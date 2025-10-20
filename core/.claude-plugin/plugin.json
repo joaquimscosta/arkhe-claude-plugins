@@ -1,0 +1,8 @@
+{
+  "name": "core",
+  "description": "Essential documentation and quality control utilities for Claude Code",
+  "version": "1.0.0",
+  "author": {
+    "name": "Arkhe"
+  }
+}

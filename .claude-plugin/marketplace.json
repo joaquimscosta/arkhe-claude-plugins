@@ -1,0 +1,24 @@
+{
+  "name": "arkhe-claude-plugins",
+  "owner": {
+    "name": "Arkhe"
+  },
+  "description": "Collection of Claude Code plugins for documentation, AI engineering, and educational content creation",
+  "plugins": [
+    {
+      "name": "core",
+      "source": "./core",
+      "description": "Essential documentation and quality control utilities"
+    },
+    {
+      "name": "skola",
+      "source": "./skola",
+      "description": "Complete AI engineering and tutorial creation toolkit"
+    },
+    {
+      "name": "udemy",
+      "source": "./udemy",
+      "description": "Udemy course content extraction skill"
+    }
+  ]
+}

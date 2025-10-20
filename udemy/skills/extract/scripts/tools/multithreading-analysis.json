@@ -1,0 +1,106 @@
+{
+  "course_url": "https://risesmart.udemy.com/course/java-multithreading-concurrency-performance-optimization/",
+  "course_slug": "java-multithreading-concurrency-performance-optimization",
+  "statistics": {
+    "content_types": {
+      "video": 32,
+      "technical_resource": 2,
+      "coding_solution": 5,
+      "promotional": 1,
+      "article": 0
+    },
+    "asset_types": {
+      "Video": 32,
+      "Article": 8
+    },
+    "has_transcripts": 32,
+    "has_supplementary_assets": 0,
+    "has_quiz_data": 0,
+    "has_coding_exercise": 0,
+    "has_downloadable_resources": 0,
+    "promotional_content": 1,
+    "total_lectures": 40
+  },
+  "findings": {
+    "lectures_with_resources": [],
+    "lectures_with_quizzes": [],
+    "lectures_with_coding_exercises": [],
+    "content_type_examples": {
+      "video": [
+        {
+          "number": 1,
+          "title": "Motivation & Operating Systems fundamentals- Part 1"
+        },
+        {
+          "number": 2,
+          "title": "Operating Systems Fundamentals - Part 2"
+        },
+        {
+          "number": 4,
+          "title": "Threads Creation - Part 1, Thread Capabilities & Debugging"
+        }
+      ],
+      "technical_resource": [
+        {
+          "number": 3,
+          "title": "Tips about Coding Lectures and Debugging Instructions"
+        },
+        {
+          "number": 12,
+          "title": "Additional Resource - Image Processing, Color Spaces, Extraction & Manipulation"
+        }
+      ],
+      "coding_solution": [
+        {
+          "number": 6,
+          "title": "Thread Creation - MultiExecutor Solution"
+        },
+        {
+          "number": 9,
+          "title": "Multithreaded Calculation - Solution"
+        },
+        {
+          "number": 19,
+          "title": "Min - Max Metrics - Solution"
+        }
+      ],
+      "promotional": [
+        {
+          "number": 40,
+          "title": "Bonus Lecture - Keep Learning"
+        }
+      ]
+    },
+    "asset_type_examples": {
+      "Video": [
+        {
+          "number": 1,
+          "title": "Motivation & Operating Systems fundamentals- Part 1"
+        },
+        {
+          "number": 2,
+          "title": "Operating Systems Fundamentals - Part 2"
+        },
+        {
+          "number": 4,
+          "title": "Threads Creation - Part 1, Thread Capabilities & Debugging"
+        }
+      ],
+      "Article": [
+        {
+          "number": 3,
+          "title": "Tips about Coding Lectures and Debugging Instructions"
+        },
+        {
+          "number": 6,
+          "title": "Thread Creation - MultiExecutor Solution"
+        },
+        {
+          "number": 9,
+          "title": "Multithreaded Calculation - Solution"
+        }
+      ]
+    }
+  },
+  "recommendations": []
+}

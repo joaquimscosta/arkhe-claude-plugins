@@ -1,0 +1,472 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Udemy Course Extractor
+
+Main script for extracting Udemy course content including structure,
+transcripts, and metadata.
+
+Usage:
+    python extract.py "https://SITE.udemy.com/course/course-name/" [output-dir]
+"""
+
+import sys
+import os
+import re
+import json
+import argparse
+import logging
+from pathlib import Path
+from urllib.parse import urlparse
+import time
+
+# Add current directory to path for imports
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from api_client import UdemyAPIClient
+from auth import Authenticator
+from file_writer import CourseFileWriter
+from content_extractors import ArticleExtractor, QuizExtractor, ResourceExtractor, ExternalResourceLinker
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(message)s'
+)
+logger = logging.getLogger(__name__)
+
+
+def parse_course_url(url):
+    """
+    Extract course information from Udemy URL.
+
+    Args:
+        url: Udemy course URL
+
+    Returns:
+        dict with 'site', 'course_id', 'course_slug'
+    """
+    parsed = urlparse(url)
+    site = parsed.netloc
+
+    # Extract course slug from path
+    # Example: /course/react-complete-guide/ → react-complete-guide
+    match = re.search(r'/course/([^/]+)', parsed.path)
+    if not match:
+        raise ValueError(f"Could not extract course ID from URL: {url}")
+
+    course_slug = match.group(1)
+
+    return {
+        'site': site,
+        'course_slug': course_slug,
+        'base_url': f"{parsed.scheme}://{site}"
+    }
+
+
+def get_project_root():
+    """
+    Get the project root directory for udemy-research/.
+
+    Uses current working directory (where Claude Code is running) as base.
+    This works whether the plugin is installed locally or from a Git repository.
+    """
+    return Path.cwd() / 'udemy-research'
+
+
+def parse_arguments():
+    """Parse command-line arguments."""
+    parser = argparse.ArgumentParser(
+        description='Extract Udemy course content including transcripts, articles, quizzes, and resources.',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  # Extract all content types (default)
+  python3 extract.py "https://SITE.udemy.com/course/java-multithreading/"
+
+  # Extract only transcripts
+  python3 extract.py "https://SITE.udemy.com/course/react-guide/" --content-types video
+
+  # Extract videos and articles, skip promotional content
+  python3 extract.py "URL" --content-types video,article --skip-promotional
+
+  # Custom output directory
+  python3 extract.py "URL" --output-dir my-course
+        """
+    )
+
+    parser.add_argument('course_url', help='Udemy course URL')
+    parser.add_argument('--output-dir', help='Custom output directory (default: course slug)')
+    parser.add_argument(
+        '--content-types',
+        default='all',
+        help='Comma-separated content types to extract: video,article,quiz,resource (default: all)'
+    )
+    parser.add_argument(
+        '--skip-promotional',
+        action='store_true',
+        help='Skip promotional/bonus lectures'
+    )
+    parser.add_argument(
+        '--quiz-format',
+        choices=['yaml', 'json'],
+        default='yaml',
+        help='Output format for quizzes (default: yaml)'
+    )
+    parser.add_argument(
+        '--download-resources',
+        action='store_true',
+        default=True,
+        help='Download supplementary resource files (PDFs, code, etc.) - enabled by default'
+    )
+    parser.add_argument(
+        '--no-download-resources',
+        action='store_false',
+        dest='download_resources',
+        help='Skip downloading resource files, only create catalog'
+    )
+    parser.add_argument(
+        '--max-resource-size',
+        type=int,
+        default=100,
+        help='Maximum resource file size to download in MB (default: 100)'
+    )
+
+    return parser.parse_args()
+
+
+def main():
+    # Check Python version
+    if sys.version_info < (3, 8):
+        print("=" * 60)
+        print("ERROR: Python 3.8+ Required")
+        print("=" * 60)
+        print(f"Current Python version: {sys.version.split()[0]}")
+        print("Required: Python 3.8 or higher")
+        print("\nPlease run with:")
+        print("  python3 extract.py <course-url>")
+        print("\nOr make script executable and run:")
+        print("  ./extract.py <course-url>")
+        print("=" * 60)
+        sys.exit(1)
+
+    # Parse arguments
+    args = parse_arguments()
+
+    course_url = args.course_url
+    output_dir = args.output_dir
+
+    # Parse content types
+    if args.content_types == 'all':
+        content_types = {'video', 'article', 'quiz', 'resource'}
+    else:
+        content_types = set(args.content_types.split(','))
+
+    # Configuration
+    config = {
+        'content_types': content_types,
+        'skip_promotional': args.skip_promotional,
+        'quiz_format': args.quiz_format,
+        'download_resources': args.download_resources,
+        'max_resource_size_mb': args.max_resource_size
+    }
+
+    print("=" * 60)
+    print("Udemy Course Extractor")
+    print("=" * 60)
+    print(f"Course URL: {course_url}\n")
+
+    try:
+        # Parse course URL
+        print("📋 Parsing course URL...")
+        course_info = parse_course_url(course_url)
+        print(f"  Site: {course_info['site']}")
+        print(f"  Course: {course_info['course_slug']}\n")
+
+        # Determine output directory
+        if not output_dir:
+            output_dir = course_info['course_slug']
+
+        project_root = get_project_root()
+        output_path = project_root / output_dir
+
+        print(f"📁 Output directory: {output_path}\n")
+
+        # Initialize authenticator
+        print("🔐 Initializing authentication...")
+        auth = Authenticator(project_root)
+        auth_headers = auth.get_auth_headers()
+        print("  ✓ Authentication successful\n")
+
+        # Initialize API client
+        print("🔌 Initializing API client...")
+        api_client = UdemyAPIClient(
+            base_url=course_info['base_url'],
+            auth_headers=auth_headers,
+            project_root=project_root
+        )
+        print("  ✓ API client ready\n")
+
+        # Initialize content extractors
+        print("🔧 Initializing content extractors...")
+        article_extractor = ArticleExtractor(api_client, config)
+        quiz_extractor = QuizExtractor(api_client, config)
+        resource_extractor = ResourceExtractor(api_client, config)
+        external_link_scanner = ExternalResourceLinker(api_client, config)
+        print("  ✓ Extractors ready\n")
+
+        # Fetch course structure
+        print("📚 Fetching course structure...")
+        course_data = api_client.get_course_structure(course_info['course_slug'])
+
+        if not course_data:
+            print("  ✗ Failed to fetch course structure")
+            sys.exit(1)
+
+        course_title = course_data.get('title', course_info['course_slug'])
+        sections = course_data.get('sections', [])
+        total_lectures = sum(len(s.get('lectures', [])) for s in sections)
+
+        print(f"  ✓ Course: {course_title}")
+        print(f"  ✓ Sections: {len(sections)}")
+        print(f"  ✓ Total lectures: {total_lectures}\n")
+
+        # Initialize file writer
+        print("💾 Initializing file writer...")
+        file_writer = CourseFileWriter(
+            output_path=output_path,
+            course_name=course_info['course_slug'],
+            course_url=course_url,
+            project_root=project_root
+        )
+        file_writer.create_directory_structure()
+        print("  ✓ Directory structure created\n")
+
+        # Save course metadata
+        print("📝 Saving course metadata...")
+        file_writer.save_course_readme(course_data)
+        print("  ✓ README.md created\n")
+
+        # Extract content
+        print("📜 Extracting course content...")
+        print(f"  Processing {total_lectures} lectures...")
+        print(f"  Content types: {', '.join(sorted(content_types))}\n")
+
+        lecture_number = 1
+        extraction_counts = {
+            'transcripts': 0,
+            'articles': 0,
+            'quizzes': 0,
+            'resources': 0,
+            'skipped': 0
+        }
+
+        for section_idx, section in enumerate(sections, 1):
+            section_title = section.get('title', f'Section {section_idx}')
+            lectures = section.get('lectures', [])
+
+            print(f"  Section {section_idx}/{len(sections)}: {section_title}")
+            print(f"    {len(lectures)} lectures")
+
+            for lecture in lectures:
+                lecture_id = lecture.get('id')
+                lecture_title = lecture.get('title', f'Lecture {lecture_number}')
+
+                if not lecture_id:
+                    print(f"    [{lecture_number:03d}] ⚠️  {lecture_title} - No lecture ID")
+                    extraction_counts['skipped'] += 1
+                    lecture_number += 1
+                    continue
+
+                # Detect content type
+                content_type = api_client.detect_content_type(lecture)
+
+                # Check if we should skip promotional content
+                if config['skip_promotional'] and content_type == 'promotional':
+                    print(f"    [{lecture_number:03d}] ⊘ {lecture_title} - Promotional (skipped)")
+                    extraction_counts['skipped'] += 1
+                    lecture_number += 1
+                    continue
+
+                # Track what was extracted for this lecture
+                extracted_items = []
+
+                # Extract video transcript
+                if content_type == 'video' and 'video' in content_types:
+                    transcript = api_client.get_lecture_transcript(
+                        course_id=course_data['id'],
+                        lecture_id=lecture_id
+                    )
+                    if transcript:
+                        file_writer.save_transcript(
+                            lecture_number=lecture_number,
+                            lecture_title=lecture_title,
+                            transcript_data=transcript
+                        )
+                        extraction_counts['transcripts'] += 1
+                        extracted_items.append('transcript')
+
+                        # Scan transcript for external links
+                        transcript_text = ' '.join([cue.get('text', '') for cue in transcript])
+                        external_link_scanner.scan_content(
+                            transcript_text, 'transcript', lecture_number, lecture_title
+                        )
+
+                # Extract article content
+                if content_type in ['article', 'coding_solution', 'technical_resource', 'promotional'] and 'article' in content_types:
+                    article_data = article_extractor.extract(lecture)
+                    if article_data:
+                        file_writer.save_article(
+                            lecture_number=lecture_number,
+                            lecture_title=lecture_title,
+                            article_data=article_data
+                        )
+                        extraction_counts['articles'] += 1
+                        extracted_items.append(f"article({article_data['article_type']})")
+
+                        # Scan article for external links
+                        article_content = article_data.get('content', '')
+                        external_link_scanner.scan_content(
+                            article_content, 'article', lecture_number, lecture_title
+                        )
+
+                # Extract quiz
+                if content_type == 'quiz' and 'quiz' in content_types:
+                    quiz_data = quiz_extractor.extract(lecture)
+                    if quiz_data:
+                        file_writer.save_quiz(
+                            lecture_number=lecture_number,
+                            lecture_title=lecture_title,
+                            quiz_data=quiz_data,
+                            output_format=config['quiz_format']
+                        )
+                        extraction_counts['quizzes'] += 1
+                        extracted_items.append('quiz')
+
+                # Extract resources
+                if 'resource' in content_types:
+                    resource_data = resource_extractor.extract(lecture)
+                    if resource_data:
+                        # Save downloaded resource files
+                        resources = resource_data.get('resources', [])
+                        for resource in resources:
+                            if resource.get('downloaded') and resource.get('download_path'):
+                                file_writer.save_resource_file(
+                                    lecture_number=lecture_number,
+                                    lecture_title=lecture_title,
+                                    resource_download_data=resource['download_path']
+                                )
+
+                        # Save resource catalog
+                        file_writer.save_resource_catalog(
+                            lecture_number=lecture_number,
+                            lecture_title=lecture_title,
+                            resource_data=resource_data
+                        )
+                        extraction_counts['resources'] += 1
+
+                        # Update extracted items message
+                        download_count = resource_data.get('metadata', {}).get('downloaded_count', 0)
+                        if download_count > 0:
+                            extracted_items.append(f"resources({download_count} files)")
+                        else:
+                            extracted_items.append('resources(catalog)')
+
+                # Display result
+                if extracted_items:
+                    items_str = ', '.join(extracted_items)
+                    print(f"    [{lecture_number:03d}] ✓ {lecture_title} [{items_str}]")
+                else:
+                    print(f"    [{lecture_number:03d}] ⚠️  {lecture_title} - No extractable content")
+                    extraction_counts['skipped'] += 1
+
+                lecture_number += 1
+
+                # Rate limiting: wait 0.5 seconds between requests
+                time.sleep(0.5)
+
+            print()  # Blank line between sections
+
+        # Generate and save external links summary
+        print("\n🔗 Processing external resource links...")
+        links_summary = external_link_scanner.generate_summary()
+        if links_summary and links_summary.get('total_resources', 0) > 0:
+            file_writer.save_external_links(links_summary)
+        else:
+            print("  ⚠️  No external links found")
+
+        # Summary
+        print("\n" + "=" * 60)
+        print("Extraction Complete!")
+        print("=" * 60)
+        print(f"Course: {course_title}")
+        print(f"Output: {output_path}")
+        print(f"\nStatistics:")
+        print(f"  Sections: {len(sections)}")
+        print(f"  Total lectures: {total_lectures}")
+        print(f"  Transcripts: {extraction_counts['transcripts']}")
+        print(f"  Articles: {extraction_counts['articles']}")
+        print(f"  Quizzes: {extraction_counts['quizzes']}")
+        print(f"  Resources: {extraction_counts['resources']}")
+        print(f"  Skipped: {extraction_counts['skipped']}")
+
+        # Get file statistics
+        stats = file_writer.get_statistics()
+        print(f"\nFiles created:")
+        print(f"  {output_path}/README.md")
+        if stats['transcripts'] > 0:
+            print(f"  {output_path}/transcripts/ ({stats['transcripts']} files)")
+        if stats['articles'] > 0:
+            print(f"  {output_path}/articles/ ({stats['articles']} files)")
+        if stats['quizzes'] > 0:
+            print(f"  {output_path}/quizzes/ ({stats['quizzes']} files)")
+        if stats['resources'] > 0:
+            print(f"  {output_path}/resources/ ({stats['resources']} catalogs)")
+
+        # Show extractor statistics if any issues
+        article_stats = article_extractor.get_statistics()
+        quiz_stats = quiz_extractor.get_statistics()
+        resource_stats = resource_extractor.get_statistics()
+
+        # Show resource download statistics
+        if config['download_resources'] and hasattr(resource_extractor, 'get_download_statistics'):
+            download_stats = resource_extractor.get_download_statistics()
+            if download_stats['downloaded'] > 0 or download_stats['failed_download'] > 0:
+                print(f"\nResource Download Statistics:")
+                if download_stats['downloaded'] > 0:
+                    total_mb = download_stats['total_bytes'] / (1024 * 1024)
+                    print(f"  ✓ {download_stats['downloaded']} files downloaded ({total_mb:.1f}MB)")
+                if download_stats['skipped_size'] > 0:
+                    print(f"  ⊘ {download_stats['skipped_size']} files skipped (exceeded size limit)")
+                if download_stats['failed_download'] > 0:
+                    print(f"  ✗ {download_stats['failed_download']} files failed to download")
+
+        if article_stats['partial'] > 0 or article_stats['failed'] > 0:
+            print(f"\nArticle Extraction Issues:")
+            if article_stats['partial'] > 0:
+                print(f"  ⚠️  {article_stats['partial']} articles saved as raw HTML (conversion failed)")
+            if article_stats['failed'] > 0:
+                print(f"  ✗ {article_stats['failed']} articles failed to extract")
+
+        print("=" * 60)
+
+        # Update API documentation if new endpoints were discovered
+        if api_client.has_new_endpoints():
+            print("\n📝 Updating API documentation with new endpoints...")
+            api_client.update_api_documentation()
+            print("  ✓ API.md updated")
+
+        print("\n✓ Done!")
+
+    except KeyboardInterrupt:
+        print("\n\n⚠️  Extraction interrupted by user")
+        sys.exit(1)
+    except Exception as error:
+        print(f"\n✗ Error: {str(error)}")
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)
+
+
+if __name__ == '__main__':
+    main()
