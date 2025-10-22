@@ -11,13 +11,7 @@ Complete guide to installing and using the Arkhe Claude Plugins.
 
 ### 1. Add the Marketplace
 
-From within Claude Code, run:
-
-```bash
-/plugin marketplace add /Users/jcosta/Projects/skola.dev/arkhe-claude-plugins
-```
-
-Or if you're in the project directory:
+From within Claude Code, navigate to the parent directory of the cloned repository and run:
 
 ```bash
 /plugin marketplace add ./arkhe-claude-plugins

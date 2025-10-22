@@ -45,6 +45,34 @@ Udemy course content extraction skill.
 
 ---
 
+### 4. Review Plugin
+
+Code quality review and workflow orchestration tools.
+
+**Components:**
+- 2 agents: `pragmatic-code-review`, `ui-ux-designer`
+- 5 commands: `/code`, `/security`, `/design`, `/codebase`, `/workflow`
+
+**Use for:** Code review, security assessment, design review, codebase documentation, workflow orchestration
+
+[View Review Plugin Details →](./review/README.md)
+
+---
+
+### 5. Git Plugin
+
+Git workflow automation for commit, PR, and branching.
+
+**Components:**
+- 3 commands: `/commit`, `/create-pr`, `/create-branch`
+- 4 scripts: Smart pre-commit checks, PR creation/update, branch naming
+
+**Use for:** Git workflows, automated commits, pull requests, feature branching
+
+[View Git Plugin Details →](./git/README.md)
+
+---
+
 ## Quick Start
 
 ### 1. Add the Marketplace
@@ -60,6 +88,8 @@ Install all plugins:
 /plugin install core@arkhe-claude-plugins
 /plugin install skola@arkhe-claude-plugins
 /plugin install udemy@arkhe-claude-plugins
+/plugin install review@arkhe-claude-plugins
+/plugin install git@arkhe-claude-plugins
 ```
 
 Or install selectively based on your needs.
@@ -85,6 +115,12 @@ After installation, restart Claude Code and use:
 
 **For Udemy course extraction:**
 → Install `udemy`
+
+**For code quality and review:**
+→ Install `review`
+
+**For Git workflow automation:**
+→ Install `git`
 
 ## Developer Documentation
 

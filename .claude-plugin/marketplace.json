@@ -19,6 +19,16 @@
       "name": "udemy",
       "source": "./udemy",
       "description": "Udemy course content extraction skill"
+    },
+    {
+      "name": "review",
+      "source": "./review",
+      "description": "Code quality review and workflow orchestration tools"
+    },
+    {
+      "name": "git",
+      "source": "./git",
+      "description": "Git workflow automation (commit, PR, branching)"
     }
   ]
 }
