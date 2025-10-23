@@ -156,9 +156,9 @@ For more details, see:
 
 ### Via Command
 ```bash
-/changelog-generator
-/changelog-generator --since v1.1.0 --version 1.2.0
-/changelog-generator --format github --append
+/changelog
+/changelog --since v1.1.0 --version 1.2.0
+/changelog --format github --append
 ```
 
 ### Auto-Invoke
@@ -181,7 +181,7 @@ vim CHANGELOG.md
 2. Skill auto-invokes: Analyzes commits since v1.1.0
 3. Skill generates: Draft changelog with categorized changes
 4. Developer reviews: Edits descriptions, adds context
-5. Developer: `/changelog-generator --append --version 1.2.0`
+5. Developer: `/changelog --append --version 1.2.0`
 6. Skill updates: CHANGELOG.md with final content
 7. Developer commits: Changelog as part of release
 
@@ -189,13 +189,13 @@ vim CHANGELOG.md
 ```bash
 # Generate changelog for specific service
 cd services/api
-/changelog-generator --output CHANGELOG.md --since v1.0.0
+/changelog --output CHANGELOG.md --since v1.0.0
 ```
 
 ### Monorepo Root Changelog
 ```bash
 # Generate project-wide changelog
-/changelog-generator --output CHANGELOG.md --format keepachangelog
+/changelog --output CHANGELOG.md --format keepachangelog
 ```
 
 ## Quality Standards

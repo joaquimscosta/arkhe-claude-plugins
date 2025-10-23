@@ -10,7 +10,7 @@ User-service needs a release with JWT improvements and bug fixes.
 ### Command
 ```bash
 cd backend/user-service
-/changelog-generator --since v1.1.0 --version 1.2.0 --append
+/changelog --since v1.1.0 --version 1.2.0 --append
 ```
 
 ### Git History (user-service)
@@ -60,23 +60,23 @@ All notable changes to the User Service will be documented in this file.
 ## Example 2: Frontend Release (web-ui v2.1.0)
 
 ### Context
-Major UI update with UIFort components and Material-UI theme changes.
+Major UI update with new component library and theme changes.
 
 ### Command
 ```bash
 cd frontend/web-ui
-/changelog-generator --format keepachangelog --version 2.1.0
+/changelog --format keepachangelog --version 2.1.0
 ```
 
 ### Git History (web-ui)
 ```
-feat: integrate UIFort data table for keyword research (#201)
-feat: add multi-currency support in revenue dashboard (#202)
-feat!: migrate from Redux to TanStack Query + Zustand (#203)
-fix: resolve hydration errors in Next.js 14 (#204)
-perf: optimize bundle size (reduced by 30%) (#205)
-style: update Material-UI theme to livingCoral preset (#206)
-docs: add UIFort integration guide
+✨ feat: integrate data table component for keyword research (#201)
+💰 feat: add multi-currency support in revenue dashboard (#202)
+⚛️ feat!: migrate from Redux to TanStack Query + Zustand (#203)
+🔧 fix: resolve hydration errors in Next.js 14 (#204)
+⚡ perf: optimize bundle size (reduced by 30%) (#205)
+🎨 style: update theme to coral color preset (#206)
+📚 docs: add component library integration guide
 ```
 
 ### Generated Changelog
@@ -85,26 +85,24 @@ docs: add UIFort integration guide
 
 All notable changes to your project UI will be documented in this file.
 
-## [2.1.0] - 2025-10-22
+## [v2.1.0] — *2025-10-22* — ✨ **Frontend Enhancement Release**
 
-### Added
-- UIFort data table component for keyword research with sorting, filtering, and pagination (#201)
-- Multi-currency support in revenue dashboard with automatic USD conversion (#202)
-- Material-UI livingCoral theme preset for improved visual consistency (#206)
-
-### Changed
-- **BREAKING**: Migrated state management from Redux to TanStack Query + Zustand (#203)
+**Frontend**
+- 🧩 Integrated data table component for keyword research with sorting, filtering, and pagination (#201)
+- 💰 Added multi-currency support in revenue dashboard with automatic USD conversion (#202)
+- 🎨 Updated theme to coral color preset for improved visual consistency (#206)
+- **BREAKING**: ⚛️ Migrated state management from Redux to TanStack Query + Zustand (#203)
   - Redux store removed - see migration guide
   - React Query now handles server state
   - Zustand manages client UI state
 
-### Fixed
-- Next.js 14 hydration errors in server components (#204)
+**Bug Fixes**
+- 🔧 Resolved Next.js 14 hydration errors in server components (#204)
 
-### Performance
-- Reduced bundle size by 30% through code splitting and lazy loading (#205)
+**Performance**
+- ⚡ Reduced bundle size by 30% through code splitting and lazy loading (#205)
 
-## [2.0.0] - 2025-08-01
+## [v2.0.0] — *2025-08-01* — 🚀 **Major Architecture Release**
 
 ...
 ```
@@ -114,17 +112,19 @@ All notable changes to your project UI will be documented in this file.
 ⚠️  BREAKING CHANGES DETECTED
 📊 Analysis:
    - 7 commits analyzed
-   - Version bump: MAJOR (2.0.0 → 2.1.0) - Contains breaking change
-   - Categories: 3 feat, 1 fix, 1 perf, 1 style, 1 docs
+   - Version format: v2.1.0 (Nos Ilha style with emojis)
+   - Version bump: MAJOR (v2.0.0 → v2.1.0) - Contains breaking change
+   - Component sections: Frontend, Bug Fixes, Performance
+   - Emoji prefixes: ✨ feat, 🔧 fix, ⚡ perf, 🎨 style, 📚 docs
    - Breaking changes: 1 (state management migration)
 
 🚨 Breaking Change Details:
-   - Commit: feat!: migrate from Redux to TanStack Query + Zustand (#203)
+   - Commit: ⚛️ feat!: migrate from Redux to TanStack Query + Zustand (#203)
    - Impact: State management architecture change
    - Action Required: Update consuming components
 
 📝 Updated: frontend/web-ui/CHANGELOG.md
-🏷️  Suggested tag: git tag -a v2.1.0 -m "Release v2.1.0"
+🏷️  Suggested tag: git tag -a v2.1.0 -m "Frontend Enhancement Release v2.1.0"
 ```
 
 ## Example 3: Monorepo Root Release (v1.5.0)
@@ -135,7 +135,7 @@ Project-wide release affecting multiple services and common-libs.
 ### Command
 ```bash
 # From monorepo root
-/changelog-generator --since v1.4.0 --version 1.5.0 --format github
+/changelog --since v1.4.0 --version 1.5.0 --format github
 ```
 
 ### Git History (monorepo)
@@ -200,7 +200,7 @@ Hotfix release for search-service with only bug fixes.
 ### Command
 ```bash
 cd backend/search-service
-/changelog-generator --since v1.1.0 --version 1.1.1 --append
+/changelog --since v1.1.0 --version 1.1.1 --append
 ```
 
 ### Git History (search-service)
@@ -247,7 +247,7 @@ Release candidate for common-libs before production deployment.
 ### Command
 ```bash
 cd backend/common-libs
-/changelog-generator --since v1.5.5 --version 1.6.0-rc1 --format conventional
+/changelog --since v1.5.5 --version 1.6.0-rc1 --format conventional
 ```
 
 ### Git History (common-libs)
@@ -292,7 +292,7 @@ docs: update JavaDoc for new tracing utilities
 ⚠️  Next Steps:
    1. Deploy to staging environment
    2. Run integration tests
-   3. If successful: /changelog-generator --version 1.6.0 (stable)
+   3. If successful: /changelog --version 1.6.0 (stable)
 
 📝 Updated: backend/common-libs/CHANGELOG.md
 🏷️  Suggested tag: git tag -a v1.6.0-rc1 -m "Release candidate v1.6.0-rc1"
@@ -305,7 +305,7 @@ Generate monthly changelog for October 2025 progress report.
 
 ### Command
 ```bash
-/changelog-generator --since "2025-10-01" --until "2025-10-31" --output OCTOBER_2025.md
+/changelog --since "2025-10-01" --until "2025-10-31" --output OCTOBER_2025.md
 ```
 
 ### Generated Output
@@ -328,9 +328,9 @@ Generate monthly changelog for October 2025 progress report.
 - OpenSearch integration with Valkey cache (search-service) #302
 
 ### Frontend
-- UIFort data table integration (web-ui) #201
+- Data table integration (web-ui) #201
 - Multi-currency revenue dashboard (web-ui) #202
-- Material-UI theme presets (web-ui) #206
+- Theme presets (web-ui) #206
 
 ### Infrastructure
 - Distributed tracing utilities (common-libs) #501
@@ -357,7 +357,7 @@ Generate monthly changelog for October 2025 progress report.
 
 ## Documentation
 - Architecture documentation updated
-- UIFort integration guide added
+- Component library integration guide added
 - API documentation updated for auth endpoints
 
 ## Testing

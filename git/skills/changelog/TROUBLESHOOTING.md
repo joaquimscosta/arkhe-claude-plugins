@@ -28,7 +28,7 @@ cd backend/user-service
 ```
 
 **Prevention:**
-- Always run `/changelog-generator` from within a git repository
+- Always run `/changelog` from within a git repository
 - Check `pwd` before running the command
 
 ---
@@ -64,10 +64,10 @@ git checkout main
 **Alternative:**
 ```bash
 # Generate changelog for specific commit range
-/changelog-generator --since abc123 --until def456
+/changelog --since abc123 --until def456
 
 # Or use date range instead
-/changelog-generator --since "2025-10-01" --until "2025-10-22"
+/changelog --since "2025-10-01" --until "2025-10-22"
 ```
 
 **Prevention:**
@@ -92,10 +92,10 @@ Expected format: MAJOR.MINOR.PATCH (e.g., 1.2.0)
 **Solution:**
 ```bash
 # Use proper semantic versioning
-/changelog-generator --version 1.2.0
+/changelog --version 1.2.0
 
-# NOT: /changelog-generator --version 1.2
-# NOT: /changelog-generator --version v1.x.0
+# NOT: /changelog --version 1.2
+# NOT: /changelog --version v1.x.0
 ```
 
 **Valid Formats:**
@@ -127,19 +127,19 @@ Conflicting versions detected
 **Solution Option A: Overwrite**
 ```bash
 # Overwrite existing entry
-/changelog-generator --version 1.2.0 --overwrite
+/changelog --version 1.2.0 --overwrite
 ```
 
 **Solution Option B: Skip**
 ```bash
 # Skip generation if version exists
-/changelog-generator --version 1.2.0 --skip-if-exists
+/changelog --version 1.2.0 --skip-if-exists
 ```
 
 **Solution Option C: Increment Version**
 ```bash
 # Use next version instead
-/changelog-generator --version 1.2.1
+/changelog --version 1.2.1
 ```
 
 **Prevention:**
@@ -267,7 +267,7 @@ git rebase -i HEAD~5
 **Alternative:**
 ```bash
 # Generate changelog and manually add PR links
-/changelog-generator --version 1.2.0
+/changelog --version 1.2.0
 
 # Edit CHANGELOG.md to add missing PR numbers
 vim CHANGELOG.md
@@ -297,13 +297,13 @@ Service-specific changelogs are empty
 ```bash
 # Generate service-specific changelog
 cd backend/user-service
-/changelog-generator --version 1.2.0
+/changelog --version 1.2.0
 
 # Filter commits by path (manual)
 git log v1.1.0..HEAD --oneline -- backend/user-service/
 
 # Or specify path filter
-/changelog-generator --path backend/user-service
+/changelog --path backend/user-service
 ```
 
 **Monorepo Best Practices:**
@@ -333,9 +333,9 @@ Sections out of order or missing
 **Solution:**
 ```bash
 # Specify format explicitly
-/changelog-generator --format keepachangelog  # Industry standard
-/changelog-generator --format conventional    # Conventional Commits
-/changelog-generator --format github          # GitHub release notes
+/changelog --format keepachangelog  # Industry standard
+/changelog --format conventional    # Conventional Commits
+/changelog --format github          # GitHub release notes
 ```
 
 **Format Comparison:**
@@ -368,14 +368,14 @@ Memory errors with large commit history
 **Solution:**
 ```bash
 # Limit commit range
-/changelog-generator --since v1.9.0 --until HEAD  # Last version only
+/changelog --since v1.9.0 --until HEAD  # Last version only
 
 # Use date range instead of full history
-/changelog-generator --since "2025-10-01"
+/changelog --since "2025-10-01"
 
 # Generate incrementally (per service)
-cd backend/user-service && /changelog-generator
-cd backend/search-service && /changelog-generator
+cd backend/user-service && /changelog
+cd backend/search-service && /changelog
 ```
 
 **Optimization:**
@@ -419,10 +419,10 @@ test -f CHANGELOG.md && echo "Exists" || echo "Will create new"
 
 ```bash
 # Enable verbose output
-/changelog-generator --verbose --version 1.2.0
+/changelog --verbose --version 1.2.0
 
 # Dry run (preview without writing)
-/changelog-generator --dry-run --version 1.2.0
+/changelog --dry-run --version 1.2.0
 
 # Show detected commits
 git log v1.1.0..HEAD --pretty=format:"%h %s" | head -20
