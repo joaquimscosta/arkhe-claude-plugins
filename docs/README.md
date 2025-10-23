@@ -149,7 +149,8 @@ The Arkhe Claude Plugins marketplace demonstrates all plugin component types acr
 **Agents** (specialized AI assistants):
 - **core**: 1 agent - `docs-architect`
 - **skola**: 5 agents - `tutorial-engineer`, `ai-engineer`, `prompt-engineer`, `context-manager`, `mermaid-expert`
-- **review**: 2 agents - `pragmatic-code-review`, `ui-ux-designer`
+- **review**: 2 agents - `pragmatic-code-review`, `design-review`
+- **ui**: 1 agent - `ui-ux-designer`
 
 **Skills** (model-invoked capabilities):
 - **udemy**: 1 skill - `extract` (auto-activates on Udemy URLs)
@@ -254,6 +255,27 @@ Use these plugins as templates for your own development. Each demonstrates diffe
 - Complex review workflows
 
 [View Review Plugin Details →](../review/README.md)
+
+---
+
+#### **ui** - Specialized Agent Pattern
+
+**Structure**: 1 agent (no commands)
+**Complexity**: Low
+**Key Features**:
+- UI/UX design expertise and design systems
+- Accessibility-first design patterns (WCAG 2.1/2.2 AA)
+- User research and usability testing methodologies
+- Design token architecture and component libraries
+- Figma and modern design tool workflows
+
+**Best for learning**:
+- Creating focused, specialized agents without commands
+- Domain expertise packaging (design systems, accessibility)
+- Agent-only plugin architecture
+- Cross-plugin integration (complements review plugin)
+
+[View UI Plugin Details →](../ui/README.md)
 
 ---
 

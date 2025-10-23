@@ -23,16 +23,16 @@ Principal Engineer code reviewer implementing the "Pragmatic Quality" framework 
 
 **Use via**: `/agents` interface
 
-#### 2. ui-ux-designer
-Complete UI/UX design expert specializing in accessibility-first design, design systems, and user research methodologies.
+#### 2. design-review
+Elite design review specialist conducting comprehensive UI/UX reviews using Playwright MCP for automated browser testing.
 
 **Capabilities**:
-- Design system architecture
-- Accessibility compliance (WCAG 2.1/2.2 AA)
-- User research and usability testing
-- Responsive and cross-platform design
-- Component library design
-- Design token management
+- Live environment interaction testing
+- Responsive design validation (desktop/tablet/mobile)
+- Accessibility compliance testing (WCAG 2.1 AA)
+- Interactive state verification (hover, active, disabled)
+- Visual consistency and polish analysis
+- Browser console error detection
 
 **Use via**: `/agents` interface
 
@@ -202,7 +202,7 @@ Browse and select agents through the `/agents` interface:
 
 This will show both:
 - **pragmatic-code-review** - Principal Engineer code reviewer
-- **ui-ux-designer** - UI/UX design expert
+- **design-review** - Elite design review specialist
 
 ## MCP Requirements
 

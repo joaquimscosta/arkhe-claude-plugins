@@ -36,6 +36,11 @@
       "description": "Code quality review tools for development teams"
     },
     {
+      "name": "ui",
+      "source": "./ui",
+      "description": "UI/UX design and design system toolkit"
+    },
+    {
       "name": "git",
       "source": "./git",
       "description": "Git workflow automation (commit, PR, branching, changelog)"

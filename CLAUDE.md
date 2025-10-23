@@ -24,6 +24,7 @@ arkhe-claude-plugins/
 ├── ai/                            # AI engineering and LLM development
 ├── doc/                           # Documentation generation
 ├── review/                        # Code review and quality
+├── ui/                            # UI/UX design and design systems
 ├── git/                           # Git workflow automation
 ├── udemy/                         # Udemy course extraction
 └── docs/                          # Developer documentation
@@ -79,8 +80,13 @@ Udemy course content extraction skill.
 
 ### Review Plugin
 Code quality review tools for development teams.
-- **Agents**: `pragmatic-code-review`, `ui-ux-designer`
+- **Agents**: `pragmatic-code-review`, `design-review`
 - **Commands**: `/code`, `/security`, `/design`, `/codebase`
+
+### UI Plugin
+UI/UX design and design system toolkit.
+- **Agents**: `ui-ux-designer`
+- **Commands**: None (all capabilities via agent)
 
 ### Git Plugin
 Git workflow automation for commits, pull requests, branching, and changelog generation.
@@ -103,6 +109,7 @@ Git workflow automation for commits, pull requests, branching, and changelog gen
 /plugin install skola@arkhe-claude-plugins
 /plugin install udemy@arkhe-claude-plugins
 /plugin install review@arkhe-claude-plugins
+/plugin install ui@arkhe-claude-plugins
 /plugin install git@arkhe-claude-plugins
 
 # Verify installation

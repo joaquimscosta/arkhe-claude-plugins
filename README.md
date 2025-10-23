@@ -78,16 +78,29 @@ Udemy course content extraction skill.
 Code quality review tools for development teams.
 
 **Components:**
-- 2 agents: `pragmatic-code-review`, `ui-ux-designer`
+- 2 agents: `pragmatic-code-review`, `design-review`
 - 4 commands: `/code`, `/security`, `/design`, `/codebase`
 
-**Use for:** Code review, security assessment, design review, codebase documentation
+**Use for:** Code review, security assessment, design review with Playwright MCP, codebase documentation
 
 [View Review Plugin Details →](./review/README.md)
 
 ---
 
-### 7. Git Plugin
+### 7. UI Plugin
+
+UI/UX design and design system toolkit.
+
+**Components:**
+- 1 agent: `ui-ux-designer`
+
+**Use for:** Design systems, accessibility compliance, user research, component library design, design-to-development handoff
+
+[View UI Plugin Details →](./ui/README.md)
+
+---
+
+### 8. Git Plugin
 
 Git workflow automation for commit, PR, branching, and changelog generation.
 
@@ -120,6 +133,7 @@ Install all plugins:
 /plugin install skola@arkhe-claude-plugins
 /plugin install udemy@arkhe-claude-plugins
 /plugin install review@arkhe-claude-plugins
+/plugin install ui@arkhe-claude-plugins
 /plugin install git@arkhe-claude-plugins
 ```
 
@@ -152,6 +166,9 @@ After installation, restart Claude Code and use:
 
 **For code quality and review:**
 → Install `review`
+
+**For UI/UX design and design systems:**
+→ Install `ui`
 
 **For Git workflow automation:**
 → Install `git`
