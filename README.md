@@ -165,6 +165,10 @@ After installation, restart Claude Code and use:
 - **[Agent Skills Overview](./docs/AGENT_SKILLS_OVERVIEW.md)** - Complete guide to understanding and using Agent Skills, including architecture, progressive disclosure, and best practices
 - **[Skill Development Best Practices](./docs/SKILL_DEVELOPMENT_BEST_PRACTICES.md)** - Lessons learned from real-world skill implementation, token optimization, and common pitfalls
 
+### Prompt Engineering & Best Practices
+
+- **[Claude 4 Best Practices](./docs/CLAUDE_4_BEST_PRACTICES.md)** - Official prompt engineering techniques for Claude 4 models (Sonnet 4.5, Opus 4.1, Haiku 4.5) including instruction following, context optimization, and migration guidance
+
 ### Creating Your Own Plugins
 
 Want to extend these plugins or create your own?
@@ -180,9 +184,17 @@ Want to extend these plugins or create your own?
 arkhe-claude-plugins/
 ├── .claude-plugin/
 │   └── marketplace.json
-├── docs/                          # Developer documentation
-│   ├── AGENT_SKILLS_OVERVIEW.md
-│   └── SKILL_DEVELOPMENT_BEST_PRACTICES.md
+├── docs/                                      # Developer documentation
+│   ├── AGENT_SKILLS_OVERVIEW.md              # ← Synced from Claude docs
+│   ├── CLAUDE_4_BEST_PRACTICES.md            # ← Synced from Claude docs
+│   ├── COMMANDS.md                           # ← Synced from Claude docs
+│   ├── DEVELOPER_TOOLS.md                    # Custom development guide
+│   ├── HOOKS.md                              # ← Synced from Claude docs
+│   ├── PLUGINS.md                            # ← Synced from Claude docs
+│   ├── SKILL_DEVELOPMENT_BEST_PRACTICES.md   # Custom lessons learned
+│   ├── SUBAGENTS.md                          # ← Synced from Claude docs
+│   ├── README.md                             # Documentation index
+│   └── update-claude-docs.sh                 # Automated doc sync script
 ├── core/
 │   ├── .claude-plugin/plugin.json
 │   ├── agents/

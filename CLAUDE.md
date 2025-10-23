@@ -476,12 +476,37 @@ chmod +x scripts/*.py
 ## Key Documentation Files
 
 ### Developer Resources
-- `docs/AGENT_SKILLS_OVERVIEW.md` - Comprehensive guide to Agent Skills architecture
-- `docs/SKILL_DEVELOPMENT_BEST_PRACTICES.md` - Lessons learned from real implementations
-- `docs/PLUGINS.md` - Plugin system documentation
-- `docs/SUBAGENTS.md` - Agent configuration and usage guide
-- `docs/HOOKS.md` - Event handling documentation
-- `docs/DEVELOPER_TOOLS.md` - Development tooling guide
+- `docs/AGENT_SKILLS_OVERVIEW.md` - Comprehensive guide to Agent Skills architecture (synced)
+- `docs/SKILL_DEVELOPMENT_BEST_PRACTICES.md` - Lessons learned from real implementations (custom)
+- `docs/PLUGINS.md` - Plugin system documentation (synced)
+- `docs/SUBAGENTS.md` - Agent configuration and usage guide (synced)
+- `docs/COMMANDS.md` - Slash commands reference and development guide (synced)
+- `docs/HOOKS.md` - Event handling documentation (synced)
+- `docs/DEVELOPER_TOOLS.md` - Development tooling guide (custom)
+- `docs/CLAUDE_4_BEST_PRACTICES.md` - Official prompt engineering techniques for Claude 4 models (synced)
+
+### Automated Documentation Sync
+
+The `docs/` directory includes both **custom documentation** (written for this project) and **synced documentation** (automated copies of official Claude Code documentation).
+
+**To update synced documentation**:
+```bash
+cd docs && ./update-claude-docs.sh
+```
+
+**Synced files** (6 total):
+- SUBAGENTS.md, PLUGINS.md, HOOKS.md, COMMANDS.md
+- AGENT_SKILLS_OVERVIEW.md, CLAUDE_4_BEST_PRACTICES.md
+
+**Custom files** (never overwritten):
+- DEVELOPER_TOOLS.md, SKILL_DEVELOPMENT_BEST_PRACTICES.md, README.md
+
+**To add new documentation URLs**:
+1. Edit `docs/update-claude-docs.sh` and add to `URL_MAPPINGS` array
+2. Run `./update-claude-docs.sh` to download
+3. Update README.md, CLAUDE.md, and docs/README.md to reference new file
+
+See [docs/README.md](docs/README.md) "Maintaining This Documentation" section for complete details.
 
 ### Plugin Documentation
 - `*/README.md` - Plugin overview and usage examples
@@ -499,6 +524,8 @@ All plugins are currently at **version 1.0.0**. When making breaking changes, in
 For complete technical specifications:
 - **Plugin System**: `docs/PLUGINS.md`
 - **Agent Configuration**: `docs/SUBAGENTS.md`
+- **Commands Development**: `docs/COMMANDS.md`
 - **Skill Development**: `docs/SKILL_DEVELOPMENT_BEST_PRACTICES.md`
+- **Prompt Engineering**: `docs/CLAUDE_4_BEST_PRACTICES.md`
 - **Installation Guide**: `INSTALLATION.md`
 - **Main README**: `README.md`
