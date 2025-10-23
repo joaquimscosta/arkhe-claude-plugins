@@ -1,0 +1,8 @@
+{
+  "name": "doc",
+  "description": "Multi-purpose documentation toolkit (generation, explanation, diagrams)",
+  "version": "1.0.0",
+  "author": {
+    "name": "Arkhe"
+  }
+}
