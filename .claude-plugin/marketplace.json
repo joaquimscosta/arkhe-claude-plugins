@@ -8,17 +8,42 @@
     {
       "name": "core",
       "source": "./core",
-      "description": "Essential documentation and quality control utilities"
+      "description": "Essential documentation, quality control, and workflow orchestration utilities"
+    },
+    {
+      "name": "ai",
+      "source": "./ai",
+      "description": "AI engineering toolkit for production-ready LLM applications"
+    },
+    {
+      "name": "doc",
+      "source": "./doc",
+      "description": "Multi-purpose documentation toolkit"
     },
     {
       "name": "skola",
       "source": "./skola",
-      "description": "Complete AI engineering and tutorial creation toolkit"
+      "description": "Tutorial creation and educational content toolkit"
     },
     {
       "name": "udemy",
       "source": "./udemy",
       "description": "Udemy course content extraction skill"
+    },
+    {
+      "name": "review",
+      "source": "./review",
+      "description": "Code quality review tools for development teams"
+    },
+    {
+      "name": "ui",
+      "source": "./ui",
+      "description": "UI/UX design and design system toolkit"
+    },
+    {
+      "name": "git",
+      "source": "./git",
+      "description": "Git workflow automation (commit, PR, branching, changelog)"
     }
   ]
 }

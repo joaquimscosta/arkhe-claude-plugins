@@ -1,6 +1,6 @@
 # Core Plugin
 
-Essential documentation and quality control utilities for Claude Code.
+Essential documentation, quality control, and workflow orchestration utilities for Claude Code.
 
 ## Components
 
@@ -15,6 +15,8 @@ Essential documentation and quality control utilities for Claude Code.
 - **/double-check**: Quality validation command that verifies your work from multiple angles. Ensures completeness and correctness before finalizing.
 
 - **/ultrathink**: Deep thinking command for complex problem-solving. Takes time to analyze problems thoroughly from different perspectives.
+
+- **/workflow**: Product Manager-led orchestration agent that coordinates specialist agents across any domain. Supports enhanced thinking modes (--seq, --ultrathink, --thinkhard), MCP server integration (--exa, --c7), spec kit workflows, and natural language requests. Tracks work via AGENT_TODOS.md.
 
 ## Installation
 
@@ -39,6 +41,10 @@ After installation, the agent and commands will be available:
 /discuss implementing a new authentication system
 /double-check
 /ultrathink how to optimize the database queries
+
+# Use workflow orchestration
+/workflow implement OAuth2 authentication --seq --c7
+/workflow refactor-payment-system --thinkhard
 ```
 
 ## Version

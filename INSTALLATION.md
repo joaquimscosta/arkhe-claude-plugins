@@ -1,103 +1,224 @@
 # Installation Guide
 
-Complete guide to installing and using the Arkhe Claude Plugins.
+Complete guide to installing and using the Arkhe Claude Plugins marketplace.
 
 ## Prerequisites
 
 - Claude Code installed and running
 - This repository cloned or accessible locally
 
-## Step-by-Step Installation
+## Quick Start
 
 ### 1. Add the Marketplace
 
-From within Claude Code, run:
-
-```bash
-/plugin marketplace add /Users/jcosta/Projects/skola.dev/arkhe-claude-plugins
-```
-
-Or if you're in the project directory:
+From within Claude Code, navigate to the parent directory of the cloned repository and run:
 
 ```bash
 /plugin marketplace add ./arkhe-claude-plugins
 ```
 
-### 2. Browse Available Plugins
-
-```bash
-/plugin
-```
-
-Select "Browse Plugins" to see all available plugins in the marketplace.
-
-### 3. Install Plugins
-
-You can install plugins individually or all at once:
-
-#### Install All Plugins
+### 2. Install All Plugins
 
 ```bash
 /plugin install core@arkhe-claude-plugins
+/plugin install ai@arkhe-claude-plugins
+/plugin install doc@arkhe-claude-plugins
 /plugin install skola@arkhe-claude-plugins
 /plugin install udemy@arkhe-claude-plugins
+/plugin install review@arkhe-claude-plugins
+/plugin install ui@arkhe-claude-plugins
+/plugin install git@arkhe-claude-plugins
 ```
 
-#### Install Selectively
+### 3. Restart Claude Code
 
-**For documentation work only:**
+After installation, restart Claude Code for all plugins to take effect.
+
+---
+
+## Plugin Overview
+
+### Core Plugin
+Essential documentation, quality control, and workflow orchestration utilities.
+
+**Install**: `/plugin install core@arkhe-claude-plugins`
+
+**Components**:
+- 1 agent: `docs-architect`
+- 4 commands: `/discuss`, `/double-check`, `/ultrathink`, `/workflow`
+
+---
+
+### AI Plugin
+AI engineering toolkit for production-ready LLM applications.
+
+**Install**: `/plugin install ai@arkhe-claude-plugins`
+
+**Components**:
+- 3 agents: `ai-engineer`, `prompt-engineer`, `context-manager`
+- 2 commands: `/improve-agent`, `/multi-agent-optimize`
+
+---
+
+### Doc Plugin
+Multi-purpose documentation toolkit.
+
+**Install**: `/plugin install doc@arkhe-claude-plugins`
+
+**Components**:
+- 2 agents: `docs-architect`, `mermaid-expert`
+- 2 commands: `/doc-generate`, `/code-explain`
+
+---
+
+### Skola Plugin
+Tutorial creation and educational content toolkit.
+
+**Install**: `/plugin install skola@arkhe-claude-plugins`
+
+**Components**:
+- 5 agents: `tutorial-engineer`, `ai-engineer`, `prompt-engineer`, `context-manager`, `mermaid-expert`
+- 4 commands: `/doc-generate`, `/code-explain`, `/improve-agent`, `/multi-agent-optimize`
+
+---
+
+### Udemy Plugin
+Udemy course content extraction skill.
+
+**Install**: `/plugin install udemy@arkhe-claude-plugins`
+
+**Components**:
+- 1 skill: `extract` (auto-invoked when working with Udemy URLs)
+
+---
+
+### Review Plugin
+Code quality review tools for development teams.
+
+**Install**: `/plugin install review@arkhe-claude-plugins`
+
+**Components**:
+- 2 agents: `pragmatic-code-review`, `design-review`
+- 4 commands: `/code`, `/security`, `/design`, `/codebase`
+
+---
+
+### UI Plugin
+UI/UX design and design system toolkit.
+
+**Install**: `/plugin install ui@arkhe-claude-plugins`
+
+**Components**:
+- 1 agent: `ui-ux-designer`
+
+---
+
+### Git Plugin
+Git workflow automation for commits, pull requests, branching, and changelog generation.
+
+**Install**: `/plugin install git@arkhe-claude-plugins`
+
+**Components**:
+- 4 commands: `/commit`, `/create-pr`, `/create-branch`, `/changelog`
+- 1 skill: `changelog` (auto-invoked)
+- 4 scripts: Shell scripts for git workflow automation
+
+---
+
+## Selective Installation
+
+Install only the plugins you need:
+
+### For Documentation Work
 ```bash
 /plugin install core@arkhe-claude-plugins
+/plugin install doc@arkhe-claude-plugins
 ```
 
-**For AI/tutorial development:**
+### For AI/LLM Development
+```bash
+/plugin install ai@arkhe-claude-plugins
+```
+
+### For Tutorial Creation
 ```bash
 /plugin install skola@arkhe-claude-plugins
+/plugin install doc@arkhe-claude-plugins
 ```
 
-**For Udemy extraction:**
+### For Udemy Course Extraction
 ```bash
 /plugin install udemy@arkhe-claude-plugins
 ```
 
-### 4. Restart Claude Code
+### For Code Quality & Review
+```bash
+/plugin install review@arkhe-claude-plugins
+```
 
-After installation, restart Claude Code for the plugins to take effect.
+### For UI/UX Design Work
+```bash
+/plugin install ui@arkhe-claude-plugins
+```
+
+### For Git Workflow Automation
+```bash
+/plugin install git@arkhe-claude-plugins
+```
+
+---
 
 ## Verification
 
 After installation, verify that everything works:
 
-### Check Agents
+### Check Installed Plugins
+
+```bash
+/plugin
+```
+
+You should see all 8 plugins listed.
+
+### Check Available Agents
 
 ```bash
 /agents
 ```
 
-You should see:
-- From **core**: `docs-architect`
-- From **skola**: `tutorial-engineer`, `ai-engineer`, `prompt-engineer`, `context-manager`, `mermaid-expert`
+You should see agents from installed plugins:
+- **core**: `docs-architect`
+- **ai**: `ai-engineer`, `prompt-engineer`, `context-manager`
+- **doc**: `docs-architect`, `mermaid-expert`
+- **skola**: `tutorial-engineer`, `ai-engineer`, `prompt-engineer`, `context-manager`, `mermaid-expert`
+- **review**: `pragmatic-code-review`, `design-review`
+- **ui**: `ui-ux-designer`
 
-### Check Commands
+### Check Available Commands
 
 ```bash
 /help
 ```
 
-You should see:
-- From **core**: `/discuss`, `/double-check`, `/ultrathink`
-- From **skola**: `/doc-generate`, `/code-explain`, `/improve-agent`, `/multi-agent-optimize`
+You should see commands from installed plugins:
+- **core**: `/discuss`, `/double-check`, `/ultrathink`, `/workflow`
+- **ai**: `/improve-agent`, `/multi-agent-optimize`
+- **doc**: `/doc-generate`, `/code-explain`
+- **skola**: `/doc-generate`, `/code-explain`, `/improve-agent`, `/multi-agent-optimize`
+- **review**: `/code`, `/security`, `/design`, `/codebase`
+- **git**: `/commit`, `/create-pr`, `/create-branch`, `/changelog`
 
 ### Check Skills
 
-Skills are automatically invoked. The `extract` skill will activate when you:
-- Provide a Udemy course URL
-- Ask to extract/download Udemy content
-- Mention Udemy course analysis
+Skills are automatically invoked when relevant context is detected:
+- **udemy**: `extract` skill activates when you provide Udemy URLs or mention Udemy content extraction
+- **git**: `changelog` skill activates when you edit CHANGELOG.md or request changelog generation
+
+---
 
 ## Usage Examples
 
-### Using Core Plugin
+### Core Plugin
 
 ```bash
 # Start a technical discussion
@@ -106,11 +227,29 @@ Skills are automatically invoked. The `extract` skill will activate when you:
 # Validate your work
 /double-check
 
-# Deep analysis
+# Deep analysis with multi-step thinking
 /ultrathink optimization strategies for database queries
+
+# Orchestrate complex workflows
+/workflow Create a new feature for user authentication
 ```
 
-### Using Skola Plugin
+### AI Plugin
+
+```bash
+# Use AI engineering agent
+/agents
+# Select: ai-engineer
+"Help me build an intelligent search feature with semantic similarity"
+
+# Improve an existing agent
+/improve-agent frontend-engineer
+
+# Optimize multi-agent workflows
+/multi-agent-optimize
+```
+
+### Doc Plugin
 
 ```bash
 # Generate documentation
@@ -119,15 +258,25 @@ Skills are automatically invoked. The `extract` skill will activate when you:
 # Explain complex code
 /code-explain src/utils/parser.ts
 
-# Improve an agent
-/improve-agent customer-support
+# Use Mermaid expert for diagrams
+/agents
+# Select: mermaid-expert
+"Create a sequence diagram for the authentication flow"
+```
 
+### Skola Plugin
+
+```bash
 # Create a tutorial
 /agents
 # Select: tutorial-engineer
+"Create a step-by-step tutorial for setting up JWT authentication"
+
+# Generate documentation with educational focus
+/doc-generate tutorial for building a REST API
 ```
 
-### Using Udemy Plugin
+### Udemy Plugin
 
 ```bash
 # The skill auto-activates when you mention Udemy
@@ -136,6 +285,55 @@ Extract this course: https://www.udemy.com/course/python-complete/
 # Or just ask
 I need to extract transcripts from my Udemy course on React
 ```
+
+### Review Plugin
+
+```bash
+# Code review workflow
+/code
+
+# Security assessment
+/security
+
+# Design review (requires Playwright MCP)
+/design
+
+# Complete codebase documentation
+/codebase
+
+# Use specialized review agents
+/agents
+# Select: pragmatic-code-review or design-review
+```
+
+### UI Plugin
+
+```bash
+# Access UI/UX design expert
+/agents
+# Select: ui-ux-designer
+"Help me create a design token system for our product"
+"Review our interface for WCAG 2.1 AA compliance"
+"Design accessible form validation patterns"
+```
+
+### Git Plugin
+
+```bash
+# Create context-aware commit
+/commit
+
+# Create pull request
+/create-pr
+
+# Create feature branch with smart naming
+/create-branch
+
+# Generate changelog from commits
+/changelog
+```
+
+---
 
 ## Managing Plugins
 
@@ -169,37 +367,67 @@ I need to extract transcripts from my Udemy course on React
 /plugin marketplace remove arkhe-claude-plugins
 ```
 
+---
+
 ## Troubleshooting
 
-### Plugins not showing up
+### Plugins Not Showing Up
 
 1. Ensure you restarted Claude Code after installation
 2. Check that the marketplace was added correctly: `/plugin marketplace list`
 3. Verify the plugin is installed: `/plugin`
 
-### Commands not working
+### Commands Not Working
 
 1. Check the command name with `/help`
 2. Ensure the plugin is enabled: `/plugin`
 3. Try reinstalling the plugin
 
-### Skills not activating
+### Agents Not Appearing
+
+1. Check installed plugins with `/plugin`
+2. Verify agents with `/agents`
+3. Ensure the plugin is enabled (not disabled)
+
+### Skills Not Activating
 
 Skills are model-invoked, so they activate automatically based on context. Make sure:
 1. The plugin is installed and enabled
 2. Your request clearly matches the skill's use case
-3. You're providing the necessary information (e.g., Udemy URL for extract)
+3. You're providing the necessary information (e.g., Udemy URL for extract skill)
+
+### Playwright MCP Issues (for design-review)
+
+If the `/design` command or `design-review` agent fails:
+1. Verify Playwright MCP server is installed and running
+2. Check `.mcp.json` configuration in your project
+3. Ensure preview environment is accessible
+4. Review MCP server logs for errors
+
+---
+
+## Next Steps
+
+- **Read plugin documentation**: Each plugin has a detailed README with usage examples
+- **Explore agents**: Use `/agents` to discover specialized AI assistants
+- **Try commands**: Use `/help` to see all available commands and experiment
+- **Review skills**: Check individual plugin documentation for skill capabilities
+- **Developer documentation**: See `docs/` directory for plugin development guides
+
+---
 
 ## Support
 
 For issues or questions:
-1. Check the individual plugin README files
-2. Review the skill documentation (for udemy)
+1. Check individual plugin README files for detailed documentation
+2. Review the developer documentation in `docs/`
 3. Open an issue in the repository
 
-## Next Steps
+---
 
-- Read individual plugin READMEs for detailed usage
-- Explore agent capabilities with `/agents`
-- Try different commands to understand their behavior
-- Review the Udemy extraction skill documentation if using that feature
+## Additional Resources
+
+- [Main README](./README.md) - Project overview and plugin summaries
+- [Developer Documentation](./docs/README.md) - Complete guide for plugin developers
+- [Plugin Development Best Practices](./docs/SKILL_DEVELOPMENT_BEST_PRACTICES.md) - Lessons learned from real implementations
+- [Claude 4 Best Practices](./docs/CLAUDE_4_BEST_PRACTICES.md) - Official prompt engineering guide
