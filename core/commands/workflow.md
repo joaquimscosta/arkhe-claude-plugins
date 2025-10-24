@@ -2,7 +2,7 @@
 allowed-tools: Bash(*), Task, Read, Write, Edit, Grep, Glob, web_search, web_fetch, google_drive_search, google_drive_fetch, repl, artifacts
 argument-hint: [request | @spec.md | @plan.md | @tasks.md] [--seq] [--serena] [--c7] [--exa] [--ultrathink | --thinkhard | --thinkharder]
 description: Product Manager orchestration with optional spec-kit integration, parallel agent execution, MCP enhancements, and thinking modes
-model: claude-sonnet-4-5-20250929
+model: sonnet
 ---
 
 # Workflow Orchestration Command
