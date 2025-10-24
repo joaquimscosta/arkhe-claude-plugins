@@ -1,6 +1,6 @@
 {
   "name": "git",
-  "description": "Git workflow automation (commit, PR, branching)",
+  "description": "Git workflow automation (commit, PR, branching, changelog)",
   "version": "1.0.0",
   "author": {
     "name": "Arkhe"

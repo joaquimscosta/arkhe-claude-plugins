@@ -115,6 +115,21 @@ Reference guide for development and research tools.
 
 ---
 
+### 🎯 [Claude 4 Best Practices](./CLAUDE_4_BEST_PRACTICES.md)
+
+Official prompt engineering guide for Claude 4 models.
+
+**Topics covered:**
+- Claude 4 prompt engineering techniques (Sonnet 4.5, Opus 4.1, Haiku 4.5)
+- Explicit instruction patterns for precise results
+- Context optimization and performance improvement
+- Migration guidance from previous Claude models
+- Best practices for instruction following
+
+**Best for:** Optimizing prompts for Claude 4 agents, understanding model capabilities, improving agent performance
+
+---
+
 ## Plugin Development Resources
 
 Now that you understand the foundational concepts and specialized features, explore the five reference implementations that demonstrate these patterns in practice.
@@ -126,15 +141,16 @@ The Arkhe Claude Plugins marketplace demonstrates all plugin component types acr
 #### Component Distribution
 
 **Commands** (workflow automation via slash commands):
-- **core**: 3 commands - `/discuss`, `/double-check`, `/ultrathink`
+- **core**: 4 commands - `/discuss`, `/double-check`, `/ultrathink`, `/workflow`
 - **skola**: 4 commands - `/doc-generate`, `/code-explain`, `/improve-agent`, `/multi-agent-optimize`
 - **git**: 3 commands + 4 scripts - `/commit`, `/create-pr`, `/create-branch`
-- **review**: 5 commands - `/code`, `/security`, `/design`, `/codebase`, `/workflow`
+- **review**: 4 commands - `/code`, `/security`, `/design`, `/codebase`
 
 **Agents** (specialized AI assistants):
 - **core**: 1 agent - `docs-architect`
 - **skola**: 5 agents - `tutorial-engineer`, `ai-engineer`, `prompt-engineer`, `context-manager`, `mermaid-expert`
-- **review**: 2 agents - `pragmatic-code-review`, `ui-ux-designer`
+- **review**: 2 agents - `pragmatic-code-review`, `design-review`
+- **ui**: 1 agent - `ui-ux-designer`
 
 **Skills** (model-invoked capabilities):
 - **udemy**: 1 skill - `extract` (auto-activates on Udemy URLs)
@@ -239,6 +255,27 @@ Use these plugins as templates for your own development. Each demonstrates diffe
 - Complex review workflows
 
 [View Review Plugin Details →](../review/README.md)
+
+---
+
+#### **ui** - Specialized Agent Pattern
+
+**Structure**: 1 agent (no commands)
+**Complexity**: Low
+**Key Features**:
+- UI/UX design expertise and design systems
+- Accessibility-first design patterns (WCAG 2.1/2.2 AA)
+- User research and usability testing methodologies
+- Design token architecture and component libraries
+- Figma and modern design tool workflows
+
+**Best for learning**:
+- Creating focused, specialized agents without commands
+- Domain expertise packaging (design systems, accessibility)
+- Agent-only plugin architecture
+- Cross-plugin integration (complements review plugin)
+
+[View UI Plugin Details →](../ui/README.md)
 
 ---
 
@@ -409,9 +446,17 @@ This workflow uses both `git` and `review` plugins together, demonstrating how m
 
 ## Additional Resources
 
-### Official Documentation
+### Official Claude Code Documentation
 
-- [Claude Code Plugins Guide](https://docs.claude.com/en/docs/claude-code/plugins)
+- [Claude Code Plugins Guide](https://docs.claude.com/en/docs/claude-code/plugins) - Also available locally: [PLUGINS.md](./PLUGINS.md)
+- [Subagents Guide](https://docs.claude.com/en/docs/claude-code/sub-agents) - Also available locally: [SUBAGENTS.md](./SUBAGENTS.md)
+- [Slash Commands Guide](https://docs.claude.com/en/docs/claude-code/slash-commands) - Also available locally: [COMMANDS.md](./COMMANDS.md)
+- [Hooks Guide](https://docs.claude.com/en/docs/claude-code/hooks-guide) - Also available locally: [HOOKS.md](./HOOKS.md)
+- [Agent Skills Overview](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview) - Also available locally: [AGENT_SKILLS_OVERVIEW.md](./AGENT_SKILLS_OVERVIEW.md)
+- [Claude 4 Best Practices](https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/claude-4-best-practices) - Also available locally: [CLAUDE_4_BEST_PRACTICES.md](./CLAUDE_4_BEST_PRACTICES.md)
+
+### Official Resources
+
 - [Agent Skills Cookbook](https://github.com/anthropics/claude-cookbooks/tree/main/skills)
 - [Anthropic Engineering Blog: Agent Skills](https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills)
 
@@ -420,6 +465,79 @@ This workflow uses both `git` and `review` plugins together, demonstrating how m
 - [Main README](../README.md) - Plugin marketplace overview and quick start
 - [Installation Guide](../INSTALLATION.md) - Detailed installation instructions
 - Plugin READMEs: [core](../core/README.md), [skola](../skola/README.md), [udemy](../udemy/README.md), [git](../git/README.md), [review](../review/README.md)
+
+---
+
+## Maintaining This Documentation
+
+This documentation directory includes both **custom documentation** (written specifically for this project) and **synced documentation** (automated copies of official Claude Code documentation).
+
+### Synced Documentation (Auto-Updated)
+
+The following files are automatically synced from official Claude Code documentation using `update-claude-docs.sh`:
+
+- **SUBAGENTS.md** - Agent configuration and usage guide
+- **PLUGINS.md** - Plugin system documentation
+- **HOOKS.md** - Event handling documentation
+- **COMMANDS.md** - Slash commands reference
+- **AGENT_SKILLS_OVERVIEW.md** - Agent Skills architecture guide
+- **CLAUDE_4_BEST_PRACTICES.md** - Prompt engineering for Claude 4 models
+
+### Custom Documentation (Never Overwritten)
+
+These files contain project-specific content and are **never** modified by the sync script:
+
+- **DEVELOPER_TOOLS.md** - Custom plugin development guide
+- **SKILL_DEVELOPMENT_BEST_PRACTICES.md** - Lessons learned from implementations
+- **README.md** - This file - developer documentation index
+
+### How to Update Documentation
+
+To sync the latest official Claude Code documentation:
+
+```bash
+cd docs
+./update-claude-docs.sh
+```
+
+**Output example**:
+```
+✓ 6 updated, ✗ 0 failed, ⊖ 0 skipped (empty)
+✓ Updated: SUBAGENTS.md
+✓ Updated: PLUGINS.md
+✓ Updated: HOOKS.md
+✓ Updated: COMMANDS.md
+✓ Updated: AGENT_SKILLS_OVERVIEW.md
+✓ Updated: CLAUDE_4_BEST_PRACTICES.md
+```
+
+### Adding New Documentation URLs
+
+To add new official Claude Code documentation to the sync system:
+
+1. **Edit the script**: Open `update-claude-docs.sh` and add a new line to the `URL_MAPPINGS` array:
+   ```bash
+   "https://docs.claude.com/path/to/doc.md|YOUR_FILENAME.md"
+   ```
+
+2. **Follow naming conventions**: Use `UPPERCASE_WITH_UNDERSCORES.md` format (e.g., `CLAUDE_4_BEST_PRACTICES.md`)
+
+3. **Run the sync script**: Execute `./update-claude-docs.sh` to download the new documentation
+
+4. **Update references**: Add the new file to:
+   - Main `README.md` (repository overview)
+   - `CLAUDE.md` (plugin development guide)
+   - This file (`docs/README.md`)
+
+### Script Safety Features
+
+The sync script includes comprehensive safety features:
+
+- ✅ **Empty content protection** - Never overwrites files with empty data
+- ✅ **Atomic updates** - Uses temporary files for safe replacement
+- ✅ **Failure resilience** - Individual download failures don't stop the sync
+- ✅ **Automatic cleanup** - Temporary files always removed
+- ✅ **Portable** - Works on macOS (Bash 3.2+) and Linux
 
 ---
 

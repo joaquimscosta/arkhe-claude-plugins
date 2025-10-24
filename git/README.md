@@ -8,7 +8,7 @@ The Git plugin provides intelligent Git workflow automation with context-aware r
 
 ## Components
 
-### Commands (3)
+### Commands (4)
 
 #### 1. /commit
 Context-aware Git commit assistant with smart pre-commit checks and submodule support.
@@ -114,6 +114,57 @@ export BRANCH_PREFIX=""               # Additional prefix (optional)
 
 ---
 
+#### 4. /changelog
+Generate comprehensive changelogs from git commit history with semantic versioning analysis and conventional commit support.
+
+**Features**:
+- Automatic commit categorization by type (feat, fix, docs, etc.)
+- Semantic versioning detection (MAJOR, MINOR, PATCH)
+- Multiple output formats (Keep a Changelog, Conventional, GitHub)
+- Breaking changes detection
+- Existing CHANGELOG.md append support
+- Monorepo support (service-specific changelogs)
+
+**Usage**:
+```bash
+/changelog                                # Since last tag
+/changelog --since v1.0.0 --version 1.1.0 # Specific range
+/changelog --append                        # Append to existing
+/changelog --format github                # GitHub format
+```
+
+**Flags**:
+- `--since <commit/tag>`: Start commit (default: last tag)
+- `--until <commit/tag>`: End commit (default: HEAD)
+- `--output <file>`: Output file (default: CHANGELOG.md)
+- `--format <style>`: keepachangelog, conventional, github
+- `--version <version>`: Version number for release
+- `--append`: Append instead of overwrite
+- `--no-group`: Flat list without type grouping
+
+---
+
+### Skills (1)
+
+#### changelog (Auto-Invoke)
+
+Automatically generates changelogs when editing changelog files or mentioning release-related keywords.
+
+**Auto-Invoke Triggers**:
+- Editing files: `CHANGELOG.md`, `CHANGELOG.txt`, `HISTORY.md`
+- Keywords: "changelog", "release notes", "version", "semantic versioning"
+- Git tagging operations
+- Release preparation discussions
+
+**Delivers**:
+1. **Git History Analysis** - Commit categorization and semantic version detection
+2. **Formatted Changelog** - Industry-standard formats (Keep a Changelog, Conventional, GitHub)
+3. **Update Strategy** - Append/overwrite options with version management
+
+**Documentation**: See `skills/changelog/` directory for WORKFLOW, EXAMPLES, and TROUBLESHOOTING guides.
+
+---
+
 ## Installation
 
 ### Add the Marketplace
@@ -140,6 +191,7 @@ When no command conflicts exist:
 /commit
 /create-pr
 /create-branch add authentication
+/changelog
 ```
 
 ### Namespaced Invocation
@@ -150,6 +202,7 @@ When command name conflicts exist with other plugins:
 /git:commit
 /git:create-pr
 /git:create-branch add authentication
+/git:changelog
 ```
 
 ## Configuration

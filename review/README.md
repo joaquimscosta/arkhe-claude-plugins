@@ -1,10 +1,10 @@
 # Review Plugin
 
-> Code quality review and workflow orchestration tools for development teams
+> Code quality review tools for development teams
 
 ## Overview
 
-The Review plugin provides comprehensive code quality tools including code review, security assessment, design review, codebase documentation, and workflow orchestration. All commands support customizable output paths for flexible integration into any project workflow.
+The Review plugin provides comprehensive code quality tools including code review, security assessment, design review, and codebase documentation. All commands support customizable output paths for flexible integration into any project workflow.
 
 ## Components
 
@@ -23,20 +23,20 @@ Principal Engineer code reviewer implementing the "Pragmatic Quality" framework 
 
 **Use via**: `/agents` interface
 
-#### 2. ui-ux-designer
-Complete UI/UX design expert specializing in accessibility-first design, design systems, and user research methodologies.
+#### 2. design-review
+Elite design review specialist conducting comprehensive UI/UX reviews using Playwright MCP for automated browser testing.
 
 **Capabilities**:
-- Design system architecture
-- Accessibility compliance (WCAG 2.1/2.2 AA)
-- User research and usability testing
-- Responsive and cross-platform design
-- Component library design
-- Design token management
+- Live environment interaction testing
+- Responsive design validation (desktop/tablet/mobile)
+- Accessibility compliance testing (WCAG 2.1 AA)
+- Interactive state verification (hover, active, disabled)
+- Visual consistency and polish analysis
+- Browser console error detection
 
 **Use via**: `/agents` interface
 
-### Commands (5)
+### Commands (4)
 
 #### 1. /code
 Comprehensive code review analyzing git changes with the Pragmatic Quality framework.
@@ -137,42 +137,6 @@ Complete codebase documentation generator analyzing project structure, architect
 
 ---
 
-#### 5. /workflow
-Product Manager-led orchestration agent with enhanced thinking modes and MCP server integration.
-
-**Features**:
-- Multi-agent orchestration
-- Task tracking with AGENT_TODOS.md
-- Parallel execution waves
-- Enhanced thinking modes (--seq, --ultrathink, --thinkhard)
-- MCP server integration (--exa, --c7)
-- Spec kit support
-- Natural language request handling
-
-**Flags**:
-- `--seq`: Sequential thinking for deep analytical reasoning
-- `--exa`: Web research and competitive analysis
-- `--c7`: Best practices research from documentation
-- `--ultrathink`: Ultra-deep thinking mode
-- `--thinkhard`: Intensive thinking mode
-- `--thinkharder`: Maximum thinking mode
-
-**Usage**:
-```bash
-/workflow implement auth --seq           # With sequential thinking
-/workflow oauth-integration --exa --c7   # Spec kit with research
-/workflow refactor payment --thinkhard   # Natural language with deep analysis
-```
-
-**Workflow Directory**: `.claude/workflow/` (customizable via arguments)
-
-**Output**:
-- `.claude/workflow/AGENT_TODOS.md` (natural language requests)
-- `.claude/workflow/specs/{spec-name}/AGENT_TODOS.md` (spec kits)
-- `.claude/workflow/archive/` (archived task tracking)
-
----
-
 ## Installation
 
 ### Add the Marketplace
@@ -200,7 +164,6 @@ When no command conflicts exist:
 /security
 /design
 /codebase
-/workflow implement feature --seq
 ```
 
 ### Namespaced Invocation
@@ -212,7 +175,6 @@ When command name conflicts exist with other plugins:
 /review:security
 /review:design
 /review:codebase
-/review:workflow feature --seq
 ```
 
 ### Custom Output Paths
@@ -228,10 +190,6 @@ Commands support optional custom output paths:
 # Security review
 /security                # Default: .claude/reports/
 /security audits/sec     # Custom: audits/sec/
-
-# Workflow
-/workflow feature               # Default: .claude/workflow/
-/workflow feature custom/wf     # Custom: custom/wf/
 ```
 
 ### Accessing Agents
@@ -244,7 +202,7 @@ Browse and select agents through the `/agents` interface:
 
 This will show both:
 - **pragmatic-code-review** - Principal Engineer code reviewer
-- **ui-ux-designer** - UI/UX design expert
+- **design-review** - Elite design review specialist
 
 ## MCP Requirements
 
@@ -279,19 +237,15 @@ The plugin uses the following default paths:
 | security | `.claude/reports/` | ✅ Yes (via `$ARGUMENTS`) |
 | design | N/A (inline output) | ❌ No |
 | codebase | `./` (root) | ❌ No (fixed filename) |
-| workflow | `.claude/workflow/` | ✅ Yes (via `$ARGUMENTS`) |
 
 ### Project Integration
 
 The plugin automatically creates output directories if they don't exist:
 
 ```bash
-# These directories are created automatically:
+# This directory is created automatically:
 .claude/
-├── reports/           # Code and security reviews
-└── workflow/          # Workflow orchestration
-    ├── specs/         # Spec kit directories
-    └── archive/       # Archived task tracking
+└── reports/           # Code and security reviews
 ```
 
 ## Examples
@@ -310,19 +264,6 @@ The plugin automatically creates output directories if they don't exist:
 
 # 4. Review UI changes (if applicable)
 /design
-```
-
-### Workflow Orchestration
-
-```bash
-# Start new feature with spec kit
-/workflow oauth-integration --seq --c7
-
-# Or natural language request
-/workflow implement user authentication with JWT --thinkhard
-
-# Check task progress
-# (View .claude/workflow/AGENT_TODOS.md)
 ```
 
 ### Codebase Documentation

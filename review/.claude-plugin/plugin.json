@@ -1,6 +1,6 @@
 {
   "name": "review",
-  "description": "Code quality review and workflow orchestration tools",
+  "description": "Code quality review tools for development teams",
   "version": "1.0.0",
   "author": {
     "name": "Arkhe"
