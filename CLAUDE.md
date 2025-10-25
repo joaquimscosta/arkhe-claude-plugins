@@ -19,8 +19,8 @@ This repository uses a **marketplace-based plugin system** where each plugin is 
 arkhe-claude-plugins/
 ├── .claude-plugin/
 │   └── marketplace.json          # Marketplace catalog
-├── core/                          # Essential documentation tools
-├── skola/                         # AI engineering (deprecated, use ai/)
+├── core/                          # Quality control and workflow orchestration
+├── skola/                         # Tutorial and educational content
 ├── ai/                            # AI engineering and LLM development
 ├── doc/                           # Documentation generation
 ├── review/                        # Code review and quality
@@ -55,8 +55,7 @@ plugin-name/
 ## Available Plugins
 
 ### Core Plugin
-Essential documentation, quality control, and workflow orchestration utilities.
-- **Agents**: `docs-architect`
+Quality control and workflow orchestration utilities.
 - **Commands**: `/discuss`, `/double-check`, `/ultrathink`, `/workflow`
 
 ### AI Plugin
@@ -70,9 +69,9 @@ Multi-purpose documentation toolkit.
 - **Commands**: `/doc-generate`, `/code-explain`
 
 ### Skola Plugin
-Tutorial creation and educational content toolkit.
-- **Agents**: `tutorial-engineer`, `ai-engineer`, `prompt-engineer`, `context-manager`, `mermaid-expert`
-- **Commands**: `/doc-generate`, `/code-explain`, `/improve-agent`, `/multi-agent-optimize`
+Tutorial and educational content toolkit.
+- **Agents**: `tutorial-engineer`
+- **Commands**: `/teach-code`
 
 ### Udemy Plugin
 Udemy course content extraction skill.

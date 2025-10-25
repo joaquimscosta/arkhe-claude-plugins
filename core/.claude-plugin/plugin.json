@@ -1,6 +1,6 @@
 {
   "name": "core",
-  "description": "Essential documentation, quality control, and workflow orchestration utilities for Claude Code",
+  "description": "Quality control and workflow orchestration utilities for Claude Code",
   "version": "1.0.0",
   "author": {
     "name": "Arkhe"

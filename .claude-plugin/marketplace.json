@@ -8,7 +8,7 @@
     {
       "name": "core",
       "source": "./core",
-      "description": "Essential documentation, quality control, and workflow orchestration utilities"
+      "description": "Quality control and workflow orchestration utilities"
     },
     {
       "name": "ai",
@@ -23,7 +23,7 @@
     {
       "name": "skola",
       "source": "./skola",
-      "description": "Tutorial creation and educational content toolkit"
+      "description": "Tutorial and educational content toolkit"
     },
     {
       "name": "udemy",

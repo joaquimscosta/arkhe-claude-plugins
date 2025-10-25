@@ -6,13 +6,12 @@ Collection of Claude Code plugins for documentation, AI engineering, and educati
 
 ### 1. Core Plugin
 
-Essential documentation, quality control, and workflow orchestration utilities.
+Quality control and workflow orchestration utilities.
 
 **Components:**
-- 1 agent: `docs-architect`
 - 4 commands: `/discuss`, `/double-check`, `/ultrathink`, `/workflow`
 
-**Use for:** Documentation architecture, technical discussions, quality validation, workflow orchestration
+**Use for:** Technical discussions, quality validation, workflow orchestration
 
 [View Core Plugin Details →](./core/README.md)
 
@@ -48,13 +47,13 @@ Multi-purpose documentation toolkit.
 
 ### 4. Skola Plugin
 
-Complete tutorial creation and educational content toolkit.
+Tutorial and educational content toolkit.
 
 **Components:**
-- 5 agents: `tutorial-engineer`, `ai-engineer`, `prompt-engineer`, `context-manager`, `mermaid-expert`
-- 4 commands: `/doc-generate`, `/code-explain`, `/improve-agent`, `/multi-agent-optimize`
+- 1 agent: `tutorial-engineer`
+- 1 command: `/teach-code`
 
-**Use for:** Creating tutorials, building educational content, step-by-step guides
+**Use for:** Creating step-by-step tutorials, educational code explanations, progressive learning experiences
 
 [View Skola Plugin Details →](./skola/README.md)
 
@@ -215,7 +214,6 @@ arkhe-claude-plugins/
 ├── core/
 │   ├── .claude-plugin/plugin.json
 │   ├── agents/
-│   │   └── docs-architect.md
 │   ├── commands/
 │   │   ├── discuss.md
 │   │   ├── double-check.md
@@ -224,16 +222,9 @@ arkhe-claude-plugins/
 ├── skola/
 │   ├── .claude-plugin/plugin.json
 │   ├── agents/
-│   │   ├── tutorial-engineer.md
-│   │   ├── ai-engineer.md
-│   │   ├── prompt-engineer.md
-│   │   ├── context-manager.md
-│   │   └── mermaid-expert.md
+│   │   └── tutorial-engineer.md
 │   ├── commands/
-│   │   ├── doc-generate.md
-│   │   ├── code-explain.md
-│   │   ├── improve-agent.md
-│   │   └── multi-agent-optimize.md
+│   │   └── teach-code.md
 │   └── README.md
 ├── udemy/
 │   ├── .claude-plugin/plugin.json

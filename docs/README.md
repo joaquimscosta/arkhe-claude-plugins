@@ -142,13 +142,16 @@ The Arkhe Claude Plugins marketplace demonstrates all plugin component types acr
 
 **Commands** (workflow automation via slash commands):
 - **core**: 4 commands - `/discuss`, `/double-check`, `/ultrathink`, `/workflow`
-- **skola**: 4 commands - `/doc-generate`, `/code-explain`, `/improve-agent`, `/multi-agent-optimize`
+- **ai**: 2 commands - `/improve-agent`, `/multi-agent-optimize`
+- **doc**: 2 commands - `/doc-generate`, `/code-explain`
+- **skola**: 1 command - `/teach-code`
 - **git**: 3 commands + 4 scripts - `/commit`, `/create-pr`, `/create-branch`
 - **review**: 4 commands - `/code`, `/security`, `/design`, `/codebase`
 
 **Agents** (specialized AI assistants):
-- **core**: 1 agent - `docs-architect`
-- **skola**: 5 agents - `tutorial-engineer`, `ai-engineer`, `prompt-engineer`, `context-manager`, `mermaid-expert`
+- **ai**: 3 agents - `ai-engineer`, `prompt-engineer`, `context-manager`
+- **doc**: 2 agents - `docs-architect`, `mermaid-expert`
+- **skola**: 1 agent - `tutorial-engineer`
 - **review**: 2 agents - `pragmatic-code-review`, `design-review`
 - **ui**: 1 agent - `ui-ux-designer`
 

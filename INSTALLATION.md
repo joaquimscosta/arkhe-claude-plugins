@@ -39,12 +39,11 @@ After installation, restart Claude Code for all plugins to take effect.
 ## Plugin Overview
 
 ### Core Plugin
-Essential documentation, quality control, and workflow orchestration utilities.
+Quality control and workflow orchestration utilities.
 
 **Install**: `/plugin install core@arkhe-claude-plugins`
 
 **Components**:
-- 1 agent: `docs-architect`
 - 4 commands: `/discuss`, `/double-check`, `/ultrathink`, `/workflow`
 
 ---
@@ -72,13 +71,13 @@ Multi-purpose documentation toolkit.
 ---
 
 ### Skola Plugin
-Tutorial creation and educational content toolkit.
+Tutorial and educational content toolkit.
 
 **Install**: `/plugin install skola@arkhe-claude-plugins`
 
 **Components**:
-- 5 agents: `tutorial-engineer`, `ai-engineer`, `prompt-engineer`, `context-manager`, `mermaid-expert`
-- 4 commands: `/doc-generate`, `/code-explain`, `/improve-agent`, `/multi-agent-optimize`
+- 1 agent: `tutorial-engineer`
+- 1 command: `/teach-code`
 
 ---
 
@@ -187,10 +186,9 @@ You should see all 8 plugins listed.
 ```
 
 You should see agents from installed plugins:
-- **core**: `docs-architect`
 - **ai**: `ai-engineer`, `prompt-engineer`, `context-manager`
 - **doc**: `docs-architect`, `mermaid-expert`
-- **skola**: `tutorial-engineer`, `ai-engineer`, `prompt-engineer`, `context-manager`, `mermaid-expert`
+- **skola**: `tutorial-engineer`
 - **review**: `pragmatic-code-review`, `design-review`
 - **ui**: `ui-ux-designer`
 
@@ -204,7 +202,7 @@ You should see commands from installed plugins:
 - **core**: `/discuss`, `/double-check`, `/ultrathink`, `/workflow`
 - **ai**: `/improve-agent`, `/multi-agent-optimize`
 - **doc**: `/doc-generate`, `/code-explain`
-- **skola**: `/doc-generate`, `/code-explain`, `/improve-agent`, `/multi-agent-optimize`
+- **skola**: `/teach-code`
 - **review**: `/code`, `/security`, `/design`, `/codebase`
 - **git**: `/commit`, `/create-pr`, `/create-branch`, `/changelog`
 

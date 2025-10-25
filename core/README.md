@@ -1,12 +1,8 @@
 # Core Plugin
 
-Essential documentation, quality control, and workflow orchestration utilities for Claude Code.
+Quality control and workflow orchestration utilities for Claude Code.
 
 ## Components
-
-### Agents
-
-- **docs-architect**: Creates comprehensive technical documentation from existing codebases. Analyzes architecture, design patterns, and implementation details to produce long-form technical manuals and ebooks.
 
 ### Commands
 
@@ -30,13 +26,9 @@ Essential documentation, quality control, and workflow orchestration utilities f
 
 ## Usage
 
-After installation, the agent and commands will be available:
+After installation, the commands will be available:
 
 ```bash
-# Use the docs-architect agent
-/agents
-# Select "docs-architect" from the list
-
 # Use quality control commands
 /discuss implementing a new authentication system
 /double-check
