@@ -23,12 +23,7 @@
     {
       "name": "skola",
       "source": "./skola",
-      "description": "Tutorial and educational content toolkit"
-    },
-    {
-      "name": "udemy",
-      "source": "./udemy",
-      "description": "Udemy course content extraction skill"
+      "description": "Tutorial creation and educational content extraction toolkit (Udemy, YouTube, blogs)"
     },
     {
       "name": "review",

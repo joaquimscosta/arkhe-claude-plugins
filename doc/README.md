@@ -12,13 +12,17 @@ Multi-purpose documentation toolkit for generating comprehensive technical docum
 
 - **docs-architect**: Creates comprehensive technical documentation from existing codebases. Analyzes architecture, design patterns, and implementation details to produce long-form technical manuals and ebooks. Perfect for documenting complex software architectures.
 
-- **mermaid-expert**: Create Mermaid diagrams for flowcharts, sequences, ERDs, and architectures. Masters syntax for all diagram types and styling. Use for visualizing system architectures, data flows, and technical diagrams.
+### Skills
+
+- **mermaid**: Auto-invoked Mermaid diagram generator for flowcharts, sequence diagrams, ERDs, state machines, architecture diagrams, and more. Triggers when you mention diagram-related keywords or explicitly use the `/diagram` command. Provides comprehensive examples and troubleshooting for all diagram types.
 
 ### Commands
 
-- **/doc-generate**: Automated documentation generation that extracts information from code, creates clear explanations, and maintains consistency across documentation types. Use for generating project documentation.
+- **/doc-generate**: Automated documentation generation that extracts information from code, creates clear explanations, and maintains consistency across documentation types. Use for generating project documentation. Auto-invokes the mermaid skill when diagram generation is needed.
 
 - **/code-explain**: Explains code in detail, breaking down complex logic into understandable concepts with examples and use cases. Perfect for understanding complex codebases and technical implementations.
+
+- **/diagram**: Create or edit Mermaid diagrams with manual control. Supports all diagram types: flowcharts, sequence diagrams, ERDs, state diagrams, Gantt charts, pie charts, git graphs, user journeys, quadrant charts, and timelines.
 
 ## Use Cases
 
@@ -52,11 +56,19 @@ After installation, all agents, commands, and skills will be available:
 ```bash
 # Use specialized agents
 /agents
-# Select from: docs-architect, mermaid-expert
+# Select from: docs-architect
 
 # Use documentation commands
 /doc-generate for the user authentication module
 /code-explain src/services/auth/jwt-validator.ts
+
+# Create diagrams (manual control)
+/diagram user authentication flow with login and validation
+/diagram sequence diagram for API communication
+
+# Auto-invoke skill by mentioning keywords
+"Create a flowchart for the payment process"
+"I need an ERD for the database schema"
 ```
 
 ## Examples
@@ -77,14 +89,18 @@ After installation, all agents, commands, and skills will be available:
 /code-explain the caching strategy in api/cache-manager.js
 ```
 
-### Architecture Diagrams
+### Diagram Generation
 
 ```bash
-# Use mermaid-expert agent
-/agents
-# Select: mermaid-expert
-"Create a sequence diagram showing the authentication flow"
-"Generate an ERD for the database schema"
+# Method 1: Use /diagram command for explicit control
+/diagram create a sequence diagram showing the authentication flow
+/diagram generate an ERD for the database schema
+/diagram flowchart for user registration process
+
+# Method 2: Auto-invoke by mentioning diagram keywords
+"I need a state diagram for the order lifecycle"
+"Can you visualize the API flow with a sequence diagram?"
+"Create a Gantt chart for the project timeline"
 ```
 
 ## Common Workflows
@@ -103,9 +119,9 @@ After installation, all agents, commands, and skills will be available:
 
 3. **Create diagrams**:
    ```bash
-   /agents
-   # Select: mermaid-expert
-   "Create a component diagram showing the system architecture"
+   /diagram create a component diagram showing the system architecture
+   # Or use auto-invoke:
+   "I need a flowchart for the deployment process"
    ```
 
 ## Version

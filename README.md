@@ -36,8 +36,9 @@ AI engineering toolkit for building production-ready LLM applications.
 Multi-purpose documentation toolkit.
 
 **Components:**
-- 2 agents: `docs-architect`, `mermaid-expert`
-- 2 commands: `/doc-generate`, `/code-explain`
+- 1 agent: `docs-architect`
+- 1 skill: `mermaid` (auto-invoked diagram generation)
+- 3 commands: `/doc-generate`, `/code-explain`, `/diagram`
 
 **Use for:** Generating technical documentation, creating architecture diagrams, explaining complex code
 
@@ -47,32 +48,20 @@ Multi-purpose documentation toolkit.
 
 ### 4. Skola Plugin
 
-Tutorial and educational content toolkit.
+Tutorial creation and educational content extraction toolkit (Udemy, YouTube, blogs).
 
 **Components:**
 - 1 agent: `tutorial-engineer`
-- 1 command: `/teach-code`
+- 1 skill: `extract-udemy` (auto-invoked for Udemy URLs)
+- 2 commands: `/extract`, `/teach-code`
 
-**Use for:** Creating step-by-step tutorials, educational code explanations, progressive learning experiences
+**Use for:** Creating step-by-step tutorials, extracting educational content from Udemy courses, offline course archiving
 
 [View Skola Plugin Details →](./skola/README.md)
 
 ---
 
-### 5. Udemy Plugin
-
-Udemy course content extraction skill.
-
-**Components:**
-- 1 skill: `extract` (auto-invoked when working with Udemy URLs)
-
-**Use for:** Extracting course transcripts, articles, quizzes, resources from Udemy
-
-[View Udemy Plugin Details →](./udemy/README.md)
-
----
-
-### 6. Review Plugin
+### 5. Review Plugin
 
 Code quality review tools for development teams.
 
@@ -129,8 +118,7 @@ Install all plugins:
 /plugin install core@arkhe-claude-plugins
 /plugin install ai@arkhe-claude-plugins
 /plugin install doc@arkhe-claude-plugins
-/plugin install skola@arkhe-claude-plugins
-/plugin install udemy@arkhe-claude-plugins
+/plugin install skola@arkhe-claude-plugins    # Includes Udemy extraction
 /plugin install review@arkhe-claude-plugins
 /plugin install ui@arkhe-claude-plugins
 /plugin install git@arkhe-claude-plugins
@@ -157,11 +145,8 @@ After installation, restart Claude Code and use:
 **For educational content creation:**
 → Install `skola` and `doc`
 
-**For tutorial creation:**
-→ Install `skola`
-
-**For Udemy course extraction:**
-→ Install `udemy`
+**For tutorial creation and educational content extraction:**
+→ Install `skola` (includes Udemy extraction, YouTube coming soon)
 
 **For code quality and review:**
 → Install `review`
@@ -191,7 +176,7 @@ Want to extend these plugins or create your own?
 
 1. Review the existing plugin structure in this repository
 2. Read the [Skills Development Best Practices](./docs/SKILL_DEVELOPMENT_BEST_PRACTICES.md) for technical guidance
-3. Follow the patterns established in `core`, `skola`, and `udemy`
+3. Follow the patterns established in `core`, `skola`, `doc`, and `git`
 4. Test locally using the marketplace structure
 
 ## Directory Structure
@@ -224,12 +209,10 @@ arkhe-claude-plugins/
 │   ├── agents/
 │   │   └── tutorial-engineer.md
 │   ├── commands/
+│   │   ├── extract.md
 │   │   └── teach-code.md
-│   └── README.md
-├── udemy/
-│   ├── .claude-plugin/plugin.json
 │   ├── skills/
-│   │   └── extract/
+│   │   └── extract-udemy/
 │   └── README.md
 ├── README.md
 └── INSTALLATION.md

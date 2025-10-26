@@ -23,8 +23,7 @@ From within Claude Code, navigate to the parent directory of the cloned reposito
 /plugin install core@arkhe-claude-plugins
 /plugin install ai@arkhe-claude-plugins
 /plugin install doc@arkhe-claude-plugins
-/plugin install skola@arkhe-claude-plugins
-/plugin install udemy@arkhe-claude-plugins
+/plugin install skola@arkhe-claude-plugins    # Includes Udemy extraction
 /plugin install review@arkhe-claude-plugins
 /plugin install ui@arkhe-claude-plugins
 /plugin install git@arkhe-claude-plugins
@@ -65,29 +64,21 @@ Multi-purpose documentation toolkit.
 **Install**: `/plugin install doc@arkhe-claude-plugins`
 
 **Components**:
-- 2 agents: `docs-architect`, `mermaid-expert`
-- 2 commands: `/doc-generate`, `/code-explain`
+- 1 agent: `docs-architect`
+- 1 skill: `mermaid` (auto-invoked for diagrams)
+- 3 commands: `/doc-generate`, `/code-explain`, `/diagram`
 
 ---
 
 ### Skola Plugin
-Tutorial and educational content toolkit.
+Tutorial creation and educational content extraction toolkit (Udemy, YouTube, blogs).
 
 **Install**: `/plugin install skola@arkhe-claude-plugins`
 
 **Components**:
 - 1 agent: `tutorial-engineer`
-- 1 command: `/teach-code`
-
----
-
-### Udemy Plugin
-Udemy course content extraction skill.
-
-**Install**: `/plugin install udemy@arkhe-claude-plugins`
-
-**Components**:
-- 1 skill: `extract` (auto-invoked when working with Udemy URLs)
+- 1 skill: `extract-udemy` (auto-invoked for Udemy URLs)
+- 2 commands: `/extract`, `/teach-code`
 
 ---
 
@@ -145,9 +136,9 @@ Install only the plugins you need:
 /plugin install doc@arkhe-claude-plugins
 ```
 
-### For Udemy Course Extraction
+### For Educational Content Extraction
 ```bash
-/plugin install udemy@arkhe-claude-plugins
+/plugin install skola@arkhe-claude-plugins    # Includes Udemy, YouTube (coming soon)
 ```
 
 ### For Code Quality & Review
@@ -187,7 +178,7 @@ You should see all 8 plugins listed.
 
 You should see agents from installed plugins:
 - **ai**: `ai-engineer`, `prompt-engineer`, `context-manager`
-- **doc**: `docs-architect`, `mermaid-expert`
+- **doc**: `docs-architect`
 - **skola**: `tutorial-engineer`
 - **review**: `pragmatic-code-review`, `design-review`
 - **ui**: `ui-ux-designer`
@@ -201,7 +192,7 @@ You should see agents from installed plugins:
 You should see commands from installed plugins:
 - **core**: `/discuss`, `/double-check`, `/ultrathink`, `/workflow`
 - **ai**: `/improve-agent`, `/multi-agent-optimize`
-- **doc**: `/doc-generate`, `/code-explain`
+- **doc**: `/doc-generate`, `/code-explain`, `/diagram`
 - **skola**: `/teach-code`
 - **review**: `/code`, `/security`, `/design`, `/codebase`
 - **git**: `/commit`, `/create-pr`, `/create-branch`, `/changelog`
@@ -209,6 +200,7 @@ You should see commands from installed plugins:
 ### Check Skills
 
 Skills are automatically invoked when relevant context is detected:
+- **doc**: `mermaid` skill activates when you mention diagrams, flowcharts, or visualization keywords
 - **udemy**: `extract` skill activates when you provide Udemy URLs or mention Udemy content extraction
 - **git**: `changelog` skill activates when you edit CHANGELOG.md or request changelog generation
 
@@ -256,10 +248,11 @@ Skills are automatically invoked when relevant context is detected:
 # Explain complex code
 /code-explain src/utils/parser.ts
 
-# Use Mermaid expert for diagrams
-/agents
-# Select: mermaid-expert
-"Create a sequence diagram for the authentication flow"
+# Create diagrams (manual control)
+/diagram create a sequence diagram for the authentication flow
+
+# Or use auto-invoke
+"I need an ERD for the database schema"
 ```
 
 ### Skola Plugin

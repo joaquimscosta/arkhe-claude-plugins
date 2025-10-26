@@ -20,13 +20,12 @@ arkhe-claude-plugins/
 ├── .claude-plugin/
 │   └── marketplace.json          # Marketplace catalog
 ├── core/                          # Quality control and workflow orchestration
-├── skola/                         # Tutorial and educational content
+├── skola/                         # Tutorial creation and content extraction
 ├── ai/                            # AI engineering and LLM development
 ├── doc/                           # Documentation generation
 ├── review/                        # Code review and quality
 ├── ui/                            # UI/UX design and design systems
 ├── git/                           # Git workflow automation
-├── udemy/                         # Udemy course extraction
 └── docs/                          # Developer documentation
 ```
 
@@ -65,17 +64,15 @@ AI engineering toolkit for production-ready LLM applications.
 
 ### Doc Plugin
 Multi-purpose documentation toolkit.
-- **Agents**: `docs-architect`, `mermaid-expert`
-- **Commands**: `/doc-generate`, `/code-explain`
+- **Agents**: `docs-architect`
+- **Skills**: `mermaid` (auto-invoked diagram generation)
+- **Commands**: `/doc-generate`, `/code-explain`, `/diagram`
 
 ### Skola Plugin
-Tutorial and educational content toolkit.
+Tutorial creation and educational content extraction toolkit (Udemy, YouTube, blogs).
 - **Agents**: `tutorial-engineer`
-- **Commands**: `/teach-code`
-
-### Udemy Plugin
-Udemy course content extraction skill.
-- **Skills**: `extract` (auto-invoke when Udemy URLs detected)
+- **Skills**: `extract-udemy` (auto-invoked for Udemy URLs)
+- **Commands**: `/extract`, `/teach-code`
 
 ### Review Plugin
 Code quality review tools for development teams.
@@ -105,8 +102,7 @@ Git workflow automation for commits, pull requests, branching, and changelog gen
 /plugin install core@arkhe-claude-plugins
 /plugin install ai@arkhe-claude-plugins
 /plugin install doc@arkhe-claude-plugins
-/plugin install skola@arkhe-claude-plugins
-/plugin install udemy@arkhe-claude-plugins
+/plugin install skola@arkhe-claude-plugins     # Includes Udemy extraction
 /plugin install review@arkhe-claude-plugins
 /plugin install ui@arkhe-claude-plugins
 /plugin install git@arkhe-claude-plugins

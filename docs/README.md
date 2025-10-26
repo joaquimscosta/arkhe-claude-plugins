@@ -143,20 +143,22 @@ The Arkhe Claude Plugins marketplace demonstrates all plugin component types acr
 **Commands** (workflow automation via slash commands):
 - **core**: 4 commands - `/discuss`, `/double-check`, `/ultrathink`, `/workflow`
 - **ai**: 2 commands - `/improve-agent`, `/multi-agent-optimize`
-- **doc**: 2 commands - `/doc-generate`, `/code-explain`
+- **doc**: 3 commands - `/doc-generate`, `/code-explain`, `/diagram`
 - **skola**: 1 command - `/teach-code`
-- **git**: 3 commands + 4 scripts - `/commit`, `/create-pr`, `/create-branch`
+- **git**: 4 commands - `/commit`, `/create-pr`, `/create-branch`, `/changelog`
 - **review**: 4 commands - `/code`, `/security`, `/design`, `/codebase`
 
 **Agents** (specialized AI assistants):
 - **ai**: 3 agents - `ai-engineer`, `prompt-engineer`, `context-manager`
-- **doc**: 2 agents - `docs-architect`, `mermaid-expert`
+- **doc**: 1 agent - `docs-architect`
 - **skola**: 1 agent - `tutorial-engineer`
 - **review**: 2 agents - `pragmatic-code-review`, `design-review`
 - **ui**: 1 agent - `ui-ux-designer`
 
 **Skills** (model-invoked capabilities):
+- **doc**: 1 skill - `mermaid` (auto-activates on diagram/flowchart keywords)
 - **udemy**: 1 skill - `extract` (auto-activates on Udemy URLs)
+- **git**: 1 skill - `changelog` (auto-activates on CHANGELOG.md editing)
 
 **Scripts** (executable automation):
 - **git**: 4 scripts - commit.sh, pr.sh, branch.sh, common.sh
@@ -183,41 +185,24 @@ Use these plugins as templates for your own development. Each demonstrates diffe
 
 ---
 
-#### **skola** - Comprehensive Multi-Agent Plugin
+#### **skola** - Educational Content Toolkit
 
-**Structure**: 5 agents + 4 commands
+**Structure**: 1 agent + 1 skill + 2 commands
 **Complexity**: High
 **Key Features**:
-- Multiple related agents with specializations
-- Command coordination across agents
-- AI engineering and educational content tools
+- Tutorial creation workflows
+- Educational content extraction (Udemy, YouTube coming soon)
+- Progressive disclosure skill architecture
+- Python integration for content extraction
+- Auto-invoked capabilities
 
 **Best for learning**:
-- Organizing multiple related components
-- Agent specialization patterns
+- Skill development with Python scripts
+- Progressive disclosure patterns
+- Agent + command + skill coordination
 - Complex plugin architecture
 
 [View Skola Plugin Details →](../skola/README.md)
-
----
-
-#### **udemy** - Skills-Based Plugin
-
-**Structure**: 1 skill with complete implementation
-**Complexity**: Advanced
-**Key Features**:
-- Progressive disclosure in action
-- Python scripts, documentation, and templates
-- Auto-invoked capability based on context
-- Comprehensive resource loading strategy
-
-**Best for learning**:
-- Skill development and architecture
-- Progressive disclosure patterns
-- Resource management strategies
-- Complex skill implementations
-
-[View Udemy Plugin Details →](../udemy/README.md)
 
 ---
 
@@ -317,7 +302,7 @@ Choose your learning path based on your goals and experience level.
 
 1. **Understand architecture:** Read progressive disclosure section in [Agent Skills Overview](./AGENT_SKILLS_OVERVIEW.md)
 2. **Learn best practices:** Study [Skill Development Best Practices](./SKILL_DEVELOPMENT_BEST_PRACTICES.md)
-3. **Examine real implementation:** Explore `udemy/skills/extract/` in detail
+3. **Examine real implementation:** Explore `skola/skills/extract-udemy/` in detail
 4. **Master token optimization:** Apply three-level loading strategy
 5. **Build your skill:** Create following progressive disclosure pattern
 6. **Test thoroughly:** Verify metadata, instructions, and resource loading
@@ -384,7 +369,7 @@ Skills use a three-level architecture to minimize token usage while maximizing c
   - Additional documentation, templates, scripts
   - Loaded as needed during skill execution
 
-This pattern is demonstrated in `udemy/skills/extract/`.
+This pattern is demonstrated in `skola/skills/extract-udemy/`.
 
 ### Plugin Organization
 
@@ -467,7 +452,7 @@ This workflow uses both `git` and `review` plugins together, demonstrating how m
 
 - [Main README](../README.md) - Plugin marketplace overview and quick start
 - [Installation Guide](../INSTALLATION.md) - Detailed installation instructions
-- Plugin READMEs: [core](../core/README.md), [skola](../skola/README.md), [udemy](../udemy/README.md), [git](../git/README.md), [review](../review/README.md)
+- Plugin READMEs: [core](../core/README.md), [skola](../skola/README.md), [doc](../doc/README.md), [git](../git/README.md), [review](../review/README.md), [ui](../ui/README.md)
 
 ---
 
@@ -559,7 +544,7 @@ Want to contribute to these plugins or create your own?
 ## Questions or Issues?
 
 - Review the [Skill Development Best Practices](./SKILL_DEVELOPMENT_BEST_PRACTICES.md) for common pitfalls
-- Examine the reference implementations (`git`, `review`, `core`, `skola`, `udemy`)
+- Examine the reference implementations (`git`, `review`, `core`, `skola`, `doc`, `ui`)
 - Check the foundational guides (Plugins, Subagents, Hooks)
 - Check the official Claude Code documentation
 - Open an issue in the repository

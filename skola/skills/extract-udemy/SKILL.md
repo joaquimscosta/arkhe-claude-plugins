@@ -1,9 +1,9 @@
 ---
-name: Udemy Course Extractor
+name: Extract Udemy Course
 description: Extract complete Udemy course content including video transcripts, articles, quizzes, downloadable resources (PDFs, code files), and external links. Use when user provides a Udemy course URL, mentions extracting/downloading/scraping/archiving Udemy content, analyzing course structure, or wants offline access to course materials.
 ---
 
-# Udemy Course Extractor
+# Extract Udemy Course
 
 Extract complete course content from Udemy for offline study and research.
 
@@ -36,7 +36,7 @@ Use this skill when the user:
 ### Basic Extraction (All Content Types)
 
 ```bash
-python3 arkhe-claude-plugins/udemy/skills/extract/scripts/extract.py \
+python3 arkhe-claude-plugins/skola/skills/extract-udemy/scripts/extract.py \
   "https://SITE.udemy.com/course/course-name/"
 ```
 
@@ -47,12 +47,12 @@ The script uses the current working directory to locate `udemy-research/cookies.
 
 ```bash
 # Only transcripts and articles
-python3 arkhe-claude-plugins/udemy/skills/extract/scripts/extract.py \
+python3 arkhe-claude-plugins/skola/skills/extract-udemy/scripts/extract.py \
   "https://SITE.udemy.com/course/course-name/" \
   --content-types video,article
 
 # Only resources (without downloading files)
-python3 arkhe-claude-plugins/udemy/skills/extract/scripts/extract.py \
+python3 arkhe-claude-plugins/skola/skills/extract-udemy/scripts/extract.py \
   "https://SITE.udemy.com/course/course-name/" \
   --content-types resource \
   --no-download-resources
@@ -61,7 +61,7 @@ python3 arkhe-claude-plugins/udemy/skills/extract/scripts/extract.py \
 ### Advanced Options
 
 ```bash
-python3 arkhe-claude-plugins/udemy/skills/extract/scripts/extract.py \
+python3 arkhe-claude-plugins/skola/skills/extract-udemy/scripts/extract.py \
   "https://SITE.udemy.com/course/course-name/" \
   --content-types video,article,quiz,resource \
   --skip-promotional \

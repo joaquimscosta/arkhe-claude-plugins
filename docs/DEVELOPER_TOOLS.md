@@ -128,7 +128,7 @@ After capturing API data:
 ### Related Documentation
 
 - [Udemy Platform Reference](../udemy-research/UDEMY_PLATFORM_REFERENCE.md) - API documentation derived from inspector data
-- [API Client](../arkhe-claude-plugins/udemy/skills/extract/scripts/api_client.py) - Production API client implementation
+- [API Client](../arkhe-claude-plugins/skola/skills/extract-udemy/scripts/api_client.py) - Production API client implementation
 - [Research Notes](../udemy-research/RESEARCH.md) - Original API research findings
 
 ---

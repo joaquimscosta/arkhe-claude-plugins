@@ -212,7 +212,7 @@ cd services/api
 - `/doc-generate` - Generate comprehensive documentation
 - `/code-explain` - Explain complex code sections
 - `docs-architect` agent - Create technical documentation from code
-- `mermaid-expert` agent - Generate diagrams (e.g., release flow diagrams)
+- `mermaid` skill or `/diagram` command - Generate diagrams (e.g., release flow diagrams)
 
 ## Version
 
