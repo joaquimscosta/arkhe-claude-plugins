@@ -1,6 +1,6 @@
 # Agent Skill Development: Best Practices
 
-**Based on**: AGENT_SKILLS_OVERVIEW.md + Udemy-Extract Skill Implementation
+**Based On**: AGENT_SKILLS_OVERVIEW.md + skill-creator Reference
 **Date**: 2025-10-18
 **Purpose**: Document lessons learned and best practices for creating Claude Code Skills
 
@@ -10,12 +10,13 @@
 
 1. [Progressive Disclosure Strategy](#progressive-disclosure-strategy)
 2. [YAML Frontmatter Guidelines](#yaml-frontmatter-guidelines)
-3. [Token Optimization Techniques](#token-optimization-techniques)
-4. [File Organization Patterns](#file-organization-patterns)
-5. [Security Best Practices](#security-best-practices)
-6. [Documentation Structure](#documentation-structure)
-7. [Common Pitfalls](#common-pitfalls)
-8. [Real-World Example: Udemy-Extract](#real-world-example-extract)
+3. [Writing Style Guidelines](#writing-style-guidelines)
+4. [Token Optimization Techniques](#token-optimization-techniques)
+5. [File Organization Patterns](#file-organization-patterns)
+6. [Security Best Practices](#security-best-practices)
+7. [Documentation Structure](#documentation-structure)
+8. [Common Pitfalls](#common-pitfalls)
+9. [Real-World Example: Udemy-Extract](#real-world-example-udemy-extract)
 
 ---
 
@@ -28,18 +29,18 @@
 ```
 Level 1: Metadata (Always Loaded)
 ├── YAML frontmatter: name + description
-├── Token cost: ~100 tokens
+├── Size: ~100 words
 └── Purpose: Skill discovery
 
 Level 2: Instructions (Loaded When Triggered)
 ├── SKILL.md body
-├── Token cost: <5,000 tokens (target: <1,000)
+├── Size: <5,000 words (target: <1,000 words)
 └── Purpose: Quick start and core guidance
 
 Level 3+: Resources (Loaded As Needed)
 ├── Supporting docs (TROUBLESHOOTING.md, EXAMPLES.md, etc.)
 ├── Executable scripts
-├── Token cost: Effectively unlimited (loaded on-demand)
+├── Size: Effectively unlimited (loaded on-demand)
 └── Purpose: Deep dives and deterministic operations
 ```
 
@@ -104,6 +105,20 @@ description: What this skill does and when to use it
 [What it does]. Use when [trigger scenario 1], [trigger scenario 2], or [trigger scenario 3].
 ```
 
+**Writing Convention**: Use **third-person form** in descriptions.
+
+**Source**: [skill-creator YAML frontmatter](https://github.com/anthropics/skills/blob/main/skill-creator/SKILL.md)
+
+**Third-person examples**:
+- ✅ "This skill should be used when..."
+- ✅ "Guide for creating effective skills"
+- ✅ "Extract complete Udemy course content..."
+
+**Second-person (avoid)**:
+- ❌ "Use this skill when..."
+- ❌ "You should use this when..."
+- ❌ "This helps you to..."
+
 **Good Example** (Udemy-Extract):
 > Extract complete Udemy course content including video transcripts, articles, quizzes, downloadable resources (PDFs, code files), and external links. Use when user provides a Udemy course URL, mentions extracting/downloading Udemy content, or wants to research/analyze a Udemy course offline.
 
@@ -130,28 +145,122 @@ Include varied keywords for better skill discovery:
 - "analyze" → "analyze/research/study/review"
 - "transcript" → "transcript/captions/subtitles"
 
+### Optional: allowed-tools Field
+
+**Purpose**: Restrict which tools Claude can use when a skill is active.
+
+**Source**: [SKILLS.md - Restrict tool access](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/using-skills#restrict-tool-access-with-allowed-tools)
+
+**Syntax**:
+```yaml
+---
+name: safe-file-reader
+description: Read files without making changes. Use when you need read-only file access.
+allowed-tools: Read, Grep, Glob
+---
+```
+
+**When specified**: Claude can only use the listed tools without asking for permission.
+
+**When omitted**: Claude asks for permission to use tools as normal (standard permission model).
+
+**Use cases**:
+- ✅ Read-only skills that shouldn't modify files
+- ✅ Skills with limited scope (e.g., only data analysis, no file writing)
+- ✅ Security-sensitive workflows where you want to restrict capabilities
+
+**Example - Code review skill (read-only)**:
+```yaml
+---
+name: code-reviewer
+description: Review code for best practices and potential issues. Use when reviewing code, checking PRs, or analyzing code quality.
+allowed-tools: Read, Grep, Glob
+---
+```
+
+**Important**: `allowed-tools` is only supported for skills in Claude Code.
+
+---
+
+## Writing Style Guidelines
+
+### Use Imperative/Infinitive Form
+
+**Principle**: Write skill instructions using imperative/infinitive form (verb-first instructions), not second-person directives.
+
+**Source**: [skill-creator official reference](https://github.com/anthropics/skills/blob/main/skill-creator/SKILL.md)
+
+### ✅ Good Examples (Imperative/Infinitive)
+
+```markdown
+- To accomplish X, do Y
+- Create the skill directory
+- Answer the following questions
+- Use objective, instructional language
+- Run the validation script
+```
+
+### ❌ Bad Examples (Second-Person)
+
+```markdown
+- You should do X
+- If you need to do X
+- You can accomplish this by
+- You'll want to create
+- You might consider running
+```
+
+### Why This Matters
+
+**Clarity**: Imperative form maintains consistency and clarity for AI consumption.
+
+**Purpose**: Treats the skill as procedural documentation rather than conversational guidance.
+
+**Consistency**: Aligns with official Anthropic skill development patterns demonstrated in skill-creator.
+
+### Application
+
+Use imperative form throughout:
+- SKILL.md instructions
+- Supporting documentation (WORKFLOW.md, EXAMPLES.md, TROUBLESHOOTING.md)
+- Code comments in scripts
+- Template text
+
+**Example transformation:**
+
+**Before** (second-person):
+```markdown
+If you want to extract course content, you should first authenticate by creating
+a cookies.json file. You'll need to copy your access_token from the browser.
+```
+
+**After** (imperative):
+```markdown
+To extract course content, first authenticate by creating a cookies.json file.
+Copy the access_token from the browser.
+```
+
 ---
 
 ## Token Optimization Techniques
 
-### Target Token Budgets
+### Target Budgets
 
-| File | Target Tokens | Max Tokens | Typical Lines |
-|------|--------------|------------|---------------|
-| SKILL.md | <1,000 | <5,000 | <150 |
-| Supporting doc | Any | Any | Unlimited |
+**Source**: [skill-creator progressive disclosure](https://github.com/anthropics/skills/blob/main/skill-creator/SKILL.md)
+
+| File | Target | Maximum | Typical Lines |
+|------|--------|---------|---------------|
+| SKILL.md metadata | ~100 words | - | 5-10 (YAML) |
+| SKILL.md body | <1,000 words | <5,000 words | <150 |
+| Supporting docs | Any | Unlimited | Unlimited |
 | Scripts | 0 (executed) | 0 | Unlimited |
 
-### Calculation Method
+**Note on terminology**: Official documentation uses "words" as the measurement unit for skill content. The context window uses "tokens" (1 word ≈ 1.33 tokens on average), but for skill development, measure content in **words**.
 
-```python
-# Approximate token count
-tokens ≈ word_count / 0.75
-
-# Example:
-# 750 words ≈ 1,000 tokens
-# 3,750 words ≈ 5,000 tokens
-```
+**Progressive disclosure architecture**:
+1. **Level 1 (Metadata)**: ~100 words - Always loaded for skill discovery
+2. **Level 2 (SKILL.md body)**: <5,000 words maximum (target: <1,000 words) - Loaded when skill triggers
+3. **Level 3+ (Resources)**: Unlimited - Loaded as needed or executed without loading
 
 ### Optimization Strategies
 
@@ -183,7 +292,7 @@ See [WORKFLOW.md](WORKFLOW.md) for detailed step-by-step instructions.
 4. Generate output
 ```
 
-**Savings**: ~80 lines, ~500 tokens
+**Savings**: ~80 lines, ~360 words
 
 #### 2. Use References Over Embedding
 
@@ -211,7 +320,7 @@ See [EXAMPLES.md](EXAMPLES.md) for detailed examples including:
 - Resource-only extraction
 ```
 
-**Savings**: ~140 lines, ~900 tokens
+**Savings**: ~140 lines, ~675 words
 
 #### 3. Condense Code Blocks
 
@@ -248,25 +357,87 @@ See EXAMPLES.md for all options.
 
 ### Recommended Structure
 
+**Source**: [skill-creator three-tier resource organization](https://github.com/anthropics/skills/blob/main/skill-creator/SKILL.md)
+
 ```
 .claude/skills/my-skill/
 ├── SKILL.md                    # Main instructions (<150 lines)
 ├── WORKFLOW.md                 # Detailed step-by-step (optional)
-├── EXAMPLES.md                 # Usage examples
-├── TROUBLESHOOTING.md          # Error handling
-├── API_REFERENCE.md            # API docs (if applicable)
-├── scripts/
+├── EXAMPLES.md                 # Usage examples (recommended)
+├── TROUBLESHOOTING.md          # Error handling (recommended)
+├── scripts/                    # Tier 1: Executable code
 │   ├── main.py                 # Entry point
-│   ├── module1.py
-│   ├── module2.py
-│   └── tools/                  # Testing and analysis utilities
-│       ├── analyze.py
-│       └── test.py
-├── templates/                  # Output templates
-│   └── template.md
-└── resources/                  # Reference materials
-    └── schema.json
+│   ├── module1.py              # Supporting modules
+│   └── module2.py
+├── references/                 # Tier 2: Documentation loaded to context
+│   ├── API_REFERENCE.md        # API documentation
+│   ├── SCHEMA.md               # Data schemas
+│   └── POLICY.md               # Domain knowledge, policies
+└── assets/                     # Tier 3: Output resources (not loaded)
+    ├── templates/
+    │   └── template.md         # Output templates
+    └── boilerplate/
+        └── starter.html        # Boilerplate code
 ```
+
+### Three-Tier Resource Architecture
+
+**Source**: [skill-creator resource organization rationale](https://github.com/anthropics/skills/blob/main/skill-creator/SKILL.md)
+
+#### Tier 1: `scripts/` - Executable Code
+**Purpose**: Deterministic operations executed without loading to context.
+
+**When to include**:
+- Tasks requiring deterministic reliability
+- Code that Claude would otherwise rewrite repeatedly
+- Complex operations better handled by scripts
+
+**Benefits**:
+- Token efficient (0 tokens - executed, not loaded)
+- Deterministic, reliable results
+- Reusable across sessions
+
+**Examples**: Data processing, API calls, file transformations
+
+---
+
+#### Tier 2: `references/` - Documentation
+**Purpose**: Reference material loaded into context as needed.
+
+**When to include**:
+- Database schemas, API specifications
+- Company policies, domain knowledge
+- Detailed workflow guides
+- Large documentation (>10k words)
+
+**Benefits**:
+- Keeps SKILL.md lean
+- Loaded only when Claude determines it's needed
+- Progressive disclosure in action
+
+**Best practice**: If files are large (>10k words), include grep search patterns in SKILL.md.
+
+**Important**: Information should live in either SKILL.md or references files, not both (avoid duplication).
+
+**Examples**: API_REFERENCE.md, DATABASE_SCHEMA.md, COMPANY_POLICY.md
+
+---
+
+#### Tier 3: `assets/` - Output Resources
+**Purpose**: Files used in skill output, not loaded to context.
+
+**When to include**:
+- Templates (HTML, React, PowerPoint)
+- Images, icons, logos
+- Fonts, sample documents
+- Boilerplate code
+
+**Benefits**:
+- Separates output resources from documentation
+- Enables Claude to use files without loading them to context
+- Keeps context window clean
+
+**Examples**: `assets/logo.png`, `assets/slides.pptx`, `assets/frontend-template/`
 
 ### File Naming Conventions
 
@@ -284,9 +455,15 @@ See EXAMPLES.md for all options.
 - Make scripts executable: `chmod +x *.py`
 - Include shebang: `#!/usr/bin/env python3`
 
-**Resources**:
+**References** (Documentation):
+- Use UPPERCASE.md for reference documentation
+- Use descriptive names (API_REFERENCE.md, SCHEMA.md)
+- Store in `references/` directory
+
+**Assets** (Output resources):
 - Use descriptive names
-- Group by type in subdirectories
+- Group by type in subdirectories within `assets/`
+- Examples: `assets/templates/`, `assets/images/`, `assets/boilerplate/`
 
 ---
 
@@ -294,17 +471,31 @@ See EXAMPLES.md for all options.
 
 ### Runtime Environment Constraints
 
-**Allowed**:
-- ✅ Standard library imports only
-- ✅ Pre-installed packages (check code execution docs)
-- ✅ File operations within container
-- ✅ Bash commands
+**Source**: [SKILLS.md - Multi-file Skill example](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/using-skills#multi-file-skill)
 
-**Forbidden**:
-- ❌ Network access (except documented API usage)
-- ❌ Runtime package installation (`pip install`)
-- ❌ Accessing external URLs (unless skill's purpose)
-- ❌ Credential harvesting beyond documented auth
+**Allowed**:
+- ✅ Standard library imports
+- ✅ Third-party packages (Claude auto-installs or asks permission)
+- ✅ File operations within project scope
+- ✅ Bash commands
+- ✅ Network access for skill functionality (e.g., API calls)
+
+**Best practices**:
+- ✅ Document required packages in description field
+- ✅ Use standard library when possible (no installation needed)
+- ✅ Clear documentation of external dependencies
+
+**Security requirements**:
+- ❌ No credential harvesting beyond documented authentication
+- ❌ No obfuscated code execution
+- ❌ Clear logging (no sensitive data in logs)
+
+**Package installation**: Per [SKILLS.md line 437-584](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/using-skills), "Claude will automatically install required dependencies (or ask for permission to install them) when it needs them."
+
+**Example from SKILLS.md**:
+```yaml
+description: Extract text, fill forms, merge PDFs. Use when working with PDF files, forms, or document extraction. Requires pypdf and pdfplumber packages.
+```
 
 ### Authentication Patterns
 
@@ -594,7 +785,7 @@ chmod +x scripts/*.py
 
 **What it does well**:
 1. ✅ **Excellent progressive disclosure**
-   - SKILL.md: 258 lines (~1,264 tokens)
+   - SKILL.md: 258 lines (~1,264 words)
    - Supporting docs: 1,360 lines (loaded on-demand)
    - Scripts: 3,482 lines (executed, never loaded)
 
@@ -604,9 +795,9 @@ chmod +x scripts/*.py
    - Includes "what" and "when"
 
 3. ✅ **Secure implementation**
-   - Standard library only
-   - No runtime package installation
+   - Uses standard library (no external dependencies)
    - Cookie-based auth (user-provided)
+   - Clear authentication documentation
 
 4. ✅ **Well-organized files**
    - Clear separation of concerns
@@ -634,7 +825,7 @@ chmod +x scripts/*.py
 **Don't**:
 - ❌ Embed all content in SKILL.md
 - ❌ Forget to update references after moving files
-- ❌ Use third-party packages without checking availability
+- ❌ Forget to document required packages in description
 - ❌ Make scripts non-executable
 
 ---
@@ -648,14 +839,14 @@ chmod +x scripts/*.py
 - [ ] Name ≤ 64 characters
 - [ ] Description ≤ 1,024 characters
 - [ ] Description includes "what" and "when"
-- [ ] SKILL.md <5,000 tokens (target: <1,000)
+- [ ] SKILL.md <5,000 words (target: <1,000 words)
 - [ ] Supporting docs created (EXAMPLES.md, TROUBLESHOOTING.md)
 
 **Code Quality**:
 - [ ] Scripts executable (`chmod +x`)
 - [ ] Shebang added (`#!/usr/bin/env python3`)
-- [ ] Standard library only (or pre-installed packages)
-- [ ] No runtime package installation
+- [ ] Required packages documented in description
+- [ ] Standard library preferred when possible
 - [ ] Secure authentication (if needed)
 
 **Documentation**:
@@ -669,7 +860,7 @@ chmod +x scripts/*.py
 - [ ] Skill triggers correctly (test description keywords)
 - [ ] Scripts execute without errors
 - [ ] Supporting docs load on-demand
-- [ ] Token usage within guidelines
+- [ ] Word count within guidelines (<5,000 words for SKILL.md)
 
 ---
 
@@ -803,9 +994,9 @@ The [skill-creator](https://github.com/anthropics/skills/tree/main/skill-creator
 
 ### Key Characteristics
 
-**Size**: 175 lines (~1,140 tokens)
+**Size**: 175 lines (~1,140 words)
 - Slightly above 150-line target but demonstrates that comprehensive skills can be effective
-- Well under 5,000 token hard limit
+- Well under 5,000 word maximum
 - Balances completeness with conciseness
 
 **Structure**:
