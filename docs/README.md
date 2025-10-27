@@ -439,12 +439,14 @@ This workflow uses both `git` and `review` plugins together, demonstrating how m
 - [Claude Code Plugins Guide](https://docs.claude.com/en/docs/claude-code/plugins) - Also available locally: [PLUGINS.md](./PLUGINS.md)
 - [Subagents Guide](https://docs.claude.com/en/docs/claude-code/sub-agents) - Also available locally: [SUBAGENTS.md](./SUBAGENTS.md)
 - [Slash Commands Guide](https://docs.claude.com/en/docs/claude-code/slash-commands) - Also available locally: [COMMANDS.md](./COMMANDS.md)
+- [Skills Guide](https://docs.claude.com/en/docs/claude-code/skills) - Also available locally: [SKILLS.md](./SKILLS.md)
 - [Hooks Guide](https://docs.claude.com/en/docs/claude-code/hooks-guide) - Also available locally: [HOOKS.md](./HOOKS.md)
 - [Agent Skills Overview](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview) - Also available locally: [AGENT_SKILLS_OVERVIEW.md](./AGENT_SKILLS_OVERVIEW.md)
 - [Claude 4 Best Practices](https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/claude-4-best-practices) - Also available locally: [CLAUDE_4_BEST_PRACTICES.md](./CLAUDE_4_BEST_PRACTICES.md)
 
 ### Official Resources
 
+- [Anthropic Skills Repository](https://github.com/anthropics/skills) - Official reference implementations of Agent Skills with real-world examples, architecture patterns, and best practices
 - [Agent Skills Cookbook](https://github.com/anthropics/claude-cookbooks/tree/main/skills)
 - [Anthropic Engineering Blog: Agent Skills](https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills)
 

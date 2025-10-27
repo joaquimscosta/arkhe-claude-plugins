@@ -680,6 +680,9 @@ chmod +x scripts/*.py
 - [Skills Best Practices](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/best-practices)
 - [Skills Cookbook](https://github.com/anthropics/claude-cookbooks/tree/main/skills)
 
+**Official Skill Examples**:
+- [Anthropic Skills Repository](https://github.com/anthropics/skills) - Official reference implementations of Agent Skills with real-world examples, architecture patterns, and best practices from Anthropic's engineering team
+
 **Internal References**:
 - `AGENT_SKILLS_OVERVIEW.md` - Claude's official skills documentation
 - `.claude/skills/extract/` - Reference implementation

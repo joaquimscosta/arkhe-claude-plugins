@@ -163,8 +163,10 @@ After installation, restart Claude Code and use:
 
 ### Skills Development
 
+- **[Skills Guide](./docs/SKILLS.md)** - Practical guide to creating, managing, and sharing Agent Skills in Claude Code
 - **[Agent Skills Overview](./docs/AGENT_SKILLS_OVERVIEW.md)** - Complete guide to understanding and using Agent Skills, including architecture, progressive disclosure, and best practices
 - **[Skill Development Best Practices](./docs/SKILL_DEVELOPMENT_BEST_PRACTICES.md)** - Lessons learned from real-world skill implementation, token optimization, and common pitfalls
+- **[Anthropic Skills Repository](https://github.com/anthropics/skills)** - Official reference implementations with real-world examples and patterns
 
 ### Prompt Engineering & Best Practices
 

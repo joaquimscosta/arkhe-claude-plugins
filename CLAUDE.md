@@ -478,6 +478,7 @@ chmod +x scripts/*.py
 ## Key Documentation Files
 
 ### Developer Resources
+- `docs/SKILLS.md` - Practical guide to creating and managing Agent Skills in Claude Code (synced)
 - `docs/AGENT_SKILLS_OVERVIEW.md` - Comprehensive guide to Agent Skills architecture (synced)
 - `docs/SKILL_DEVELOPMENT_BEST_PRACTICES.md` - Lessons learned from real implementations (custom)
 - `docs/PLUGINS.md` - Plugin system documentation (synced)
@@ -496,8 +497,8 @@ The `docs/` directory includes both **custom documentation** (written for this p
 cd docs && ./update-claude-docs.sh
 ```
 
-**Synced files** (6 total):
-- SUBAGENTS.md, PLUGINS.md, HOOKS.md, COMMANDS.md
+**Synced files** (7 total):
+- SUBAGENTS.md, PLUGINS.md, HOOKS.md, COMMANDS.md, SKILLS.md
 - AGENT_SKILLS_OVERVIEW.md, CLAUDE_4_BEST_PRACTICES.md
 
 **Custom files** (never overwritten):
@@ -531,3 +532,8 @@ For complete technical specifications:
 - **Prompt Engineering**: `docs/CLAUDE_4_BEST_PRACTICES.md`
 - **Installation Guide**: `INSTALLATION.md`
 - **Main README**: `README.md`
+
+## External Resources
+
+Official examples and references for skill development:
+- **[Anthropic Skills Repository](https://github.com/anthropics/skills)** - Official reference implementations of Agent Skills with real-world examples, architecture patterns, and best practices from Anthropic's engineering team
