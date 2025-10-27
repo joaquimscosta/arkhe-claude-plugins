@@ -478,13 +478,20 @@ chmod +x scripts/*.py
 ## Key Documentation Files
 
 ### Developer Resources
+
+**Skills Development** (most important for skill creation):
+- `docs/SKILL_DEVELOPMENT_BEST_PRACTICES.md` - **PRIMARY GUIDE**: Integrated best practices from official docs and real implementations (custom)
 - `docs/SKILLS.md` - Practical guide to creating and managing Agent Skills in Claude Code (synced)
 - `docs/AGENT_SKILLS_OVERVIEW.md` - Comprehensive guide to Agent Skills architecture (synced)
-- `docs/SKILL_DEVELOPMENT_BEST_PRACTICES.md` - Lessons learned from real implementations (custom)
+- [Official Best Practices](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/best-practices.md) - Anthropic's official skill authoring guide (online)
+
+**Plugin System**:
 - `docs/PLUGINS.md` - Plugin system documentation (synced)
 - `docs/SUBAGENTS.md` - Agent configuration and usage guide (synced)
 - `docs/COMMANDS.md` - Slash commands reference and development guide (synced)
 - `docs/HOOKS.md` - Event handling documentation (synced)
+
+**Development Tools**:
 - `docs/DEVELOPER_TOOLS.md` - Development tooling guide (custom)
 - `docs/CLAUDE_4_BEST_PRACTICES.md` - Official prompt engineering techniques for Claude 4 models (synced)
 
@@ -535,6 +542,11 @@ For complete technical specifications:
 
 ## External Resources
 
-Official examples and references for skill development:
+**Official Documentation**:
+- **[Agent Skills Best Practices](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/best-practices.md)** - Comprehensive authoring guide covering core principles, YAML frontmatter, degrees of freedom, content guidelines, workflows, and evaluation
+- [Agent Skills Overview](https://docs.claude.com/en/docs/agents-and-tools/agent-skills) - Introduction to Agent Skills across Claude products
+- [Using Skills in Claude Code](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/using-skills) - Practical guide for creating and managing skills
+
+**Official Skill Examples**:
 - **[Anthropic Skills Repository](https://github.com/anthropics/skills)** - Official reference implementations of Agent Skills with real-world examples, architecture patterns, and best practices from Anthropic's engineering team
 - **[skill-creator Reference](https://github.com/anthropics/skills/tree/main/skill-creator)** - Exemplary official skill demonstrating best practices for YAML frontmatter, writing style (imperative/infinitive form), resource organization (scripts/references/assets), and progressive disclosure architecture. See detailed analysis in `docs/SKILL_DEVELOPMENT_BEST_PRACTICES.md`

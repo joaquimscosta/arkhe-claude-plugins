@@ -1,95 +1,257 @@
 # Agent Skill Development: Best Practices
 
-**Based On**: AGENT_SKILLS_OVERVIEW.md + skill-creator Reference
-**Date**: 2025-10-18
+**Based On**: AGENT_SKILLS_OVERVIEW.md + skill-creator Reference + [Official Best Practices](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/best-practices.md)
+**Date**: 2025-10-27
 **Purpose**: Document lessons learned and best practices for creating Claude Code Skills
+
+> **📚 Official Reference**: This document integrates guidance from [Anthropic's Agent Skills Best Practices](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/best-practices.md) with real-world implementation lessons from this repository's skills.
 
 ---
 
 ## Table of Contents
 
-1. [Progressive Disclosure Strategy](#progressive-disclosure-strategy)
-2. [YAML Frontmatter Guidelines](#yaml-frontmatter-guidelines)
-3. [Writing Style Guidelines](#writing-style-guidelines)
-4. [Token Optimization Techniques](#token-optimization-techniques)
-5. [File Organization Patterns](#file-organization-patterns)
-6. [Security Best Practices](#security-best-practices)
-7. [Documentation Structure](#documentation-structure)
-8. [Common Pitfalls](#common-pitfalls)
-9. [Real-World Example: Udemy-Extract](#real-world-example-udemy-extract)
+1. [Core Principles](#core-principles)
+2. [Structure & Sizing Best Practices](#structure--sizing-best-practices)
+3. [YAML Frontmatter Guidelines](#yaml-frontmatter-guidelines)
+4. [Content & Writing Standards](#content--writing-standards)
+5. [Degrees of Freedom](#degrees-of-freedom)
+6. [File Organization Patterns](#file-organization-patterns)
+7. [Workflows and Feedback Loops](#workflows-and-feedback-loops)
+8. [Scripts & Security](#scripts--security)
+9. [Documentation Templates](#documentation-templates)
+10. [Evaluation and Iteration](#evaluation-and-iteration)
+11. [Common Pitfalls](#common-pitfalls)
+12. [Anti-Patterns to Avoid](#anti-patterns-to-avoid)
+13. [Anatomy of a Well-Designed Skill](#anatomy-of-a-well-designed-skill)
+14. [Quick Checklist for New Skills](#quick-checklist-for-new-skills)
+15. [Skills Documentation Reference](#skills-documentation-reference)
+16. [Resources](#resources)
 
 ---
 
-## Progressive Disclosure Strategy
+## Core Principles
+
+> **Source**: [Official Best Practices - Core Principles](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/best-practices.md#core-principles)
+
+### 1. Conciseness: Context Windows Are Shared Resources
+
+**Principle**: Only include information Claude doesn't already have.
+
+The system loads skill metadata at startup, reads SKILL.md when relevant, and accesses additional files on-demand—meaning verbose documentation directly competes with conversation history and other context.
+
+**Implementation**:
+- ✅ Assume Claude is already highly intelligent
+- ✅ Add only novel information specific to your domain
+- ❌ Avoid over-explaining general programming concepts
+- ❌ Don't repeat what Claude already knows
+
+**Challenge each piece of information**: "Does Claude need this, or does Claude already know this?"
+
+### 2. Appropriate Freedom Levels
+
+**Principle**: Match specificity to task fragility.
+
+- **High Freedom** (text instructions): Simple decisions, multiple valid approaches
+- **Medium Freedom** (pseudocode): Preferred patterns with acceptable variation
+- **Low Freedom** (specific scripts): Fragile operations requiring exact sequences
+
+See [Degrees of Freedom](#degrees-of-freedom) section for detailed guidance.
+
+### 3. Model-Specific Testing
+
+**Principle**: Effectiveness varies across models.
+
+Skills should be tested with:
+- **Haiku** - Fast, efficient, less capable
+- **Sonnet** - Balanced performance
+- **Opus** - Most capable
+
+Guidance sufficient for Opus may need enhancement for Haiku.
+
+**Best practice**: Test with the lowest-tier model you intend to support.
+
+### 4. Progressive Disclosure
+
+**Principle**: Load only what's needed, when it's needed.
+
+See [Structure & Sizing Best Practices](#structure--sizing-best-practices) section for detailed implementation.
+
+### 5. One-Level Deep References
+
+**Principle**: Keep file references shallow for easier navigation.
+
+- ✅ `SKILL.md` → `advanced.md` (one level)
+- ❌ `SKILL.md` → `advanced.md` → `details.md` (two levels)
+
+**Why**: Reduces cognitive load and makes skills easier to maintain.
+
+---
+
+## Structure & Sizing Best Practices
+
+> **Source**: [Official Best Practices - File Structure and Progressive Disclosure](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/best-practices.md#file-structure-and-progressive-disclosure)
 
 ### The Three-Level Architecture
 
-**Principle**: Load only what's needed, when it's needed.
+**Principle**: Load only what's needed, when it's needed. This is the foundation of effective skill design.
 
 ```
 Level 1: Metadata (Always Loaded)
 ├── YAML frontmatter: name + description
-├── Size: ~100 words
+├── Size: 5-10 lines
 └── Purpose: Skill discovery
 
 Level 2: Instructions (Loaded When Triggered)
 ├── SKILL.md body
-├── Size: <5,000 words (target: <1,000 words)
+├── Size: < 500 lines (official maximum)
 └── Purpose: Quick start and core guidance
 
 Level 3+: Resources (Loaded As Needed)
-├── Supporting docs (TROUBLESHOOTING.md, EXAMPLES.md, etc.)
+├── Supporting docs (WORKFLOW.md, EXAMPLES.md, TROUBLESHOOTING.md)
 ├── Executable scripts
-├── Size: Effectively unlimited (loaded on-demand)
+├── Size: Unlimited (loaded on-demand or executed)
 └── Purpose: Deep dives and deterministic operations
 ```
 
-### Implementation Pattern
+### Size Guidelines
 
-**SKILL.md should**:
-- ✅ Provide quick start (essential steps only)
-- ✅ Show output structure
-- ✅ List common issues with references to detailed docs
-- ✅ Reference supporting files (don't embed them)
-- ❌ Avoid detailed step-by-step workflows (use separate WORKFLOW.md)
-- ❌ Avoid embedding all examples (use EXAMPLES.md)
-- ❌ Avoid complete error catalog (use TROUBLESHOOTING.md)
+| Component | Size Limit | Notes |
+|-----------|------------|-------|
+| **SKILL.md total** | **< 500 lines** | Official maximum (typically 2,000-3,000 words) |
+| YAML frontmatter | 5-10 lines | See [YAML Frontmatter Guidelines](#yaml-frontmatter-guidelines) |
+| Supporting docs | Unlimited | Include TOC if >100 lines |
+| Scripts | 0 tokens | Executed, not loaded to context |
 
-**Example from Udemy-Extract**:
+**Measurement**: Official guidance uses **line count**, not word count.
+
+### What Goes Where
+
+**SKILL.md should contain**:
+- ✅ Quick start (essential steps only)
+- ✅ Output structure overview
+- ✅ Common issues (1-2 per issue) with reference to TROUBLESHOOTING.md
+- ✅ Brief examples with reference to EXAMPLES.md
+- ✅ References to supporting files (don't embed them)
+
+**SKILL.md should NOT contain**:
+- ❌ Detailed step-by-step workflows → Use WORKFLOW.md
+- ❌ Complete examples with full code → Use EXAMPLES.md
+- ❌ Comprehensive error catalog → Use TROUBLESHOOTING.md
+- ❌ Large reference docs → Use references/ directory
+
+### Progressive Disclosure in Practice
+
+**Good example** (referencing pattern):
 ```markdown
 ## Common Issues
 
-**"Could not find course with slug"**
-- Ensure you're enrolled in the course
-- Course must appear in "My Courses"
+**"Authentication failed"**
+- Verify credentials file exists
+- Check token hasn't expired
 
-For complete troubleshooting, see [TROUBLESHOOTING.md](TROUBLESHOOTING.md).
+See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for complete error handling.
 ```
 
-**What NOT to do**:
+**Bad example** (embedding everything):
 ```markdown
-<!-- ❌ Don't embed the entire troubleshooting guide in SKILL.md -->
+<!-- ❌ Don't do this -->
 ## Common Issues
 
 ### Error: Authentication failed
-...100 lines of detailed troubleshooting...
+1. Check credentials file...
+2. Verify token format...
+(100+ lines of detailed troubleshooting)
 
 ### Error: Network timeout
-...another 50 lines...
+1. Check connectivity...
+(50+ more lines)
 ```
+
+### Optimization Strategies
+
+#### Strategy 1: Extract Detailed Content
+
+Extract workflows to separate files, keep only overview in SKILL.md.
+
+**Before** (bloated SKILL.md):
+```markdown
+## Workflow
+
+### Step 1: Authenticate
+1. Create cookies.json file
+2. Add access_token from browser
+3. Add client_id from browser
+(90 more lines)
+```
+
+**After** (optimized):
+```markdown
+## Workflow
+
+See [WORKFLOW.md](WORKFLOW.md) for detailed instructions.
+
+**Quick overview**: Authenticate → Fetch data → Process → Generate output
+```
+
+**Savings**: ~80 lines
+
+#### Strategy 2: Reference vs. Embed Examples
+
+**Before**:
+```markdown
+## Examples
+Example 1: Basic usage (50 lines)
+Example 2: Advanced usage (50 lines)
+Example 3: Error handling (50 lines)
+```
+
+**After**:
+```markdown
+## Examples
+
+See [EXAMPLES.md](EXAMPLES.md) for:
+- Basic usage
+- Advanced usage with custom options
+- Error handling patterns
+```
+
+**Savings**: ~140 lines
 
 ---
 
 ## YAML Frontmatter Guidelines
 
+> **Source**: [Official Best Practices - YAML Frontmatter](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/best-practices.md#yaml-frontmatter-requirements)
+
 ### Required Fields
 
 ```yaml
 ---
-name: Your Skill Name
-description: What this skill does and when to use it
+name: lowercase-with-hyphens  # 64 characters max
+description: What this skill does and when to use it  # 1,024 characters max
 ---
 ```
+
+### Naming Conventions
+
+**Format**: Use gerund form (verb + -ing) for clarity
+
+✅ **Good Examples**:
+- `processing-pdfs`
+- `analyzing-spreadsheets`
+- `managing-databases`
+- `extracting-udemy-courses`
+
+❌ **Avoid**:
+- Vague terms: `helper`, `utils`, `tools`
+- Generic names: `documents`, `data`, `processor`
+- Reserved terms: `anthropic`, `claude`
+
+**Constraints**:
+- Only lowercase letters, numbers, and hyphens
+- Cannot contain XML tags
+- Cannot use reserved words ("anthropic", "claude")
+- Must be between 1-64 characters
 
 ### Limits
 
@@ -100,24 +262,26 @@ description: What this skill does and when to use it
 
 ### Description Best Practices
 
+> **Source**: [Official Best Practices - Writing Effective Descriptions](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/best-practices.md#writing-effective-descriptions)
+
+**Writing Convention**: Always write in **third person** since descriptions inject into system prompts.
+
 **Template**:
 ```
 [What it does]. Use when [trigger scenario 1], [trigger scenario 2], or [trigger scenario 3].
 ```
 
-**Writing Convention**: Use **third-person form** in descriptions.
-
-**Source**: [skill-creator YAML frontmatter](https://github.com/anthropics/skills/blob/main/skill-creator/SKILL.md)
-
 **Third-person examples**:
+- ✅ "Extracts text and tables from PDF files, fills forms, merges documents. Use when working with PDF files or when the user mentions PDFs, forms, or document extraction."
 - ✅ "This skill should be used when..."
 - ✅ "Guide for creating effective skills"
-- ✅ "Extract complete Udemy course content..."
 
-**Second-person (avoid)**:
-- ❌ "Use this skill when..."
-- ❌ "You should use this when..."
-- ❌ "This helps you to..."
+**First/Second-person (avoid)**:
+- ❌ "I can help you process Excel files" (first person)
+- ❌ "You should use this when..." (second person)
+- ❌ "Helps with documents" (vague)
+
+**Why this matters**: Descriptions are injected into Claude's system prompt, so third-person maintains consistent voice.
 
 **Good Example** (Udemy-Extract):
 > Extract complete Udemy course content including video transcripts, articles, quizzes, downloadable resources (PDFs, code files), and external links. Use when user provides a Udemy course URL, mentions extracting/downloading Udemy content, or wants to research/analyze a Udemy course offline.
@@ -182,174 +346,196 @@ allowed-tools: Read, Grep, Glob
 
 ---
 
-## Writing Style Guidelines
+## Content & Writing Standards
 
-### Use Imperative/Infinitive Form
+> **Sources**: [Official Best Practices - Content Guidelines](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/best-practices.md#content-guidelines) + [skill-creator reference](https://github.com/anthropics/skills/blob/main/skill-creator/SKILL.md)
 
-**Principle**: Write skill instructions using imperative/infinitive form (verb-first instructions), not second-person directives.
+### Writing Style: Imperative Form
 
-**Source**: [skill-creator official reference](https://github.com/anthropics/skills/blob/main/skill-creator/SKILL.md)
+**Principle**: Use imperative/infinitive form (verb-first), not second-person directives.
 
-### ✅ Good Examples (Imperative/Infinitive)
+**✅ Good** (Imperative):
+- "To accomplish X, do Y"
+- "Create the skill directory"
+- "Run the validation script"
 
-```markdown
-- To accomplish X, do Y
-- Create the skill directory
-- Answer the following questions
-- Use objective, instructional language
-- Run the validation script
-```
+**❌ Avoid** (Second-person):
+- "You should do X"
+- "You'll want to create"
+- "You might consider running"
 
-### ❌ Bad Examples (Second-Person)
+**Why**: Maintains consistency and clarity for AI consumption. Treats skills as procedural documentation.
 
-```markdown
-- You should do X
-- If you need to do X
-- You can accomplish this by
-- You'll want to create
-- You might consider running
-```
-
-### Why This Matters
-
-**Clarity**: Imperative form maintains consistency and clarity for AI consumption.
-
-**Purpose**: Treats the skill as procedural documentation rather than conversational guidance.
-
-**Consistency**: Aligns with official Anthropic skill development patterns demonstrated in skill-creator.
-
-### Application
-
-Use imperative form throughout:
-- SKILL.md instructions
-- Supporting documentation (WORKFLOW.md, EXAMPLES.md, TROUBLESHOOTING.md)
-- Code comments in scripts
-- Template text
+**Apply throughout**: SKILL.md, WORKFLOW.md, EXAMPLES.md, TROUBLESHOOTING.md, script comments
 
 **Example transformation:**
-
-**Before** (second-person):
 ```markdown
-If you want to extract course content, you should first authenticate by creating
-a cookies.json file. You'll need to copy your access_token from the browser.
+❌ Before: "If you want to extract content, you should first authenticate..."
+✅ After: "To extract content, first authenticate by creating cookies.json"
 ```
 
-**After** (imperative):
+### Terminology Consistency
+
+**Principle**: Choose one term and use it throughout.
+
+**Examples**:
+- Pick "API endpoint" **or** "URL" - not both
+- Use "field," "box," "element," **or** "control" - stay consistent
+- Select "extract," "pull," "get," **or** "retrieve" - pick one
+
+**Why**: Reduces confusion and makes skills easier to follow.
+
+### Avoid Time-Sensitive Information
+
+**❌ Don't**:
 ```markdown
-To extract course content, first authenticate by creating a cookies.json file.
-Copy the access_token from the browser.
+Before August 2025, use the old API. After August 2025, use the new API.
 ```
+
+**✅ Do** (use collapsible sections):
+```markdown
+## Current Method
+Use the v2 API endpoint: `api.example.com/v2/messages`
+
+## Old Patterns
+<details>
+<summary>Legacy v1 API (deprecated 2025-08)</summary>
+The v1 API used: `api.example.com/v1/messages`
+</details>
+```
+
+### Templates and Examples
+
+**Principle**: Show input/output pairs for clarity.
+
+- Mark templates as **mandatory** for strict requirements
+- Acknowledge **adaptation** for flexible guidance
+
+**Example**:
+```markdown
+## Output Format
+
+Use this template structure:
+```json
+{"title": "...", "sections": [...]}
+```
+
+Adapt field names based on the data source schema.
+```
+
+### Provide One Default Option
+
+**❌ Don't overwhelm**:
+"Use pypdf, pdfplumber, PyMuPDF, pdfrw, pikepdf, or any other PDF library"
+
+**✅ Provide default with escape hatch**:
+"Use pdfplumber for PDF extraction (or another library if you have a specific preference)"
+
+### MCP Tool References
+
+Always use **fully qualified names**: `ServerName:tool_name`
+
+**Examples**:
+- `BigQuery:bigquery_schema` (not `bigquery_schema`)
+- `GitHub:create_issue` (not `create_issue`)
+
+### Documentation File Structure
+
+**Required**:
+- `SKILL.md` - Main instructions (<500 lines)
+
+**Highly recommended**:
+- `EXAMPLES.md` - Usage examples
+- `TROUBLESHOOTING.md` - Error handling
+
+**Optional**:
+- `WORKFLOW.md` - Detailed steps
+- `references/` - API docs, schemas, policies (include TOC if >100 lines)
+- `assets/` - Templates, images, boilerplate
+
+See [File Organization Patterns](#file-organization-patterns) for detailed structure.
 
 ---
 
-## Token Optimization Techniques
+## Degrees of Freedom
 
-### Target Budgets
+> **Source**: [Official Best Practices - Degrees of Freedom Guidance](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/best-practices.md#degrees-of-freedom-guidance)
 
-**Source**: [skill-creator progressive disclosure](https://github.com/anthropics/skills/blob/main/skill-creator/SKILL.md)
+**Principle**: Match the level of specificity to the fragility of the task.
 
-| File | Target | Maximum | Typical Lines |
-|------|--------|---------|---------------|
-| SKILL.md metadata | ~100 words | - | 5-10 (YAML) |
-| SKILL.md body | <1,000 words | <5,000 words | <150 |
-| Supporting docs | Any | Unlimited | Unlimited |
-| Scripts | 0 (executed) | 0 | Unlimited |
+### High Freedom (Text-Based Instructions)
 
-**Note on terminology**: Official documentation uses "words" as the measurement unit for skill content. The context window uses "tokens" (1 word ≈ 1.33 tokens on average), but for skill development, measure content in **words**.
+**When to use**: Multiple valid approaches exist and context determines the best path.
 
-**Progressive disclosure architecture**:
-1. **Level 1 (Metadata)**: ~100 words - Always loaded for skill discovery
-2. **Level 2 (SKILL.md body)**: <5,000 words maximum (target: <1,000 words) - Loaded when skill triggers
-3. **Level 3+ (Resources)**: Unlimited - Loaded as needed or executed without loading
+**Format**: Natural language instructions with flexibility.
 
-### Optimization Strategies
+**Example use cases**:
+- Code review processes (multiple valid review approaches)
+- Content generation with stylistic variation
+- Research and analysis tasks
 
-#### 1. Extract Detailed Content
-
-**Before** (too detailed):
+**Example**:
 ```markdown
-## Workflow
+Review the codebase for:
+- Code quality and best practices
+- Performance implications
+- Security vulnerabilities
+- Documentation completeness
 
-### Step 1: Authenticate
-1. Create cookies.json file
-2. Add access_token from browser
-3. Add client_id from browser
-4. Verify format is correct
-5. Test authentication...
-(90 more lines)
+Provide actionable recommendations prioritized by impact.
 ```
 
-**After** (optimized):
+### Medium Freedom (Pseudocode with Parameters)
+
+**When to use**: A preferred pattern exists but variation is acceptable.
+
+**Format**: Structured guidance with parameters Claude can adapt.
+
+**Example use cases**:
+- Report generation with templates
+- API integration with configurable endpoints
+- Data transformation with schema variations
+
+**Example**:
 ```markdown
-## Workflow
+Generate report following this structure:
+1. Executive summary (2-3 paragraphs)
+2. Key findings (bulleted list)
+3. Detailed analysis (sections per finding)
+4. Recommendations (prioritized)
 
-See [WORKFLOW.md](WORKFLOW.md) for detailed step-by-step instructions.
-
-**Quick overview**:
-1. Authenticate (cookies.json)
-2. Fetch course structure
-3. Extract content
-4. Generate output
+Adapt tone and depth based on audience identified in context.
 ```
 
-**Savings**: ~80 lines, ~360 words
+### Low Freedom (Specific Scripts, Minimal Parameters)
 
-#### 2. Use References Over Embedding
+**When to use**: Operations are fragile, consistency is critical, or exact sequences must be followed.
 
-**Before**:
-```markdown
-## Examples
+**Format**: Executable scripts with specific parameters.
 
-Example 1: Full extraction
-(50 lines of code and output)
+**Example use cases**:
+- Database migrations (must execute in exact order)
+- API authentication flows (specific token refresh sequences)
+- Data extraction with complex parsing logic
 
-Example 2: Selective extraction
-(50 lines of code and output)
-
-Example 3: Resource-only
-(50 lines of code and output)
+**Example**:
+```python
+#!/usr/bin/env python3
+# Extract Udemy course data with specific API endpoints and error handling
+python3 scripts/extract.py --course-url "$COURSE_URL" --output-dir "./output"
 ```
 
-**After**:
-```markdown
-## Examples
+**Why use scripts**: Deterministic reliability, token efficiency (executed not loaded), reusable across sessions.
 
-See [EXAMPLES.md](EXAMPLES.md) for detailed examples including:
-- Full course extraction
-- Selective content type extraction
-- Resource-only extraction
-```
+### Decision Framework
 
-**Savings**: ~140 lines, ~675 words
+Ask these questions when designing a skill:
 
-#### 3. Condense Code Blocks
-
-**Before**:
-```markdown
-### Full Example
-
-```bash
-python3 .claude/skills/my-skill/scripts/run.py \
-  --option1 value1 \
-  --option2 value2 \
-  --option3 value3 \
-  --option4 value4 \
-  --option5 value5 \
-  --option6 value6
-```
-
-**After**:
-```markdown
-### Example
-
-```bash
-python3 scripts/run.py "https://example.com" --custom-output
-```
-
-See EXAMPLES.md for all options.
-```
-
-**Savings**: Shorter code blocks + reference to full documentation
+1. **Is there one correct approach?** → Low freedom (script)
+2. **Are there multiple valid approaches?** → High freedom (text)
+3. **Is there a preferred approach with acceptable variations?** → Medium freedom (pseudocode)
+4. **Does the task require exact sequencing?** → Low freedom (script)
+5. **Can Claude adapt the approach based on context?** → High/Medium freedom
 
 ---
 
@@ -361,7 +547,7 @@ See EXAMPLES.md for all options.
 
 ```
 .claude/skills/my-skill/
-├── SKILL.md                    # Main instructions (<150 lines)
+├── SKILL.md                    # Main instructions (<500 lines)
 ├── WORKFLOW.md                 # Detailed step-by-step (optional)
 ├── EXAMPLES.md                 # Usage examples (recommended)
 ├── TROUBLESHOOTING.md          # Error handling (recommended)
@@ -370,7 +556,7 @@ See EXAMPLES.md for all options.
 │   ├── module1.py              # Supporting modules
 │   └── module2.py
 ├── references/                 # Tier 2: Documentation loaded to context
-│   ├── API_REFERENCE.md        # API documentation
+│   ├── API_REFERENCE.md        # API documentation (include TOC if >100 lines)
 │   ├── SCHEMA.md               # Data schemas
 │   └── POLICY.md               # Domain knowledge, policies
 └── assets/                     # Tier 3: Output resources (not loaded)
@@ -415,9 +601,10 @@ See EXAMPLES.md for all options.
 - Loaded only when Claude determines it's needed
 - Progressive disclosure in action
 
-**Best practice**: If files are large (>10k words), include grep search patterns in SKILL.md.
-
-**Important**: Information should live in either SKILL.md or references files, not both (avoid duplication).
+**Best practices**:
+- **Table of contents**: Include a table of contents in reference files over 100 lines (official requirement)
+- **Search patterns**: If files are very large (>10k words), include grep search patterns in SKILL.md
+- **No duplication**: Information should live in either SKILL.md or references files, not both
 
 **Examples**: API_REFERENCE.md, DATABASE_SCHEMA.md, COMPANY_POLICY.md
 
@@ -467,11 +654,160 @@ See EXAMPLES.md for all options.
 
 ---
 
-## Security Best Practices
+## Workflows and Feedback Loops
 
-### Runtime Environment Constraints
+> **Source**: [Official Best Practices - Workflows and Feedback Loops](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/best-practices.md#workflows-and-feedback-loops)
 
-**Source**: [SKILLS.md - Multi-file Skill example](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/using-skills#multi-file-skill)
+### Workflow Structure
+
+**For complex operations**: Break into sequential, numbered steps.
+
+**Best practice**: Provide a checklist Claude can copy and check off:
+
+```markdown
+Copy this checklist and track your progress:
+
+\`\`\`
+- [ ] Step 1: Read all source documents
+- [ ] Step 2: Identify key themes
+- [ ] Step 3: Cross-reference claims
+- [ ] Step 4: Create structured summary
+- [ ] Step 5: Verify citations
+\`\`\`
+```
+
+**Why this works**: Explicit checklists help Claude track progress and reduce missed steps.
+
+### Validation Patterns
+
+**Principle**: Implement feedback loops to improve output quality.
+
+**Pattern**: Run validator → Fix errors → Repeat
+
+**Example workflow**:
+```markdown
+1. Generate output
+2. Run validation script: `python3 scripts/validate.py output.json`
+3. If errors found, fix and repeat step 2
+4. Once validation passes, proceed
+```
+
+**For code-heavy skills**:
+1. Analyze requirements
+2. Create implementation plan
+3. Validate plan (run through checklist)
+4. Execute implementation
+5. Verify output (run tests, validation scripts)
+
+**Why this works**: Validation loops catch errors early and significantly improve output quality.
+
+### Intermediate Verification
+
+**For complex operations**: Use plan-validate-execute pattern.
+
+**Steps**:
+1. Claude creates a structured plan file
+2. A script validates the plan (checks for completeness, conflicts)
+3. Execution follows only after validation passes
+
+**Example**:
+```markdown
+1. Create migration plan: `plan.json`
+2. Validate plan: `python3 scripts/validate_plan.py plan.json`
+3. If validation passes, execute: `python3 scripts/execute_plan.py plan.json`
+```
+
+---
+
+## Scripts & Security
+
+> **Sources**: [Official Best Practices - Executable Scripts and Code](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/best-practices.md#executable-scripts-and-code) + [SKILLS.md - Multi-file Skill example](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/using-skills#multi-file-skill)
+
+### Script Best Practices
+
+#### 1. Solve, Don't Punt
+
+**Principle**: Handle error conditions explicitly rather than delegating to Claude.
+
+❌ **Don't punt errors**:
+```python
+if not os.path.exists(path):
+    raise FileNotFoundError(f"File {path} not found")
+```
+
+✅ **Solve the problem**:
+```python
+try:
+    with open(path) as f:
+        return f.read()
+except FileNotFoundError:
+    print(f"File {path} not found, creating default")
+    with open(path, 'w') as f:
+        f.write(DEFAULT_CONTENT)
+    return DEFAULT_CONTENT
+```
+
+#### 2. Document Constants
+
+**Every "magic number" needs justification**.
+
+❌ **Undocumented constant**:
+```python
+REQUEST_TIMEOUT = 30
+```
+
+✅ **Documented constant**:
+```python
+# HTTP requests typically complete within 30 seconds
+# Longer timeout accounts for slow connections and large responses
+REQUEST_TIMEOUT = 30
+```
+
+#### 3. Provide Utility Scripts
+
+**Benefits**:
+- More reliable than generated code
+- Save tokens (executed, not loaded to context)
+- Ensure consistency across uses
+
+**Make clear**: Should Claude execute the script or read it as reference? (Most common: execute)
+
+#### 4. Visual Analysis
+
+**When inputs can be rendered as images**: Have Claude analyze them visually rather than text representations.
+
+**Example use cases**: Screenshots of UI elements, diagrams, flowcharts, data visualizations
+
+### Package Dependencies
+
+**Document all required packages** in the skill description or SKILL.md.
+
+**Note**: Claude.ai can install packages, but the Anthropic API has no network access during code execution.
+
+❌ **Don't assume packages are available**:
+```markdown
+Use the pdf library to process files.
+```
+
+✅ **Be explicit about dependencies**:
+```markdown
+Install required package:
+\`\`\`bash
+pip install pdfplumber
+\`\`\`
+
+Then use:
+\`\`\`python
+from pdfplumber import open
+\`\`\`
+```
+
+**Example** (from official docs):
+```yaml
+description: Extract text, fill forms, merge PDFs. Use when working with PDF files, forms, or document extraction. Requires pypdf and pdfplumber packages.
+```
+
+### Runtime Environment
 
 **Allowed**:
 - ✅ Standard library imports
@@ -481,21 +817,11 @@ See EXAMPLES.md for all options.
 - ✅ Network access for skill functionality (e.g., API calls)
 
 **Best practices**:
-- ✅ Document required packages in description field
 - ✅ Use standard library when possible (no installation needed)
+- ✅ Document required packages in description field
 - ✅ Clear documentation of external dependencies
 
-**Security requirements**:
-- ❌ No credential harvesting beyond documented authentication
-- ❌ No obfuscated code execution
-- ❌ Clear logging (no sensitive data in logs)
-
 **Package installation**: Per [SKILLS.md line 437-584](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/using-skills), "Claude will automatically install required dependencies (or ask for permission to install them) when it needs them."
-
-**Example from SKILLS.md**:
-```yaml
-description: Extract text, fill forms, merge PDFs. Use when working with PDF files, forms, or document extraction. Requires pypdf and pdfplumber packages.
-```
 
 ### Authentication Patterns
 
@@ -526,13 +852,14 @@ password = input("Enter password: ")
 - ❌ Could send credentials anywhere
 - ❌ User has no control
 
-### Code Audit Checklist
+### Security Requirements
 
-Before publishing a skill, verify:
+**Code audit checklist** (before publishing):
 
 - [ ] No `eval()` or `exec()` calls
 - [ ] No obfuscated code (base64, hex strings)
 - [ ] No unexpected network destinations
+- [ ] No credential harvesting beyond documented authentication
 - [ ] Credentials handled securely
 - [ ] All operations match stated purpose
 - [ ] Clear logging (no sensitive data in logs)
@@ -540,21 +867,9 @@ Before publishing a skill, verify:
 
 ---
 
-## Documentation Structure
+## Documentation Templates
 
-### Essential Documentation
-
-**Minimum required**:
-1. `SKILL.md` - Main instructions
-
-**Highly recommended**:
-2. `EXAMPLES.md` - Usage examples
-3. `TROUBLESHOOTING.md` - Error handling
-
-**Optional but valuable**:
-4. `WORKFLOW.md` - Detailed steps
-5. `API_REFERENCE.md` - API documentation
-6. `CONTRIBUTING.md` - For open-source skills
+See [Content & Writing Standards](#content--writing-standards) for file structure guidelines.
 
 ### SKILL.md Template
 
@@ -682,6 +997,70 @@ Error output
 
 ---
 
+## Evaluation and Iteration
+
+> **Source**: [Official Best Practices - Evaluation and Iteration](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/best-practices.md#evaluation-and-iteration)
+
+### Build Evaluations First
+
+**Principle**: Create test scenarios BEFORE extensive documentation.
+
+**Process**:
+1. Establish baseline performance without the skill
+2. Create the skill
+3. Measure whether the skill improves results
+4. Iterate based on measurements
+
+**Evaluation structure**:
+```json
+{
+  "skills": ["skill-name"],
+  "query": "User request",
+  "files": ["relevant files"],
+  "expected_behavior": [
+    "Specific observable outcome 1",
+    "Specific observable outcome 2"
+  ]
+}
+```
+
+**Why this works**: Evaluations provide objective measurements of skill effectiveness.
+
+### Iterative Development with Claude
+
+**Recommended workflow**:
+
+1. **Complete a task with Claude normally** - Note what context you repeatedly provide
+2. **Ask Claude A to create a skill** - Capture that repeated context as a skill
+3. **Test the skill with Claude B** - Use on similar tasks
+4. **Observe Claude B's behavior** - What gaps exist? What's missed?
+5. **Return to Claude A with observations** - Provide specific feedback for refinement
+6. **Repeat based on real usage patterns** - Don't guess, iterate based on actual use
+
+**Key insight**: Monitor how Claude navigates your skill. Unexpected exploration paths, missed connections, or ignored content indicate structural improvements needed.
+
+### Testing Across Models
+
+**Always test with multiple models**:
+- **Haiku** - Fast, efficient, less capable (good baseline test)
+- **Sonnet** - Balanced performance (most common use case)
+- **Opus** - Most capable (if skill works on Haiku, it will work on Opus)
+
+**Best practice**: If guidance works for Haiku, it will work for all models.
+
+### Real-World Testing
+
+**Don't just test happy paths**:
+- ✅ Test with incomplete information
+- ✅ Test with edge cases
+- ✅ Test with ambiguous inputs
+- ✅ Test with errors and failures
+- ✅ Test with team members (fresh perspectives)
+
+**Incorporate feedback**: Real usage reveals issues that theoretical testing misses.
+
+---
+
 ## Common Pitfalls
 
 ### Pitfall #1: Embedding Everything in SKILL.md
@@ -779,88 +1158,281 @@ chmod +x scripts/*.py
 
 ---
 
-## Real-World Example: Udemy-Extract
+### Pitfall #5: Too Many Options
 
-### Implementation Analysis
+**Problem**:
+```markdown
+Use pypdf, pdfplumber, PyMuPDF, pdfrw, pikepdf, or any other PDF library.
+```
 
-**What it does well**:
-1. ✅ **Excellent progressive disclosure**
-   - SKILL.md: 258 lines (~1,264 words)
-   - Supporting docs: 1,360 lines (loaded on-demand)
-   - Scripts: 3,482 lines (executed, never loaded)
+**Why it fails**:
+- Overwhelms Claude with choices
+- No clear default
+- Increases decision fatigue
 
-2. ✅ **Clear YAML frontmatter**
-   - Name: 22 chars (34% of limit)
-   - Description: 291 chars (28% of limit)
-   - Includes "what" and "when"
+**Solution**:
+```markdown
+Use pdfplumber for PDF extraction (or another library if you have a specific preference).
+```
 
-3. ✅ **Secure implementation**
-   - Uses standard library (no external dependencies)
-   - Cookie-based auth (user-provided)
-   - Clear authentication documentation
+**Key improvement**: Provide one default with an escape hatch for special cases.
 
-4. ✅ **Well-organized files**
-   - Clear separation of concerns
-   - Scripts grouped by function
-   - Supporting docs by user journey
+---
 
-**What could be improved**:
-1. ⚠️ **SKILL.md could be more concise**
-   - Current: 258 lines
-   - Target: <150 lines
-   - Action: Extract "Workflow" section to WORKFLOW.md
+### Pitfall #6: Deeply Nested References
 
-2. ⚠️ **Broken references** (post-consolidation)
-   - 5 references to deleted files
-   - Action: Update to new file names
+**Problem**:
+```
+SKILL.md → WORKFLOW.md → DETAILS.md → ADVANCED.md
+```
 
-### Lessons Learned
+**Why it fails**:
+- Difficult to navigate
+- Increases cognitive load
+- Hard to maintain
 
-**Do**:
-- ✅ Split instructions (SKILL.md) from examples (EXAMPLES.md) and troubleshooting (TROUBLESHOOTING.md)
-- ✅ Use scripts for deterministic operations
-- ✅ Reference supporting docs instead of embedding
-- ✅ Make frontmatter descriptive and trigger-rich
+**Solution**: Keep references one level deep
+```
+SKILL.md → WORKFLOW.md ✓
+SKILL.md → EXAMPLES.md ✓
+SKILL.md → TROUBLESHOOTING.md ✓
+```
 
-**Don't**:
-- ❌ Embed all content in SKILL.md
-- ❌ Forget to update references after moving files
-- ❌ Forget to document required packages in description
-- ❌ Make scripts non-executable
+---
+
+### Pitfall #7: Windows-Style Paths
+
+**Problem**:
+```markdown
+See `scripts\helper.py` for details.
+```
+
+**Why it fails**: Windows-style backslashes cause issues on Unix systems.
+
+**Solution**:
+```markdown
+See `scripts/helper.py` for details.
+```
+
+**Always use Unix-style forward slashes** in documentation and code.
+
+---
+
+### Pitfall #8: Inconsistent Terminology
+
+**Problem**:
+```markdown
+Use the API endpoint to fetch data from the URL using the web service address...
+```
+
+**Why it fails**: Multiple terms for the same concept create confusion.
+
+**Solution**: Pick one term and stick with it
+```markdown
+Use the API endpoint to fetch data...
+```
+
+---
+
+## Anti-Patterns to Avoid
+
+> **Source**: [Official Best Practices - Anti-Patterns](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/best-practices.md#anti-patterns-to-avoid)
+
+Quick reference of patterns to avoid:
+
+- ❌ Windows-style paths (`scripts\helper.py`) → Use Unix-style (`scripts/helper.py`)
+- ❌ Too many options ("Use pypdf, pdfplumber, PyMuPDF, or...") → Provide one default with escape hatch
+- ❌ Deeply nested references (3+ levels) → Keep one level deep from SKILL.md
+- ❌ Vague descriptions ("Helps with data") → Include both what the skill does and when to use it
+- ❌ Over-explaining known concepts → Challenge each piece of information for necessity
+- ❌ Time-sensitive information ("Before Aug 2025...") → Use collapsible sections
+- ❌ Inconsistent terminology → Pick one term and use throughout
+- ❌ First/second-person descriptions → Always use third person
+- ❌ Non-executable scripts → Always include shebang and `chmod +x`
+- ❌ Undocumented constants → Every magic number needs justification
+- ❌ Punting errors to Claude → Handle errors explicitly in scripts
+
+---
+
+## Anatomy of a Well-Designed Skill
+
+This section breaks down the characteristics of effective skills using real implementation examples.
+
+### 1. Progressive Disclosure Architecture
+
+**Principle**: Load only what's needed, when it's needed. Distribute content across the three-level loading system.
+
+**Ideal distribution**:
+- **Level 1 (YAML)**: 5-10 lines (always loaded)
+- **Level 2 (SKILL.md body)**: <500 lines, target <200 (loaded when triggered)
+- **Level 3 (Resources)**: Unlimited size (loaded on-demand or executed)
+
+**Example** (Udemy-Extract skill):
+- SKILL.md: 258 lines (~1,264 words) - under limit ✅
+- Supporting docs: 1,360 lines - loaded on-demand ✅
+- Scripts: 3,482 lines - executed, never loaded to context ✅
+
+**Key insight**: 3,482 lines of deterministic operations consume 0 tokens because they're executed rather than loaded.
+
+### 2. Effective YAML Frontmatter
+
+**Characteristics of good frontmatter**:
+- ✅ Concise name (20-40 chars recommended, 64 max)
+- ✅ Descriptive but not verbose (200-400 chars recommended, 1,024 max)
+- ✅ Third-person voice ("This skill should be used when...")
+- ✅ Includes "what" (capabilities) and "when" (triggers)
+- ✅ Lists varied trigger keywords for discovery
+
+**Example** (Udemy-Extract):
+```yaml
+name: extract-udemy  # 22 chars (34% of 64-char limit)
+description: Extract complete Udemy course content including video transcripts, articles, quizzes, downloadable resources (PDFs, code files), and external links. Use when user provides a Udemy course URL, mentions extracting/downloading Udemy content, or wants to research/analyze a Udemy course offline.  # 291 chars (28% of 1,024-char limit)
+```
+
+**Why it works**: Lists specific capabilities, defines clear triggers, includes varied keywords (extract/download/research/analyze).
+
+### 3. Secure Authentication Patterns
+
+**Good pattern characteristics**:
+- ✅ User provides credentials explicitly
+- ✅ Credentials stored locally (not in code)
+- ✅ No auto-scraping or credential harvesting
+- ✅ Clear documentation of requirements
+- ✅ Standard library when possible (no external dependencies)
+
+**Example** (Udemy-Extract cookie-based auth):
+```python
+# User manually creates cookies.json from browser
+# Script reads from known location
+auth_file = project_root / "cookies.json"
+cookies = json.loads(auth_file.read_text())
+```
+
+**Why it's secure**: User controls credentials, script only reads from documented location, no network harvesting.
+
+### 4. Clear File Organization
+
+**Effective organization patterns**:
+- ✅ Separate instructions (SKILL.md) from examples (EXAMPLES.md) and troubleshooting (TROUBLESHOOTING.md)
+- ✅ Group scripts by function in `scripts/` directory
+- ✅ Organize supporting docs by user journey
+- ✅ One-level deep references (no nested chains)
+
+**Example structure**:
+```
+.claude/skills/my-skill/
+├── SKILL.md                    # Core instructions (<500 lines)
+├── EXAMPLES.md                 # Usage examples
+├── TROUBLESHOOTING.md          # Error handling
+├── scripts/                    # Executable code (0 tokens)
+│   ├── main.py
+│   ├── module1.py
+│   └── module2.py
+└── references/                 # Loaded on-demand
+    ├── API_REFERENCE.md
+    └── SCHEMA.md
+```
+
+### 5. Implementation Checklist
+
+Use this checklist to evaluate skill quality:
+
+**Progressive disclosure**:
+- [ ] SKILL.md under 500 lines (target: under 200)
+- [ ] Supporting docs split out (EXAMPLES.md, TROUBLESHOOTING.md)
+- [ ] Scripts are executable (0 tokens consumed)
+- [ ] References loaded on-demand
+
+**YAML frontmatter**:
+- [ ] Name: 20-40 chars (64 max)
+- [ ] Description: 200-400 chars (1,024 max)
+- [ ] Third-person voice
+- [ ] Includes capabilities ("what") and triggers ("when")
+- [ ] Varied keywords for discovery
+
+**Security**:
+- [ ] User-provided credentials only
+- [ ] No credential harvesting
+- [ ] Clear auth documentation
+- [ ] Standard library preferred
+- [ ] No `eval()` or `exec()` calls
+
+**Organization**:
+- [ ] Clear separation of concerns
+- [ ] Scripts grouped logically
+- [ ] One-level deep references
+- [ ] No broken references
+- [ ] Required packages documented
+
+### Common Mistakes to Avoid
+
+Based on real-world implementations:
+
+- ❌ **Embedding everything in SKILL.md** → Split into supporting docs
+- ❌ **Vague frontmatter** → Include specific capabilities and triggers
+- ❌ **Non-executable scripts** → Add shebang and `chmod +x`
+- ❌ **Undocumented dependencies** → List required packages in description
+- ❌ **Broken references** → Verify all links after file changes
+- ❌ **Credential handling** → Let user provide, never harvest
 
 ---
 
 ## Quick Checklist for New Skills
 
+> **Source**: Combined from [Official Best Practices - Pre-Launch Checklist](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/best-practices.md#pre-launch-checklist) and local experience
+
 ### Before Publishing
 
-**Structure**:
-- [ ] SKILL.md with YAML frontmatter
-- [ ] Name ≤ 64 characters
-- [ ] Description ≤ 1,024 characters
-- [ ] Description includes "what" and "when"
-- [ ] SKILL.md <5,000 words (target: <1,000 words)
-- [ ] Supporting docs created (EXAMPLES.md, TROUBLESHOOTING.md)
+**Quality Assurance**:
+- [ ] Description includes key terms and activation triggers
+- [ ] SKILL.md is under 500 lines (official maximum)
+- [ ] Additional details in separate files with appropriate organization
+- [ ] No time-sensitive information (use collapsible sections for legacy)
+- [ ] Terminology is consistent throughout
+- [ ] Examples are concrete with real scenarios
+- [ ] File references are one-level deep (not nested)
+- [ ] Reference files over 100 lines include table of contents
+- [ ] Progressive disclosure is used appropriately
+- [ ] Workflows have numbered, clear steps
+
+**YAML Frontmatter**:
+- [ ] Name uses lowercase-with-hyphens format
+- [ ] Name ≤ 64 characters (20-40 recommended)
+- [ ] Name uses gerund form (verb + -ing)
+- [ ] Description ≤ 1,024 characters (200-400 recommended)
+- [ ] Description written in third person
+- [ ] Description includes "what" and "when to use"
+- [ ] No reserved words ("anthropic", "claude")
+- [ ] No XML tags
 
 **Code Quality**:
+- [ ] Scripts handle errors explicitly (don't punt to Claude)
+- [ ] All constants are documented (no magic numbers)
+- [ ] Required packages are listed and verified
+- [ ] No Windows-style paths (use Unix-style `/`)
+- [ ] Validation steps protect critical operations
+- [ ] Feedback loops included where quality matters
 - [ ] Scripts executable (`chmod +x`)
 - [ ] Shebang added (`#!/usr/bin/env python3`)
-- [ ] Required packages documented in description
-- [ ] Standard library preferred when possible
-- [ ] Secure authentication (if needed)
 
-**Documentation**:
-- [ ] Quick start examples
-- [ ] Output structure documented
-- [ ] Common issues listed
-- [ ] All file references valid
-- [ ] No broken links
+**Content Guidelines**:
+- [ ] One default option provided (not overwhelming choices)
+- [ ] Consistent terminology throughout
+- [ ] Templates and examples with input/output pairs
+- [ ] MCP tools use fully qualified names (ServerName:tool_name)
+- [ ] Visual analysis used where appropriate
+- [ ] Checklists provided for complex workflows
 
 **Testing**:
+- [ ] Created at least three evaluation scenarios
+- [ ] Tested with Haiku, Sonnet, and Opus (or target models)
+- [ ] Tested in real usage scenarios (not just happy paths)
+- [ ] Tested with incomplete information and edge cases
+- [ ] Incorporated team feedback
 - [ ] Skill triggers correctly (test description keywords)
 - [ ] Scripts execute without errors
 - [ ] Supporting docs load on-demand
-- [ ] Word count within guidelines (<5,000 words for SKILL.md)
+- [ ] All file references valid (no broken links)
 
 ---
 
@@ -976,15 +1548,21 @@ Choose your path based on your current goal:
 
 **Official Documentation**:
 - [Agent Skills Overview](https://docs.claude.com/en/docs/agents-and-tools/agent-skills)
-- [Skills Best Practices](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/best-practices)
+- **[Agent Skills Best Practices](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/best-practices.md)** - **PRIMARY REFERENCE** for this document
 - [Skills Cookbook](https://github.com/anthropics/claude-cookbooks/tree/main/skills)
+- [Using Skills in Claude Code](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/using-skills)
 
 **Official Skill Examples**:
-- [Anthropic Skills Repository](https://github.com/anthropics/skills) - Official reference implementations of Agent Skills with real-world examples, architecture patterns, and best practices from Anthropic's engineering team
+- **[Anthropic Skills Repository](https://github.com/anthropics/skills)** - Official reference implementations with real-world examples and best practices
+- [skill-creator](https://github.com/anthropics/skills/tree/main/skill-creator) - Exemplary reference implementation
+
+**Local Documentation**:
+- [SKILLS.md](./SKILLS.md) - Practical guide for creating and managing skills
+- [AGENT_SKILLS_OVERVIEW.md](./AGENT_SKILLS_OVERVIEW.md) - Architecture and concepts
+- This document - Lessons learned and integrated best practices
 
 **Internal References**:
-- `AGENT_SKILLS_OVERVIEW.md` - Claude's official skills documentation
-- `.claude/skills/extract/` - Reference implementation
+- `.claude/skills/extract/` - Reference implementation (Udemy extraction)
 
 ---
 
@@ -994,10 +1572,10 @@ The [skill-creator](https://github.com/anthropics/skills/tree/main/skill-creator
 
 ### Key Characteristics
 
-**Size**: 175 lines (~1,140 words)
-- Slightly above 150-line target but demonstrates that comprehensive skills can be effective
-- Well under 5,000 word maximum
-- Balances completeness with conciseness
+**Size**: 175 lines
+- Well under the official 500-line maximum
+- Demonstrates that comprehensive skills can be effective while staying concise
+- Good example of balancing completeness with brevity
 
 **Structure**:
 ```
@@ -1137,7 +1715,7 @@ How our audited skills compare to skill-creator:
    - ✅ "This skill should be used when..."
    - ❌ "Use this skill when..."
 
-4. **Size Tolerance**: skill-creator at 175 lines validates that comprehensive skills can exceed 150 lines if the content is valuable and well-organized
+4. **Size Guidance**: skill-creator at 175 lines demonstrates effective use of the 500-line budget - comprehensive yet concise
 
 5. **Avoid Duplication**: Ensure information doesn't appear in both SKILL.md and supporting docs
 
