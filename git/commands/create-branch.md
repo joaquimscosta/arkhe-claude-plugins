@@ -76,7 +76,7 @@ If `FEATURE_DIR` is not set, only the branch is created (no directory).
 
 ## Implementation
 
-Use the **Git Branch Workflow** skill to execute the branch creation workflow with arguments: `$ARGUMENTS`
+Use the **creating-branch** skill to execute the branch creation workflow with arguments: `$ARGUMENTS`
 
 The skill handles:
 - Automatic commit type detection from description keywords

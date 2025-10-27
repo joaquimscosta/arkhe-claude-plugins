@@ -52,7 +52,7 @@ Tutorial creation and educational content extraction toolkit (Udemy, YouTube, bl
 
 **Components:**
 - 1 agent: `tutorial-engineer`
-- 1 skill: `extract-udemy` (auto-invoked for Udemy URLs)
+- 1 skill: `extracting-udemy` (auto-invoked for Udemy URLs)
 - 2 commands: `/extract`, `/teach-code`
 
 **Use for:** Creating step-by-step tutorials, extracting educational content from Udemy courses, offline course archiving

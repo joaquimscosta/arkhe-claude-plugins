@@ -106,7 +106,7 @@ The PR creation command will execute the following steps:
 
 ## Implementation
 
-Use the **Git PR Workflow** skill to execute the PR workflow with arguments: `$ARGUMENTS`
+Use the **creating-pr** skill to execute the PR workflow with arguments: `$ARGUMENTS`
 
 The skill handles all workflow logic including:
 

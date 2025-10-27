@@ -88,7 +88,7 @@ The command will provide:
 
 ## Integration
 
-This command invokes the **Mermaid Diagram Generator** skill, which can also be automatically triggered when you mention diagram-related keywords in your conversations.
+This command invokes the **diagramming** skill, which can also be automatically triggered when you mention diagram-related keywords in your conversations.
 
 For detailed examples and troubleshooting, see the skill documentation in `doc/skills/mermaid/`.
 

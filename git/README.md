@@ -41,7 +41,7 @@ Context-aware Git commit assistant with smart pre-commit checks and submodule su
 - `--no-verify`: Skip all pre-commit checks
 - `--full-verify`: Run full builds (backend + frontend)
 
-**Skill**: `git/skills/commit/` (Git Commit Workflow)
+**Skill**: `git/skills/commit/` (creating-commit)
 
 ---
 
@@ -73,7 +73,7 @@ GitHub Pull Request creation and update assistant with existing PR detection.
 
 **Requirements**: GitHub CLI (`gh`) installed and authenticated
 
-**Skill**: `git/skills/pr/` (Git PR Workflow)
+**Skill**: `git/skills/pr/` (creating-pr)
 
 ---
 
@@ -110,7 +110,7 @@ export FEATURE_DIR=".claude/specs"   # Where to create feature dirs (optional)
 export BRANCH_PREFIX=""               # Additional prefix (optional)
 ```
 
-**Skill**: `git/skills/branch/` (Git Branch Workflow)
+**Skill**: `git/skills/branch/` (creating-branch)
 
 ---
 
@@ -148,7 +148,7 @@ Generate comprehensive changelogs from git commit history with semantic versioni
 
 All commands are implemented as **Hybrid Commands + Skills** - slash commands delegate to skills that contain executable scripts.
 
-#### 1. Git Commit Workflow
+#### 1. creating-commit
 
 Executes the commit workflow with repository detection, pre-commit checks, and conventional commit generation.
 
@@ -156,7 +156,7 @@ Executes the commit workflow with repository detection, pre-commit checks, and c
 **Scripts**: `commit.sh`, `common.sh`
 **Invoked by**: `/commit` command
 
-#### 2. Git PR Workflow
+#### 2. creating-pr
 
 Handles PR creation and updates with GitHub CLI integration.
 
@@ -164,7 +164,7 @@ Handles PR creation and updates with GitHub CLI integration.
 **Scripts**: `pr.sh`, `common.sh`
 **Invoked by**: `/create-pr` command
 
-#### 3. Git Branch Workflow
+#### 3. creating-branch
 
 Creates feature branches with smart naming and auto-incrementing.
 
@@ -172,7 +172,7 @@ Creates feature branches with smart naming and auto-incrementing.
 **Scripts**: `branch.sh`, `common.sh`
 **Invoked by**: `/create-branch` command
 
-#### 4. Git Changelog Generation (Auto-Invoke)
+#### 4. generating-changelog (Auto-Invoke)
 
 Automatically generates changelogs when editing changelog files or mentioning release-related keywords.
 

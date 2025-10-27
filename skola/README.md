@@ -10,8 +10,8 @@ Tutorial creation and educational content extraction toolkit for Claude Code.
 
 ### Skills
 
-- **extract-udemy**: Extract complete Udemy course content including video transcripts, articles, quizzes, downloadable resources (PDFs, code files), and external links. Auto-invoked when Udemy URLs are provided.
-- **extract-youtube**: Extract YouTube video transcripts and metadata including video details, playlist structure, and English captions. Auto-invoked when YouTube URLs are provided.
+- **extracting-udemy**: Extract complete Udemy course content including video transcripts, articles, quizzes, downloadable resources (PDFs, code files), and external links. Auto-invoked when Udemy URLs are provided.
+- **extracting-youtube**: Extract YouTube video transcripts and metadata including video details, playlist structure, and English captions. Auto-invoked when YouTube URLs are provided.
 
 ### Commands
 
@@ -41,7 +41,7 @@ If you previously installed the standalone `udemy` plugin, you should migrate to
 /plugin install skola@arkhe-claude-plugins
 ```
 
-All Udemy extraction functionality is preserved and enhanced in the `extract-udemy` skill.
+All Udemy extraction functionality is preserved and enhanced in the `extracting-udemy` skill.
 
 ## Usage
 
@@ -75,7 +75,7 @@ Claude Code will automatically invoke the appropriate extraction skill when you:
 
 ### Udemy Extraction
 
-The `extract-udemy` skill extracts:
+The `extracting-udemy` skill extracts:
 
 1. **Video Transcripts** - VTT captions converted to timestamped plain text
 2. **Articles** - HTML lectures converted to markdown
@@ -133,7 +133,7 @@ For comprehensive usage, troubleshooting, and examples:
 
 ### YouTube Extraction
 
-The `extract-youtube` skill extracts:
+The `extracting-youtube` skill extracts:
 
 1. **Video Transcripts** - English captions (manual or auto-generated) with timestamps
 2. **Video Metadata** - Title, channel, duration, upload date, description, views

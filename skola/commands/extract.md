@@ -30,7 +30,7 @@ The command will:
 
 The command identifies sources based on URL patterns:
 
-- **Udemy**: `udemy.com/course/*` → Delegates to `extract-udemy` skill
+- **Udemy**: `udemy.com/course/*` → Delegates to `extracting-udemy` skill
 - **YouTube**: `youtube.com/watch?v=*` or `youtu.be/*` → *(Coming soon)*
 - **Blog**: Other educational content URLs → *(Coming soon)*
 

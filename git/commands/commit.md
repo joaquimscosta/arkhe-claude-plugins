@@ -81,7 +81,7 @@ The commit command will execute the following steps:
 
 ## Implementation
 
-Use the **Git Commit Workflow** skill to execute the commit workflow with arguments: `$ARGUMENTS`
+Use the **creating-commit** skill to execute the commit workflow with arguments: `$ARGUMENTS`
 
 The skill handles all workflow logic including:
 - Path resolution (works from any directory in the project)

@@ -128,7 +128,7 @@ The command analyzes:
 
 ## Implementation
 
-Use the **Git Changelog Generation** skill to execute the changelog workflow with arguments: `$ARGUMENTS`
+Use the **generating-changelog** skill to execute the changelog workflow with arguments: `$ARGUMENTS`
 
 The skill handles:
 - Git history analysis from commit range

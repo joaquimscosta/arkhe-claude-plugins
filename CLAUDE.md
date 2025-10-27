@@ -71,7 +71,7 @@ Multi-purpose documentation toolkit.
 ### Skola Plugin
 Tutorial creation and educational content extraction toolkit (Udemy, YouTube, blogs).
 - **Agents**: `tutorial-engineer`
-- **Skills**: `extract-udemy` (auto-invoked for Udemy URLs)
+- **Skills**: `extracting-udemy` (auto-invoked for Udemy URLs)
 - **Commands**: `/extract`, `/teach-code`
 
 ### Review Plugin
