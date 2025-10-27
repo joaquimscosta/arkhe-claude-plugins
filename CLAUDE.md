@@ -537,3 +537,4 @@ For complete technical specifications:
 
 Official examples and references for skill development:
 - **[Anthropic Skills Repository](https://github.com/anthropics/skills)** - Official reference implementations of Agent Skills with real-world examples, architecture patterns, and best practices from Anthropic's engineering team
+- **[skill-creator Reference](https://github.com/anthropics/skills/tree/main/skill-creator)** - Exemplary official skill demonstrating best practices for YAML frontmatter, writing style (imperative/infinitive form), resource organization (scripts/references/assets), and progressive disclosure architecture. See detailed analysis in `docs/SKILL_DEVELOPMENT_BEST_PRACTICES.md`

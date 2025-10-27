@@ -673,6 +673,114 @@ chmod +x scripts/*.py
 
 ---
 
+## Skills Documentation Reference
+
+This section provides a comprehensive cross-reference to all skills documentation, helping you find the right resource for your needs.
+
+### Quick Navigation
+
+| Document | Type | Purpose | Best For |
+|----------|------|---------|----------|
+| [SKILLS.md](./SKILLS.md) | Local (Synced) | Practical how-to guide for creating and managing skills in Claude Code | Learning the basics, quick reference |
+| [AGENT_SKILLS_OVERVIEW.md](./AGENT_SKILLS_OVERVIEW.md) | Local (Synced) | Architecture and concepts behind Agent Skills | Understanding how skills work across Claude products |
+| [skill-creator](https://github.com/anthropics/skills/tree/main/skill-creator) | External (Anthropic) | Official reference implementation demonstrating best practices | Following official patterns, structure examples |
+| **This Document** | Local (Custom) | Lessons learned from real-world skill implementations | Practical tips, optimization techniques, troubleshooting |
+| [Anthropic Skills Repository](https://github.com/anthropics/skills) | External (Anthropic) | Collection of official skill examples | Exploring different skill types, real implementations |
+
+### Learning Paths
+
+Choose your path based on your current goal:
+
+#### 🚀 **Getting Started** (First-time skill developer)
+1. Start: [SKILLS.md](./SKILLS.md) - Learn skill structure and creation process
+2. Follow: [skill-creator SKILL.md](https://github.com/anthropics/skills/blob/main/skill-creator/SKILL.md) - See official example
+3. Reference: This document - Apply best practices and avoid common pitfalls
+4. Explore: [Anthropic Skills Repository](https://github.com/anthropics/skills) - Study different skill types
+
+#### 🏗️ **Architecture & Concepts** (Understanding the system)
+1. Start: [AGENT_SKILLS_OVERVIEW.md](./AGENT_SKILLS_OVERVIEW.md) - Three-level loading, progressive disclosure
+2. Deep dive: [skill-creator](https://github.com/anthropics/skills/tree/main/skill-creator) - Resource organization patterns
+3. Apply: This document - Progressive Disclosure Strategy section
+
+#### 🔨 **Implementation** (Building your skill)
+1. Quick reference: [SKILLS.md](./SKILLS.md) - File structure, YAML frontmatter
+2. Follow patterns: [skill-creator SKILL.md](https://github.com/anthropics/skills/blob/main/skill-creator/SKILL.md) - Writing style, organization
+3. Optimize: This document - Token optimization, file organization
+4. Validate: This document - Pre-publication checklist
+
+#### 🔍 **Troubleshooting** (Fixing issues)
+1. Check: [SKILLS.md](./SKILLS.md) - Troubleshooting section
+2. Review: This document - Common Pitfalls section
+3. Compare: [Anthropic Skills Repository](https://github.com/anthropics/skills) - Working examples
+
+### Document Comparison
+
+| Aspect | SKILLS.md | AGENT_SKILLS_OVERVIEW.md | skill-creator | This Document |
+|--------|-----------|-------------------------|---------------|---------------|
+| **Focus** | Practical how-to | Conceptual architecture | Official example | Lessons learned |
+| **Depth** | Comprehensive | Deep technical | Implementation | Practical tips |
+| **Format** | Step-by-step guide | Architecture docs | Working skill | Best practices |
+| **Audience** | All developers | Architecture-focused | All developers | Experienced devs |
+| **Updates** | Auto-synced | Auto-synced | Anthropic-maintained | Custom (manual) |
+| **Examples** | Generic | Conceptual | Real implementation | Real analysis |
+
+### Key Topics by Document
+
+#### SKILLS.md - Practical Guide
+- Creating personal, project, and plugin skills
+- Writing SKILL.md with YAML frontmatter
+- Adding supporting files (scripts, references, assets)
+- Restricting tool access with `allowed-tools`
+- Viewing, testing, and debugging skills
+- Sharing skills via plugins or git
+- Troubleshooting common issues
+
+#### AGENT_SKILLS_OVERVIEW.md - Architecture
+- Progressive disclosure architecture (3-level loading)
+- Skills across Claude products (Claude Code, Agent SDK, Claude.ai)
+- Token budget management
+- Skill structure and components
+- Auto-invocation mechanisms
+- Best practices at architectural level
+
+#### skill-creator - Official Reference
+- 6-step skill creation process
+- Writing style (imperative/infinitive form)
+- Resource organization (scripts/references/assets)
+- YAML frontmatter best practices (third-person descriptions)
+- Validation and packaging
+- Real working example to study
+
+#### This Document - Practical Lessons
+- Token optimization techniques (progressive disclosure)
+- Real-world implementation analysis (Udemy-Extract skill)
+- Security patterns (cookie-based auth, standard library)
+- File organization patterns
+- Common pitfalls and solutions
+- Pre-publication checklist
+
+### When to Use Which Document
+
+**"How do I create my first skill?"**
+→ Start with [SKILLS.md](./SKILLS.md)
+
+**"Why do skills use progressive disclosure?"**
+→ Read [AGENT_SKILLS_OVERVIEW.md](./AGENT_SKILLS_OVERVIEW.md)
+
+**"What does a good skill look like?"**
+→ Study [skill-creator SKILL.md](https://github.com/anthropics/skills/blob/main/skill-creator/SKILL.md)
+
+**"How can I optimize my skill's token usage?"**
+→ Reference this document's Progressive Disclosure Strategy section
+
+**"My skill isn't triggering, what should I check?"**
+→ Check [SKILLS.md](./SKILLS.md) Troubleshooting section, then this document's Common Pitfalls
+
+**"Where can I see more skill examples?"**
+→ Browse [Anthropic Skills Repository](https://github.com/anthropics/skills)
+
+---
+
 ## Resources
 
 **Official Documentation**:
@@ -689,6 +797,172 @@ chmod +x scripts/*.py
 
 ---
 
+## Official Anthropic Example: skill-creator
+
+The [skill-creator](https://github.com/anthropics/skills/tree/main/skill-creator) from Anthropic's official skills repository is an exemplary reference implementation demonstrating best practices for skill development.
+
+### Key Characteristics
+
+**Size**: 175 lines (~1,140 tokens)
+- Slightly above 150-line target but demonstrates that comprehensive skills can be effective
+- Well under 5,000 token hard limit
+- Balances completeness with conciseness
+
+**Structure**:
+```
+skill-creator/
+├── SKILL.md (175 lines)
+└── scripts/
+    ├── init_skill.py
+    └── package_skill.py
+```
+
+### Writing Style Guidelines
+
+The skill-creator demonstrates **imperative/infinitive form** throughout:
+
+✅ **Good** (Imperative/Infinitive):
+- "To accomplish X, do Y"
+- "Create the skill directory"
+- "Answer the following questions"
+- "Use objective, instructional language"
+
+❌ **Avoid** (Second-person):
+- ~~"You should do X"~~
+- ~~"If you need to do X"~~
+- ~~"You can accomplish this by"~~
+
+**Why this matters**: Imperative form maintains consistency and clarity for AI consumption, treating the skill as procedural documentation rather than conversational guidance.
+
+### Resource Organization Pattern
+
+The skill-creator exemplifies the three-tier resource architecture:
+
+#### 1. `scripts/` - Executable Code
+**Purpose**: Deterministic operations that would otherwise be rewritten repeatedly
+
+**When to include**:
+- Tasks requiring deterministic reliability
+- Code that's rewritten frequently
+- Complex operations better handled by scripts
+
+**Benefits**:
+- Token efficient (executed without loading to context)
+- Deterministic results
+- Reusable across sessions
+
+**Example from skill-creator**: `init_skill.py`, `package_skill.py`
+
+#### 2. `references/` - Documentation
+**Purpose**: Reference material loaded into context as needed
+
+**When to include**:
+- Database schemas, API specifications
+- Company policies, domain knowledge
+- Detailed workflow guides
+
+**Benefits**:
+- Keeps SKILL.md lean
+- Loaded only when Claude determines it's needed
+- Progressive disclosure in action
+
+**Best practice**: If files are large (>10k words), include grep search patterns in SKILL.md
+
+**Avoid duplication**: Information should live in either SKILL.md or references files, not both
+
+#### 3. `assets/` - Output Resources
+**Purpose**: Files used in output, not loaded to context
+
+**When to include**:
+- Templates (HTML, React, PowerPoint)
+- Images, icons, logos
+- Fonts, sample documents
+- Boilerplate code
+
+**Benefits**:
+- Separates output resources from documentation
+- Enables Claude to use files without loading them to context
+- Keeps context window clean
+
+**Examples**: `assets/logo.png`, `assets/slides.pptx`, `assets/frontend-template/`
+
+### Progressive Disclosure in Practice
+
+The skill-creator demonstrates the three-level loading system:
+
+1. **Level 1: Metadata** (~100 words, always loaded)
+   - YAML frontmatter: `name` and `description`
+   - Determines when Claude uses the skill
+
+2. **Level 2: SKILL.md body** (<5k words, loaded when triggered)
+   - Essential procedures and guidance
+   - References to bundled resources
+
+3. **Level 3: Bundled resources** (Unlimited, loaded as needed)
+   - Scripts can be executed without reading to context
+   - References loaded when Claude needs them
+   - Assets used in output without loading
+
+### YAML Frontmatter Best Practices
+
+From skill-creator's metadata:
+
+```yaml
+---
+name: skill-creator
+description: Guide for creating effective skills. This skill should be used when users want to create a new skill (or update an existing skill) that extends Claude's capabilities with specialized knowledge, workflows, or tool integrations.
+license: Complete terms in LICENSE.txt
+---
+```
+
+**Key observations**:
+- ✅ **Third-person description**: "This skill should be used when..." (not "Use this skill when...")
+- ✅ **Specific about purpose**: "Guide for creating effective skills"
+- ✅ **Clear triggers**: "when users want to create a new skill"
+- ✅ **Describes capabilities**: "specialized knowledge, workflows, or tool integrations"
+- ✅ Length: 225 chars (within 200-400 recommended range)
+
+### Comparison to Our Skills
+
+How our audited skills compare to skill-creator:
+
+| Aspect | skill-creator | Our Skills | Assessment |
+|--------|--------------|------------|------------|
+| **Size** | 175 lines | 98-219 lines | ✅ Most comparable or better |
+| **Writing style** | Imperative | Mixed | ⚠️ Could improve consistency |
+| **Resource org** | 3-tier (scripts/references/assets) | Scripts only | ✅ Matches our needs |
+| **YAML quality** | Third-person, specific | Good, varied | ✅ Comparable quality |
+| **Progressive disclosure** | Explicit 3-level | Good but implicit | ✅ Well implemented |
+
+### Actionable Takeaways
+
+1. **Writing Style**: Review our skills for second-person language ("you should") and convert to imperative form ("to accomplish X, do Y")
+
+2. **Resource Organization**: Our git skills effectively use `scripts/`. Consider adding `references/` or `assets/` if:
+   - Documentation gets embedded in SKILL.md (move to `references/`)
+   - Templates or boilerplate are needed (move to `assets/`)
+
+3. **YAML Descriptions**: Review for third-person consistency:
+   - ✅ "This skill should be used when..."
+   - ❌ "Use this skill when..."
+
+4. **Size Tolerance**: skill-creator at 175 lines validates that comprehensive skills can exceed 150 lines if the content is valuable and well-organized
+
+5. **Avoid Duplication**: Ensure information doesn't appear in both SKILL.md and supporting docs
+
+### Full skill-creator SKILL.md
+
+For complete reference, see: https://github.com/anthropics/skills/blob/main/skill-creator/SKILL.md
+
+The full content demonstrates:
+- 6-step skill creation process
+- Resource organization rationale
+- Writing style consistency
+- Progressive disclosure architecture
+- Validation and packaging guidance
+
+---
+
 **Document Version**: 1.0
-**Last Updated**: 2025-10-18
-**Based On**: AGENT_SKILLS_OVERVIEW.md + Udemy-Extract Skill Analysis
+**Last Updated**: 2025-10-27
+**Based On**: AGENT_SKILLS_OVERVIEW.md + skill-creator Reference
