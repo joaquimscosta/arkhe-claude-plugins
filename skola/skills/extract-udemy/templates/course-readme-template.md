@@ -8,84 +8,100 @@
 - **Instructor**: {INSTRUCTOR_NAME}
 - **Duration**: {COURSE_DURATION}
 - **Level**: {COURSE_LEVEL}
-- **Rating**: {COURSE_RATING} / 5.0
+- **Rating**: {COURSE_RATING} / 5.0 ({NUM_RATINGS} ratings)
 - **Students Enrolled**: {NUM_SUBSCRIBERS}
-- **Date Added**: {DATE}
+- **Last Updated**: {LAST_UPDATED}
+- **Date Extracted**: {EXTRACTION_DATE}
 
 ## Description
 
 {COURSE_DESCRIPTION}
 
-## Topics Covered
+## What You'll Learn
 
-- TODO: Add main topics
-- TODO: Add key concepts
-- TODO: Add technologies/frameworks covered
+<!-- TODO: Add learning objectives from course page or manually populate -->
+- Learning objective 1
+- Learning objective 2
+- Learning objective 3
+- Learning objective 4
 
-## Course Objectives
+## Prerequisites
 
-By the end of this course, you will be able to:
+<!-- TODO: Add prerequisites from course page or manually populate -->
+- Prerequisite 1
+- Prerequisite 2
+- Prerequisite 3
 
-- TODO: Learning objective 1
-- TODO: Learning objective 2
-- TODO: Learning objective 3
+## Technologies & Topics Covered
 
-## Structure
+### Core Concepts
 
-This directory contains:
+<!-- TODO: Add main topics and concepts covered in the course -->
+- Core topic 1
+- Core topic 2
+- Core topic 3
 
-- `transcripts/` - Video transcripts organized by lecture number and title
-- `slides/` - PDF slides and presentations from the course
-- `resources/` - Additional materials and references
-  - `git-repo.md` - Links to course Git repositories and code samples
+### Practical Applications
 
-## Key Takeaways
+<!-- TODO: Add practical applications or use cases covered -->
+- Application area 1
+- Application area 2
+- Application area 3
 
-TODO: Add your personal notes and key takeaways from the course
+## Who This Course Is For
 
-### Important Concepts
+<!-- TODO: Add target audience from course page or manually populate -->
+- Target audience group 1
+- Target audience group 2
+- Target audience group 3
+- Target audience group 4
 
-- TODO: Concept 1
-- TODO: Concept 2
+## Course Structure
 
-### Best Practices
+**Total Sections**: {NUM_SECTIONS}
+**Total Lectures**: {NUM_LECTURES}
+**Total Duration**: {COURSE_DURATION}
 
-- TODO: Best practice 1
-- TODO: Best practice 2
+### Sections
 
-## Progress Tracker
+{COURSE_SECTIONS}
 
-- [ ] Course started
-- [ ] Section 1 completed
-- [ ] Section 2 completed
-- [ ] Course completed
-- [ ] Transcripts extracted
-- [ ] Resources downloaded
-- [ ] Practice projects completed
-- [ ] Notes reviewed
+## Extraction Summary
 
-## Resources
+**Extraction Date**: {EXTRACTION_DATE}
 
-- **Course Repository**: See `resources/git-repo.md`
-- **Official Documentation**: TODO: Add links
-- **Additional Resources**: TODO: Add supplementary materials
+### Content Statistics
 
-## Notes
+- **{NUM_TRANSCRIPTS} video transcripts** ({TRANSCRIPTS_SIZE}) - Timestamped plain text from VTT captions
+- **{NUM_ARTICLES} articles** ({ARTICLES_SIZE}) - Technical resources, coding solutions, promotional content
+- **{NUM_RESOURCES} downloadable resources** ({RESOURCES_SIZE}) - Code examples (ZIP), PDFs, JAR files
+- **{NUM_EXTERNAL_LINKS} external links** - Categorized URLs from lecture content
 
-### Section 1: TODO: Section Name
+### Directory Structure
 
-TODO: Add notes
+```
+{COURSE_SLUG}/
+├── README.md (this file)
+├── DOWNLOADED_RESOURCES.md - Consolidated resource summary ({NUM_RESOURCES} files, {RESOURCES_SIZE})
+├── transcripts/ - Timestamped video transcripts ({NUM_TRANSCRIPTS} files)
+│   ├── 001-{first-transcript-name}.txt
+│   ├── 002-{second-transcript-name}.txt
+│   └── ...
+├── articles/ - Markdown articles from course ({NUM_ARTICLES} files)
+│   ├── {first-article-name}.md
+│   ├── {second-article-name}.md
+│   └── ...
+└── resources/ - Downloaded code examples and files
+    ├── {lecture-number}-{lecture-slug}/
+    │   └── {resource-files}
+    ├── external-links.md - Categorized external URLs ({NUM_EXTERNAL_LINKS} resources)
+    └── ...
+```
 
-### Section 2: TODO: Section Name
+**Note**: For a complete list of all downloaded resources organized by section, see [DOWNLOADED_RESOURCES.md](DOWNLOADED_RESOURCES.md).
 
-TODO: Add notes
+## Instructor
 
-## Related Courses
+**{INSTRUCTOR_NAME}** {INSTRUCTOR_BIO}
 
-- TODO: List related courses you've taken or plan to take
-
-## Certificate
-
-- [ ] Certificate obtained
-- **Certificate Date**: TODO
-- **Certificate URL**: TODO
+<!-- TODO: Add instructor bio from course page if available -->

@@ -65,6 +65,9 @@ class CourseFileWriter:
             'resources': 0
         }
 
+        # Track all resources for consolidated summary
+        self.all_resources = []  # List of dicts: {section, lecture_number, lecture_title, resources, failed_resources}
+
     def create_directory_structure(self):
         """
         Create the course directory structure.
@@ -450,6 +453,159 @@ This directory contains:
 
         return stats
 
+    def _calculate_directory_sizes(self):
+        """
+        Calculate sizes of content directories.
+
+        Returns:
+            dict: Directory sizes in human-readable format
+        """
+        def get_dir_size(directory):
+            """Get total size of directory in bytes."""
+            total = 0
+            try:
+                for entry in os.scandir(directory):
+                    if entry.is_file():
+                        total += entry.stat().st_size
+                    elif entry.is_dir():
+                        total += get_dir_size(entry.path)
+            except Exception:
+                pass
+            return total
+
+        def format_size(bytes_size):
+            """Format bytes to human-readable size."""
+            if bytes_size == 0:
+                return "0 B"
+            for unit in ['B', 'KB', 'MB', 'GB']:
+                if bytes_size < 1024.0:
+                    return f"{bytes_size:.1f} {unit}"
+                bytes_size /= 1024.0
+            return f"{bytes_size:.1f} TB"
+
+        sizes = {}
+        directories = {
+            'transcripts': self.transcripts_dir,
+            'articles': self.articles_dir,
+            'resources': self.resources_dir,
+            'quizzes': self.quizzes_dir
+        }
+
+        for name, directory in directories.items():
+            if directory.exists():
+                size_bytes = get_dir_size(directory)
+                sizes[name] = format_size(size_bytes)
+                sizes[f'{name}_bytes'] = size_bytes
+            else:
+                sizes[name] = "0 B"
+                sizes[f'{name}_bytes'] = 0
+
+        return sizes
+
+    def update_readme_with_stats(self, course_data, external_links_count=0):
+        """
+        Update README.md with actual extraction statistics after extraction completes.
+
+        Args:
+            course_data: Course information dict
+            external_links_count: Number of external links found
+
+        Returns:
+            bool: True if successful
+        """
+        try:
+            readme_file = self.output_path / 'README.md'
+            if not readme_file.exists():
+                return False
+
+            # Read current README
+            with open(readme_file, 'r') as f:
+                content = f.read()
+
+            # Calculate directory sizes
+            sizes = self._calculate_directory_sizes()
+
+            # Get course structure info
+            sections = course_data.get('sections', [])
+            num_sections = len(sections)
+            num_lectures = sum(len(s.get('lectures', [])) for s in sections)
+
+            # Get rating count
+            num_ratings = course_data.get('num_reviews', 0)
+
+            # Get last updated date
+            last_updated = course_data.get('last_update_date', '')
+            if last_updated:
+                try:
+                    # Try parsing common date formats
+                    from datetime import datetime as dt_parser
+                    for fmt in ['%Y-%m-%dT%H:%M:%S%z', '%Y-%m-%dT%H:%M:%SZ', '%Y-%m-%d']:
+                        try:
+                            dt = dt_parser.strptime(last_updated.replace('Z', '+00:00')[:19], fmt[:19])
+                            last_updated = dt.strftime('%B %Y')
+                            break
+                        except ValueError:
+                            continue
+                    else:
+                        # Fallback if date parsing fails
+                        last_updated = 'Recently'
+                except:
+                    # Fallback if date parsing fails
+                    last_updated = 'Recently'
+            else:
+                last_updated = 'Unknown'
+
+            # Current date for extraction
+            extraction_date = datetime.now().strftime('%B %d, %Y')
+
+            # Get instructor bio if available
+            instructor_bio = ''
+            instructors = course_data.get('visible_instructors', [])
+            if instructors and len(instructors) > 0:
+                instructor = instructors[0]
+                job_title = instructor.get('job_title', '')
+                if job_title:
+                    instructor_bio = f"- {job_title}"
+
+            # Generate course sections formatted list
+            course_sections_formatted = ""
+            for idx, section in enumerate(sections, 1):
+                section_title = section.get('title', f'Section {idx}')
+                lecture_count = len(section.get('lectures', []))
+                course_sections_formatted += f"{idx}. **{section_title}** ({lecture_count} lectures)\n"
+
+            # Replace all template variables
+            replacements = {
+                '{NUM_RATINGS}': f"{num_ratings:,}",
+                '{LAST_UPDATED}': last_updated,
+                '{EXTRACTION_DATE}': extraction_date,
+                '{NUM_SECTIONS}': str(num_sections),
+                '{NUM_LECTURES}': str(num_lectures),
+                '{NUM_TRANSCRIPTS}': str(self.extraction_stats['transcripts']),
+                '{NUM_ARTICLES}': str(self.extraction_stats['articles']),
+                '{NUM_RESOURCES}': str(len(self.all_resources)),
+                '{NUM_EXTERNAL_LINKS}': str(external_links_count),
+                '{TRANSCRIPTS_SIZE}': sizes.get('transcripts', '0 B'),
+                '{ARTICLES_SIZE}': sizes.get('articles', '0 B'),
+                '{RESOURCES_SIZE}': sizes.get('resources', '0 B'),
+                '{COURSE_SLUG}': self.course_name,
+                '{COURSE_SECTIONS}': course_sections_formatted.rstrip(),
+                '{INSTRUCTOR_BIO}': instructor_bio
+            }
+
+            for placeholder, value in replacements.items():
+                content = content.replace(placeholder, value)
+
+            # Write updated README
+            with open(readme_file, 'w') as f:
+                f.write(content)
+
+            return True
+
+        except Exception as e:
+            print(f"⚠️  Error updating README with stats: {e}")
+            return False
+
     def save_article(self, lecture_number, lecture_title, article_data):
         """
         Save article content to markdown file.
@@ -599,68 +755,63 @@ This directory contains:
             print(f"⚠️  Error saving quiz: {e}")
             return None
 
-    def save_resource_catalog(self, lecture_number, lecture_title, resource_data):
+    def track_resources(self, section_title, lecture_number, lecture_title, resource_data):
         """
-        Save resource catalog to markdown file.
+        Track resources for consolidated summary file (replaces save_resource_catalog).
 
         Args:
+            section_title: Section title
             lecture_number: Lecture sequence number
             lecture_title: Lecture title
-            resource_data: Dict with 'resources' list
+            resource_data: Dict with 'resources' list and 'metadata'
 
         Returns:
-            str: Filename of saved catalog, or None if failed
+            bool: True if tracked successfully
         """
         if not resource_data or not resource_data.get('resources'):
-            return None
+            return False
 
         try:
-            # Generate filename
-            sanitized = self._sanitize_filename(lecture_title)
-            filename = f"{lecture_number:03d}-{sanitized}-resources.md"
-            filepath = self.resources_dir / filename
-
-            # Format resource catalog
-            lines = []
-            lines.append(f"# Resources: {lecture_title}")
-            lines.append("")
-            lines.append(f"**Lecture**: {lecture_number}")
-            lines.append("")
-
             resources = resource_data.get('resources', [])
-            downloaded_count = resource_data.get('metadata', {}).get('downloaded_count', 0)
+            metadata = resource_data.get('metadata', {})
 
-            if downloaded_count > 0:
-                lines.append(f"**Downloaded Files**: {downloaded_count}/{len(resources)}")
-                lines.append("")
+            # Separate successful and failed downloads
+            downloaded_resources = []
+            failed_resources = []
 
             for resource in resources:
-                lines.append(f"## {resource.get('filename', 'Unknown')}")
-                lines.append(f"- **Type**: {resource.get('file_type', 'Unknown')}")
-                if resource.get('size'):
-                    size_mb = resource['size'] / (1024 * 1024)
-                    lines.append(f"- **Size**: {size_mb:.2f} MB")
-
-                # Show download status
+                # Update resource with actual file size from disk if available
                 if resource.get('downloaded'):
-                    local_file = resource.get('local_filename', {}).get('filename', 'unknown')
-                    lines.append(f"- **Status**: ✓ Downloaded as `{local_file}`")
+                    # Try to get actual file size from disk
+                    sanitized_title = self._sanitize_filename(lecture_title)
+                    resource_dir = self.resources_dir / f"{lecture_number:03d}-{sanitized_title}"
+                    filename = resource.get('filename', '')
+                    if filename:
+                        filepath = resource_dir / filename
+                        if filepath.exists():
+                            actual_size = os.path.getsize(filepath)
+                            resource['size'] = actual_size  # Update with actual size
+
+                    downloaded_resources.append(resource)
                 else:
-                    lines.append(f"- **Status**: Not downloaded")
-                    lines.append(f"- **Download URL**: [{resource.get('filename')}]({resource.get('url', '#')})")
-                lines.append("")
+                    failed_resources.append(resource)
 
-            # Save file
-            with open(filepath, 'w', encoding='utf-8') as f:
-                f.write('\n'.join(lines))
+            # Add to tracking list
+            self.all_resources.append({
+                'section_title': section_title,
+                'lecture_number': lecture_number,
+                'lecture_title': lecture_title,
+                'resources': downloaded_resources,
+                'failed_resources': failed_resources,
+                'metadata': metadata
+            })
 
-            self.created_files.append(str(filepath))
             self.extraction_stats['resources'] += 1
-            return filename
+            return True
 
         except Exception as e:
-            print(f"⚠️  Error saving resource catalog: {e}")
-            return None
+            print(f"⚠️  Error tracking resources: {e}")
+            return False
 
     def save_resource_file(self, lecture_number, lecture_title, resource_download_data):
         """
@@ -781,6 +932,203 @@ This directory contains:
         except Exception as e:
             print(f"⚠️  Error saving external links: {e}")
             return None
+
+    def generate_downloaded_resources_summary(self, config=None):
+        """
+        Generate consolidated DOWNLOADED_RESOURCES.md file at course root.
+
+        Args:
+            config: Configuration dict with max_file_size_mb, etc.
+
+        Returns:
+            str: Filename of generated summary, or None if failed
+        """
+        if not self.all_resources:
+            print("  ⓘ No resources to summarize")
+            return None
+
+        try:
+            filepath = self.output_path / 'DOWNLOADED_RESOURCES.md'
+
+            # Calculate statistics
+            total_resources = sum(len(r['resources']) + len(r['failed_resources']) for r in self.all_resources)
+            total_downloaded = sum(len(r['resources']) for r in self.all_resources)
+            total_failed = sum(len(r['failed_resources']) for r in self.all_resources)
+
+            # Calculate total size
+            total_size_bytes = 0
+            file_type_stats = {}
+
+            for resource_group in self.all_resources:
+                for resource in resource_group['resources']:
+                    size = resource.get('size', 0)
+                    total_size_bytes += size
+
+                    file_type = resource.get('file_type', 'Unknown')
+                    if file_type not in file_type_stats:
+                        file_type_stats[file_type] = {'count': 0, 'size': 0}
+                    file_type_stats[file_type]['count'] += 1
+                    file_type_stats[file_type]['size'] += size
+
+            total_size_mb = total_size_bytes / (1024 * 1024)
+
+            # Build markdown content
+            lines = []
+            lines.append("# Downloaded Resources")
+            lines.append("")
+            lines.append("## Summary Statistics")
+            lines.append("")
+            lines.append(f"**Total Resources**: {total_resources} files")
+            lines.append(f"**Successfully Downloaded**: {total_downloaded}/{total_resources} ({100 * total_downloaded / total_resources if total_resources > 0 else 0:.1f}%)")
+            lines.append(f"**Total Size**: {total_size_mb:.1f} MB")
+            lines.append(f"**Failed Downloads**: {total_failed}")
+            lines.append("")
+
+            # File types breakdown
+            if file_type_stats:
+                lines.append("### File Types Breakdown")
+                for file_type, stats in sorted(file_type_stats.items()):
+                    size_mb = stats['size'] / (1024 * 1024)
+                    lines.append(f"- **{file_type}**: {stats['count']} files ({size_mb:.1f} MB)")
+                lines.append("")
+
+            lines.append("---")
+            lines.append("")
+
+            # Group resources by section
+            resources_by_section = {}
+            for resource_group in self.all_resources:
+                section_title = resource_group['section_title']
+                if section_title not in resources_by_section:
+                    resources_by_section[section_title] = []
+                resources_by_section[section_title].append(resource_group)
+
+            # Output by section
+            for section_title, resource_groups in resources_by_section.items():
+                lines.append(f"## {section_title}")
+                lines.append("")
+
+                for rg in resource_groups:
+                    lecture_number = rg['lecture_number']
+                    lecture_title = rg['lecture_title']
+                    resources = rg['resources']
+
+                    if not resources:
+                        continue
+
+                    lines.append(f"### Lecture {lecture_number}: {lecture_title}")
+
+                    for resource in resources:
+                        filename = resource.get('filename', 'Unknown')
+                        size = resource.get('size', 0)
+                        size_mb = size / (1024 * 1024)
+
+                        # Generate brief description from lecture title (2-3 words)
+                        description = self._generate_resource_description(lecture_title, filename)
+
+                        lines.append(f"- **{filename}** ({size_mb:.1f} MB) - {description}")
+                        lines.append(f"  - Status: ✓ Downloaded")
+
+                        # Build relative path to resource
+                        sanitized_title = self._sanitize_filename(lecture_title)
+                        rel_path = f"resources/{lecture_number:03d}-{sanitized_title}/{filename}"
+                        lines.append(f"  - Location: `{rel_path}`")
+
+                    lines.append("")
+
+                lines.append("---")
+                lines.append("")
+
+            # Failed downloads section
+            if total_failed > 0:
+                lines.append("## Failed Downloads")
+                lines.append("")
+
+                for resource_group in self.all_resources:
+                    failed_resources = resource_group['failed_resources']
+                    if not failed_resources:
+                        continue
+
+                    lecture_number = resource_group['lecture_number']
+                    lecture_title = resource_group['lecture_title']
+
+                    lines.append(f"### Lecture {lecture_number}: {lecture_title}")
+
+                    for resource in failed_resources:
+                        filename = resource.get('filename', 'Unknown')
+                        size = resource.get('size', 0)
+                        size_mb = size / (1024 * 1024)
+
+                        lines.append(f"- **{filename}** ({size_mb:.1f} MB)")
+
+                        # Determine failure reason
+                        max_size_mb = config.get('max_resource_size_mb', 100) if config else 100
+                        if size_mb > max_size_mb:
+                            reason = f"File size exceeds limit ({max_size_mb} MB)"
+                        else:
+                            reason = "Download failed (network error or unavailable)"
+
+                        lines.append(f"  - Reason: {reason}")
+                        if resource.get('url'):
+                            lines.append(f"  - URL: {resource.get('url')}")
+
+                    lines.append("")
+
+                lines.append("---")
+                lines.append("")
+
+            # Download configuration
+            lines.append("## Download Configuration")
+            lines.append("")
+            max_size = config.get('max_resource_size_mb', 100) if config else 100
+            lines.append(f"- **Max file size limit**: {max_size} MB")
+            lines.append(f"- **Download enabled**: Yes")
+            lines.append(f"- **Extraction date**: {datetime.now().strftime('%B %d, %Y')}")
+            lines.append("")
+
+            # Write file
+            with open(filepath, 'w', encoding='utf-8') as f:
+                f.write('\n'.join(lines))
+
+            self.created_files.append(str(filepath))
+            print(f"  ✓ Generated DOWNLOADED_RESOURCES.md ({total_downloaded} resources)")
+
+            return 'DOWNLOADED_RESOURCES.md'
+
+        except Exception as e:
+            print(f"⚠️  Error generating downloaded resources summary: {e}")
+            return None
+
+    def _generate_resource_description(self, lecture_title, filename):
+        """
+        Generate a brief 2-3 word description from lecture title context.
+
+        Args:
+            lecture_title: Lecture title
+            filename: Resource filename
+
+        Returns:
+            str: Brief description
+        """
+        # Extract key words from lecture title
+        # Remove common words and punctuation
+        common_words = {'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'from', 'part', 'lecture'}
+
+        title_words = lecture_title.lower().replace('-', ' ').split()
+        key_words = [w for w in title_words if w not in common_words and len(w) > 2]
+
+        # Take first 2-3 meaningful words
+        description_words = key_words[:3] if len(key_words) >= 3 else key_words[:2] if len(key_words) >= 2 else key_words
+
+        if not description_words:
+            # Fallback to filename
+            filename_base = filename.rsplit('.', 1)[0]
+            description_words = filename_base.replace('-', ' ').replace('_', ' ').split()[:3]
+
+        # Capitalize and join
+        description = ' '.join(word.capitalize() for word in description_words)
+
+        return description if description else "Course resource"
 
 
 # Example usage
