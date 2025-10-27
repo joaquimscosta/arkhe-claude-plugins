@@ -11,6 +11,7 @@ Tutorial creation and educational content extraction toolkit for Claude Code.
 ### Skills
 
 - **extract-udemy**: Extract complete Udemy course content including video transcripts, articles, quizzes, downloadable resources (PDFs, code files), and external links. Auto-invoked when Udemy URLs are provided.
+- **extract-youtube**: Extract YouTube video transcripts and metadata including video details, playlist structure, and English captions. Auto-invoked when YouTube URLs are provided.
 
 ### Commands
 
@@ -60,9 +61,9 @@ All Udemy extraction functionality is preserved and enhanced in the `extract-ude
 
 **Auto-invoke (recommended)**:
 Claude Code will automatically invoke the appropriate extraction skill when you:
-- Provide a Udemy course URL
+- Provide a Udemy course URL or YouTube video/playlist URL
 - Mention extracting/downloading educational content
-- Ask to analyze course structure
+- Ask to analyze course structure or get video transcripts
 
 **Manual command**:
 ```bash
@@ -130,6 +131,58 @@ For comprehensive usage, troubleshooting, and examples:
 - `skills/extract-udemy/TROUBLESHOOTING.md` - Common issues and solutions
 - `skills/extract-udemy/WORKFLOW.md` - Step-by-step implementation details
 
+### YouTube Extraction
+
+The `extract-youtube` skill extracts:
+
+1. **Video Transcripts** - English captions (manual or auto-generated) with timestamps
+2. **Video Metadata** - Title, channel, duration, upload date, description, views
+3. **Playlist Structure** - All videos in playlist with metadata
+4. **Chapter/Timestamps** - Video chapters if available in description
+5. **Thumbnails** - Video thumbnail images
+
+**Requirements**:
+- Python 3.8+ (verify with `python3 --version`)
+- uv package manager (install: `curl -LsSf https://astral.sh/uv/install.sh | sh`)
+- Dependencies: `uv pip install youtube-transcript-api`
+- No authentication required (public YouTube data only)
+
+**Output Structure**:
+
+Extracted content is saved in `youtube-research/{video-or-playlist-title}/`:
+
+**Single Video:**
+```
+youtube-research/
+└── video-title/
+    ├── README.md           # Video metadata and description
+    ├── metadata.json       # Structured video data
+    ├── transcript.md       # English transcript with timestamps
+    └── resources/
+        └── thumbnail.jpg   # Video thumbnail
+```
+
+**Playlist:**
+```
+youtube-research/
+└── playlist-title/
+    ├── README.md               # Playlist overview and video list
+    ├── metadata.json           # Playlist metadata
+    ├── 001-first-video.md      # First video transcript
+    ├── 002-second-video.md     # Second video transcript
+    └── resources/
+        ├── 001-thumbnail.jpg
+        └── 002-thumbnail.jpg
+```
+
+**Detailed Documentation**:
+
+For comprehensive usage, troubleshooting, and examples:
+- `skills/extract-youtube/SKILL.md` - Complete skill documentation
+- `skills/extract-youtube/EXAMPLES.md` - Usage examples
+- `skills/extract-youtube/TROUBLESHOOTING.md` - Common issues and solutions
+- `skills/extract-youtube/WORKFLOW.md` - Step-by-step implementation details
+
 ## Use Cases
 
 ### Tutorial Creation
@@ -142,6 +195,7 @@ For comprehensive usage, troubleshooting, and examples:
 
 ### Content Extraction
 - Extracting Udemy courses for offline study
+- Extracting YouTube videos and playlists with transcripts
 - Archiving educational content for research
 - Creating searchable transcripts from video courses
 - Downloading course resources and supplementary materials
@@ -158,7 +212,6 @@ For comprehensive educational content workflows, consider installing:
 
 Planned additions to the content extraction capabilities:
 
-- **YouTube** - Video and playlist extraction with transcripts
 - **Blog Articles** - Tutorial and article extraction from educational blogs
 - **Other MOOCs** - Coursera, edX, LinkedIn Learning
 - **Documentation Sites** - MDN, official docs, technical guides
@@ -166,4 +219,5 @@ Planned additions to the content extraction capabilities:
 
 ## Version
 
+1.2.0 - Added YouTube extraction skill (videos and playlists)
 1.1.0 - Added Udemy extraction skill and `/extract` command
