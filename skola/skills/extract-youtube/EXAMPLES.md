@@ -1,6 +1,11 @@
-# YouTube Extraction Examples
+# YouTube Content Extraction: Examples
 
-This document provides detailed examples of using the YouTube extraction skill.
+This document provides real-world examples of YouTube content extraction with the `extracting-youtube` skill.
+
+For quick start instructions, see [SKILL.md](SKILL.md).
+For detailed workflow, see [WORKFLOW.md](WORKFLOW.md).
+
+---
 
 ## Table of Contents
 
@@ -520,3 +525,24 @@ if transcript_data:
 ```
 
 This allows for custom workflows and integration with other tools.
+
+---
+
+## Summary
+
+The `extracting-youtube` skill automates:
+- ✅ Single video and playlist extraction
+- ✅ Multiple URL format support (youtube.com, youtu.be, shorts)
+- ✅ Flexible output options (custom directories, transcript-only, skip thumbnails)
+- ✅ Graceful handling of missing transcripts
+- ✅ Large playlist support with progress tracking
+- ✅ Programmatic usage via Python modules
+
+**Result**: Comprehensive YouTube content archives for offline study and research.
+
+For detailed workflow, see [WORKFLOW.md](WORKFLOW.md).
+For troubleshooting, see [TROUBLESHOOTING.md](TROUBLESHOOTING.md).
+
+---
+
+*Last Updated: 2025-10-27*

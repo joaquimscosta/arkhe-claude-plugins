@@ -1,6 +1,12 @@
-# Troubleshooting Guide
+# YouTube Content Extraction: Troubleshooting
 
-This guide helps resolve common issues when using the YouTube extraction skill.
+This document provides solutions to common issues when using the `extracting-youtube` skill.
+
+For quick start instructions, see [SKILL.md](SKILL.md).
+For detailed workflow, see [WORKFLOW.md](WORKFLOW.md).
+For examples, see [EXAMPLES.md](EXAMPLES.md).
+
+---
 
 ## Table of Contents
 
@@ -637,3 +643,24 @@ python3 -c "import youtube_transcript_api; print('OK')"  # Should print OK
 # Test extraction
 python3 extract.py "https://youtube.com/watch?v=dQw4w9WgXcQ"
 ```
+
+---
+
+## Getting Help
+
+If issues persist:
+
+1. **Check Skill Documentation**: Review [SKILL.md](SKILL.md)
+2. **Review Examples**: See [EXAMPLES.md](EXAMPLES.md)
+3. **Verify Installation**:
+   ```bash
+   python3 --version
+   uv --version
+   python3 -c "import youtube_transcript_api; print('✓ Installed')"
+   ```
+4. **Check YouTube Status**: Some issues may be due to YouTube service changes
+5. **Test with Known Working Video**: Try `https://youtube.com/watch?v=dQw4w9WgXcQ`
+
+---
+
+*Last Updated: 2025-10-27*

@@ -1,6 +1,6 @@
 ---
-name: Git Branch Workflow
-description: Feature branch creation with optimized short naming, auto-incrementing, and commit type detection. Use when user requests to create new branches or runs /create-branch command.
+name: creating-branch
+description: Creates feature branches with optimized short naming, auto-incrementing, and commit type detection. Use when user requests to create new branches or runs /create-branch command.
 ---
 
 # Git Branch Workflow
@@ -132,3 +132,11 @@ The skill produces:
 6. **No Duplicates**: Increments number if similar branch name exists
 
 7. **Works Anywhere**: Executes from any directory in the project
+
+## Supporting Documentation
+
+For detailed information, see:
+
+- **[WORKFLOW.md](WORKFLOW.md)** - Step-by-step branch creation process with detailed explanations
+- **[EXAMPLES.md](EXAMPLES.md)** - Real-world examples covering all branch types and scenarios
+- **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** - Common issues and solutions

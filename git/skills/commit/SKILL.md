@@ -1,6 +1,6 @@
 ---
-name: Git Commit Workflow
-description: Context-aware Git commit assistant with smart pre-commit checks, submodule support, and conventional commit message generation. Use when user requests to commit changes, run /commit command, or needs help creating git commits.
+name: creating-commit
+description: Creates context-aware git commits with smart pre-commit checks, submodule support, and conventional commit message generation. Use when user requests to commit changes, run /commit command, or needs help creating git commits.
 ---
 
 # Git Commit Workflow
@@ -96,3 +96,11 @@ The skill produces:
 - Respects branch protection rules
 - Never includes Claude Code footer in commits
 - Handles both clean and mixed submodule scenarios
+
+## Supporting Documentation
+
+For detailed information, see:
+
+- **[WORKFLOW.md](WORKFLOW.md)** - Step-by-step commit process including repository detection, pre-commit checks, and submodule handling
+- **[EXAMPLES.md](EXAMPLES.md)** - Real-world commit scenarios covering features, bug fixes, submodules, and verification modes
+- **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** - Common issues and solutions for pre-commit failures and submodule conflicts

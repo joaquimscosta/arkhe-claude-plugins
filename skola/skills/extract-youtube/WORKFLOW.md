@@ -1,6 +1,8 @@
-# YouTube Extraction Workflow
+# YouTube Content Extraction: Detailed Workflow
 
-This document describes the detailed step-by-step workflow for extracting YouTube content.
+This document provides a detailed step-by-step breakdown of the YouTube content extraction process.
+
+For quick start instructions, see [SKILL.md](SKILL.md).
 
 ## Overview
 
@@ -401,3 +403,24 @@ When this skill is triggered by Claude Code:
 5. Results are summarized and presented to user
 
 The skill is designed to work from any working directory by using `Path.cwd() / 'youtube-research'` as the base output path.
+
+---
+
+## Summary
+
+The YouTube extraction workflow automates:
+1. ✅ URL parsing and content type detection
+2. ✅ Metadata extraction from YouTube pages
+3. ✅ Transcript extraction with language preference
+4. ✅ Structured file organization
+5. ✅ Resource downloading (thumbnails)
+6. ✅ Error handling and statistics tracking
+
+**Result**: Comprehensive YouTube content archives for offline study and research.
+
+For examples, see [EXAMPLES.md](EXAMPLES.md).
+For troubleshooting, see [TROUBLESHOOTING.md](TROUBLESHOOTING.md).
+
+---
+
+*Last Updated: 2025-10-27*

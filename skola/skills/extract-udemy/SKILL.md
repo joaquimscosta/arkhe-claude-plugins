@@ -1,6 +1,6 @@
 ---
-name: Extract Udemy Course
-description: Extract complete Udemy course content including video transcripts, articles, quizzes, downloadable resources (PDFs, code files), and external links. Use when user provides a Udemy course URL, mentions extracting/downloading/scraping/archiving Udemy content, analyzing course structure, or wants offline access to course materials.
+name: extracting-udemy
+description: Extracts complete Udemy course content including video transcripts, articles, quizzes, downloadable resources (PDFs, code files), and external links. Use when user provides a Udemy course URL, mentions extracting/downloading/scraping/archiving Udemy content, analyzing course structure, or wants offline access to course materials.
 ---
 
 # Extract Udemy Course
@@ -33,52 +33,14 @@ Use this skill when the user:
 
 ## Quick Start
 
-### Basic Extraction (All Content Types)
-
 ```bash
 python3 arkhe-claude-plugins/skola/skills/extract-udemy/scripts/extract.py \
   "https://SITE.udemy.com/course/course-name/"
 ```
 
 **Important:** Run the script from your project root directory (where `udemy-research/` should be created).
-The script uses the current working directory to locate `udemy-research/cookies.json`.
 
-### Extract Specific Content Types
-
-```bash
-# Only transcripts and articles
-python3 arkhe-claude-plugins/skola/skills/extract-udemy/scripts/extract.py \
-  "https://SITE.udemy.com/course/course-name/" \
-  --content-types video,article
-
-# Only resources (without downloading files)
-python3 arkhe-claude-plugins/skola/skills/extract-udemy/scripts/extract.py \
-  "https://SITE.udemy.com/course/course-name/" \
-  --content-types resource \
-  --no-download-resources
-```
-
-### Advanced Options
-
-```bash
-python3 arkhe-claude-plugins/skola/skills/extract-udemy/scripts/extract.py \
-  "https://SITE.udemy.com/course/course-name/" \
-  --content-types video,article,quiz,resource \
-  --skip-promotional \
-  --quiz-format yaml \
-  --download-resources \
-  --max-resource-size 100 \
-  --output-dir custom-directory-name
-```
-
-**Available Options:**
-- `--content-types` - Comma-separated: video, article, quiz, resource (default: all)
-- `--skip-promotional` - Skip bonus/promotional lectures
-- `--quiz-format` - Quiz output format: yaml or json (default: yaml)
-- `--download-resources` - Download resource files (enabled by default)
-- `--no-download-resources` - Only create resource catalog, skip downloads
-- `--max-resource-size` - Max download size in MB (default: 100)
-- `--output-dir` - Custom directory name (default: course slug from URL)
+For advanced options, content-type selection, and resource configuration, see [EXAMPLES.md](EXAMPLES.md).
 
 ## Output Structure
 
@@ -125,36 +87,11 @@ See [WORKFLOW.md](WORKFLOW.md) for detailed step-by-step implementation.
 
 ## Authentication
 
-Uses cookie-based authentication from `udemy-research/cookies.json`:
-
-```json
-{
-  "access_token": "your-token",
-  "client_id": "your-client-id"
-}
-```
-
-Extract cookies from browser:
-1. Log into Udemy in browser
-2. Open DevTools → Application → Cookies
-3. Copy `access_token` and `client_id`
-4. Save to `cookies.json`
-
-**Note**: Cookies expire after ~24 hours. Refresh as needed.
+See [WORKFLOW.md](WORKFLOW.md#step-1-authentication) for cookie-based authentication setup instructions.
 
 ## File Locations
 
-When running this skill, the script uses the **current working directory** as the base:
-
-- **Cookies:** `udemy-research/cookies.json` (in current working directory)
-- **Output:** `udemy-research/{course-slug}/` (in current working directory)
-
-**Example:**
-If you're running Claude Code from `/Users/you/projects/myproject/`, files will be created at:
-- `/Users/you/projects/myproject/udemy-research/cookies.json`
-- `/Users/you/projects/myproject/udemy-research/{course-slug}/`
-
-This design works whether the plugin is installed locally or from a Git repository marketplace.
+Uses current working directory for cookies and output. See [WORKFLOW.md](WORKFLOW.md#file-locations) for details.
 
 ## Common Issues
 

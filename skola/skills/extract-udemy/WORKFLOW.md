@@ -16,20 +16,39 @@ The extraction process follows 5 main steps:
 
 ---
 
-## Step 1: Authenticate
+## File Locations
+
+When running this skill, the script uses the **current working directory** as the base:
+
+- **Cookies:** `udemy-research/cookies.json` (in current working directory)
+- **Output:** `udemy-research/{course-slug}/` (in current working directory)
+
+**Example:**
+If you're running Claude Code from `/Users/you/projects/myproject/`, files will be created at:
+- `/Users/you/projects/myproject/udemy-research/cookies.json`
+- `/Users/you/projects/myproject/udemy-research/{course-slug}/`
+
+This design works whether the plugin is installed locally or from a Git repository marketplace.
+
+---
+
+## Step 1: Authentication
 
 Load session cookies from `udemy-research/cookies.json`:
 
-```python
-# Cookie-based authentication (no username/password needed)
-# Extract cookies from browser DevTools (see TROUBLESHOOTING.md)
+**Cookie file format** (`udemy-research/cookies.json`):
+```json
+{
+  "access_token": "your-token",
+  "client_id": "your-client-id"
+}
 ```
 
 **Required cookies**:
 - `access_token` - Your Udemy session token
 - `client_id` - Your Udemy client ID
 
-Extract these from your browser:
+**Extract cookies from browser**:
 1. Log into Udemy in browser
 2. Open DevTools → Application → Cookies
 3. Copy `access_token` and `client_id` values

@@ -1,6 +1,6 @@
 ---
-name: Git PR Workflow
-description: GitHub Pull Request creation and update with existing PR detection, branch pushing, and intelligent title/body generation. Use when user requests to create/update pull requests or runs /create-pr command.
+name: creating-pr
+description: Creates GitHub Pull Requests with existing PR detection, branch pushing, and intelligent title/body generation. Use when user requests to create/update pull requests or runs /create-pr command.
 ---
 
 # Git PR Workflow
@@ -102,3 +102,11 @@ The skill produces:
 5. **Works Anywhere**: Executes from any directory, resolves paths absolutely
 
 6. **Submodule Support**: Can create PRs for both root repository and submodules
+
+## Supporting Documentation
+
+For detailed information, see:
+
+- **[WORKFLOW.md](WORKFLOW.md)** - Step-by-step PR creation process including repository detection, branch management, and GitHub CLI integration
+- **[EXAMPLES.md](EXAMPLES.md)** - Real-world PR scenarios covering features, bug fixes, drafts, and submodule PRs
+- **[TROUBLESHOOTING.md](TROUBLESHOOTING.md)** - Common issues and solutions for GitHub CLI errors, authentication, and branch conflicts
