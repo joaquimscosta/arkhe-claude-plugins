@@ -106,13 +106,9 @@ The PR creation command will execute the following steps:
 
 ## Implementation
 
-Execute the PR creation workflow script:
+Use the **creating-pr** skill to execute the PR workflow with arguments: `$ARGUMENTS`
 
-```bash
-!.claude/scripts/pr.sh $ARGUMENTS
-```
-
-The script handles all workflow logic including:
+The skill handles all workflow logic including:
 
 - Repository context auto-detection
 - Comprehensive branch validation
@@ -120,6 +116,10 @@ The script handles all workflow logic including:
 - Existing PR detection with update capability
 - Intelligent PR title/body generation from commits
 - GitHub CLI integration for create and update operations
+
+**Skill location**: `git/skills/pr/`
+**Script execution**: The skill executes `./scripts/pr.sh` with the provided arguments
+**Requirements**: GitHub CLI (`gh`) installed and authenticated
 
 ## Repository Reference
 

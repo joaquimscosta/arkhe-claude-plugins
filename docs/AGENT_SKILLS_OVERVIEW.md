@@ -175,6 +175,16 @@ Custom Skills in Claude Code are filesystem-based and don't require API uploads.
 
 To learn more, see [Use Skills in Claude Code](/en/docs/claude-code/skills).
 
+### Claude Agent SDK
+
+The [Claude Agent SDK](/en/api/agent-sdk/overview) supports custom Skills through filesystem-based configuration.
+
+**Custom Skills**: Create Skills as directories with SKILL.md files in `.claude/skills/`. Enable Skills by including `"Skill"` in your `allowed_tools` configuration.
+
+Skills in the Agent SDK are then automatically discovered when the SDK runs.
+
+To learn more, see [Agent Skills in the SDK](/en/api/agent-sdk/skills).
+
 ### Claude.ai
 
 [Claude.ai](https://claude.ai) supports both pre-built Agent Skills and custom Skills.
@@ -188,7 +198,7 @@ To learn more about using Skills in Claude.ai, see the following resources in th
 * [What are Skills?](https://support.claude.com/en/articles/12512176-what-are-skills)
 * [Using Skills in Claude](https://support.claude.com/en/articles/12512180-using-skills-in-claude)
 * [How to create custom Skills](https://support.claude.com/en/articles/12512198-creating-custom-skills)
-* [Tech Claude your way of working using Skills](https://support.claude.com/en/articles/12580051-teach-claude-your-way-of-working-using-skills)
+* [Teach Claude your way of working using Skills](https://support.claude.com/en/articles/12580051-teach-claude-your-way-of-working-using-skills)
 
 ## Skill structure
 
@@ -308,6 +318,10 @@ Plan your Skills to work within these constraints.
 
   <Card title="Use Skills in Claude Code" icon="terminal" href="/en/docs/claude-code/skills">
     Create and manage custom Skills in Claude Code
+  </Card>
+
+  <Card title="Use Skills in the Agent SDK" icon="cube" href="/en/api/agent-sdk/skills">
+    Use Skills programmatically in TypeScript and Python
   </Card>
 
   <Card title="Authoring best practices" icon="lightbulb" href="/en/docs/agents-and-tools/agent-skills/best-practices">

@@ -83,6 +83,7 @@ readonly URL_MAPPINGS=(
     "https://docs.claude.com/en/docs/claude-code/plugins.md|PLUGINS.md"
     "https://docs.claude.com/en/docs/claude-code/hooks-guide.md|HOOKS.md"
     "https://docs.claude.com/en/docs/claude-code/slash-commands.md|COMMANDS.md"
+    "https://docs.claude.com/en/docs/claude-code/skills.md|SKILLS.md"
     "https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview.md|AGENT_SKILLS_OVERVIEW.md"
     "https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/claude-4-best-practices.md|CLAUDE_4_BEST_PRACTICES.md"
 )

@@ -1,6 +1,6 @@
 ---
-name: Mermaid Diagram Generator
-description: Create and edit Mermaid diagrams for flowcharts, sequence diagrams, ERDs, state machines, architecture diagrams, process flows, timelines, and more. Use when user mentions diagram, flowchart, mermaid, visualize, refactor diagram, sequence diagram, ERD, architecture diagram, process flow, state machine, or needs visual documentation.
+name: diagramming
+description: Creates and edits Mermaid diagrams for flowcharts, sequence diagrams, ERDs, state machines, architecture diagrams, process flows, timelines, and more. Use when user mentions diagram, flowchart, mermaid, visualize, refactor diagram, sequence diagram, ERD, architecture diagram, process flow, state machine, or needs visual documentation.
 ---
 
 # Mermaid Diagram Generator
@@ -81,6 +81,10 @@ graph TD
 - **Planning**: Project timelines, user journeys, decision trees
 - **Analysis**: State machines, entity relationships, git workflows
 - **Communication**: Process flows, sequence diagrams, quadrant charts
+
+## Workflow
+
+See [WORKFLOW.md](WORKFLOW.md) for detailed step-by-step methodology including diagram type selection, creation process, styling guidelines, and quality validation.
 
 ## Examples
 

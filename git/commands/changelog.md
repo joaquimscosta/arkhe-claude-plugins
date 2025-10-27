@@ -126,14 +126,19 @@ The command analyzes:
 - Git tags
 - Pull request numbers (from GitHub-style commit messages)
 
-## Workflow Integration
+## Implementation
 
-This command uses the `changelog` skill from the git plugin for:
-- Git history analysis
-- Commit categorization
-- Semantic version detection
-- Changelog formatting
-- CHANGELOG.md updates
+Use the **generating-changelog** skill to execute the changelog workflow with arguments: `$ARGUMENTS`
+
+The skill handles:
+- Git history analysis from commit range
+- Automatic commit categorization by type
+- Semantic version bump detection (MAJOR/MINOR/PATCH)
+- Multiple output format support (Keep a Changelog, Conventional, GitHub)
+- CHANGELOG.md updates (append or overwrite)
+
+**Skill location**: `git/skills/changelog/`
+**Auto-invoke**: Automatically activates when editing CHANGELOG.md or mentioning "changelog", "release notes"
 
 ## See Also
 

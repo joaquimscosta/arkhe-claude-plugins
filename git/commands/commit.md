@@ -81,13 +81,9 @@ The commit command will execute the following steps:
 
 ## Implementation
 
-Execute the commit workflow script:
+Use the **creating-commit** skill to execute the commit workflow with arguments: `$ARGUMENTS`
 
-```bash
-!.claude/scripts/commit.sh $ARGUMENTS
-```
-
-The script handles all workflow logic including:
+The skill handles all workflow logic including:
 - Path resolution (works from any directory in the project)
 - Repository change detection
 - Interactive selection with file counts
@@ -95,6 +91,9 @@ The script handles all workflow logic including:
 - Smart pre-commit checks based on file types
 - Intelligent commit message generation
 - Post-commit summary with submodule reminders
+
+**Skill location**: `git/skills/commit/`
+**Script execution**: The skill executes `./scripts/commit.sh` with the provided arguments
 
 ## Smart Pre-commit Checks
 

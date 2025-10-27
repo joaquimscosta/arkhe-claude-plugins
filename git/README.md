@@ -41,7 +41,7 @@ Context-aware Git commit assistant with smart pre-commit checks and submodule su
 - `--no-verify`: Skip all pre-commit checks
 - `--full-verify`: Run full builds (backend + frontend)
 
-**Script**: `.claude/scripts/commit.sh`
+**Skill**: `git/skills/commit/` (creating-commit)
 
 ---
 
@@ -73,7 +73,7 @@ GitHub Pull Request creation and update assistant with existing PR detection.
 
 **Requirements**: GitHub CLI (`gh`) installed and authenticated
 
-**Script**: `.claude/scripts/pr.sh`
+**Skill**: `git/skills/pr/` (creating-pr)
 
 ---
 
@@ -110,7 +110,7 @@ export FEATURE_DIR=".claude/specs"   # Where to create feature dirs (optional)
 export BRANCH_PREFIX=""               # Additional prefix (optional)
 ```
 
-**Script**: `.claude/scripts/branch.sh`
+**Skill**: `git/skills/branch/` (creating-branch)
 
 ---
 
@@ -144,11 +144,40 @@ Generate comprehensive changelogs from git commit history with semantic versioni
 
 ---
 
-### Skills (1)
+### Skills (4)
 
-#### changelog (Auto-Invoke)
+All commands are implemented as **Hybrid Commands + Skills** - slash commands delegate to skills that contain executable scripts.
+
+#### 1. creating-commit
+
+Executes the commit workflow with repository detection, pre-commit checks, and conventional commit generation.
+
+**Location**: `skills/commit/`
+**Scripts**: `commit.sh`, `common.sh`
+**Invoked by**: `/commit` command
+
+#### 2. creating-pr
+
+Handles PR creation and updates with GitHub CLI integration.
+
+**Location**: `skills/pr/`
+**Scripts**: `pr.sh`, `common.sh`
+**Invoked by**: `/create-pr` command
+
+#### 3. creating-branch
+
+Creates feature branches with smart naming and auto-incrementing.
+
+**Location**: `skills/branch/`
+**Scripts**: `branch.sh`, `common.sh`
+**Invoked by**: `/create-branch` command
+
+#### 4. generating-changelog (Auto-Invoke)
 
 Automatically generates changelogs when editing changelog files or mentioning release-related keywords.
+
+**Location**: `skills/changelog/`
+**Invoked by**: `/changelog` command and auto-triggers
 
 **Auto-Invoke Triggers**:
 - Editing files: `CHANGELOG.md`, `CHANGELOG.txt`, `HISTORY.md`
@@ -244,41 +273,38 @@ Pre-commit checks are automatically detected based on file changes:
 **Skip checks**: Use `--no-verify` flag
 **Full verification**: Use `--full-verify` flag
 
-## Scripts
+## Architecture
 
-The plugin includes 4 shell scripts in `scripts/` directory:
+The plugin uses a **Hybrid Commands + Skills** pattern where:
 
-### 1. commit.sh
-Handles the commit workflow:
-- Repository detection
-- Change analysis
-- Pre-commit check execution
-- Commit message generation
-- Submodule reference updates
+1. **Commands** (`commands/*.md`) - User interface via slash commands
+2. **Skills** (`skills/*/`) - Implementation with scripts and documentation
+3. **Scripts** (`skills/*/scripts/`) - Executable bash scripts that travel with the plugin
 
-### 2. pr.sh
-Handles PR creation and updates:
-- Repository detection
-- Branch pushing
-- Existing PR detection
-- PR title/body generation
-- GitHub CLI integration
+### Script Organization
 
-### 3. branch.sh
-Handles branch creation:
-- Commit type detection
-- Feature numbering
-- Branch creation
-- Optional feature directory setup
+Each skill contains its own scripts directory:
 
-### 4. common.sh
-Shared utilities:
-- Path resolution
-- Repository detection
-- Output formatting
-- Error handling
+**skills/commit/scripts/**
+- `commit.sh` - Main commit workflow
+- `common.sh` - Shared utilities
 
-All scripts are executable and use absolute paths for reliability.
+**skills/pr/scripts/**
+- `pr.sh` - PR creation and updates
+- `common.sh` - Shared utilities
+
+**skills/branch/scripts/**
+- `branch.sh` - Branch creation workflow
+- `common.sh` - Shared utilities
+
+**skills/changelog/** (No scripts - pure skill with WORKFLOW.md)
+
+### Key Features
+
+- **Self-contained**: Scripts travel with the plugin
+- **Executable**: All scripts have execute permissions
+- **Reliable**: Use absolute paths and proper error handling
+- **Documented**: Each skill includes SKILL.md with detailed instructions
 
 ## Examples
 
@@ -440,9 +466,13 @@ git submodule update --init --recursive
 
 ### Script Permission Issues
 
-If scripts aren't executable:
+If scripts aren't executable (unlikely, as they're bundled with the plugin):
 ```bash
-chmod +x .claude/scripts/*.sh
+# Verify scripts are executable
+ls -la git/skills/*/scripts/*.sh
+
+# If needed, make executable
+chmod +x git/skills/*/scripts/*.sh
 ```
 
 ## Best Practices

@@ -357,13 +357,13 @@ def main():
                                     resource_download_data=resource['download_path']
                                 )
 
-                        # Save resource catalog
-                        file_writer.save_resource_catalog(
+                        # Track resources for consolidated summary
+                        file_writer.track_resources(
+                            section_title=section_title,
                             lecture_number=lecture_number,
                             lecture_title=lecture_title,
                             resource_data=resource_data
                         )
-                        extraction_counts['resources'] += 1
 
                         # Update extracted items message
                         download_count = resource_data.get('metadata', {}).get('downloaded_count', 0)
@@ -395,6 +395,15 @@ def main():
         else:
             print("  ⚠️  No external links found")
 
+        # Generate consolidated downloaded resources summary
+        print("\n📦 Generating downloaded resources summary...")
+        file_writer.generate_downloaded_resources_summary(config)
+
+        # Update README with final statistics
+        print("\n📝 Updating README with extraction statistics...")
+        links_count = links_summary.get('total_resources', 0) if links_summary else 0
+        file_writer.update_readme_with_stats(course_data, links_count)
+
         # Summary
         print("\n" + "=" * 60)
         print("Extraction Complete!")
@@ -421,7 +430,8 @@ def main():
         if stats['quizzes'] > 0:
             print(f"  {output_path}/quizzes/ ({stats['quizzes']} files)")
         if stats['resources'] > 0:
-            print(f"  {output_path}/resources/ ({stats['resources']} catalogs)")
+            print(f"  {output_path}/DOWNLOADED_RESOURCES.md")
+            print(f"  {output_path}/resources/ ({stats['resources']} files)")
 
         # Show extractor statistics if any issues
         article_stats = article_extractor.get_statistics()

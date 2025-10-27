@@ -1,12 +1,12 @@
 ---
-name: changelog
-description: Analyze git commit history and generate professional changelogs with semantic versioning, conventional commit support, and multiple output formats (Keep a Changelog, Conventional, GitHub). Auto-invokes when editing CHANGELOG.md or mentioning "changelog", "release notes", or version tags.
+name: generating-changelog
+description: Analyzes git commit history and generates professional changelogs with semantic versioning, conventional commit support, and multiple output formats (Keep a Changelog, Conventional, GitHub). Auto-invokes when editing CHANGELOG.md or mentioning "changelog", "release notes", or version tags.
 triggers:
   - editing: ['**/CHANGELOG.md', '**/CHANGELOG.txt', '**/HISTORY.md']
   - keywords: ['changelog', 'release notes', 'version', 'semantic versioning', 'conventional commits']
 ---
 
-# Changelog Generator Skill
+# Git Changelog Generation
 
 Automatically analyze git commit history and generate comprehensive changelogs following industry-standard formats.
 
