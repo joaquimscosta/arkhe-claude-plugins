@@ -1,7 +1,7 @@
 {
   "name": "skola",
   "description": "Tutorial creation and educational content extraction toolkit (Udemy, YouTube, blogs)",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "author": {
     "name": "Arkhe"
   }
