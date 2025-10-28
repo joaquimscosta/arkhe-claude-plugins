@@ -1,5 +1,7 @@
 ---
 description: Context-aware Git commit assistant with smart pre-commit checks
+argument-hint: [scope] [--no-verify | --full-verify]
+allowed-tools: Bash(git:*)
 ---
 
 # Commit Command
@@ -81,19 +83,7 @@ The commit command will execute the following steps:
 
 ## Implementation
 
-Use the **creating-commit** skill to execute the commit workflow with arguments: `$ARGUMENTS`
-
-The skill handles all workflow logic including:
-- Path resolution (works from any directory in the project)
-- Repository change detection
-- Interactive selection with file counts
-- Branch protection enforcement
-- Smart pre-commit checks based on file types
-- Intelligent commit message generation
-- Post-commit summary with submodule reminders
-
-**Skill location**: `git/skills/commit/`
-**Script execution**: The skill executes `./scripts/commit.sh` with the provided arguments
+Use the **creating-commit** skill with arguments: `$ARGUMENTS`
 
 ## Smart Pre-commit Checks
 

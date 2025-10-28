@@ -30,7 +30,7 @@ The command will:
 
 The command identifies sources based on URL patterns:
 
-- **Udemy**: `udemy.com/course/*` → Delegates to `extracting-udemy` skill
+- **Udemy**: `udemy.com/course/*`
 - **YouTube**: `youtube.com/watch?v=*` or `youtu.be/*` → *(Coming soon)*
 - **Blog**: Other educational content URLs → *(Coming soon)*
 
@@ -89,12 +89,6 @@ Each source maintains its own directory structure optimized for that content typ
 ## Direct Skill Access
 
 You can also invoke extraction skills directly without using this command. Claude Code will auto-invoke them when appropriate context is detected (e.g., mentioning "extract this Udemy course").
-
-## Related Documentation
-
-- **Udemy Extraction**: See `skola/skills/extract-udemy/SKILL.md` for detailed Udemy-specific documentation
-- **YouTube Extraction**: *(Coming soon)*
-- **Blog Extraction**: *(Coming soon)*
 
 ## Future Enhancements
 

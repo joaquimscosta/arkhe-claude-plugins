@@ -1,5 +1,7 @@
 ---
 description: Create a new feature branch with optimized short naming
+argument-hint: <feature_description>
+allowed-tools: Bash(git:*)
 ---
 
 # Branch Creation Command
@@ -76,14 +78,4 @@ If `FEATURE_DIR` is not set, only the branch is created (no directory).
 
 ## Implementation
 
-Use the **creating-branch** skill to execute the branch creation workflow with arguments: `$ARGUMENTS`
-
-The skill handles:
-- Automatic commit type detection from description keywords
-- Short, readable branch name generation (2-3 words)
-- Auto-incrementing feature numbers
-- Optional feature directory creation (if FEATURE_DIR configured)
-- Conventional commits standard compatibility
-
-**Skill location**: `git/skills/branch/`
-**Script execution**: The skill executes `./scripts/branch.sh` with the provided arguments
+Use the **creating-branch** skill with arguments: `$ARGUMENTS`

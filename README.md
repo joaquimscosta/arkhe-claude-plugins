@@ -191,7 +191,6 @@ arkhe-claude-plugins/
 │   ├── AGENT_SKILLS_OVERVIEW.md              # ← Synced from Claude docs
 │   ├── CLAUDE_4_BEST_PRACTICES.md            # ← Synced from Claude docs
 │   ├── COMMANDS.md                           # ← Synced from Claude docs
-│   ├── DEVELOPER_TOOLS.md                    # Custom development guide
 │   ├── HOOKS.md                              # ← Synced from Claude docs
 │   ├── PLUGINS.md                            # ← Synced from Claude docs
 │   ├── SKILL_DEVELOPMENT_BEST_PRACTICES.md   # Custom lessons learned

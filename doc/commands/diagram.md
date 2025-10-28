@@ -88,13 +88,9 @@ The command will provide:
 
 ## Integration
 
-This command invokes the **diagramming** skill, which can also be automatically triggered when you mention diagram-related keywords in your conversations.
-
-For detailed examples and troubleshooting, see the skill documentation in `doc/skills/mermaid/`.
+This command invokes the **diagramming** skill with arguments: `$ARGUMENTS`
 
 ## Related Resources
 
-- **Examples**: See comprehensive diagram examples in `doc/skills/mermaid/EXAMPLES.md`
-- **Troubleshooting**: Common issues and solutions in `doc/skills/mermaid/TROUBLESHOOTING.md`
 - **Mermaid Documentation**: https://mermaid.js.org
 - **Live Editor**: https://mermaid.live (test and preview diagrams)

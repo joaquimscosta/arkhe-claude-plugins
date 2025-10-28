@@ -73,7 +73,6 @@ readonly USER_AGENT="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit
 #    - docs/README.md (developer documentation index)
 #
 # Custom files that should NEVER be added to this sync list:
-# - DEVELOPER_TOOLS.md (custom plugin development guide)
 # - SKILL_DEVELOPMENT_BEST_PRACTICES.md (custom lessons learned)
 # - README.md (custom documentation index)
 # - Any other files created specifically for this project

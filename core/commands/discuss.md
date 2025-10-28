@@ -1,3 +1,7 @@
+---
+description: Thorough technical discussion with focused clarifying questions
+---
+
 I want to have a thorough technical discussion about: $ARGUMENTS
 
 Before proceeding with any implementation or detailed analysis, I need you to gather important context through focused questions. 

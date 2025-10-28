@@ -99,22 +99,6 @@ Lessons learned from real-world skill implementation, specifically from the `ext
 
 **Best for:** Practical guidance when building your own skills
 
----
-
-### 🔍 [Developer Tools](./DEVELOPER_TOOLS.md)
-
-Reference guide for development and research tools.
-
-**Topics covered:**
-- Udemy API Inspector (browser automation for API discovery)
-- Request/response analysis workflows
-- API endpoint documentation process
-- Research tool usage and workflows
-
-**Best for:** Developers extending the plugins or researching new APIs
-
----
-
 ### 🎯 [Claude 4 Best Practices](./CLAUDE_4_BEST_PRACTICES.md)
 
 Official prompt engineering guide for Claude 4 models.
@@ -477,7 +461,6 @@ The following files are automatically synced from official Claude Code documenta
 
 These files contain project-specific content and are **never** modified by the sync script:
 
-- **DEVELOPER_TOOLS.md** - Custom plugin development guide
 - **SKILL_DEVELOPMENT_BEST_PRACTICES.md** - Lessons learned from implementations
 - **README.md** - This file - developer documentation index
 

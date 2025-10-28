@@ -492,7 +492,6 @@ chmod +x scripts/*.py
 - `docs/HOOKS.md` - Event handling documentation (synced)
 
 **Development Tools**:
-- `docs/DEVELOPER_TOOLS.md` - Development tooling guide (custom)
 - `docs/CLAUDE_4_BEST_PRACTICES.md` - Official prompt engineering techniques for Claude 4 models (synced)
 
 ### Automated Documentation Sync
@@ -509,7 +508,7 @@ cd docs && ./update-claude-docs.sh
 - AGENT_SKILLS_OVERVIEW.md, CLAUDE_4_BEST_PRACTICES.md
 
 **Custom files** (never overwritten):
-- DEVELOPER_TOOLS.md, SKILL_DEVELOPMENT_BEST_PRACTICES.md, README.md
+- SKILL_DEVELOPMENT_BEST_PRACTICES.md, README.md
 
 **To add new documentation URLs**:
 1. Edit `docs/update-claude-docs.sh` and add to `URL_MAPPINGS` array

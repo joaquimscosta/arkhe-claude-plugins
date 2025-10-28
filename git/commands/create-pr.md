@@ -1,5 +1,7 @@
 ---
 description: Context-aware GitHub Pull Request creation and update assistant
+argument-hint: [scope] [--draft] [--base <branch>]
+allowed-tools: Bash(git:*), Bash(gh:*)
 ---
 
 # Create Pull Request Command
@@ -106,19 +108,8 @@ The PR creation command will execute the following steps:
 
 ## Implementation
 
-Use the **creating-pr** skill to execute the PR workflow with arguments: `$ARGUMENTS`
+Use the **creating-pr** skill with arguments: `$ARGUMENTS`
 
-The skill handles all workflow logic including:
-
-- Repository context auto-detection
-- Comprehensive branch validation
-- Automatic branch pushing
-- Existing PR detection with update capability
-- Intelligent PR title/body generation from commits
-- GitHub CLI integration for create and update operations
-
-**Skill location**: `git/skills/pr/`
-**Script execution**: The skill executes `./scripts/pr.sh` with the provided arguments
 **Requirements**: GitHub CLI (`gh`) installed and authenticated
 
 ## Repository Reference

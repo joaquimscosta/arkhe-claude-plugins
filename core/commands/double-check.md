@@ -1,3 +1,7 @@
+---
+description: Comprehensive verification of work from multiple angles with extended thinking
+---
+
 Please double check your work and what you generated. 
 - Is it really complete? 
 - Did you approach it from different angles? 

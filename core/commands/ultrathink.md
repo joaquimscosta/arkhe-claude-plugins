@@ -1,3 +1,8 @@
+---
+description: Multi-agent orchestration with extended thinking for complex tasks
+argument-hint: <task_description>
+---
+
 ## Usage
 
 `/ultrathink <TASK_DESCRIPTION>`

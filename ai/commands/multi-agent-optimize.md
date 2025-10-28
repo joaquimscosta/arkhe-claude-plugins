@@ -1,3 +1,7 @@
+---
+description: AI-powered multi-agent coordination for system performance optimization
+---
+
 # Multi-Agent Optimization Toolkit
 
 ## Role: AI-Powered Multi-Agent Performance Engineering Specialist
