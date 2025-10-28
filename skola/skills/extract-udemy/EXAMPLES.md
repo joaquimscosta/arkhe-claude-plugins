@@ -19,7 +19,7 @@ Comprehensive examples demonstrating all features of the Udemy Course Extractor.
 Extract all content types from a course:
 
 ```bash
-python3 arkhe-claude-plugins/skola/skills/extract-udemy/scripts/extract.py \
+uv run arkhe-claude-plugins/skola/skills/extract-udemy/scripts/extract.py \
   "https://risesmart.udemy.com/course/data-structures-and-algorithms-java/"
 ```
 
@@ -116,7 +116,7 @@ udemy-research/data-structures-and-algorithms-java/
 Extract only video transcripts (fastest, smallest output):
 
 ```bash
-python3 arkhe-claude-plugins/skola/skills/extract-udemy/scripts/extract.py \
+uv run arkhe-claude-plugins/skola/skills/extract-udemy/scripts/extract.py \
   "https://risesmart.udemy.com/course/react-complete-guide/" \
   --content-types video
 ```
@@ -141,7 +141,7 @@ Files created:
 Extract videos and articles, skip resources:
 
 ```bash
-python3 arkhe-claude-plugins/skola/skills/extract-udemy/scripts/extract.py \
+uv run arkhe-claude-plugins/skola/skills/extract-udemy/scripts/extract.py \
   "https://risesmart.udemy.com/course/python-bootcamp/" \
   --content-types video,article
 ```
@@ -162,7 +162,7 @@ python3 arkhe-claude-plugins/skola/skills/extract-udemy/scripts/extract.py \
 Create resource catalogs without downloading files:
 
 ```bash
-python3 arkhe-claude-plugins/skola/skills/extract-udemy/scripts/extract.py \
+uv run arkhe-claude-plugins/skola/skills/extract-udemy/scripts/extract.py \
   "https://risesmart.udemy.com/course/web-development-bootcamp/" \
   --content-types resource \
   --no-download-resources
@@ -193,7 +193,7 @@ resources/010-html-basics-resources.md:
 Download all supplementary files (PDFs, code, etc.):
 
 ```bash
-python3 arkhe-claude-plugins/skola/skills/extract-udemy/scripts/extract.py \
+uv run arkhe-claude-plugins/skola/skills/extract-udemy/scripts/extract.py \
   "https://risesmart.udemy.com/course/data-structures-and-algorithms-java/" \
   --content-types resource
 ```
@@ -227,7 +227,7 @@ Files created:
 Download only resources under 50MB:
 
 ```bash
-python3 arkhe-claude-plugins/skola/skills/extract-udemy/scripts/extract.py \
+uv run arkhe-claude-plugins/skola/skills/extract-udemy/scripts/extract.py \
   "https://risesmart.udemy.com/course/unreal-engine-5/" \
   --content-types resource \
   --max-resource-size 50
@@ -247,7 +247,7 @@ Resource Download Statistics:
 Extract main course content, skip promotional lectures:
 
 ```bash
-python3 arkhe-claude-plugins/skola/skills/extract-udemy/scripts/extract.py \
+uv run arkhe-claude-plugins/skola/skills/extract-udemy/scripts/extract.py \
   "https://risesmart.udemy.com/course/complete-web-developer/" \
   --skip-promotional
 ```
@@ -274,7 +274,7 @@ Statistics:
 Extract a massive course with automatic pagination:
 
 ```bash
-python3 arkhe-claude-plugins/skola/skills/extract-udemy/scripts/extract.py \
+uv run arkhe-claude-plugins/skola/skills/extract-udemy/scripts/extract.py \
   "https://risesmart.udemy.com/course/complete-python-bootcamp/" \
   --content-types video,article
 ```
@@ -305,13 +305,13 @@ If extraction is interrupted, re-run with same command:
 
 ```bash
 # First run interrupted at lecture 100/300
-python3 arkhe-claude-plugins/skola/skills/extract-udemy/scripts/extract.py \
+uv run arkhe-claude-plugins/skola/skills/extract-udemy/scripts/extract.py \
   "https://risesmart.udemy.com/course/large-course/"
 
 # ^C (interrupted)
 
 # Re-run with same command:
-python3 arkhe-claude-plugins/skola/skills/extract-udemy/scripts/extract.py \
+uv run arkhe-claude-plugins/skola/skills/extract-udemy/scripts/extract.py \
   "https://risesmart.udemy.com/course/large-course/"
 
 # Script will overwrite files (idempotent)
@@ -329,7 +329,7 @@ python3 arkhe-claude-plugins/skola/skills/extract-udemy/scripts/extract.py \
 When extracting from a new course, the script discovers API endpoints:
 
 ```bash
-python3 arkhe-claude-plugins/skola/skills/extract-udemy/scripts/extract.py \
+uv run arkhe-claude-plugins/skola/skills/extract-udemy/scripts/extract.py \
   "https://newsite.udemy.com/course/machine-learning-course/"
 ```
 
@@ -354,7 +354,7 @@ Analyze course content types before extracting:
 
 ```bash
 # Run analysis first
-python3 arkhe-claude-plugins/skola/skills/extract-udemy/scripts/tools/analyze_content_types.py \
+uv run arkhe-claude-plugins/skola/skills/extract-udemy/scripts/tools/analyze_content_types.py \
   "https://risesmart.udemy.com/course/data-structures-and-algorithms-java/" \
   analysis-report.json
 ```
@@ -394,7 +394,7 @@ Content Type Analysis Tool
 # Now you know what to extract!
 
 # Extract only the valuable parts:
-python3 arkhe-claude-plugins/skola/skills/extract-udemy/scripts/extract.py \
+uv run arkhe-claude-plugins/skola/skills/extract-udemy/scripts/extract.py \
   "https://risesmart.udemy.com/course/data-structures-and-algorithms-java/" \
   --content-types video,resource
 ```
@@ -404,7 +404,7 @@ python3 arkhe-claude-plugins/skola/skills/extract-udemy/scripts/extract.py \
 Extract quiz questions for review:
 
 ```bash
-python3 arkhe-claude-plugins/skola/skills/extract-udemy/scripts/extract.py \
+uv run arkhe-claude-plugins/skola/skills/extract-udemy/scripts/extract.py \
   "https://risesmart.udemy.com/course/aws-certified-solutions-architect/" \
   --content-types quiz \
   --quiz-format yaml
@@ -439,7 +439,7 @@ questions:
 Extract all external resources mentioned in the course:
 
 ```bash
-python3 arkhe-claude-plugins/skola/skills/extract-udemy/scripts/extract.py \
+uv run arkhe-claude-plugins/skola/skills/extract-udemy/scripts/extract.py \
   "https://risesmart.udemy.com/course/react-complete-guide/" \
   --content-types video,article
 ```
@@ -481,7 +481,7 @@ Links to external resources mentioned throughout the course.
 Extract to a specific directory:
 
 ```bash
-python3 arkhe-claude-plugins/skola/skills/extract-udemy/scripts/extract.py \
+uv run arkhe-claude-plugins/skola/skills/extract-udemy/scripts/extract.py \
   "https://risesmart.udemy.com/course/data-structures-and-algorithms-java/" \
   --output-dir my-dsa-course
 ```
@@ -500,7 +500,7 @@ Files created:
 Extract everything with all options enabled:
 
 ```bash
-python3 arkhe-claude-plugins/skola/skills/extract-udemy/scripts/extract.py \
+uv run arkhe-claude-plugins/skola/skills/extract-udemy/scripts/extract.py \
   "https://risesmart.udemy.com/course/complete-web-development/" \
   --content-types video,article,quiz,resource \
   --download-resources \
