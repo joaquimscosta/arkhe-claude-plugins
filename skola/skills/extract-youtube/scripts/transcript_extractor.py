@@ -36,6 +36,11 @@ class TranscriptExtractor:
             'unavailable': 0,
             'error': 0
         }
+        # Initialize the API instance
+        if TRANSCRIPT_API_AVAILABLE:
+            self.ytt_api = YouTubeTranscriptApi()
+        else:
+            self.ytt_api = None
 
     def extract(self, video_id: str, language: str = 'en') -> Optional[Dict[str, any]]:
         """
@@ -48,14 +53,14 @@ class TranscriptExtractor:
         Returns:
             dict with transcript data or None if unavailable
         """
-        if not TRANSCRIPT_API_AVAILABLE:
+        if not TRANSCRIPT_API_AVAILABLE or self.ytt_api is None:
             logging.error("youtube-transcript-api not installed")
             self.statistics['error'] += 1
             return None
 
         try:
             # Try to get transcript list
-            transcript_list = YouTubeTranscriptApi.list_transcripts(video_id)
+            transcript_list = self.ytt_api.list(video_id)
 
             # Prefer manually created transcripts over auto-generated
             transcript = None
@@ -82,7 +87,10 @@ class TranscriptExtractor:
                 return None
 
             # Fetch the transcript data
-            transcript_data = transcript.fetch()
+            fetched_transcript = transcript.fetch()
+
+            # Convert FetchedTranscript to raw data for compatibility
+            transcript_data = fetched_transcript.to_raw_data()
 
             result = {
                 'video_id': video_id,

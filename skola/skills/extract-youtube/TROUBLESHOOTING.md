@@ -32,17 +32,18 @@ Current Python version: 3.7.9
 ```
 
 **Solution:**
+
+When using `uv run`, Python version is automatically managed. The script declares `requires-python = ">=3.8"` in its inline metadata, so uv will use an appropriate Python version.
+
 ```bash
-# Check available Python versions
-python3 --version
-python3.8 --version
-python3.9 --version
+# uv automatically handles Python versions
+uv run extract.py "URL"
 
-# Use specific version if available
-python3.9 extract.py "URL"
-
-# Or install Python 3.8+ from python.org
+# If you need to install a specific Python version:
+uv python install 3.11
 ```
+
+**Note:** With the inline script metadata approach, Python version issues are rare because uv manages the Python environment automatically.
 
 ### uv Not Installed
 
@@ -74,16 +75,34 @@ uv --version
 ModuleNotFoundError: No module named 'youtube_transcript_api'
 ```
 
+**This should NOT happen when using `uv run`!**
+
+The script uses inline script metadata (PEP 723), which means dependencies are automatically installed on first run.
+
 **Solution:**
 ```bash
-# Install with uv
-uv pip install youtube-transcript-api
+# Use uv run (recommended - auto-installs dependencies)
+uv run extract.py "URL"
 
-# Verify installation
-python3 -c "import youtube_transcript_api; print('✓ Installed')"
+# If error persists, check the script has inline metadata:
+head -n 10 extract.py
+# Should show:
+# #!/usr/bin/env -S uv run --script
+# # /// script
+# # requires-python = ">=3.8"
+# # dependencies = [
+# #     "youtube-transcript-api>=0.6.0",
+# # ]
+# # ///
+```
 
-# Alternative: Install with pip
-pip3 install youtube-transcript-api
+**If running with python3 directly (not recommended):**
+```bash
+# You'll need to manually install dependencies
+python3 -m pip install youtube-transcript-api
+
+# But it's better to use uv run instead
+uv run extract.py "URL"
 ```
 
 ### Import Errors After Installation
@@ -94,10 +113,13 @@ ImportError: cannot import name 'YouTubeTranscriptApi'
 ```
 
 **Solution:**
+
+This usually happens when mixing different installation methods. Use `uv run` consistently:
+
 ```bash
-# Check if multiple Python versions are installed
-which python3
-python3 --version
+# Clear any cached environments and run with uv
+uv cache clean
+uv run extract.py "URL"
 
 # Install to correct Python version
 python3 -m pip install youtube-transcript-api
@@ -281,10 +303,10 @@ ping youtube.com
 
 # Wait and retry (rate limiting)
 sleep 60
-python3 extract.py "URL"
+uv run extract.py "URL"
 
 # Try with different video to test
-python3 extract.py "https://youtube.com/watch?v=dQw4w9WgXcQ"
+uv run extract.py "https://youtube.com/watch?v=dQw4w9WgXcQ"
 ```
 
 ### Incomplete Metadata
@@ -374,7 +396,7 @@ cd ~/Documents
 python3 /path/to/extract.py "URL"
 
 # Or use --output-dir with custom location
-python3 extract.py "URL" --output-dir ~/Downloads/youtube-content
+uv run extract.py "URL" --output-dir ~/Downloads/youtube-content
 ```
 
 ### Cannot Write File
@@ -394,7 +416,7 @@ chmod u+w youtube-research/video-title/*
 
 # Or delete existing directory and re-extract
 rm -rf youtube-research/video-title/
-python3 extract.py "URL"
+uv run extract.py "URL"
 ```
 
 ### Disk Space Full
@@ -410,13 +432,13 @@ OSError: [Errno 28] No space left on device
 df -h .
 
 # Free up space or use different location
-python3 extract.py "URL" --output-dir /path/to/larger/disk/
+uv run extract.py "URL" --output-dir /path/to/larger/disk/
 
 # Use --skip-thumbnails to reduce space usage
-python3 extract.py "URL" --skip-thumbnails
+uv run extract.py "URL" --skip-thumbnails
 
 # Use --transcript-only for minimal files
-python3 extract.py "URL" --transcript-only
+uv run extract.py "URL" --transcript-only
 ```
 
 ---
@@ -439,7 +461,7 @@ ping google.com
 ping youtube.com
 
 # Retry with better connection
-python3 extract.py "URL"
+uv run extract.py "URL"
 
 # Consider using VPN if region-blocked
 ```
@@ -506,13 +528,13 @@ Extraction takes very long time.
 **Solutions:**
 ```bash
 # Skip thumbnails to speed up
-python3 extract.py "URL" --skip-thumbnails
+uv run extract.py "URL" --skip-thumbnails
 
 # Extract transcript only
-python3 extract.py "URL" --transcript-only
+uv run extract.py "URL" --transcript-only
 
 # Run in background
-python3 extract.py "URL" > extraction.log 2>&1 &
+uv run extract.py "URL" > extraction.log 2>&1 &
 
 # Monitor progress
 tail -f extraction.log
@@ -542,12 +564,12 @@ Extraction stopped mid-process (Ctrl+C, network failure, etc.)
 # Simply re-run the command
 # It will overwrite existing files and continue
 
-python3 extract.py "URL"
+uv run extract.py "URL"
 
 # To resume a playlist extraction:
 # 1. Check which videos were already extracted
 # 2. Extract remaining videos individually
-python3 extract.py "https://youtube.com/watch?v=VIDEO_ID"
+uv run extract.py "https://youtube.com/watch?v=VIDEO_ID"
 ```
 
 ---
@@ -641,7 +663,7 @@ uv --version              # Should be installed
 python3 -c "import youtube_transcript_api; print('OK')"  # Should print OK
 
 # Test extraction
-python3 extract.py "https://youtube.com/watch?v=dQw4w9WgXcQ"
+uv run extract.py "https://youtube.com/watch?v=dQw4w9WgXcQ"
 ```
 
 ---

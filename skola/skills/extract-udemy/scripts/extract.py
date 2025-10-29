@@ -1,4 +1,8 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.8"
+# dependencies = []
+# ///
 # -*- coding: utf-8 -*-
 """
 Udemy Course Extractor
@@ -7,7 +11,7 @@ Main script for extracting Udemy course content including structure,
 transcripts, and metadata.
 
 Usage:
-    python extract.py "https://SITE.udemy.com/course/course-name/" [output-dir]
+    uv run extract.py "https://SITE.udemy.com/course/course-name/" [output-dir]
 """
 
 import sys
@@ -82,16 +86,16 @@ def parse_arguments():
         epilog="""
 Examples:
   # Extract all content types (default)
-  python3 extract.py "https://SITE.udemy.com/course/java-multithreading/"
+  uv run extract.py "https://SITE.udemy.com/course/java-multithreading/"
 
   # Extract only transcripts
-  python3 extract.py "https://SITE.udemy.com/course/react-guide/" --content-types video
+  uv run extract.py "https://SITE.udemy.com/course/react-guide/" --content-types video
 
   # Extract videos and articles, skip promotional content
-  python3 extract.py "URL" --content-types video,article --skip-promotional
+  uv run extract.py "URL" --content-types video,article --skip-promotional
 
   # Custom output directory
-  python3 extract.py "URL" --output-dir my-course
+  uv run extract.py "URL" --output-dir my-course
         """
     )
 
@@ -144,7 +148,7 @@ def main():
         print(f"Current Python version: {sys.version.split()[0]}")
         print("Required: Python 3.8 or higher")
         print("\nPlease run with:")
-        print("  python3 extract.py <course-url>")
+        print("  uv run extract.py <course-url>")
         print("\nOr make script executable and run:")
         print("  ./extract.py <course-url>")
         print("=" * 60)

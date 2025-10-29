@@ -1,4 +1,10 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.8"
+# dependencies = [
+#     "youtube-transcript-api>=0.6.0",
+# ]
+# ///
 # -*- coding: utf-8 -*-
 """
 YouTube Content Extractor
@@ -7,8 +13,12 @@ Main script for extracting YouTube video and playlist content including
 transcripts and metadata.
 
 Usage:
-    python3 extract.py "https://youtube.com/watch?v=VIDEO_ID"
-    python3 extract.py "https://youtube.com/playlist?list=PLAYLIST_ID"
+    uv run extract.py "https://youtube.com/watch?v=VIDEO_ID"
+    uv run extract.py "https://youtube.com/playlist?list=PLAYLIST_ID"
+
+    # Or make executable and run directly:
+    chmod +x extract.py
+    ./extract.py "https://youtube.com/watch?v=VIDEO_ID"
 """
 
 import sys
@@ -50,16 +60,16 @@ def parse_arguments():
         epilog="""
 Examples:
   # Extract single video
-  python3 extract.py "https://youtube.com/watch?v=dQw4w9WgXcQ"
+  uv run extract.py "https://youtube.com/watch?v=dQw4w9WgXcQ"
 
   # Extract playlist
-  python3 extract.py "https://youtube.com/playlist?list=PLrAXtmErZgOeiKm4sgNOknGvNjby9efdf"
+  uv run extract.py "https://youtube.com/playlist?list=PLrAXtmErZgOeiKm4sgNOknGvNjby9efdf"
 
   # Short URL
-  python3 extract.py "https://youtu.be/dQw4w9WgXcQ"
+  uv run extract.py "https://youtu.be/dQw4w9WgXcQ"
 
   # Custom output directory
-  python3 extract.py "URL" --output-dir my-video
+  uv run extract.py "URL" --output-dir my-video
         """
     )
 
@@ -315,7 +325,7 @@ def main():
         print(f"Current Python version: {sys.version.split()[0]}")
         print("Required: Python 3.8 or higher")
         print("\nPlease run with:")
-        print("  python3 extract.py <youtube-url>")
+        print("  uv run extract.py <youtube-url>")
         print("=" * 60)
         sys.exit(1)
 
