@@ -75,15 +75,15 @@ Resource Download Statistics:
   ✓ 110 files downloaded (0.5MB)
 
 Files created:
-  udemy-research/data-structures-and-algorithms-java/README.md
-  udemy-research/data-structures-and-algorithms-java/transcripts/ (142 files)
-  udemy-research/data-structures-and-algorithms-java/articles/ (2 files)
-  udemy-research/data-structures-and-algorithms-java/resources/ (61 catalogs)
+  skola-research/udemy/data-structures-and-algorithms-java/README.md
+  skola-research/udemy/data-structures-and-algorithms-java/transcripts/ (142 files)
+  skola-research/udemy/data-structures-and-algorithms-java/articles/ (2 files)
+  skola-research/udemy/data-structures-and-algorithms-java/resources/ (61 catalogs)
 ```
 
 **Result Structure:**
 ```
-udemy-research/data-structures-and-algorithms-java/
+skola-research/udemy/data-structures-and-algorithms-java/
 ├── README.md
 ├── transcripts/
 │   ├── 001-overview-please-watch.txt
@@ -132,8 +132,8 @@ Statistics:
   Resources: 0
 
 Files created:
-  udemy-research/react-complete-guide/README.md
-  udemy-research/react-complete-guide/transcripts/ (285 files)
+  skola-research/udemy/react-complete-guide/README.md
+  skola-research/udemy/react-complete-guide/transcripts/ (285 files)
 ```
 
 ### Example 3: Articles and Transcripts
@@ -176,7 +176,7 @@ Statistics:
   Resources: 45
 
 Files created:
-  udemy-research/web-development-bootcamp/resources/ (45 catalog files)
+  skola-research/udemy/web-development-bootcamp/resources/ (45 catalog files)
 
 # Each catalog file lists resources with URLs for manual download:
 resources/010-html-basics-resources.md:
@@ -489,9 +489,9 @@ uv run arkhe-claude-plugins/skola/skills/extract-udemy/scripts/extract.py \
 **Result:**
 ```
 Files created:
-  udemy-research/my-dsa-course/README.md
-  udemy-research/my-dsa-course/transcripts/
-  udemy-research/my-dsa-course/resources/
+  skola-research/udemy/my-dsa-course/README.md
+  skola-research/udemy/my-dsa-course/transcripts/
+  skola-research/udemy/my-dsa-course/resources/
   ...
 ```
 
@@ -531,11 +531,11 @@ Resource Download Statistics:
   ⊘ 5 files skipped (exceeded 200MB limit)
 
 Files created:
-  udemy-research/web-dev-2024/README.md
-  udemy-research/web-dev-2024/transcripts/ (380 files)
-  udemy-research/web-dev-2024/articles/ (25 files)
-  udemy-research/web-dev-2024/quizzes/ (8 files)
-  udemy-research/web-dev-2024/resources/ (95 catalogs, 150 downloaded files)
+  skola-research/udemy/web-dev-2024/README.md
+  skola-research/udemy/web-dev-2024/transcripts/ (380 files)
+  skola-research/udemy/web-dev-2024/articles/ (25 files)
+  skola-research/udemy/web-dev-2024/quizzes/ (8 files)
+  skola-research/udemy/web-dev-2024/resources/ (95 catalogs, 150 downloaded files)
 ```
 
 ---

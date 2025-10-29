@@ -86,13 +86,13 @@ The `extracting-udemy` skill extracts:
 
 **Requirements**:
 - Python 3.8+ (verify with `python3 --version`)
-- Valid Udemy session in `udemy-research/cookies.json`
+- Valid Udemy session in `skola-research/udemy/cookies.json`
 - Must be enrolled in the course
 - Standard library only (no pip packages needed)
 
 **Authentication Setup**:
 
-Create `udemy-research/cookies.json` in your project root:
+Create `skola-research/udemy/cookies.json` in your project root:
 
 ```json
 {
@@ -111,10 +111,10 @@ Extract cookies from browser:
 
 **Output Structure**:
 
-Extracted courses are saved in `udemy-research/{course-slug}/`:
+Extracted courses are saved in `skola-research/udemy/{course-slug}/`:
 
 ```
-udemy-research/
+skola-research/udemy/
 └── course-name/
     ├── README.md           # Course metadata
     ├── transcripts/        # Video transcripts
@@ -149,11 +149,11 @@ The `extracting-youtube` skill extracts:
 
 **Output Structure**:
 
-Extracted content is saved in `youtube-research/{video-or-playlist-title}/`:
+Extracted content is saved in `skola-research/youtube/{video-or-playlist-title}/`:
 
 **Single Video:**
 ```
-youtube-research/
+skola-research/youtube/
 └── video-title/
     ├── README.md           # Video metadata and description
     ├── metadata.json       # Structured video data
@@ -164,7 +164,7 @@ youtube-research/
 
 **Playlist:**
 ```
-youtube-research/
+skola-research/youtube/
 └── playlist-title/
     ├── README.md               # Playlist overview and video list
     ├── metadata.json           # Playlist metadata

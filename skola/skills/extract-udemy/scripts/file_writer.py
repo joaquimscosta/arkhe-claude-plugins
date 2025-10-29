@@ -1138,7 +1138,7 @@ This directory contains:
 # Example usage
 if __name__ == '__main__':
     # Use current working directory as base (works for both local and Git-installed plugins)
-    project_root = Path.cwd() / 'udemy-research'
+    project_root = Path.cwd() / 'skola-research' / 'udemy'
 
     # Test file writer
     writer = CourseFileWriter(

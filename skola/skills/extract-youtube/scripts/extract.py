@@ -45,11 +45,11 @@ logger = logging.getLogger(__name__)
 
 def get_project_root():
     """
-    Get the project root directory for youtube-research/.
+    Get the project root directory for skola-research/youtube/.
 
     Uses current working directory (where Claude Code is running) as base.
     """
-    return Path.cwd() / 'youtube-research'
+    return Path.cwd() / 'skola-research' / 'youtube'
 
 
 def parse_arguments():

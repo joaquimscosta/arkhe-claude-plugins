@@ -34,7 +34,7 @@ def analyze_course_content(course_url, output_file=None):
         output_file: Optional path to save analysis report
     """
     # Use current working directory as base (works for both local and Git-installed plugins)
-    project_root = Path.cwd() / 'udemy-research'
+    project_root = Path.cwd() / 'skola-research' / 'udemy'
 
     print("=" * 60)
     print("Content Type Analysis Tool")

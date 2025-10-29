@@ -179,7 +179,7 @@ Timestamps are formatted as:
 
 **Single Video:**
 ```
-youtube-research/
+skola-research/youtube/
 └── video-title/
     ├── README.md           # Video information and description
     ├── metadata.json       # Structured metadata
@@ -190,7 +190,7 @@ youtube-research/
 
 **Playlist:**
 ```
-youtube-research/
+skola-research/youtube/
 └── playlist-title/
     ├── README.md               # Playlist overview and video list
     ├── metadata.json           # Playlist metadata
@@ -411,7 +411,7 @@ When this skill is triggered by Claude Code:
 4. Claude executes extraction script via Bash tool
 5. Results are summarized and presented to user
 
-The skill is designed to work from any working directory by using `Path.cwd() / 'youtube-research'` as the base output path.
+The skill is designed to work from any working directory by using `Path.cwd() / 'skola-research' / 'youtube'` as the base output path.
 
 ---
 

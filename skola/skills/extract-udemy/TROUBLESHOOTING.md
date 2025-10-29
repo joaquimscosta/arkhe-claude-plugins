@@ -63,9 +63,9 @@ FileNotFoundError: [Errno 2] No such file or directory: 'cookies.json'
 
 **Solution:**
 
-Create `cookies.json` in `udemy-research/` directory:
+Create `cookies.json` in `skola-research/udemy/` directory:
 ```bash
-cd udemy-research
+cd skola-research/udemy
 touch cookies.json
 # Edit file and add your cookies
 ```
@@ -338,8 +338,8 @@ PermissionError: [Errno 13] Permission denied: 'resources/file.pdf'
 
 1. **Check directory permissions**:
    ```bash
-   ls -la udemy-research/course-name/resources/
-   chmod 755 udemy-research/course-name/resources/
+   ls -la skola-research/udemy/course-name/resources/
+   chmod 755 skola-research/udemy/course-name/resources/
    ```
 
 2. **Check disk space**:
@@ -483,7 +483,7 @@ If issues persist:
 
 1. **Check recent changes**:
    - See `IMPLEMENTATION_SUMMARY.md` for recent updates
-   - Check `../../../udemy-research/FUTURE_EXTRACTORS_ROADMAP.md` for known issues
+   - Check `../../../skola-research/udemy/FUTURE_EXTRACTORS_ROADMAP.md` for known issues
 
 2. **Enable debug logging**:
    ```python
@@ -498,7 +498,7 @@ If issues persist:
    ```
 
 4. **Check API documentation**:
-   - See `../../../udemy-research/API.md` for endpoint details
+   - See `../../../skola-research/udemy/API.md` for endpoint details
    - May need to update endpoints if Udemy changed their API
 
 ---

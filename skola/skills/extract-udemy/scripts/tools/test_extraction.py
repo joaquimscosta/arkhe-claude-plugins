@@ -33,7 +33,7 @@ def test_authentication():
     print("=" * 60)
 
     # Use current working directory as base (works for both local and Git-installed plugins)
-    project_root = Path.cwd() / 'udemy-research'
+    project_root = Path.cwd() / 'skola-research' / 'udemy'
 
     try:
         print("\n1. Loading credentials from .env...")

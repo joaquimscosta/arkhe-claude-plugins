@@ -9,7 +9,7 @@ Extract educational content from multiple sources for offline study, research, a
 ## Supported Sources
 
 - **Udemy** - Course content including video transcripts, articles, quizzes, and resources
-- **YouTube** - *(Coming soon)* Video transcripts and metadata
+- **YouTube** - Video transcripts and metadata for videos and playlists
 - **Blog Articles** - *(Coming soon)* Article content and code examples
 
 ## How to Use
@@ -31,19 +31,20 @@ The command will:
 The command identifies sources based on URL patterns:
 
 - **Udemy**: `udemy.com/course/*`
-- **YouTube**: `youtube.com/watch?v=*` or `youtu.be/*` → *(Coming soon)*
+- **YouTube**: `youtube.com/watch?v=*` or `youtu.be/*` or `youtube.com/playlist?list=*`
 - **Blog**: Other educational content URLs → *(Coming soon)*
 
 ## Requirements by Source
 
 ### Udemy
 - Python 3.8+
-- Valid Udemy session cookies in `udemy-research/cookies.json`
+- Valid Udemy session cookies in `skola-research/udemy/cookies.json`
 - Must be enrolled in the course
 
-### YouTube (Coming Soon)
+### YouTube
 - Python 3.8+
-- Optional: YouTube API key for enhanced metadata
+- uv package manager
+- No authentication required for public videos
 
 ### Blog Articles (Coming Soon)
 - Python 3.8+
@@ -56,9 +57,14 @@ The command identifies sources based on URL patterns:
 /extract https://www.udemy.com/course/complete-python-bootcamp/
 ```
 
-### Extract YouTube Video (Coming Soon)
+### Extract YouTube Video
 ```
 /extract https://www.youtube.com/watch?v=dQw4w9WgXcQ
+```
+
+### Extract YouTube Playlist
+```
+/extract https://www.youtube.com/playlist?list=PLrAXtmErZgOeiKm4sgNOknGvNjby9efdf
 ```
 
 ### Extract Blog Article (Coming Soon)
@@ -71,9 +77,10 @@ The command identifies sources based on URL patterns:
 All extracted content is organized in source-specific directories:
 
 ```
-udemy-research/          # Udemy courses
-youtube-research/        # YouTube videos (coming soon)
-blog-research/           # Blog articles (coming soon)
+skola-research/
+├── udemy/              # Udemy courses
+├── youtube/            # YouTube videos and playlists
+└── blog/               # Blog articles (coming soon)
 ```
 
 Each source maintains its own directory structure optimized for that content type.

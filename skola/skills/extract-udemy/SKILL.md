@@ -39,16 +39,16 @@ uv run arkhe-claude-plugins/skola/skills/extract-udemy/scripts/extract.py \
   "https://SITE.udemy.com/course/course-name/"
 ```
 
-**Important:** Run the script from your project root directory (where `udemy-research/` should be created).
+**Important:** Run the script from your project root directory (where `skola-research/` should be created).
 
 For advanced options, content-type selection, and resource configuration, see [EXAMPLES.md](EXAMPLES.md).
 
 ## Output Structure
 
-Courses are created in `udemy-research/{course-slug}/`:
+Courses are created in `skola-research/udemy/{course-slug}/`:
 
 ```
-udemy-research/
+skola-research/udemy/
 └── course-name/
     ├── README.md                # Course metadata (auto-populated from API)
     ├── transcripts/             # Video transcripts with timestamps
@@ -124,8 +124,8 @@ See [EXAMPLES.md](EXAMPLES.md) for detailed examples including:
 ## Implementation Details
 
 For technical details about the extractors, API endpoints, and implementation:
-- See `../../../udemy-research/UDEMY_PLATFORM_REFERENCE.md` for platform details and API documentation
-- See `../../../udemy-research/FUTURE_EXTRACTORS_ROADMAP.md` for planned features
+- See `../../../skola-research/udemy/UDEMY_PLATFORM_REFERENCE.md` for platform details and API documentation
+- See `../../../skola-research/udemy/FUTURE_EXTRACTORS_ROADMAP.md` for planned features
 
 ## Related Files
 
@@ -139,5 +139,5 @@ For technical details about the extractors, API endpoints, and implementation:
 **Documentation:**
 - `TROUBLESHOOTING.md` - Complete error handling guide
 - `EXAMPLES.md` - Detailed usage examples
-- `../../../udemy-research/UDEMY_PLATFORM_REFERENCE.md` - Platform details and API documentation
-- `../../../udemy-research/QUICKSTART.md` - Quick start guide
+- `../../../skola-research/udemy/UDEMY_PLATFORM_REFERENCE.md` - Platform details and API documentation
+- `../../../skola-research/udemy/QUICKSTART.md` - Quick start guide

@@ -70,12 +70,12 @@ def parse_course_url(url):
 
 def get_project_root():
     """
-    Get the project root directory for udemy-research/.
+    Get the project root directory for skola-research/udemy/.
 
     Uses current working directory (where Claude Code is running) as base.
     This works whether the plugin is installed locally or from a Git repository.
     """
-    return Path.cwd() / 'udemy-research'
+    return Path.cwd() / 'skola-research' / 'udemy'
 
 
 def parse_arguments():

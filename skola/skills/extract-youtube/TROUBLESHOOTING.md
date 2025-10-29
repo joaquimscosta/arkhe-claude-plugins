@@ -383,7 +383,7 @@ If you need all videos from a very large playlist, extract individual video URLs
 
 **Error:**
 ```
-PermissionError: [Errno 13] Permission denied: 'youtube-research/...'
+PermissionError: [Errno 13] Permission denied: 'skola-research/youtube/...'
 ```
 
 **Solution:**
@@ -409,13 +409,13 @@ PermissionError: [Errno 13] Permission denied: 'transcript.md'
 **Solution:**
 ```bash
 # Check if file already exists and is read-only
-ls -l youtube-research/video-title/
+ls -l skola-research/youtube/video-title/
 
 # Remove read-only attribute
-chmod u+w youtube-research/video-title/*
+chmod u+w skola-research/youtube/video-title/*
 
 # Or delete existing directory and re-extract
-rm -rf youtube-research/video-title/
+rm -rf skola-research/youtube/video-title/
 uv run extract.py "URL"
 ```
 

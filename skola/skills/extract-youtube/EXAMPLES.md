@@ -47,7 +47,7 @@ URL: https://www.youtube.com/watch?v=dQw4w9WgXcQ
 📹 Extracting video: dQw4w9WgXcQ
   Fetching metadata...
   ✓ Title: Rick Astley - Never Gonna Give You Up
-  📁 Output: youtube-research/Rick-Astley-Never-Gonna-Give-You-Up
+  📁 Output: skola-research/youtube/Rick-Astley-Never-Gonna-Give-You-Up
 
   Extracting transcript...
   ✓ Transcript saved
@@ -59,14 +59,14 @@ URL: https://www.youtube.com/watch?v=dQw4w9WgXcQ
 ✓ Extraction complete!
   Transcripts: 1
   Thumbnails: 1
-  Output: youtube-research/Rick-Astley-Never-Gonna-Give-You-Up
+  Output: skola-research/youtube/Rick-Astley-Never-Gonna-Give-You-Up
 
 ✓ Done!
 ```
 
 **Files Created:**
 ```
-youtube-research/Rick-Astley-Never-Gonna-Give-You-Up/
+skola-research/youtube/Rick-Astley-Never-Gonna-Give-You-Up/
 ├── README.md
 ├── metadata.json
 ├── transcript.md
@@ -158,7 +158,7 @@ URL: https://www.youtube.com/playlist?list=PLrAXtmErZgOeiKm4sgNOknGvNjby9efdf
   ✓ Playlist: Python Tutorial for Beginners
   ✓ Videos: 12
 
-  📁 Output: youtube-research/Python-Tutorial-for-Beginners
+  📁 Output: skola-research/youtube/Python-Tutorial-for-Beginners
 
   Saving playlist metadata...
   ✓ Playlist metadata saved
@@ -182,7 +182,7 @@ URL: https://www.youtube.com/playlist?list=PLrAXtmErZgOeiKm4sgNOknGvNjby9efdf
 Playlist Extraction Complete!
 ============================================================
 Playlist: Python Tutorial for Beginners
-Output: youtube-research/Python-Tutorial-for-Beginners
+Output: skola-research/youtube/Python-Tutorial-for-Beginners
 
 Statistics:
   Total videos: 12
@@ -191,8 +191,8 @@ Statistics:
   Failed: 0
 
 Files created:
-  youtube-research/Python-Tutorial-for-Beginners/README.md
-  youtube-research/Python-Tutorial-for-Beginners/metadata.json
+  skola-research/youtube/Python-Tutorial-for-Beginners/README.md
+  skola-research/youtube/Python-Tutorial-for-Beginners/metadata.json
   Transcripts: 10 files
   Thumbnails: 12 files
 ============================================================
@@ -202,7 +202,7 @@ Files created:
 
 **Files Created:**
 ```
-youtube-research/Python-Tutorial-for-Beginners/
+skola-research/youtube/Python-Tutorial-for-Beginners/
 ├── README.md
 ├── metadata.json
 ├── 001-Introduction-to-Python.md
@@ -241,7 +241,7 @@ uv run arkhe-claude-plugins/skola/skills/extract-youtube/scripts/extract.py \
 
 **Output Path:**
 ```
-youtube-research/rickroll-classic/
+skola-research/youtube/rickroll-classic/
 ├── README.md
 ├── metadata.json
 ├── transcript.md
@@ -268,7 +268,7 @@ uv run arkhe-claude-plugins/skola/skills/extract-youtube/scripts/extract.py \
 
 **Files Created:**
 ```
-youtube-research/Rick-Astley-Never-Gonna-Give-You-Up/
+skola-research/youtube/Rick-Astley-Never-Gonna-Give-You-Up/
 └── transcript.md
 ```
 
@@ -291,7 +291,7 @@ uv run arkhe-claude-plugins/skola/skills/extract-youtube/scripts/extract.py \
 
 **Files Created:**
 ```
-youtube-research/Rick-Astley-Never-Gonna-Give-You-Up/
+skola-research/youtube/Rick-Astley-Never-Gonna-Give-You-Up/
 ├── README.md
 ├── metadata.json
 ├── transcript.md
@@ -315,7 +315,7 @@ Some videos don't have transcripts available:
 📹 Extracting video: ABC123XYZ
   Fetching metadata...
   ✓ Title: Music Video Without Captions
-  📁 Output: youtube-research/Music-Video-Without-Captions
+  📁 Output: skola-research/youtube/Music-Video-Without-Captions
 
   Extracting transcript...
   ⚠️  No transcript available
@@ -327,12 +327,12 @@ Some videos don't have transcripts available:
 ✓ Extraction complete!
   Transcripts: 0
   Thumbnails: 1
-  Output: youtube-research/Music-Video-Without-Captions
+  Output: skola-research/youtube/Music-Video-Without-Captions
 ```
 
 **Files Created:**
 ```
-youtube-research/Music-Video-Without-Captions/
+skola-research/youtube/Music-Video-Without-Captions/
 ├── README.md
 ├── metadata.json
 └── resources/
@@ -473,7 +473,7 @@ When Claude Code invokes this skill automatically:
 ```
 I've extracted the content from that YouTube video. Here's what was saved:
 
-📁 Output: youtube-research/Rick-Astley-Never-Gonna-Give-You-Up/
+📁 Output: skola-research/youtube/Rick-Astley-Never-Gonna-Give-You-Up/
 
 Files created:
 - README.md - Video information and description
@@ -509,7 +509,7 @@ metadata = client.get_video_metadata(video_id)
 transcript_data = transcript_extractor.extract(video_id)
 
 # Save files
-output_path = Path("youtube-research/my-video")
+output_path = Path("skola-research/youtube/my-video")
 file_writer = YouTubeFileWriter(output_path, 'video')
 file_writer.create_directory_structure()
 file_writer.save_video_readme(metadata)

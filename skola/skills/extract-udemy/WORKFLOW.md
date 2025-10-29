@@ -20,13 +20,13 @@ The extraction process follows 5 main steps:
 
 When running this skill, the script uses the **current working directory** as the base:
 
-- **Cookies:** `udemy-research/cookies.json` (in current working directory)
-- **Output:** `udemy-research/{course-slug}/` (in current working directory)
+- **Cookies:** `skola-research/udemy/cookies.json` (in current working directory)
+- **Output:** `skola-research/udemy/{course-slug}/` (in current working directory)
 
 **Example:**
 If you're running Claude Code from `/Users/you/projects/myproject/`, files will be created at:
-- `/Users/you/projects/myproject/udemy-research/cookies.json`
-- `/Users/you/projects/myproject/udemy-research/{course-slug}/`
+- `/Users/you/projects/myproject/skola-research/udemy/cookies.json`
+- `/Users/you/projects/myproject/skola-research/udemy/{course-slug}/`
 
 This design works whether the plugin is installed locally or from a Git repository marketplace.
 
@@ -34,9 +34,9 @@ This design works whether the plugin is installed locally or from a Git reposito
 
 ## Step 1: Authentication
 
-Load session cookies from `udemy-research/cookies.json`:
+Load session cookies from `skola-research/udemy/cookies.json`:
 
-**Cookie file format** (`udemy-research/cookies.json`):
+**Cookie file format** (`skola-research/udemy/cookies.json`):
 ```json
 {
   "access_token": "your-token",
@@ -52,7 +52,7 @@ Load session cookies from `udemy-research/cookies.json`:
 1. Log into Udemy in browser
 2. Open DevTools → Application → Cookies
 3. Copy `access_token` and `client_id` values
-4. Save to `udemy-research/cookies.json`
+4. Save to `skola-research/udemy/cookies.json`
 
 **Note**: Cookies expire after ~24 hours. Refresh as needed.
 
