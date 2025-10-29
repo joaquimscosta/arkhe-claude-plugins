@@ -118,7 +118,7 @@ Install all plugins:
 /plugin install core@arkhe-claude-plugins
 /plugin install ai@arkhe-claude-plugins
 /plugin install doc@arkhe-claude-plugins
-/plugin install skola@arkhe-claude-plugins    # Includes Udemy extraction
+/plugin install skola@arkhe-claude-plugins
 /plugin install review@arkhe-claude-plugins
 /plugin install ui@arkhe-claude-plugins
 /plugin install git@arkhe-claude-plugins
