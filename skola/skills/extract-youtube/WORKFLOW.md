@@ -19,24 +19,33 @@ The extraction process follows these high-level steps:
 
 ### 1. Setup
 
-#### Install Dependencies
+#### Install uv Package Manager
 
 ```bash
-# Install uv package manager (if not already installed)
+# Install uv (if not already installed)
 curl -LsSf https://astral.sh/uv/install.sh | sh
-
-# Install youtube-transcript-api
-uv pip install youtube-transcript-api
 ```
 
-#### Verify Installation
+#### Zero Setup - Dependencies Auto-Install
 
+The script uses **inline script metadata** (PEP 723), which means:
+- Dependencies are declared within the script itself
+- On first run, `uv` automatically creates an isolated virtual environment
+- The required `youtube-transcript-api` package is auto-installed
+- No manual dependency installation needed!
+
+**First run will show:**
 ```bash
-# Check Python version (3.8+ required)
-python3 --version
+uv run extract.py "URL"
+# Creating virtual environment...
+# Installing dependencies: youtube-transcript-api>=0.6.0
+# Running script...
+```
 
-# Verify youtube-transcript-api is installed
-python3 -c "import youtube_transcript_api; print('✓ Package installed')"
+**Subsequent runs are instant:**
+```bash
+uv run extract.py "URL"
+# Running script... (environment already exists)
 ```
 
 ### 2. URL Parsing
@@ -375,19 +384,19 @@ Files created:
 ### Custom Output Directory
 
 ```bash
-python3 extract.py "URL" --output-dir my-custom-name
+uv run extract.py "URL" --output-dir my-custom-name
 ```
 
 ### Skip Thumbnails
 
 ```bash
-python3 extract.py "URL" --skip-thumbnails
+uv run extract.py "URL" --skip-thumbnails
 ```
 
 ### Transcript Only
 
 ```bash
-python3 extract.py "URL" --transcript-only
+uv run extract.py "URL" --transcript-only
 ```
 
 This skips README.md, metadata.json, and thumbnail downloads.

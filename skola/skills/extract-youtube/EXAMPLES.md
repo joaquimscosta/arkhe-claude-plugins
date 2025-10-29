@@ -24,7 +24,7 @@ For detailed workflow, see [WORKFLOW.md](WORKFLOW.md).
 
 **Command:**
 ```bash
-python3 arkhe-claude-plugins/skola/skills/extract-youtube/scripts/extract.py \
+uv run arkhe-claude-plugins/skola/skills/extract-youtube/scripts/extract.py \
   "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
 ```
 
@@ -133,7 +133,7 @@ The official video for "Never Gonna Give You Up" by Rick Astley
 
 **Command:**
 ```bash
-python3 arkhe-claude-plugins/skola/skills/extract-youtube/scripts/extract.py \
+uv run arkhe-claude-plugins/skola/skills/extract-youtube/scripts/extract.py \
   "https://www.youtube.com/playlist?list=PLrAXtmErZgOeiKm4sgNOknGvNjby9efdf"
 ```
 
@@ -222,7 +222,7 @@ YouTube's short URL format (`youtu.be`) is fully supported:
 
 **Command:**
 ```bash
-python3 arkhe-claude-plugins/skola/skills/extract-youtube/scripts/extract.py \
+uv run arkhe-claude-plugins/skola/skills/extract-youtube/scripts/extract.py \
   "https://youtu.be/dQw4w9WgXcQ"
 ```
 
@@ -234,7 +234,7 @@ Override the default directory name (derived from video/playlist title):
 
 **Command:**
 ```bash
-python3 arkhe-claude-plugins/skola/skills/extract-youtube/scripts/extract.py \
+uv run arkhe-claude-plugins/skola/skills/extract-youtube/scripts/extract.py \
   "https://www.youtube.com/watch?v=dQw4w9WgXcQ" \
   --output-dir rickroll-classic
 ```
@@ -261,7 +261,7 @@ Extract only transcripts, skip metadata files and thumbnails:
 
 **Command:**
 ```bash
-python3 arkhe-claude-plugins/skola/skills/extract-youtube/scripts/extract.py \
+uv run arkhe-claude-plugins/skola/skills/extract-youtube/scripts/extract.py \
   "https://www.youtube.com/watch?v=dQw4w9WgXcQ" \
   --transcript-only
 ```
@@ -284,7 +284,7 @@ Extract metadata and transcripts but skip thumbnail downloads:
 
 **Command:**
 ```bash
-python3 arkhe-claude-plugins/skola/skills/extract-youtube/scripts/extract.py \
+uv run arkhe-claude-plugins/skola/skills/extract-youtube/scripts/extract.py \
   "https://www.youtube.com/watch?v=dQw4w9WgXcQ" \
   --skip-thumbnails
 ```
@@ -360,7 +360,7 @@ The extraction continues even when some videos don't have transcripts.
 
 **Command:**
 ```bash
-python3 arkhe-claude-plugins/skola/skills/extract-youtube/scripts/extract.py \
+uv run arkhe-claude-plugins/skola/skills/extract-youtube/scripts/extract.py \
   "https://www.youtube.com/playlist?list=LARGE_PLAYLIST_ID"
 ```
 
@@ -397,7 +397,7 @@ python3 arkhe-claude-plugins/skola/skills/extract-youtube/scripts/extract.py \
 - Use `--transcript-only` if you only need text
 - Run in background with output redirection:
   ```bash
-  python3 extract.py "URL" > extraction.log 2>&1 &
+  uv run extract.py "URL" > extraction.log 2>&1 &
   ```
 
 ## Error Recovery
@@ -426,7 +426,7 @@ Transcript Extraction Issues:
 
 **Command:**
 ```bash
-python3 extract.py "https://youtube.com/invalid"
+uv run extract.py "https://youtube.com/invalid"
 ```
 
 **Output:**
@@ -441,7 +441,7 @@ python3 extract.py "https://youtube.com/invalid"
 
 **Command:**
 ```bash
-python3 arkhe-claude-plugins/skola/skills/extract-youtube/scripts/extract.py \
+uv run arkhe-claude-plugins/skola/skills/extract-youtube/scripts/extract.py \
   "https://www.youtube.com/playlist?list=PLAYLIST_ID" \
   --output-dir python-course \
   --skip-thumbnails
@@ -451,7 +451,7 @@ python3 arkhe-claude-plugins/skola/skills/extract-youtube/scripts/extract.py \
 
 **Command:**
 ```bash
-python3 arkhe-claude-plugins/skola/skills/extract-youtube/scripts/extract.py \
+uv run arkhe-claude-plugins/skola/skills/extract-youtube/scripts/extract.py \
   "https://youtu.be/VIDEO_ID" \
   --transcript-only \
   --output-dir lecture-transcript

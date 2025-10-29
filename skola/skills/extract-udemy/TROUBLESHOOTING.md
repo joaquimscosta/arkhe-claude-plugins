@@ -101,7 +101,7 @@ touch cookies.json
 3. **Try numeric course ID instead**:
    ```bash
    # Extract course ID from URL or browser
-   python3 extract.py "https://SITE.udemy.com/course/4218796/"
+   uv run extract.py "https://SITE.udemy.com/course/4218796/"
    ```
 
 ### Error: "Course not found" or 404
@@ -143,7 +143,7 @@ ERROR: 404 Not Found - Course {id} not found
 1. **Re-run API discovery**:
    ```bash
    # Use analyze_content_types.py to test endpoints
-   python3 scripts/tools/analyze_content_types.py "COURSE_URL" output.json
+   uv run scripts/tools/analyze_content_types.py "COURSE_URL" output.json
    ```
 
 2. **Check for new endpoint patterns**:
@@ -263,13 +263,13 @@ Statistics:
 
 2. **Re-run extraction**:
    ```bash
-   python3 extract.py "COURSE_URL" --content-types resource
+   uv run extract.py "COURSE_URL" --content-types resource
    ```
 
 3. **Verify resources are detected**:
    ```bash
    # Run content analysis
-   python3 scripts/tools/analyze_content_types.py "COURSE_URL" analysis.json
+   uv run scripts/tools/analyze_content_types.py "COURSE_URL" analysis.json
    # Check: "Lectures with Downloadable Resources: X"
    ```
 
@@ -291,7 +291,7 @@ Statistics:
 
 1. **Increase size limit**:
    ```bash
-   python3 extract.py "COURSE_URL" --max-resource-size 500
+   uv run extract.py "COURSE_URL" --max-resource-size 500
    ```
 
 2. **Download specific resources manually**:
@@ -300,7 +300,7 @@ Statistics:
 
 3. **Skip resource downloading**:
    ```bash
-   python3 extract.py "COURSE_URL" --no-download-resources
+   uv run extract.py "COURSE_URL" --no-download-resources
    # Creates catalogs without downloading files
    ```
 
@@ -316,7 +316,7 @@ ERROR: Failed to download resource.pdf - timeout
 
 1. **Re-run extraction** (will skip already downloaded files):
    ```bash
-   python3 extract.py "COURSE_URL" --content-types resource
+   uv run extract.py "COURSE_URL" --content-types resource
    ```
 
 2. **Check network connection**:
@@ -383,7 +383,7 @@ ConnectionRefusedError: [Errno 61] Connection refused
    ```bash
    export HTTP_PROXY="http://proxy:port"
    export HTTPS_PROXY="http://proxy:port"
-   python3 extract.py "COURSE_URL"
+   uv run extract.py "COURSE_URL"
    ```
 
 ### Error: "SSL Certificate verification failed"
@@ -434,19 +434,19 @@ SyntaxError: invalid syntax
 
 **Solutions:**
 
-1. **Use `python3` command**:
+1. **Use `uv run` command for consistent environment**:
    ```bash
-   python3 extract.py "COURSE_URL"
-   # NOT: python extract.py
+   uv run extract.py "COURSE_URL"
+   # uv handles Python version automatically
    ```
 
-2. **Verify Python version**:
+2. **Verify Python version (if not using uv)**:
    ```bash
    python3 --version
    # Should show: Python 3.8.x or higher
    ```
 
-3. **Make script executable** (uses shebang `#!/usr/bin/env python3`):
+3. **Make script executable** (uses shebang `#!/usr/bin/env -S uv run --script`):
    ```bash
    chmod +x extract.py
    ./extract.py "COURSE_URL"
@@ -493,7 +493,7 @@ If issues persist:
 
 3. **Run content analysis**:
    ```bash
-   python3 scripts/tools/analyze_content_types.py "COURSE_URL" debug-analysis.json
+   uv run scripts/tools/analyze_content_types.py "COURSE_URL" debug-analysis.json
    # Check output for API response details
    ```
 
@@ -511,7 +511,7 @@ If issues persist:
 | Course not found | Verify enrollment, check URL |
 | No transcripts | Check if lecture has captions in UI |
 | No resources (but visible in UI) | Verify `supplementary_assets` parsing (bug fix 2025-10-18) |
-| Python syntax error | Use `python3` command |
+| Python syntax error | Use `uv run` command |
 | Rate limited | Increase delay in extract.py |
 | Download failed | Re-run (skips completed), or use `--no-download-resources` |
 | Network timeout | Check connection, try again |

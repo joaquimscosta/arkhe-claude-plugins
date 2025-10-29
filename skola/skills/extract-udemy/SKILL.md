@@ -26,15 +26,16 @@ Use this skill when the user:
 
 ## Requirements
 
-- **Python**: 3.8+ (verify with `python3 --version`)
+- **Python**: 3.8+ (automatically managed by uv)
+- **uv**: Modern Python package manager (install: `curl -LsSf https://astral.sh/uv/install.sh | sh`)
 - **Authentication**: Valid Udemy session in `cookies.json`
 - **Access**: Must be enrolled in the course
-- **Libraries**: Standard library only (no pip packages needed)
+- **Libraries**: Standard library only (no external dependencies needed)
 
 ## Quick Start
 
 ```bash
-python3 arkhe-claude-plugins/skola/skills/extract-udemy/scripts/extract.py \
+uv run arkhe-claude-plugins/skola/skills/extract-udemy/scripts/extract.py \
   "https://SITE.udemy.com/course/course-name/"
 ```
 
@@ -105,8 +106,9 @@ Uses current working directory for cookies and output. See [WORKFLOW.md](WORKFLO
 - Ensure using latest version with `supplementary_assets` parsing
 
 **"SyntaxError" or "invalid syntax"**
-- Use `python3` command (not `python`)
-- Verify Python 3.8+ with `python3 --version`
+- Use `uv run` command for consistent Python environment
+- Verify Python 3.8+ available: `python3 --version`
+- uv automatically manages Python version requirements
 
 For complete troubleshooting, see [TROUBLESHOOTING.md](TROUBLESHOOTING.md).
 

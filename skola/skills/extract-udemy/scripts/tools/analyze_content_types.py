@@ -1,4 +1,8 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.8"
+# dependencies = []
+# ///
 """
 Content Type Analysis Tool
 
@@ -275,9 +279,9 @@ def analyze_course_content(course_url, output_file=None):
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
-        print("Usage: python3 analyze_content_types.py <course_url> [output_file]")
+        print("Usage: uv run analyze_content_types.py <course_url> [output_file]")
         print("\nExample:")
-        print("  python3 analyze_content_types.py https://risesmart.udemy.com/course/data-structures-and-algorithms-java content-analysis.json")
+        print("  uv run analyze_content_types.py https://risesmart.udemy.com/course/data-structures-and-algorithms-java content-analysis.json")
         sys.exit(1)
 
     course_url = sys.argv[1]

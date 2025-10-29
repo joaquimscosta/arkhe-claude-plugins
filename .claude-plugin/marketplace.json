@@ -1,9 +1,11 @@
 {
   "name": "arkhe-claude-plugins",
+  "metadata": {
+    "description": "Collection of Claude Code plugins for documentation, AI engineering, and educational content creation"
+  },
   "owner": {
     "name": "Arkhe"
   },
-  "description": "Collection of Claude Code plugins for documentation, AI engineering, and educational content creation",
   "plugins": [
     {
       "name": "core",

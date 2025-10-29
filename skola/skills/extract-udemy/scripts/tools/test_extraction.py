@@ -1,4 +1,8 @@
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.8"
+# dependencies = []
+# ///
 # -*- coding: utf-8 -*-
 """
 Test Extraction Script
@@ -7,7 +11,7 @@ Tests the Udemy course extraction functionality with actual API endpoints
 discovered during research phase.
 
 Usage:
-    python test_extraction.py
+    uv run test_extraction.py
 """
 
 import sys
