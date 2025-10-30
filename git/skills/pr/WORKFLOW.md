@@ -274,8 +274,6 @@ feat(auth): add user authentication
 - [ ] TODO: Describe testing approach
 - [ ] TODO: Manual testing steps
 - [ ] TODO: Automated tests added
-
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
 ```
 
 **Example Body**:
@@ -290,8 +288,6 @@ feat(auth): add user authentication
 - [ ] Verify token refresh on expiration
 - [ ] Run auth test suite: `npm test auth`
 - [ ] Manual testing in staging environment
-
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
 ```
 
 ### Interactive Approval

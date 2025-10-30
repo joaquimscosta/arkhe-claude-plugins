@@ -58,8 +58,6 @@ Body:
 - [ ] Test OAuth2 login with Google provider
 - [ ] Verify token refresh on expiration
 - [ ] Run auth test suite: `npm test auth`
-
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
 ```
 
 **PR Creation**:
@@ -211,8 +209,6 @@ Body:
 - [ ] TODO: Add WebSocket tests
 - [ ] TODO: Test reconnection logic
 - [ ] TODO: Manual testing
-
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
 ```
 
 **Draft Creation**:

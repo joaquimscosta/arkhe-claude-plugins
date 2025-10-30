@@ -409,13 +409,13 @@ PermissionError: [Errno 13] Permission denied: 'transcript.md'
 **Solution:**
 ```bash
 # Check if file already exists and is read-only
-ls -l skola-research/youtube/video-title/
+ls -l skola-research/youtube/complete-python-course-2024/
 
 # Remove read-only attribute
-chmod u+w skola-research/youtube/video-title/*
+chmod u+w skola-research/youtube/complete-python-course-2024/*
 
 # Or delete existing directory and re-extract
-rm -rf skola-research/youtube/video-title/
+rm -rf skola-research/youtube/complete-python-course-2024/
 uv run extract.py "URL"
 ```
 
