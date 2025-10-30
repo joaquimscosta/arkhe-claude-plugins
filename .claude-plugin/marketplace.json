@@ -41,6 +41,11 @@
       "name": "git",
       "source": "./git",
       "description": "Git workflow automation (commit, PR, branching, changelog)"
+    },
+    {
+      "name": "specprep",
+      "source": "./specprep",
+      "description": "AI meta-prompt framework for Spec Kit workflow optimization"
     }
   ]
 }

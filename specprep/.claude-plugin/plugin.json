@@ -1,0 +1,8 @@
+{
+  "name": "specprep",
+  "description": "AI meta-prompt framework for Spec Kit workflow optimization",
+  "version": "1.0.0",
+  "author": {
+    "name": "Arkhe"
+  }
+}
