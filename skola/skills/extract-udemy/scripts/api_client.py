@@ -274,7 +274,7 @@ class UdemyAPIClient:
                 if page == 1:
                     # First page failed, try fallback
                     print("  Documented endpoint failed, attempting discovery...")
-                    return self._discover_course_structure(course_id)
+                    return self._discover_course_structure(course_id, course_slug)
                 else:
                     # Subsequent page failed, might be end of pagination
                     break
@@ -389,22 +389,23 @@ class UdemyAPIClient:
 
         return course_data
 
-    def _discover_course_structure(self, course_slug):
+    def _discover_course_structure(self, course_id, course_slug):
         """
         Attempt to discover course structure endpoint.
 
         Args:
-            course_slug: Course identifier
+            course_id: Numeric course ID
+            course_slug: Course slug string
 
         Returns:
             dict: Course structure or None if discovery failed
         """
         # Common Udemy API endpoint patterns to try
         patterns = [
-            f'/api-2.0/courses/{course_slug}/cached-subscriber-curriculum-items',
-            f'/api-2.0/courses/{course_slug}/curriculum-items',
-            f'/api-2.0/courses/{course_slug}/public-curriculum-items',
-            f'/api-2.0/courses/{course_slug}/subscriber-curriculum-items',
+            f'/api-2.0/courses/{course_id}/cached-subscriber-curriculum-items',
+            f'/api-2.0/courses/{course_id}/curriculum-items',
+            f'/api-2.0/courses/{course_id}/public-curriculum-items',
+            f'/api-2.0/courses/{course_id}/subscriber-curriculum-items',
         ]
 
         for pattern in patterns:

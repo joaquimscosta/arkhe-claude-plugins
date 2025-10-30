@@ -70,11 +70,32 @@ def parse_course_url(url):
 
 def get_project_root():
     """
-    Get the project root directory for skola-research/udemy/.
+    Get project root for skola-research/udemy/.
 
-    Uses current working directory (where Claude Code is running) as base.
-    This works whether the plugin is installed locally or from a Git repository.
+    Priority:
+    1. SKOLA_RESEARCH_DIR env var (if set) + '/udemy'
+    2. Upward search for 'skola-research' directory + '/udemy'
+    3. Path.cwd() / 'skola-research' / 'udemy' (fallback)
+
+    Returns:
+        Path: Absolute path to skola-research/udemy directory
     """
+    # Check environment variable
+    env_base = os.getenv('SKOLA_RESEARCH_DIR')
+    if env_base:
+        return Path(env_base).expanduser().resolve() / 'udemy'
+
+    # Upward search for skola-research
+    current = Path.cwd().resolve()
+    while True:
+        candidate = current / 'skola-research'
+        if candidate.exists() and candidate.is_dir():
+            return candidate / 'udemy'
+        if current.parent == current:
+            break
+        current = current.parent
+
+    # Fallback
     return Path.cwd() / 'skola-research' / 'udemy'
 
 

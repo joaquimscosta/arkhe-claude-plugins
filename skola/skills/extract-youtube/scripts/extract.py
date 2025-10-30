@@ -45,10 +45,32 @@ logger = logging.getLogger(__name__)
 
 def get_project_root():
     """
-    Get the project root directory for skola-research/youtube/.
+    Get project root for skola-research/youtube/.
 
-    Uses current working directory (where Claude Code is running) as base.
+    Priority:
+    1. SKOLA_RESEARCH_DIR env var (if set) + '/youtube'
+    2. Upward search for 'skola-research' directory + '/youtube'
+    3. Path.cwd() / 'skola-research' / 'youtube' (fallback)
+
+    Returns:
+        Path: Absolute path to skola-research/youtube directory
     """
+    # Check environment variable
+    env_base = os.getenv('SKOLA_RESEARCH_DIR')
+    if env_base:
+        return Path(env_base).expanduser().resolve() / 'youtube'
+
+    # Upward search for skola-research
+    current = Path.cwd().resolve()
+    while True:
+        candidate = current / 'skola-research'
+        if candidate.exists() and candidate.is_dir():
+            return candidate / 'youtube'
+        if current.parent == current:
+            break
+        current = current.parent
+
+    # Fallback
     return Path.cwd() / 'skola-research' / 'youtube'
 
 

@@ -32,14 +32,8 @@ Creates feature branches with intelligent naming and auto-incrementing.
 
 ## Implementation
 
-Delegates to the **git:branch** skill for all branch creation logic:
+Invoke the Skill tool with skill name "git:branch" and arguments: `$ARGUMENTS`
 
-```
-If arguments provided:
-  Invoke Skill tool with skill name "git:branch" and arguments: $ARGUMENTS
+The skill will handle commit type detection, branch naming, auto-increment numbering, and can auto-generate from uncommitted changes when no arguments are provided.
 
-If no arguments provided:
-  Invoke Skill tool with skill name "git:branch" with no arguments
-```
-
-For detailed documentation including commit type detection, branch naming format, auto-generation workflow, and configuration options, see `git/skills/branch/SKILL.md`.
+For detailed documentation, see `git/skills/branch/SKILL.md`.
