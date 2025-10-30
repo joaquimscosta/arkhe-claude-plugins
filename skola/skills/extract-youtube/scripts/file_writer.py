@@ -291,25 +291,28 @@ class YouTubeFileWriter:
 
 def sanitize_directory_name(name: str) -> str:
     """
-    Sanitize directory name for filesystem.
+    Sanitize directory name for filesystem (normalized, Udemy-aligned).
 
     Args:
         name: Original directory name
 
     Returns:
-        Sanitized directory name
+        Sanitized directory name (lowercase, alphanumeric with hyphens, max 100 chars)
     """
-    # Remove invalid characters
-    name = re.sub(r'[<>:"/\\|?*]', '', name)
+    # Convert to lowercase for consistency
+    name = name.lower()
 
-    # Replace spaces with hyphens
-    name = re.sub(r'\s+', '-', name)
+    # Remove special characters, keep only word chars and hyphens/spaces
+    name = re.sub(r'[^\w\s-]', '', name)
 
-    # Remove leading/trailing hyphens and dots
-    name = name.strip('-.')
+    # Consolidate multiple hyphens and spaces into single hyphens
+    name = re.sub(r'[-\s]+', '-', name)
 
-    # Limit length
-    if len(name) > 200:
-        name = name[:200]
+    # Remove leading/trailing hyphens
+    name = name.strip('-')
+
+    # Limit length with safe truncation
+    if len(name) > 100:
+        name = name[:100].rstrip('-')
 
     return name or 'untitled'

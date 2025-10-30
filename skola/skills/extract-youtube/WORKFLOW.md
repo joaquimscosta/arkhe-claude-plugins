@@ -180,7 +180,7 @@ Timestamps are formatted as:
 **Single Video:**
 ```
 skola-research/youtube/
-└── video-title/
+└── complete-python-course-2024/
     ├── README.md           # Video information and description
     ├── metadata.json       # Structured metadata
     ├── transcript.md       # Transcript with timestamps
@@ -191,7 +191,7 @@ skola-research/youtube/
 **Playlist:**
 ```
 skola-research/youtube/
-└── playlist-title/
+└── python-tutorial-series/
     ├── README.md               # Playlist overview and video list
     ├── metadata.json           # Playlist metadata
     ├── 001-first-video.md      # First video transcript

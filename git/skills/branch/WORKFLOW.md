@@ -184,14 +184,17 @@ Generate branch name and execute git command.
    git branch --show-current
    ```
 
-3. **Optional: Create feature directory** (if `FEATURE_DIR` configured):
+3. **Optional: Create feature directory** (only if spec-kit is installed):
+   - Checks for `.specify/` directory in repository root
+   - If found, creates directory at `${FEATURE_DIR:-plan/specs}/{branch-name}/`
    ```bash
-   mkdir -p .claude/specs/feat-004-user-authentication/
+   # Only executed when .specify/ exists
+   mkdir -p plan/specs/feat-004-user-authentication/
    ```
 
 **Output**:
 - Success message with branch name
-- Optional feature directory path
+- Optional feature directory path (only shown if `.specify/` exists)
 - Current branch confirmation
 
 ---
@@ -245,6 +248,8 @@ Generate branch name and execute git command.
 export FEATURE_DIR=".claude/specs"
 ```
 Creates a directory at `$FEATURE_DIR/{branch-name}/` for specifications.
+
+**Note**: Directory creation only happens when spec-kit is installed (`.specify/` directory exists in repository root). Without spec-kit, no directory is created regardless of `FEATURE_DIR` setting.
 
 **BRANCH_PREFIX** (optional):
 ```bash
@@ -318,18 +323,20 @@ This ensures unique identifiers across the entire project.
 
 ### Feature Directory Structure
 
-When `FEATURE_DIR` is configured:
+When spec-kit is installed (`.specify/` directory exists):
 ```
-.claude/specs/
-├── feat-001-user-auth/
+plan/specs/
+├── feat/001-user-auth/
 │   ├── spec.md
 │   └── notes.md
-├── fix-002-login-bug/
+├── fix/002-login-bug/
 │   └── investigation.md
-└── feat-003-dashboard/
+└── feat/003-dashboard/
     ├── design.md
     └── requirements.md
 ```
+
+**Note**: These directories are only created when `.specify/` directory exists in the repository root, indicating spec-kit is installed. Without spec-kit, branch creation skips directory creation entirely.
 
 ---
 

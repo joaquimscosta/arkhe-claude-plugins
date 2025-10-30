@@ -326,12 +326,19 @@ Branch: fix/010-login-validation
 
 ---
 
-## Example 9: With Feature Directory
+## Example 9: With Spec-Kit Installed (Feature Directory Created)
 
 ### Scenario
-Branch creation with `FEATURE_DIR` configured.
+Branch creation in a project with spec-kit installed (`.specify/` directory exists).
 
-### Configuration
+### Prerequisites
+```bash
+# Project has spec-kit installed
+ls -la .specify/
+# Directory exists
+```
+
+### Configuration (Optional)
 ```bash
 export FEATURE_DIR=".claude/specs"
 ```
@@ -351,29 +358,79 @@ Number: 011
 Branch: feat/011-payment-gateway
 ```
 
-**Feature Directory Creation**:
+**Spec-Kit Check**:
 ```bash
-mkdir -p .claude/specs/feat-011-payment-gateway/
+# Script checks for .specify/ directory
+if [[ -d ".specify" ]]; then
+    # Directory found - create spec directory
+    mkdir -p plan/specs/feat/011-payment-gateway/
+fi
 ```
 
 ### Output
 ```
 ✅ Branch created: feat/011-payment-gateway
-📁 Feature directory: .claude/specs/feat-011-payment-gateway/
+📁 Spec directory: plan/specs/feat/011-payment-gateway/
 ```
 
 ### Directory Structure
 ```
-.claude/specs/
-└── feat-011-payment-gateway/
+plan/specs/
+└── feat/011-payment-gateway/
     ├── spec.md            # Feature specification
     ├── design.md          # Design decisions
     └── notes.md           # Implementation notes
 ```
 
+**Note**: Spec directory is automatically created because `.specify/` directory exists in repository root.
+
 ---
 
-## Example 10: Sequential Numbering Across Types
+## Example 10: Without Spec-Kit (No Directory Created)
+
+### Scenario
+Branch creation in a project without spec-kit installed (no `.specify/` directory).
+
+### Prerequisites
+```bash
+# Project does NOT have spec-kit
+ls -la .specify/
+# ls: .specify: No such file or directory
+```
+
+### Command
+```bash
+/create-branch add payment gateway integration
+```
+
+### Execution
+
+**Detection**:
+```
+Type: feat
+Keywords: payment-gateway
+Number: 012
+Branch: feat/012-payment-gateway
+```
+
+**Spec-Kit Check**:
+```bash
+# Script checks for .specify/ directory
+if [[ -d ".specify" ]]; then
+    # Directory NOT found - skip spec directory creation
+fi
+```
+
+### Output
+```
+✅ Branch created: feat/012-payment-gateway
+```
+
+**Note**: No spec directory line shown because `.specify/` directory does not exist. No directory is created, preventing unnecessary clutter in non-spec-kit projects.
+
+---
+
+## Example 11: Sequential Numbering Across Types
 
 ### Scenario
 Multiple branches of different types.
@@ -406,7 +463,7 @@ All branches share sequential numbering:
 
 ---
 
-## Example 11: Type Detection Keywords
+## Example 12: Type Detection Keywords
 
 ### Complete Keyword Reference
 

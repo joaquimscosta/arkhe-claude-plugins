@@ -46,20 +46,42 @@ Each command outputs optimized text ready for immediate use:
 
 All `/specprep:*` commands support optional modes to control optimization depth:
 
-| Mode | Description |
-|------|--------------|
-| **quick** | Performs fast, lightweight cleanup and formatting — minimal validation. |
-| **strict** | Enforces all SDD and constitutional rules, marking ambiguities with `[NEEDS CLARIFICATION]`. |
-| *(default)* | Balanced optimization combining structure, clarity, and moderate validation. |
+| Mode | Description | When to Use |
+|------|--------------|-------------|
+| **quick** | Performs fast, lightweight cleanup and formatting — minimal validation. | Quick iterations, early drafts, or when you just need basic formatting. |
+| **strict** | Enforces all SDD and constitutional rules, marking ambiguities with `[NEEDS CLARIFICATION]`. Offers interactive correction after processing. | Final reviews, compliance validation, or when you want to catch every ambiguity. |
+| *(default)* | Balanced optimization combining structure, clarity, and moderate validation. Implicit when no mode is specified. | Most common use case — comprehensive cleanup with reasonable validation. |
 
-Example:
+### Usage Examples
 
 ```bash
-/specprep:plan @specs/002-feature/plan.md quick   # Light cleanup only
-/specprep:plan @specs/002-feature/plan.md strict  # Full validation
+# Default mode (balanced) - just omit the mode
+/specprep:plan @specs/002-feature/plan.md
+
+# Quick mode - fast cleanup
+/specprep:plan @specs/002-feature/plan.md quick
+
+# Strict mode - full validation with interactive correction
+/specprep:plan @specs/002-feature/plan.md strict
 ```
 
-If no mode is provided, SpecPrep uses **balanced mode** by default.
+### Mode Keywords
+
+- **Valid modes**: `quick`, `strict`
+- **Default mode**: Omit the mode argument (no keyword needed)
+- **No abbreviations**: Full words only — `q` or `s` are not recognized
+- **Position**: Mode is always the last positional argument
+
+### Interactive Correction (Strict Mode)
+
+When using **strict mode**, after generating output with `[NEEDS CLARIFICATION]` markers, you'll be prompted:
+
+```
+Found 3 clarifications needed. Resolve interactively? [y/N]
+```
+
+- **Yes (y)**: Answer questions to resolve each ambiguity, then regenerate clean output
+- **No (N)**: Receive the output with `[NEEDS CLARIFICATION]` markers intact for manual review
 
 ---
 
@@ -232,18 +254,29 @@ A markdown task list ready for:
 
 ## 💡 Workflow Integration
 
-Typical Spec Kit + SpecPrep pipeline:
+Typical Spec Kit + SpecPrep pipeline with mode selection:
 
 ```bash
+# Phase 1: Clean raw feature idea (default mode)
 /specprep:specify @drafts/feature.txt
 → /speckit:specify
 
+# Phase 2: Validate implementation plan (strict mode for compliance)
 /specprep:plan @specs/002-feature/spec.md strict
 → /speckit:plan
+→ [Interactive clarification session]
+→ /speckit:plan [with resolved clarifications]
 
+# Phase 3: Extract tasks (quick mode for fast iteration)
 /specprep:tasks @specs/002-feature/plan.md quick
 → /speckit:tasks
 ```
+
+### Mode Selection Strategy
+
+- **Early iterations**: Use `quick` mode for rapid cleanup without deep validation
+- **Mid-stage work**: Use default mode (omit mode argument) for balanced optimization
+- **Pre-commit reviews**: Use `strict` mode to catch all ambiguities and violations before finalizing
 
 This architecture ensures that every phase of Spec-Driven Development begins with clean, validated input — turning raw ideas into executable specifications with maximum quality and minimal noise.
 

@@ -250,9 +250,11 @@ create_branch() {
     if git checkout -b "$branch_name"; then
         success "Created and checked out branch: $branch_name"
 
-        # Create feature directory (compatible with specify kit structure)
-        local feature_dir="$monorepo_root/${FEATURE_DIR:-plan/specs}/$branch_name"
-        mkdir -p "$feature_dir"
+        # Create feature directory only if spec-kit is installed (checks for .specify directory)
+        if [[ -d "$monorepo_root/.specify" ]]; then
+            local feature_dir="$monorepo_root/${FEATURE_DIR:-plan/specs}/$branch_name"
+            mkdir -p "$feature_dir"
+        fi
 
         return 0
     else
@@ -307,7 +309,12 @@ main() {
     echo ""
     echo "📋 Branch: $branch_name"
     echo "🔢 Feature number: $feature_num"
-    echo "📁 Spec directory: ${FEATURE_DIR:-plan/specs}/$branch_name"
+
+    # Only display spec directory if spec-kit is installed
+    if [[ -d "$monorepo_root/.specify" ]]; then
+        echo "📁 Spec directory: ${FEATURE_DIR:-plan/specs}/$branch_name"
+    fi
+
     echo ""
     echo "Next steps:"
     echo "  1. Make your changes"

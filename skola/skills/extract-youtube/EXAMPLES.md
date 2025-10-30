@@ -158,7 +158,7 @@ URL: https://www.youtube.com/playlist?list=PLrAXtmErZgOeiKm4sgNOknGvNjby9efdf
   ✓ Playlist: Python Tutorial for Beginners
   ✓ Videos: 12
 
-  📁 Output: skola-research/youtube/Python-Tutorial-for-Beginners
+  📁 Output: skola-research/youtube/python-tutorial-for-beginners
 
   Saving playlist metadata...
   ✓ Playlist metadata saved
@@ -182,7 +182,7 @@ URL: https://www.youtube.com/playlist?list=PLrAXtmErZgOeiKm4sgNOknGvNjby9efdf
 Playlist Extraction Complete!
 ============================================================
 Playlist: Python Tutorial for Beginners
-Output: skola-research/youtube/Python-Tutorial-for-Beginners
+Output: skola-research/youtube/python-tutorial-for-beginners
 
 Statistics:
   Total videos: 12
@@ -191,8 +191,8 @@ Statistics:
   Failed: 0
 
 Files created:
-  skola-research/youtube/Python-Tutorial-for-Beginners/README.md
-  skola-research/youtube/Python-Tutorial-for-Beginners/metadata.json
+  skola-research/youtube/python-tutorial-for-beginners/README.md
+  skola-research/youtube/python-tutorial-for-beginners/metadata.json
   Transcripts: 10 files
   Thumbnails: 12 files
 ============================================================
@@ -202,12 +202,12 @@ Files created:
 
 **Files Created:**
 ```
-skola-research/youtube/Python-Tutorial-for-Beginners/
+skola-research/youtube/python-tutorial-for-beginners/
 ├── README.md
 ├── metadata.json
-├── 001-Introduction-to-Python.md
-├── 002-Variables-and-Data-Types.md
-├── 003-Control-Flow-If-Statements.md
+├── 001-lintroduction-to-pythone.md
+├── 002-lvariables-and-data-typese.md
+├── 003-lcontrol-flow-if-statementse.md
 ├── ...
 └── resources/
     ├── 001-thumbnail.jpg
