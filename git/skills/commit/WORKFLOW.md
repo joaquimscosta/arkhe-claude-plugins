@@ -257,10 +257,6 @@ Generate conventional commit messages with appropriate type and scope.
 <type>(<scope>): <description>
 
 [optional body]
-
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
-
-Co-Authored-By: Claude <noreply@anthropic.com>
 ```
 
 ### Commit Type Detection
@@ -307,12 +303,9 @@ Message: docs(commit): update skill documentation
 - Breaking changes
 - Related issues
 
-**Step 3: Add Footer**
-```
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
-
-Co-Authored-By: Claude <noreply@anthropic.com>
-```
+**Step 3: Finalize Message**
+- Review for clarity and completeness
+- Ensure it follows conventional commit format
 
 ### Interactive Approval
 
@@ -325,10 +318,6 @@ docs(commit): add comprehensive workflow documentation
 Added detailed 5-step process explanation including
 repository detection, change analysis, pre-commit checks,
 message generation, and submodule handling.
-
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
-
-Co-Authored-By: Claude <noreply@anthropic.com>
 ────────────────────────────────
 
 Proceed with this commit? (y/n):
@@ -384,11 +373,7 @@ git add plugins/arkhe-claude-plugins
 git commit -m "chore: update arkhe-claude-plugins submodule
 
 Updated to include latest changes:
-- docs(commit): add workflow documentation
-
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
-
-Co-Authored-By: Claude <noreply@anthropic.com>"
+- docs(commit): add workflow documentation"
 ```
 
 **No** (`n`):
@@ -451,10 +436,6 @@ feat(auth): add OAuth2 login support
 
 Implemented OAuth2 authentication flow with token refresh
 and secure session management.
-
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
-
-Co-Authored-By: Claude <noreply@anthropic.com>
 ```
 
 **Step 5: Commit**
@@ -495,10 +476,6 @@ No checks required (documentation)
 **Step 4: Commit to Submodule**
 ```
 docs(commit): update skill documentation
-
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
-
-Co-Authored-By: Claude <noreply@anthropic.com>
 
 ✅ Committed: [arkhe-claude-plugins def5678]
 ```

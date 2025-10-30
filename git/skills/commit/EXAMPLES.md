@@ -46,10 +46,6 @@ feat(auth): add OAuth2 login support
 
 Implemented OAuth2 authentication flow with
 token refresh and secure session management.
-
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
-
-Co-Authored-By: Claude <noreply@anthropic.com>
 ──────────────────────────────────
 
 Proceed? (y/n): y
@@ -95,10 +91,6 @@ fix(auth): resolve null pointer in token validation
 
 Added null safety checks in TokenValidator.validateToken()
 to prevent NPE when token is expired.
-
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
-
-Co-Authored-By: Claude <noreply@anthropic.com>
 ```
 
 ### Output
@@ -139,10 +131,6 @@ docs(commit): add comprehensive workflow documentation
 Added detailed 5-step process covering repository detection,
 change analysis, pre-commit checks, message generation, and
 submodule handling.
-
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
-
-Co-Authored-By: Claude <noreply@anthropic.com>
 ```
 
 ### Output
@@ -196,10 +184,6 @@ chore: update arkhe-claude-plugins submodule
 
 Updated to include:
 - feat(git): add commit skill
-
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
-
-Co-Authored-By: Claude <noreply@anthropic.com>
 ```
 
 ### Output
@@ -241,10 +225,6 @@ docs: update installation guide
 
 Added troubleshooting section and clarified
 dependency requirements.
-
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
-
-Co-Authored-By: Claude <noreply@anthropic.com>
 ```
 
 ### Output
@@ -296,10 +276,6 @@ feat(dashboard): add real-time analytics
 
 Implemented WebSocket connection for live data
 updates on dashboard with automatic reconnection.
-
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
-
-Co-Authored-By: Claude <noreply@anthropic.com>
 ```
 
 ### Output
@@ -398,10 +374,6 @@ feat(parser): add JSON parsing support
 
 Implemented serde-based JSON parser with
 error handling and validation.
-
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
-
-Co-Authored-By: Claude <noreply@anthropic.com>
 ```
 
 ### Output
@@ -483,10 +455,6 @@ feat: upgrade to Node.js 20
 
 Updated dependencies and TypeScript target
 to support Node.js 20 features.
-
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
-
-Co-Authored-By: Claude <noreply@anthropic.com>
 ```
 
 ### Output
