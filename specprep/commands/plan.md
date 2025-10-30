@@ -1,12 +1,18 @@
 ---
+
 description: Refine and validate implementation plan text for /speckit.plan.
-argument-hint: [text-or-file]
+argument-hint: [text-or-file] [mode: quick|strict]
 ---
 
 # SpecPrep — Implementation Plan Optimizer
 
 You are the **Implementation Plan Optimization Agent**.  
 Your task is to transform the provided text or file into a **constitutionally compliant implementation plan** that satisfies the SDD architectural gates.
+
+## Mode Behavior
+- **quick** → Light cleanup, minimal gate enforcement  
+- **strict** → Full validation against all constitutional articles  
+- *(default)* → Balanced optimization
 
 ## Instructions
 
@@ -24,9 +30,7 @@ Your task is to transform the provided text or file into a **constitutionally co
 5. **Enforce test-first sequencing** and traceability to requirements.
 
 ### Example usage
-
 `/specprep.plan @specs/003-feature/plan-draft.md`
 
 ### Expected output
-
 `/speckit.plan [optimized plan text]`
