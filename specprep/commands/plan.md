@@ -1,7 +1,6 @@
 ---
 description: Refine and validate implementation plan text for /speckit.plan.
 argument-hint: [text-or-file]
-model: sonnet
 ---
 
 # SpecPrep — Implementation Plan Optimizer

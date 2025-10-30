@@ -1,7 +1,6 @@
 ---
 description: Extract and organize executable tasks for /speckit.tasks.
 argument-hint: [plan-file] [optional-research-file]
-model: sonnet
 ---
 
 # SpecPrep — Task Optimizer

@@ -1,7 +1,6 @@
 ---
 description: Clean and optimize feature text or files for use with /speckit.specify.
 argument-hint: [text-or-file]
-model: sonnet
 ---
 
 # SpecPrep — Specification Optimizer
