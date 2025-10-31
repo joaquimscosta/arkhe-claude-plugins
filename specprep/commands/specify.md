@@ -118,9 +118,17 @@ When using **strict mode**, after generating output with `[NEEDS CLARIFICATION]`
 4. If user responds "n" or "no":
    - Return the specification as-is with markers intact
 
+## After Optimization
+
+Once you have generated the optimized specification text:
+
+1. Present the optimized output to the user
+2. Use the SlashCommand tool to automatically invoke: `/speckit.specify [optimized spec text]`
+3. This chains the workflow so the user doesn't need to manually copy/paste
+
+**Important**: Only invoke the SpecKit command if optimization succeeds. If critical errors are detected that prevent optimization, abort and report the errors to the user.
+
 ### Example usage
+
 `/specprep:specify @specs/001-feature/raw-spec.md`
 `/specprep:specify @specs/001-feature/raw-spec.md strict`
-
-### Expected output
-`/speckit:specify [optimized spec text]`

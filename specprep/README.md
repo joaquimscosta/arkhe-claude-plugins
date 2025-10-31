@@ -1,26 +1,27 @@
 # SpecPrep Plugin
 
-**SpecPrep** is an AI meta-prompt framework that optimizes text and files for use with the [Spec Kit](https://github.com/github/spec-kit) workflow.  
-It preprocesses inputs to ensure clarity, compliance, and structure before they are passed into the main `/speckit` commands.
+**SpecPrep** is an AI meta-prompt framework that optimizes text and files for use with the [Spec Kit](https://github.com/github/spec-kit) workflow.
+It preprocesses inputs to ensure clarity, compliance, and structure, then **automatically invokes** the corresponding `/speckit` commands to create artifacts—eliminating manual copy/paste steps.
 
 ---
 
 ## 🧭 Overview
 
-SpecPrep provides a set of namespaced slash commands that prepare your content for Spec Kit’s three key stages of Spec-Driven Development (SDD):
+SpecPrep provides two specialized slash commands that **automatically prepare and execute** the critical preparation stages of Spec-Driven Development (SDD):
 
-| Command | Purpose | Modes | Target Command |
+| Command | Purpose | Modes | Auto-Invokes |
 |----------|----------|--------|----------------|
-| `/specprep:specify` | Cleans and structures raw feature ideas into well-formed specifications | `quick`, `strict`, *(default)* | `/speckit:specify` |
-| `/specprep:plan` | Validates and refines implementation plans for architectural compliance | `quick`, `strict`, *(default)* | `/speckit:plan` |
-| `/specprep:tasks` | Extracts and organizes executable tasks from plans and research | `quick`, `strict`, *(default)* | `/speckit:tasks` |
+| `/specprep:specify` | Cleans and structures raw feature ideas, then creates spec.md artifact | `quick`, `strict`, *(default)* | `/speckit.specify` |
+| `/specprep:plan` | Validates and refines implementation plans, then creates plan.md artifact | `quick`, `strict`, *(default)* | `/speckit.plan` |
 
-Each command acts as a **meta-prompt optimizer**, enforcing SDD best practices such as:
+Each command acts as a **meta-prompt optimizer and executor**, providing:
 
+- **Automatic workflow chaining**: Optimization → SpecKit invocation (no manual copy/paste)
 - Clear "WHAT and WHY" separation from "HOW"
 - Proper abstraction levels
 - `[NEEDS CLARIFICATION]` tagging for ambiguity
 - Compliance with the project constitution (Articles VII–IX)
+- Direct artifact creation (spec.md, plan.md, tasks.md)
 
 ---
 
@@ -36,22 +37,18 @@ flowchart TD
     SpecPrep1 --> Opt1{Optimization}
     Opt1 -->|Remove HOW<br/>Add clarity| Output1[Optimized Spec Text]
 
-    Output1 --> SpecKit1[/speckit:specify/]
+    Output1 --> SpecKit1[/speckit.specify/]
     SpecKit1 --> Artifact1[(spec.md)]
 
     Artifact1 --> SpecPrep2[/specprep:plan<br/>Validate & Refine/]
     SpecPrep2 --> Opt2{Validation}
     Opt2 -->|Constitutional<br/>Compliance| Output2[Validated Plan Text]
 
-    Output2 --> SpecKit2[/speckit:plan/]
+    Output2 --> SpecKit2[/speckit.plan/]
     SpecKit2 --> Artifact2[(plan.md)]
 
-    Artifact2 --> SpecPrep3[/specprep:tasks<br/>Extract & Organize/]
-    Research[(research.md<br/>optional)] -.->|Additional Context| SpecPrep3
-    SpecPrep3 --> Opt3{Extraction}
-    Opt3 -->|Structured<br/>Task List| Output3[Organized Tasks]
-
-    Output3 --> SpecKit3[/speckit:tasks/]
+    Artifact2 --> SpecKit3[/speckit.tasks<br/>Extract Tasks/]
+    Research[(research.md<br/>optional)] -.->|Additional Context| SpecKit3
     SpecKit3 --> Artifact3[(tasks.md)]
 
     Artifact3 --> Implementation[Implementation Phase]
@@ -60,7 +57,6 @@ flowchart TD
 
     style SpecPrep1 fill:#e1f5ff,stroke:#0066cc,stroke-width:2px
     style SpecPrep2 fill:#e1f5ff,stroke:#0066cc,stroke-width:2px
-    style SpecPrep3 fill:#e1f5ff,stroke:#0066cc,stroke-width:2px
     style SpecKit1 fill:#fff4e1,stroke:#cc8800,stroke-width:2px
     style SpecKit2 fill:#fff4e1,stroke:#cc8800,stroke-width:2px
     style SpecKit3 fill:#fff4e1,stroke:#cc8800,stroke-width:2px
@@ -71,9 +67,10 @@ flowchart TD
 
 ### Key Integration Points
 
-- **SpecPrep commands** (blue) optimize and validate inputs before they reach Spec Kit
-- **Spec Kit commands** (orange) generate the official artifacts used throughout development
+- **SpecPrep commands** (blue) optimize and validate requirements and architecture before they reach SpecKit
+- **SpecKit commands** (orange) generate the official artifacts used throughout development
 - **Artifacts** (green) serve as both outputs and inputs for subsequent phases
+- **Task extraction** goes directly to SpecKit (no preprocessing needed)
 - **Cycle**: Implementation generates new ideas, continuing the SDD cycle
 
 ---
@@ -81,18 +78,23 @@ flowchart TD
 ## ⚙️ Usage Examples
 
 ```bash
+# Phase 1: Optimize and create spec.md artifact
 /specprep:specify @notes/feature-idea.txt quick
+
+# Phase 2: Validate plan and create plan.md artifact
 /specprep:plan @specs/002-feature/plan.md strict
-/specprep:tasks @specs/002-feature/plan.md @specs/002-feature/research.md
+
+# Phase 3: Extract tasks directly with SpecKit
+/speckit.tasks @specs/002-feature/plan.md @specs/002-feature/research.md
 ```
 
-Each command outputs optimized text ready for immediate use:
+**How SpecPrep commands work:**
+1. Optimize your input based on the selected mode (quick, strict, or default)
+2. Show you the optimized output for review
+3. **Automatically invoke** the corresponding `/speckit` command
+4. The SpecKit command creates the artifact file (spec.md or plan.md)
 
-```bash
-/speckit:specify [optimized text]
-/speckit:plan [optimized text]
-/speckit:tasks [optimized text]
-```
+**No manual copy/paste required** for requirements and architecture preparation!
 
 ---
 
@@ -143,8 +145,8 @@ Found 3 clarifications needed. Resolve interactively? [y/N]
 
 ### 🧩 `/specprep:specify`
 
-**Purpose:**  
-Transform *raw feature text* or a *file reference* into a **clean, structured specification** ready for `/speckit:specify`.
+**Purpose:**
+Transform *raw feature text* or a *file reference* into a **clean, structured specification** ready for `/speckit.specify`.
 
 **Input:**
 
@@ -166,11 +168,9 @@ Transform *raw feature text* or a *file reference* into a **clean, structured sp
 - *(default)* → Balanced optimization
 
 **Output:**
-A clean, ready-to-use feature specification formatted for:
-
-```bash
-/speckit:specify [optimized spec text]
-```
+Automatically creates spec.md artifact by:
+1. Presenting the optimized specification text to the user
+2. Auto-invoking `/speckit.specify` with the optimized content
 
 **Output Example:**
 
@@ -197,8 +197,8 @@ The user can create, assign, and track simple tasks.
 
 ### 🧩 `/specprep:plan`
 
-**Purpose:**  
-Convert a specification or draft plan into a **constitutionally compliant implementation plan** for `/speckit:plan`.
+**Purpose:**
+Convert a specification or draft plan into a **constitutionally compliant implementation plan** ready for `/speckit.plan`.
 
 **Input:**
 
@@ -220,11 +220,9 @@ Convert a specification or draft plan into a **constitutionally compliant implem
 - *(default)* → Balanced plan optimization
 
 **Output:**
-Validated, structured implementation plan for:
-
-```bash
-/speckit:plan [optimized plan text]
-```
+Automatically creates plan.md artifact by:
+1. Presenting the optimized implementation plan to the user
+2. Auto-invoking `/speckit.plan` with the optimized content
 
 **Output Example:**
 
@@ -244,87 +242,36 @@ Single web app using Vite and SQLite (<=3 projects).
 
 ---
 
-### 🧩 `/specprep:tasks`
-
-**Purpose:**  
-Extract and organize executable tasks from a plan and optional research files for `/speckit:tasks`.
-
-**Input:**
-
-- `@plan-file` (required)
-- Optional `@research-file`
-- Optional mode: `quick` | `strict`
-
-**Input Examples:**
-
-```bash
-/specprep:tasks @specs/002-feature/plan.md
-/specprep:tasks @specs/002-feature/plan.md @specs/002-feature/research.md quick
-/specprep:tasks @specs/002-feature/plan.md strict
-```
-
-**Processing Logic:**
-
-- `quick` → Basic task extraction; no coverage validation
-- `strict` → Full coverage check; validates all plan sections yield tasks, flags missing ones with `[NEEDS CLARIFICATION]`
-- *(default)* → Balanced extraction
-
-**Output:**
-A markdown task list ready for:
-
-```bash
-/speckit:tasks [optimized task text]
-```
-
-**Output Example:**
-
-```markdown
-## Backend
-- [ ] Create SQLite schema for tasks
-- [ ] Implement CRUD operations [P]
-
-## Frontend
-- [ ] Build task list UI
-- [ ] Implement drag-and-drop reordering [P]
-
-## Tests
-- [ ] Integration test: add and retrieve tasks
-- [ ] E2E: move task between lists
-
-[NEEDS CLARIFICATION: Should tasks persist on page reload?]
-```
-
----
-
 ### 🧠 Quick Reference Table
 
-| Command | Input | Modes | Output |
+| Command | Input | Modes | Result |
 |----------|--------|--------|---------|
-| `/specprep:specify` | Text or file (`@notes/*.txt`) | `quick`, `strict`, *(default)* | Clean spec text → `/speckit:specify` |
-| `/specprep:plan` | Plan draft (`@specs/*/plan.md`) | `quick`, `strict`, *(default)* | Validated plan text → `/speckit:plan` |
-| `/specprep:tasks` | Plan + research (`@specs/*/plan.md`, `@specs/*/research.md`) | `quick`, `strict`, *(default)* | Structured tasks → `/speckit:tasks` |
+| `/specprep:specify` | Text or file (`@notes/*.txt`) | `quick`, `strict`, *(default)* | Optimized spec → **auto-creates spec.md** |
+| `/specprep:plan` | Plan draft (`@specs/*/plan.md`) | `quick`, `strict`, *(default)* | Validated plan → **auto-creates plan.md** |
+
+**Note:** For task extraction, use `/speckit.tasks @plan.md` directly—no preprocessing needed.
 
 ---
 
 ## 💡 Workflow Integration
 
-Typical Spec Kit + SpecPrep pipeline with mode selection:
+**Streamlined Spec-Driven Development pipeline** with automatic execution:
 
 ```bash
-# Phase 1: Clean raw feature idea (default mode)
+# Phase 1: Clean raw feature idea and create spec.md (automatic chaining!)
 /specprep:specify @drafts/feature.txt
-→ /speckit:specify
+# ✅ Optimizes → ✅ Auto-invokes /speckit.specify → ✅ Creates spec.md
 
-# Phase 2: Validate implementation plan (strict mode for compliance)
+# Phase 2: Validate plan and create plan.md (strict mode for compliance)
 /specprep:plan @specs/002-feature/spec.md strict
-→ /speckit:plan
-→ [Interactive clarification session]
-→ /speckit:plan [with resolved clarifications]
+# ✅ Validates → ✅ Shows clarifications → ✅ Auto-invokes /speckit.plan → ✅ Creates plan.md
 
-# Phase 3: Extract tasks (quick mode for fast iteration)
-/specprep:tasks @specs/002-feature/plan.md quick
-→ /speckit:tasks
+# Phase 3: Extract tasks and create tasks.md (use SpecKit directly)
+/speckit.tasks @specs/002-feature/plan.md @specs/002-feature/research.md
+# ✅ Extracts tasks → ✅ Creates tasks.md
 ```
+
+**Key benefit:** SpecPrep handles the preparation phases (requirements & architecture), then SpecKit completes the workflow.
 
 ### Mode Selection Strategy
 
@@ -332,7 +279,20 @@ Typical Spec Kit + SpecPrep pipeline with mode selection:
 - **Mid-stage work**: Use default mode (omit mode argument) for balanced optimization
 - **Pre-commit reviews**: Use `strict` mode to catch all ambiguities and violations before finalizing
 
-This architecture ensures that every phase of Spec-Driven Development begins with clean, validated input — turning raw ideas into executable specifications with maximum quality and minimal noise.
+### What Changed from Manual Workflow
+
+**Before (manual):**
+1. Run `/specprep:X` to optimize
+2. Read and copy the output
+3. Run `/speckit.X` and paste the optimized text
+4. Wait for artifact creation
+
+**After (automatic):**
+1. Run `/specprep:X` with your input
+2. Review optimized output (optional)
+3. ✨ **Artifact automatically created** ✨
+
+This architecture ensures that the critical preparation phases (requirements and architecture) execute seamlessly with automatic chaining, while task extraction flows naturally through SpecKit—turning raw ideas into executable specifications with maximum quality and minimal friction.
 
 ---
 

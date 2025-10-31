@@ -136,9 +136,17 @@ When using **strict mode**, after generating output with `[NEEDS CLARIFICATION]`
 4. If user responds "n" or "no":
    - Return the plan as-is with markers intact
 
+## After Optimization
+
+Once you have generated the optimized plan text:
+
+1. Present the optimized output to the user
+2. Use the SlashCommand tool to automatically invoke: `/speckit.plan [optimized plan text]`
+3. This chains the workflow so the user doesn't need to manually copy/paste
+
+**Important**: Only invoke the SpecKit command if optimization succeeds. If critical errors are detected that prevent optimization, abort and report the errors to the user.
+
 ### Example usage
+
 `/specprep:plan @specs/003-feature/plan-draft.md`
 `/specprep:plan @specs/003-feature/plan-draft.md strict`
-
-### Expected output
-`/speckit:plan [optimized plan text]`
