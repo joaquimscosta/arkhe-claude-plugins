@@ -12,6 +12,7 @@ Creates directory structure and saves transcripts in organized format.
 
 import os
 import re
+import json
 from pathlib import Path
 from datetime import datetime
 
@@ -71,6 +72,10 @@ class CourseFileWriter:
 
         # Track all resources for consolidated summary
         self.all_resources = []  # List of dicts: {section, lecture_number, lecture_title, resources, failed_resources}
+
+        # Phase 2: Progress tracking for resume capability
+        self.progress_file = self.output_path / '.extraction_progress.json'
+        self.completed_lectures = self._load_progress()
 
     def create_directory_structure(self):
         """
@@ -456,6 +461,64 @@ This directory contains:
         }
 
         return stats
+
+    def _load_progress(self):
+        """
+        Load progress from previous extraction.
+
+        Returns:
+            set: Set of completed lecture IDs
+        """
+        if self.progress_file.exists():
+            try:
+                with open(self.progress_file, 'r') as f:
+                    data = json.load(f)
+                    return set(data.get('completed_lectures', []))
+            except Exception as e:
+                print(f"  ⚠️  Could not load progress file: {e}")
+        return set()
+
+    def mark_lecture_complete(self, lecture_id):
+        """
+        Mark a lecture as successfully extracted.
+
+        Args:
+            lecture_id: Unique identifier for the lecture
+        """
+        self.completed_lectures.add(str(lecture_id))
+        self._save_progress()
+
+    def _save_progress(self):
+        """Save current extraction progress to file."""
+        import time
+        try:
+            with open(self.progress_file, 'w') as f:
+                json.dump({
+                    'completed_lectures': list(self.completed_lectures),
+                    'last_updated': time.strftime('%Y-%m-%d %H:%M:%S')
+                }, f, indent=2)
+        except Exception as e:
+            print(f"  ⚠️  Could not save progress: {e}")
+
+    def is_lecture_complete(self, lecture_id):
+        """
+        Check if a lecture was already extracted.
+
+        Args:
+            lecture_id: Unique identifier for the lecture
+
+        Returns:
+            bool: True if lecture was already completed
+        """
+        return str(lecture_id) in self.completed_lectures
+
+    def clear_progress(self):
+        """Delete progress file after successful completion."""
+        try:
+            if self.progress_file.exists():
+                self.progress_file.unlink()
+        except Exception as e:
+            print(f"  ⚠️  Could not delete progress file: {e}")
 
     def _calculate_directory_sizes(self):
         """

@@ -15,10 +15,52 @@ Handles API requests to Udemy platform with hybrid approach:
 import json
 import time
 import re
+import sys
+import logging
 from pathlib import Path
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError, URLError
 from urllib.parse import urljoin, quote
+
+# Initialize logger
+logger = logging.getLogger(__name__)
+
+
+# ANSI color codes for terminal output
+COLOR_RESET = '\033[0m'
+COLOR_GREEN = '\033[92m'   # Success
+COLOR_YELLOW = '\033[93m'  # Warning
+COLOR_BLUE = '\033[94m'    # Info/Progress
+COLOR_RED = '\033[91m'     # Error
+COLOR_GRAY = '\033[90m'    # Debug
+
+
+def _print_colored(message, color=''):
+    """Print message with ANSI color."""
+    if color:
+        print(f"{color}{message}{COLOR_RESET}", flush=True)
+    else:
+        print(message, flush=True)
+
+
+def _print_progress(message):
+    """Print progress message in blue."""
+    _print_colored(f"  {message}", COLOR_BLUE)
+
+
+def _print_success(message):
+    """Print success message in green."""
+    _print_colored(f"  {message}", COLOR_GREEN)
+
+
+def _print_warning(message):
+    """Print warning message in yellow."""
+    _print_colored(f"  {message}", COLOR_YELLOW)
+
+
+def _print_error(message):
+    """Print error message in red."""
+    _print_colored(f"  {message}", COLOR_RED)
 
 
 class UdemyAPIClient:
@@ -31,7 +73,7 @@ class UdemyAPIClient:
     - Update API.md with findings
     """
 
-    def __init__(self, base_url, auth_headers, project_root):
+    def __init__(self, base_url, auth_headers, project_root, max_retries=3):
         """
         Initialize API client.
 
@@ -39,11 +81,13 @@ class UdemyAPIClient:
             base_url: Base URL for Udemy site (e.g., https://risesmart.udemy.com)
             auth_headers: Authentication headers from Authenticator
             project_root: Path to project root directory
+            max_retries: Maximum number of retry attempts for failed requests (default: 3)
         """
         self.base_url = base_url.rstrip('/')
         self.auth_headers = auth_headers
         self.project_root = Path(project_root)
         self.api_doc_file = self.project_root / 'API.md'
+        self.max_retries = max_retries
 
         # Track discovered endpoints
         self.discovered_endpoints = []
@@ -52,6 +96,14 @@ class UdemyAPIClient:
         # Rate limiting
         self.last_request_time = 0
         self.min_request_interval = 0.5  # seconds between requests
+
+        # Retry statistics
+        self._retry_stats = {
+            'total_retries': 0,
+            'successful_retries': 0,
+            'failed_retries': 0,
+            'timeout_count': 0
+        }
 
         # Load documented endpoints
         self._read_api_documentation()
@@ -103,7 +155,7 @@ class UdemyAPIClient:
 
     def _make_request(self, endpoint, method='GET', data=None):
         """
-        Make HTTP request to Udemy API.
+        Make HTTP request to Udemy API with retry logic and exponential backoff.
 
         Args:
             endpoint: API endpoint path (will be joined with base_url)
@@ -113,47 +165,84 @@ class UdemyAPIClient:
         Returns:
             dict: JSON response data or None if failed
         """
-        self._rate_limit()
-
         url = urljoin(self.base_url, endpoint)
+        base_delay = 2  # seconds
 
-        try:
-            # Prepare request
-            headers = self.auth_headers.copy()
+        logger.debug(f"→ {method} {url}")
+        logger.debug(f"  Headers: {list(self.auth_headers.keys())}")
 
-            req = Request(url, headers=headers, method=method)
+        for attempt in range(1, self.max_retries + 1):
+            self._rate_limit()
 
-            if data:
-                req.data = json.dumps(data).encode('utf-8')
+            try:
+                # Prepare request
+                headers = self.auth_headers.copy()
+                req = Request(url, headers=headers, method=method)
 
-            # Make request
-            with urlopen(req, timeout=30) as response:
-                if response.status == 200:
-                    content = response.read().decode('utf-8')
-                    return json.loads(content)
+                if data:
+                    req.data = json.dumps(data).encode('utf-8')
+                    logger.debug(f"  Request body: {len(json.dumps(data))} bytes")
+
+                # Make request
+                logger.debug(f"  Sending request (attempt {attempt}/{self.max_retries})...")
+                with urlopen(req, timeout=30) as response:
+                    if response.status == 200:
+                        content = response.read().decode('utf-8')
+                        logger.debug(f"← HTTP {response.status} ({len(content)} bytes)")
+                        # Success after retry
+                        if attempt > 1:
+                            self._retry_stats['successful_retries'] += 1
+                        return json.loads(content)
+                    else:
+                        print(f"⚠️  HTTP {response.status} for {endpoint}")
+                        return None
+
+            except HTTPError as e:
+                if e.code == 401:
+                    _print_error(f"⚠️  Authentication failed (HTTP 401)")
+                    _print_error(f"    Check that cookies.json contains valid cookies from {self.base_url.split('//')[1]}")
+                elif e.code == 404:
+                    _print_warning(f"⚠️  Endpoint not found (HTTP 404): {endpoint}")
+                    _print_warning(f"    This may indicate an API change or incorrect endpoint")
                 else:
-                    print(f"⚠️  HTTP {response.status} for {endpoint}")
+                    _print_warning(f"⚠️  HTTP Error {e.code} for {endpoint}")
+                return None
+
+            except URLError as e:
+                reason = str(e.reason)
+                is_timeout = "timed out" in reason.lower()
+
+                if is_timeout:
+                    self._retry_stats['timeout_count'] += 1
+
+                    if attempt < self.max_retries:
+                        # Retry with exponential backoff
+                        delay = base_delay * (2 ** (attempt - 1))
+                        self._retry_stats['total_retries'] += 1
+                        _print_warning(f"⏳ Request timed out (attempt {attempt}/{self.max_retries})")
+                        _print_progress(f"🔄 Retrying in {delay}s...")
+                        time.sleep(delay)
+                        continue
+                    else:
+                        # Final attempt failed
+                        self._retry_stats['failed_retries'] += 1
+                        _print_error(f"❌ Request timed out after {self.max_retries} attempts")
+                        _print_error(f"    This is common for large courses - will try alternative endpoint")
+                        return None
+                else:
+                    _print_error(f"⚠️  Network error: {e.reason}")
                     return None
 
-        except HTTPError as e:
-            print(f"⚠️  HTTP Error {e.code} for {endpoint}")
-            if e.code == 401:
-                print("    Authentication may be required or has expired")
-            elif e.code == 404:
-                print("    Endpoint not found - may need discovery")
-            return None
+            except json.JSONDecodeError as e:
+                _print_error(f"⚠️  Invalid JSON response from {endpoint}")
+                return None
 
-        except URLError as e:
-            print(f"⚠️  Network error for {endpoint}: {e.reason}")
-            return None
+            except Exception as e:
+                _print_error(f"⚠️  Unexpected error for {endpoint}: {e}")
+                return None
 
-        except json.JSONDecodeError as e:
-            print(f"⚠️  Invalid JSON response from {endpoint}")
-            return None
-
-        except Exception as e:
-            print(f"⚠️  Unexpected error for {endpoint}: {e}")
-            return None
+        # Should not reach here, but just in case
+        return None
 
     def resolve_course_id(self, course_slug):
         """
@@ -193,7 +282,7 @@ class UdemyAPIClient:
                 if course_slug in url or published_title == course_slug:
                     course_id = course.get('id')
                     if course_id:
-                        print(f"  ✓ Resolved '{course_slug}' to ID: {course_id}")
+                        _print_success(f"✓ Resolved '{course_slug}' to ID: {course_id}")
                         return course_id
 
             # Check if there are more pages
@@ -202,7 +291,8 @@ class UdemyAPIClient:
 
             page += 1
 
-        print(f"  ✗ Could not find course with slug: {course_slug}")
+        _print_error(f"❌ Course not found in enrolled courses: {course_slug}")
+        _print_error(f"    Make sure you're enrolled at the course URL")
         return None
 
     def get_course_details(self, course_id):
@@ -227,7 +317,7 @@ class UdemyAPIClient:
         data = self._make_request(endpoint)
 
         if data:
-            print(f"  ✓ Retrieved course details")
+            _print_success(f"✓ Retrieved course details")
             return data
         else:
             print(f"  ⚠️  Could not fetch course details")
@@ -268,12 +358,17 @@ class UdemyAPIClient:
             )
 
             print(f"    Requesting page {page}...")
+            if page == 1:
+                # First page might take longer for large courses
+                _print_progress("⏳ This may take 30-60 seconds for large courses...")
+
             data = self._make_request(endpoint)
 
             if not data:
                 if page == 1:
                     # First page failed, try fallback
-                    print("  Documented endpoint failed, attempting discovery...")
+                    _print_warning("⚠️  Primary endpoint timed out (common for large courses)")
+                    _print_progress("🔄 Trying alternative endpoint...")
                     return self._discover_course_structure(course_id, course_slug)
                 else:
                     # Subsequent page failed, might be end of pagination
@@ -292,11 +387,11 @@ class UdemyAPIClient:
             page += 1
 
         if all_items:
-            print(f"  ✓ Retrieved {len(all_items)} curriculum items across {page} page(s)")
+            _print_success(f"✓ Retrieved {len(all_items)} curriculum items across {page} page(s)")
             # Pass both slug (for display) and ID (for API calls)
             return self._parse_course_structure({'results': all_items}, course_slug, course_id, course_details)
         else:
-            print("  ✗ No curriculum items found")
+            _print_error("✗ No curriculum items found")
             return None
 
     def _parse_course_structure(self, data, course_slug, course_id=None, course_details=None):
@@ -664,6 +759,15 @@ class UdemyAPIClient:
 
         # Unknown type
         return 'unknown'
+
+    def get_retry_stats(self):
+        """
+        Get retry statistics.
+
+        Returns:
+            dict: Retry statistics including total retries, successes, failures, timeouts
+        """
+        return self._retry_stats.copy()
 
 
 # Example usage
