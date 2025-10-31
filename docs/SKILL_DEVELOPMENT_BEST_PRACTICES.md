@@ -412,7 +412,7 @@ The v1 API used: `api.example.com/v1/messages`
 - Acknowledge **adaptation** for flexible guidance
 
 **Example**:
-```markdown
+
 ## Output Format
 
 Use this template structure:
@@ -421,7 +421,6 @@ Use this template structure:
 ```
 
 Adapt field names based on the data source schema.
-```
 
 ### Provide One Default Option
 
@@ -664,16 +663,14 @@ Ask these questions when designing a skill:
 
 **Best practice**: Provide a checklist Claude can copy and check off:
 
-```markdown
 Copy this checklist and track your progress:
 
-\`\`\`
+```
 - [ ] Step 1: Read all source documents
 - [ ] Step 2: Identify key themes
 - [ ] Step 3: Cross-reference claims
 - [ ] Step 4: Create structured summary
 - [ ] Step 5: Verify citations
-\`\`\`
 ```
 
 **Why this works**: Explicit checklists help Claude track progress and reduce missed steps.
@@ -790,16 +787,15 @@ Use the pdf library to process files.
 ```
 
 ✅ **Be explicit about dependencies**:
-```markdown
+
 Install required package:
-\`\`\`bash
+```bash
 pip install pdfplumber
-\`\`\`
+```
 
 Then use:
-\`\`\`python
+```python
 from pdfplumber import open
-\`\`\`
 ```
 
 **Example** (from official docs):
