@@ -24,6 +24,60 @@ Each command acts as a **meta-prompt optimizer**, enforcing SDD best practices s
 
 ---
 
+## 🗺️ Complete SDD Cycle
+
+The following diagram shows the complete Spec-Driven Development workflow and how SpecPrep integrates with Spec Kit:
+
+```mermaid
+flowchart TD
+    Start([Raw Feature Idea]) --> Input1[Text or File<br/>@notes/idea.txt]
+
+    Input1 --> SpecPrep1[/specprep:specify<br/>Clean & Structure/]
+    SpecPrep1 --> Opt1{Optimization}
+    Opt1 -->|Remove HOW<br/>Add clarity| Output1[Optimized Spec Text]
+
+    Output1 --> SpecKit1[/speckit:specify/]
+    SpecKit1 --> Artifact1[(spec.md)]
+
+    Artifact1 --> SpecPrep2[/specprep:plan<br/>Validate & Refine/]
+    SpecPrep2 --> Opt2{Validation}
+    Opt2 -->|Constitutional<br/>Compliance| Output2[Validated Plan Text]
+
+    Output2 --> SpecKit2[/speckit:plan/]
+    SpecKit2 --> Artifact2[(plan.md)]
+
+    Artifact2 --> SpecPrep3[/specprep:tasks<br/>Extract & Organize/]
+    Research[(research.md<br/>optional)] -.->|Additional Context| SpecPrep3
+    SpecPrep3 --> Opt3{Extraction}
+    Opt3 -->|Structured<br/>Task List| Output3[Organized Tasks]
+
+    Output3 --> SpecKit3[/speckit:tasks/]
+    SpecKit3 --> Artifact3[(tasks.md)]
+
+    Artifact3 --> Implementation[Implementation Phase]
+    Implementation --> NewIdeas[New Features/<br/>Improvements]
+    NewIdeas -.->|Cycle Continues| Start
+
+    style SpecPrep1 fill:#e1f5ff,stroke:#0066cc,stroke-width:2px
+    style SpecPrep2 fill:#e1f5ff,stroke:#0066cc,stroke-width:2px
+    style SpecPrep3 fill:#e1f5ff,stroke:#0066cc,stroke-width:2px
+    style SpecKit1 fill:#fff4e1,stroke:#cc8800,stroke-width:2px
+    style SpecKit2 fill:#fff4e1,stroke:#cc8800,stroke-width:2px
+    style SpecKit3 fill:#fff4e1,stroke:#cc8800,stroke-width:2px
+    style Artifact1 fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px
+    style Artifact2 fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px
+    style Artifact3 fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px
+```
+
+### Key Integration Points
+
+- **SpecPrep commands** (blue) optimize and validate inputs before they reach Spec Kit
+- **Spec Kit commands** (orange) generate the official artifacts used throughout development
+- **Artifacts** (green) serve as both outputs and inputs for subsequent phases
+- **Cycle**: Implementation generates new ideas, continuing the SDD cycle
+
+---
+
 ## ⚙️ Usage Examples
 
 ```bash
