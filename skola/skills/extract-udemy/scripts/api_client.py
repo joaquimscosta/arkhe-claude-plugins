@@ -521,13 +521,14 @@ class UdemyAPIClient:
         print("  ✗ Could not discover course structure endpoint")
         return None
 
-    def get_lecture_transcript(self, course_id, lecture_id):
+    def get_lecture_transcript(self, course_id, lecture_id, lecture_data=None):
         """
         Fetch transcript for a lecture.
 
         Args:
-            course_id: Course identifier
+            course_id: Course identifier (slug or numeric ID)
             lecture_id: Lecture identifier
+            lecture_data: Optional lecture data dict that may contain asset with captions
 
         Returns:
             list: Transcript data with timestamps, or None if not available
@@ -535,7 +536,23 @@ class UdemyAPIClient:
         if not lecture_id:
             return None
 
-        # Use the discovered endpoint to get lecture details with captions
+        # Try to extract captions from lecture_data first (more efficient, avoids API call)
+        if lecture_data:
+            asset = lecture_data.get('asset', {})
+            captions = asset.get('captions', [])
+
+            if captions:
+                # Find English captions
+                for caption in captions:
+                    locale_id = caption.get('locale_id', '')
+                    if locale_id.startswith('en'):
+                        vtt_url = caption.get('url')
+                        if vtt_url:
+                            print(f"      ✓ Found English transcript in lecture data")
+                            return self._download_and_parse_vtt(vtt_url)
+
+        # Fallback: Fetch lecture details from API if captions not in lecture_data
+        # This endpoint expects course_slug, not numeric course_id
         endpoint = f'/api-2.0/users/me/subscribed-courses/{course_id}/lectures/{lecture_id}/?fields[asset]=captions&fields[lecture]=asset'
 
         print(f"    Fetching transcript for lecture {lecture_id}...")

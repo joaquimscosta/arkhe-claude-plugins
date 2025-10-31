@@ -157,7 +157,8 @@ def validate_prerequisites(api_client, course_slug, course_url):
             if asset.get('asset_type') == 'Video':
                 has_video = True
                 lecture_id = lecture.get('id')
-                test_transcript = api_client.get_lecture_transcript(course_id, lecture_id)
+                course_slug = structure.get('slug', course_id)
+                test_transcript = api_client.get_lecture_transcript(course_slug, lecture_id, lecture)
                 if test_transcript:
                     _print_success(f"    ✓ Transcript access confirmed ({len(test_transcript)} segments)")
                 else:
@@ -209,7 +210,7 @@ class ParallelTranscriptDownloader:
         self.lock = threading.Lock()
         logger.debug(f"Parallel downloader initialized with {max_workers} workers, rate limit: {rate_limit}s")
 
-    def _download_with_rate_limit(self, course_id, lecture_id):
+    def _download_with_rate_limit(self, course_id, lecture_id, lecture_data=None):
         """Download transcript with rate limiting."""
         with self.lock:
             elapsed = time.time() - self.last_request_time
@@ -218,15 +219,15 @@ class ParallelTranscriptDownloader:
                 time.sleep(sleep_time)
             self.last_request_time = time.time()
 
-        return self.api_client.get_lecture_transcript(course_id, lecture_id)
+        return self.api_client.get_lecture_transcript(course_id, lecture_id, lecture_data)
 
     def download_batch(self, course_id, lectures):
         """
         Download transcripts for a batch of lectures in parallel.
 
         Args:
-            course_id: Course ID
-            lectures: List of lecture dicts with 'id' and 'title'
+            course_id: Course ID (slug or numeric)
+            lectures: List of lecture dicts with 'id', 'title', and optionally 'asset'
 
         Returns:
             dict: Mapping of lecture_id -> transcript data (or None if failed)
@@ -244,7 +245,8 @@ class ParallelTranscriptDownloader:
                     future = executor.submit(
                         self._download_with_rate_limit,
                         course_id,
-                        lecture_id
+                        lecture_id,
+                        lecture
                     )
                     futures[future] = lecture
 
@@ -564,8 +566,9 @@ def main():
                 # Extract video transcript
                 if content_type == 'video' and 'video' in content_types:
                     transcript = api_client.get_lecture_transcript(
-                        course_id=course_data['id'],
-                        lecture_id=lecture_id
+                        course_id=course_data.get('slug', course_data['id']),
+                        lecture_id=lecture_id,
+                        lecture_data=lecture
                     )
                     if transcript:
                         file_writer.save_transcript(
