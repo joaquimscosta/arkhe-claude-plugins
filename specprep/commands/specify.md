@@ -126,27 +126,46 @@ When using **strict mode**, after generating output with `[NEEDS CLARIFICATION]`
 
 When `draft` argument is present, follow this workflow instead of automatically invoking SpecKit:
 
-### 1. Determine Feature Name
-
-**Check current git branch:**
-```bash
-git branch --show-current
-```
-
-**If on `main` or `master` branch:**
-- Use AskUserQuestion tool to prompt user for feature name
-- Question: "You're on main branch. Please provide a feature name for the draft:"
-- Use the exact user input as `{feature}` (no sanitization)
-
-**If on any other branch (e.g., `feature/user-auth`):**
-- Convert branch name to feature name by replacing slashes with hyphens
-- Example: `feature/user-auth` → `feature-user-auth`
-- Store as `{feature}`
-
-### 2. Perform Optimization
+### 1. Perform Optimization
 
 - Run the same optimization logic based on the specified mode (quick/strict/default)
 - Generate the optimized specification text as normal
+
+### 2. Generate Semantic Feature Name
+
+Analyze the optimized specification content and generate a short, descriptive feature name:
+
+1. **Extract key concepts** from the specification title and overview
+2. **Create semantic summary** capturing the core feature in 2-3 words
+3. **Keep it brief**: Target 10-20 characters, max 25 characters
+4. **Sanitize for filesystem safety**:
+   - Convert to lowercase
+   - Replace spaces with hyphens
+   - Strip all special characters except hyphens and alphanumeric (a-z, 0-9)
+   - Remove consecutive hyphens (e.g., `--` → `-`)
+   - Remove leading/trailing hyphens
+   - Ensure only valid filename characters remain
+
+**Examples:**
+- "User Authentication with OAuth 2.0" → `oauth-auth` (10 chars)
+- "Task Management System with AI Prioritization" → `task-ai` (7 chars)
+- "Payment Processing API Integration" → `payment-api` (11 chars)
+- "Real-time Chat Messaging" → `realtime-chat` (13 chars)
+- "Customer Profile Dashboard" → `profile-dash` (12 chars)
+
+**Guidelines:**
+- Remove filler words (with, and, the, a, for, system)
+- Prioritize action/domain words
+- Use common abbreviations when clear (api, auth, db, ui)
+- Avoid dates, versions, or temporary qualifiers
+- Prefer shorter over longer (e.g., `auth` over `authentication`)
+
+**Validation & Fallback:**
+- If generated name is empty or invalid after sanitization, use AskUserQuestion to prompt for feature name
+- If name is less than 3 characters, consider asking user for confirmation or better name
+- Final name must be filesystem-safe (only lowercase letters, numbers, and hyphens)
+
+Store the generated slug as `{feature}`.
 
 ### 3. Determine Git Root and Draft Directory
 
@@ -156,63 +175,62 @@ git rev-parse --show-toplevel
 ```
 
 **Construct draft directory path:**
-- Full path: `{git-root}/plan/specs/{feature}/`
-- Example: `/Users/jcosta/Projects/my-repo/plan/specs/feature-user-auth/`
+- Full path: `{git-root}/plan/drafts/`
+- Example: `/Users/jcosta/Projects/my-repo/plan/drafts/`
 
 **Create directory if needed:**
 ```bash
-mkdir -p {git-root}/plan/specs/{feature}
+mkdir -p {git-root}/plan/drafts
 ```
 
 ### 4. Determine Draft Filename with Versioning
 
-**Check for existing draft files:**
+**Check for existing draft files with matching feature name:**
 ```bash
-ls {git-root}/plan/specs/{feature}/spec-draft*.md 2>/dev/null || echo "none"
+ls {git-root}/plan/drafts/{feature}-spec-draft-v*.md 2>/dev/null || echo "none"
 ```
 
-**Determine filename:**
-- If no `spec-draft.md` exists: use `spec-draft.md`
-- If `spec-draft.md` exists:
-  - List all versioned files: `ls {git-root}/plan/specs/{feature}/spec-draft-v*.md 2>/dev/null`
-  - Extract version numbers using pattern matching (e.g., `spec-draft-v2.md` → `2`)
-  - Find maximum version number
-  - Use next version: `spec-draft-v{max+1}.md`
+**Determine version number:**
+- List all files matching pattern: `{feature}-spec-draft-v*.md`
+- Extract version numbers using pattern matching (e.g., `oauth-user-auth-spec-draft-v2.md` → `2`)
+- Find maximum version number
+- Use next version: `v{max+1}`
+- If no existing files found, use `v1`
+
+**Construct filename:**
+- Pattern: `{feature}-spec-draft-v{N}.md`
+- Example: `oauth-user-auth-spec-draft-v1.md`
 
 **Example version detection:**
 ```bash
-# List existing files
-ls plan/specs/feature-user-auth/spec-draft*.md
-# Output: spec-draft.md, spec-draft-v2.md, spec-draft-v3.md
+# List existing files for feature "oauth-user-auth"
+ls plan/drafts/oauth-user-auth-spec-draft-v*.md 2>/dev/null
+# Output: oauth-user-auth-spec-draft-v1.md, oauth-user-auth-spec-draft-v2.md
 
-# Extract max version (bash pattern matching)
-for f in plan/specs/feature-user-auth/spec-draft-v*.md; do
-  [[ $f =~ spec-draft-v([0-9]+)\.md ]] && echo "${BASH_REMATCH[1]}"
+# Extract max version (pattern matching)
+for f in plan/drafts/oauth-user-auth-spec-draft-v*.md; do
+  [[ $f =~ -v([0-9]+)\.md$ ]] && echo "${BASH_REMATCH[1]}"
 done | sort -n | tail -1
-# Output: 3
+# Output: 2
 
-# Next version: v4
-# Filename: spec-draft-v4.md
+# Next version: v3
+# Filename: oauth-user-auth-spec-draft-v3.md
 ```
 
 ### 5. Save Draft File
 
 - Write the optimized specification content to the determined file using Write tool
-- Full path: `{git-root}/plan/specs/{feature}/{filename}`
+- Full path: `{git-root}/plan/drafts/{filename}`
+- Example: `/Users/jcosta/Projects/my-repo/plan/drafts/oauth-user-auth-spec-draft-v1.md`
 
 ### 6. Present Output
 
 **Show the optimized specification text to the user**
 
-**Include save location with optional branch mismatch warning:**
-- If current git branch matches feature name:
-  - `Draft saved to plan/specs/{feature}/{filename}`
-- If current git branch does NOT match feature name:
-  - `Draft saved to plan/specs/{feature}/{filename} (note: git branch is '{actual-branch}')`
-
-**Example outputs:**
-- `Draft saved to plan/specs/feature-user-auth/spec-draft.md`
-- `Draft saved to plan/specs/my-feature/spec-draft-v2.md (note: git branch is 'fix-auth-bug')`
+**Include save location:**
+- Format: `Draft saved to plan/drafts/{filename}`
+- Example: `Draft saved to plan/drafts/oauth-user-auth-spec-draft-v1.md`
+- Example: `Draft saved to plan/drafts/task-priority-ai-spec-draft-v2.md`
 
 ### 7. Offer to Continue
 
@@ -226,7 +244,7 @@ done | sort -n | tail -1
 - Pass the complete optimized specification text to the SpecKit command
 
 **If user selects "No":**
-- Output: "You can manually review/edit the draft and run `/specprep:specify @plan/specs/{feature}/{filename}` (without draft flag) when ready."
+- Output: "You can manually review/edit the draft and run `/specprep:specify @plan/drafts/{filename}` (without draft flag) when ready."
 
 ## After Optimization
 
@@ -240,7 +258,7 @@ Once you have generated the optimized specification text:
 
 ### If Draft Mode IS Active
 
-1. Follow the complete "Draft Mode Workflow" steps above (check branch, optimize, save file, present output, offer to continue)
+1. Follow the complete "Draft Mode Workflow" steps above (optimize, generate feature name, save file, present output, offer to continue)
 2. The draft file is saved and user can choose whether to proceed with SpecKit or stop for manual review
 
 **Important**: Only invoke the SpecKit command if optimization succeeds. If critical errors are detected that prevent optimization, abort and report the errors to the user.
@@ -253,9 +271,18 @@ Once you have generated the optimized specification text:
 /specprep:specify @specs/001-feature/raw-spec.md strict
 ```
 
-**Draft mode (save for review):**
+**Draft mode (save to plan/drafts/ for review):**
 ```
 /specprep:specify @notes/idea.txt draft
+# Generates feature name from content, saves to plan/drafts/{feature}-spec-draft-v1.md
+
 /specprep:specify @notes/idea.txt draft strict
-/specprep:specify "Build a task tracker" quick draft
+# Strict mode optimization, saves to plan/drafts/{feature}-spec-draft-v1.md
+
+/specprep:specify "Build a task tracker with AI prioritization" quick draft
+# Quick mode, saves to plan/drafts/task-tracker-ai-spec-draft-v1.md
+
+# If you run draft mode again with similar content:
+/specprep:specify @notes/idea-v2.txt draft
+# Auto-detects existing drafts, saves to plan/drafts/{feature}-spec-draft-v2.md
 ```
