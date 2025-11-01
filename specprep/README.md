@@ -11,7 +11,7 @@ SpecPrep provides two specialized slash commands that **automatically prepare an
 
 | Command | Purpose | Modes | Auto-Invokes |
 |----------|----------|--------|----------------|
-| `/specprep:specify` | Cleans and structures raw feature ideas, then creates spec.md artifact | `quick`, `strict`, *(default)* | `/speckit.specify` |
+| `/specprep:specify` | Cleans and structures raw feature ideas, then creates spec.md artifact (or draft with `draft` flag) | `quick`, `strict`, `draft`, *(default)* | `/speckit.specify` (optional with draft) |
 | `/specprep:plan` | Validates and refines implementation plans, then creates plan.md artifact | `quick`, `strict`, *(default)* | `/speckit.plan` |
 
 Each command acts as a **meta-prompt optimizer and executor**, providing:
@@ -81,6 +81,9 @@ flowchart TD
 # Phase 1: Optimize and create spec.md artifact
 /specprep:specify @notes/feature-idea.txt quick
 
+# Phase 1 (alternative): Create draft for review before SpecKit
+/specprep:specify @notes/feature-idea.txt draft strict
+
 # Phase 2: Validate plan and create plan.md artifact
 /specprep:plan @specs/002-feature/plan.md strict
 
@@ -91,8 +94,8 @@ flowchart TD
 **How SpecPrep commands work:**
 1. Optimize your input based on the selected mode (quick, strict, or default)
 2. Show you the optimized output for review
-3. **Automatically invoke** the corresponding `/speckit` command
-4. The SpecKit command creates the artifact file (spec.md or plan.md)
+3. **Automatically invoke** the corresponding `/speckit` command (or save as draft with `draft` flag)
+4. The SpecKit command creates the artifact file (spec.md or plan.md), or draft is saved for manual review
 
 **No manual copy/paste required** for requirements and architecture preparation!
 
@@ -138,6 +141,84 @@ Found 3 clarifications needed. Resolve interactively? [y/N]
 
 - **Yes (y)**: Answer questions to resolve each ambiguity, then regenerate clean output
 - **No (N)**: Receive the output with `[NEEDS CLARIFICATION]` markers intact for manual review
+
+---
+
+## 📝 Draft Mode
+
+Use `draft` mode when you want to review and edit the optimized specification before creating the official spec.md artifact:
+
+```bash
+/specprep:specify @notes/idea.txt draft [quick|strict]
+```
+
+### How Draft Mode Works
+
+1. **Feature name determination**:
+   - If on `main`/`master`: Prompts user to provide a feature name interactively
+   - Otherwise: Converts current branch name to feature name (replaces slashes with hyphens)
+   - Example: Branch `feature/user-auth` → Feature name `feature-user-auth`
+
+2. **Performs optimization**:
+   - Runs the same optimization logic as normal mode (respects `quick`/`strict`/default)
+   - Generates optimized specification text
+
+3. **Saves draft file**:
+   - Creates directory: `plan/specs/{feature}/` (relative to git repository root)
+   - Saves as `spec-draft.md` (or `spec-draft-v2.md`, `v3.md`, etc. if file exists)
+   - Uses automatic versioning to avoid overwriting existing drafts
+   - Presents optimized output to user
+
+4. **Offers to continue**:
+   - Prompts: "Draft saved. Proceed with /speckit.specify?"
+   - **Yes**: Automatically invokes `/speckit.specify` to create spec.md
+   - **No**: Stops for manual review/editing
+   - Includes branch mismatch warning if applicable
+
+### When to Use Draft Mode
+
+- **Early exploration**: Not ready to commit to the official spec.md artifact
+- **Team collaboration**: Share draft with team for feedback before finalizing
+- **Iterative refinement**: Multiple passes of optimization with manual edits between versions
+- **Complex specifications**: Want to review SDD compliance before creating the artifact
+
+### Example Workflow
+
+```bash
+# Scenario: On branch 'feature/user-auth'
+
+# 1. Create initial draft
+/specprep:specify @notes/user-auth-idea.txt draft strict
+# → Detects branch: feature/user-auth
+# → Feature name: feature-user-auth
+# → Creates plan/specs/feature-user-auth/spec-draft.md
+# → Shows optimized output
+# → Prompts to continue → User says "no" to review manually
+
+# 2. Edit the draft file manually, then create v2
+/specprep:specify @plan/specs/feature-user-auth/spec-draft.md draft
+# → Creates plan/specs/feature-user-auth/spec-draft-v2.md (versioned)
+# → User says "yes" to continue
+# → Automatically creates spec.md artifact
+```
+
+**On main branch:**
+```bash
+/specprep:specify @notes/idea.txt draft
+# → Prompts: "You're on main branch. Please provide a feature name for the draft:"
+# → User enters: "new-analytics-dashboard"
+# → Creates plan/specs/new-analytics-dashboard/spec-draft.md
+```
+
+### Draft vs Normal Mode
+
+| Aspect | Normal Mode | Draft Mode |
+|--------|-------------|------------|
+| **Invocation** | `/specprep:specify @input.txt` | `/specprep:specify @input.txt draft` |
+| **Branch check** | No | Yes (prompts for name if on main) |
+| **Saves file** | No | Yes (plan/specs/{feature}/spec-draft.md) |
+| **Auto-invoke SpecKit** | Always | Optional (user choice) |
+| **Use case** | Ready to create artifact | Want to review/edit first |
 
 ---
 
