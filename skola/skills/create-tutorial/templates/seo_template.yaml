@@ -1,0 +1,123 @@
+# SEO Metadata Template
+
+# Blog Post / Article Metadata
+title: "Compelling Title Under 60 Characters"
+slug: "url-friendly-slug-with-keywords"
+description: "Engaging 150-160 character meta description that appears in search results. Include key benefit and target keyword."
+
+# Primary keywords (3-5 most important terms)
+keywords:
+  - "primary keyword phrase"
+  - "secondary keyword"
+  - "tertiary keyword"
+  - "related term"
+
+# Tags for categorization (8-12 tags)
+tags:
+  - "language" # python, javascript, java, kotlin
+  - "framework" # react, fastapi, spring, etc.
+  - "topic" # kubernetes, docker, cloud, ai
+  - "level" # beginner, intermediate, advanced
+  - "tutorial"
+  - "devops" # if relevant
+  - "backend" # if relevant
+  - "frontend" # if relevant
+  - "cicd" # if relevant
+  - "specific-tool" # e.g., kubectl, npm, gradle
+
+# Content characteristics
+reading_time_min: 12 # Estimated reading time
+target_audience: "intermediate developers" # beginner|intermediate|advanced developers
+difficulty: "intermediate" # beginner|intermediate|advanced
+
+# Video-specific (if applicable)
+video_duration_min: 10 # Actual video length
+video_category: "Science & Technology"
+
+# Social sharing
+og_image: "path/to/thumbnail.jpg" # Open Graph image for social sharing
+twitter_card: "summary_large_image"
+
+# Publishing metadata
+author: "Your Name"
+publish_date: "YYYY-MM-DD"
+updated_date: "YYYY-MM-DD" # If updated
+canonical_url: "https://yourdomain.com/tutorials/slug" # Canonical URL if cross-posted
+
+# Series information (if part of a series)
+series:
+  name: "Mastering Kubernetes"
+  part: 2
+  total_parts: 5
+
+# Related content (optional)
+related_tutorials:
+  - "related-tutorial-slug-1"
+  - "related-tutorial-slug-2"
+
+# Search engine directives (optional)
+noindex: false # Set to true if you don't want search engines to index
+nofollow: false # Set to true if you don't want search engines to follow links
+
+# Language and localization
+language: "en" # ISO 639-1 code
+region: "US" # Optional: target region
+
+# Technical metadata
+code_languages:
+  - "python"
+  - "yaml"
+  - "bash"
+
+technologies:
+  - "Docker"
+  - "Kubernetes"
+  - "FastAPI"
+
+# YouTube-specific (if video tutorial)
+youtube:
+  tags:
+    - "python tutorial"
+    - "kubernetes guide"
+    - "docker container"
+    - "devops"
+    - "cloud native"
+    - "tutorial"
+    - "how to"
+    - "programming"
+  category_id: 28 # 28 = Science & Technology
+  default_language: "en"
+  playlist: "PLxxxxxx" # Playlist ID if part of series
+
+# Social hashtags
+hashtags:
+  - "#Python"
+  - "#Kubernetes"
+  - "#DevOps"
+  - "#Tutorial"
+  - "#CloudNative"
+
+# Call to action
+cta:
+  text: "Try building this yourself"
+  link: "https://github.com/your-repo/example"
+
+# Prerequisites for SEO context
+prerequisites:
+  - "Python 3.8+"
+  - "Docker installed"
+  - "Basic terminal knowledge"
+
+# Learning outcomes (for rich snippets)
+learning_outcomes:
+  - "Build a REST API with FastAPI"
+  - "Deploy to Kubernetes"
+  - "Configure CI/CD pipeline"
+
+# Estimated completion time (total experience)
+total_time_hours: 1.5 # Time to read + implement
+
+# Skill level progression
+skill_level:
+  before: "Can write Python scripts"
+  after: "Can deploy containerized applications to Kubernetes"
