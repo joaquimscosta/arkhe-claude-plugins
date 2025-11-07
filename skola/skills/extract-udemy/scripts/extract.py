@@ -20,14 +20,16 @@ import re
 import json
 import argparse
 import logging
+import threading
 from pathlib import Path
 from urllib.parse import urlparse
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # Add current directory to path for imports
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from api_client import UdemyAPIClient
+from api_client import UdemyAPIClient, _print_error, _print_warning, _print_success, _print_progress
 from auth import Authenticator
 from file_writer import CourseFileWriter
 from content_extractors import ArticleExtractor, QuizExtractor, ResourceExtractor, ExternalResourceLinker
@@ -99,6 +101,171 @@ def get_project_root():
     return Path.cwd() / 'skola-research' / 'udemy'
 
 
+def validate_prerequisites(api_client, course_slug, course_url):
+    """
+    Run pre-flight checks before extraction.
+
+    Args:
+        api_client: UdemyAPIClient instance
+        course_slug: Course identifier slug
+        course_url: Full course URL
+
+    Returns:
+        dict: {'success': bool, 'issues': list, 'warnings': list}
+    """
+    print("🔍 Running pre-extraction validation...")
+    print("-" * 60)
+
+    results = {'success': True, 'issues': [], 'warnings': []}
+
+    # 1. Check course enrollment
+    print("  [1/3] Checking course enrollment...")
+    course_id = api_client.resolve_course_id(course_slug)
+    if not course_id:
+        results['success'] = False
+        results['issues'].append("Course not found in enrolled courses")
+        _print_error(f"    ❌ Course not enrolled")
+        _print_error(f"    → Please enroll at: {course_url}")
+        return results
+    _print_success(f"    ✓ Course enrolled (ID: {course_id})")
+
+    # 2. Verify API access
+    print("  [2/3] Verifying API access...")
+    details = api_client.get_course_details(course_id)
+    if not details:
+        results['success'] = False
+        results['issues'].append("Cannot access course details API")
+        _print_error(f"    ❌ API access failed")
+        return results
+    _print_success(f"    ✓ API access confirmed")
+
+    # 3. Test transcript availability
+    print("  [3/3] Testing transcript access...")
+    structure = api_client.get_course_structure(course_slug)
+    if not structure:
+        results['success'] = False
+        results['issues'].append("Cannot fetch course structure")
+        _print_error(f"    ❌ Course structure unavailable")
+        return results
+
+    # Find first video lecture and test transcript
+    sections = structure.get('sections', [])
+    has_video = False
+    for section in sections:
+        for lecture in section.get('lectures', []):
+            asset = lecture.get('asset', {})
+            if asset.get('asset_type') == 'Video':
+                has_video = True
+                lecture_id = lecture.get('id')
+                course_slug = structure.get('slug', course_id)
+                test_transcript = api_client.get_lecture_transcript(course_slug, lecture_id, lecture)
+                if test_transcript:
+                    _print_success(f"    ✓ Transcript access confirmed ({len(test_transcript)} segments)")
+                else:
+                    results['warnings'].append("Test lecture has no transcript")
+                    _print_warning(f"    ⚠️  Test lecture has no transcript (may be expected)")
+                break
+        if has_video:
+            break
+
+    if not has_video:
+        total_lectures = sum(len(s.get('lectures', [])) for s in sections)
+        results['warnings'].append(f"No video lectures found ({total_lectures} total lectures)")
+        _print_warning(f"    ⚠️  No video lectures found")
+
+    print("-" * 60)
+
+    # Display results
+    if results['issues']:
+        _print_error("❌ Validation FAILED:")
+        for issue in results['issues']:
+            _print_error(f"  - {issue}")
+    elif results['warnings']:
+        _print_warning("⚠️  Validation passed with warnings:")
+        for warning in results['warnings']:
+            _print_warning(f"  - {warning}")
+    else:
+        _print_success("✅ All validation checks passed!")
+
+    print()
+    return results
+
+
+class ParallelTranscriptDownloader:
+    """Download transcripts in parallel with rate limiting."""
+
+    def __init__(self, api_client, max_workers=2, rate_limit=0.5):
+        """
+        Initialize parallel downloader.
+
+        Args:
+            api_client: UdemyAPIClient instance
+            max_workers: Number of parallel workers (default: 2)
+            rate_limit: Minimum seconds between requests (default: 0.5)
+        """
+        self.api_client = api_client
+        self.max_workers = max_workers
+        self.rate_limit = rate_limit
+        self.last_request_time = time.time()
+        self.lock = threading.Lock()
+        logger.debug(f"Parallel downloader initialized with {max_workers} workers, rate limit: {rate_limit}s")
+
+    def _download_with_rate_limit(self, course_id, lecture_id, lecture_data=None):
+        """Download transcript with rate limiting."""
+        with self.lock:
+            elapsed = time.time() - self.last_request_time
+            if elapsed < self.rate_limit:
+                sleep_time = self.rate_limit - elapsed
+                time.sleep(sleep_time)
+            self.last_request_time = time.time()
+
+        return self.api_client.get_lecture_transcript(course_id, lecture_id, lecture_data)
+
+    def download_batch(self, course_id, lectures):
+        """
+        Download transcripts for a batch of lectures in parallel.
+
+        Args:
+            course_id: Course ID (slug or numeric)
+            lectures: List of lecture dicts with 'id', 'title', and optionally 'asset'
+
+        Returns:
+            dict: Mapping of lecture_id -> transcript data (or None if failed)
+        """
+        results = {}
+        futures = {}
+
+        logger.debug(f"Starting parallel download of {len(lectures)} transcripts...")
+
+        with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
+            # Submit all download tasks
+            for lecture in lectures:
+                lecture_id = lecture.get('id')
+                if lecture_id:
+                    future = executor.submit(
+                        self._download_with_rate_limit,
+                        course_id,
+                        lecture_id,
+                        lecture
+                    )
+                    futures[future] = lecture
+
+            # Collect results as they complete
+            for future in as_completed(futures):
+                lecture = futures[future]
+                lecture_id = lecture.get('id')
+                try:
+                    transcript = future.result()
+                    results[lecture_id] = transcript
+                    logger.debug(f"Completed download for lecture {lecture_id}")
+                except Exception as e:
+                    logger.error(f"Failed to download transcript for lecture {lecture_id}: {e}")
+                    results[lecture_id] = None
+
+        logger.debug(f"Parallel batch complete: {len([r for r in results.values() if r])} successful")
+        return results
+
+
 def parse_arguments():
     """Parse command-line arguments."""
     parser = argparse.ArgumentParser(
@@ -157,6 +324,44 @@ Examples:
         help='Maximum resource file size to download in MB (default: 100)'
     )
 
+    # Phase 2: Robustness options
+    parser.add_argument(
+        '--max-retries',
+        type=int,
+        default=3,
+        help='Maximum retry attempts for failed requests (default: 3)'
+    )
+    parser.add_argument(
+        '--no-retry',
+        action='store_true',
+        help='Disable retry logic (fail immediately on errors)'
+    )
+    parser.add_argument(
+        '--no-resume',
+        action='store_true',
+        help='Force fresh extraction, ignore any previous progress'
+    )
+
+    # Phase 3: Diagnostics options
+    parser.add_argument(
+        '--debug',
+        action='store_true',
+        help='Enable verbose debug logging'
+    )
+
+    # Phase 4: Performance options
+    parser.add_argument(
+        '--parallel-workers',
+        type=int,
+        default=2,
+        help='Number of parallel download workers (default: 2, max: 5)'
+    )
+    parser.add_argument(
+        '--no-parallel',
+        action='store_true',
+        help='Disable parallel downloads (use sequential mode)'
+    )
+
     return parser.parse_args()
 
 
@@ -177,6 +382,22 @@ def main():
 
     # Parse arguments
     args = parse_arguments()
+
+    # Configure logging based on debug flag
+    if args.debug:
+        logging.basicConfig(
+            level=logging.DEBUG,
+            format='%(asctime)s [%(levelname)s] %(name)s: %(message)s',
+            datefmt='%H:%M:%S',
+            force=True
+        )
+        logger.debug("Debug mode enabled")
+    else:
+        logging.basicConfig(
+            level=logging.INFO,
+            format='%(message)s',
+            force=True
+        )
 
     course_url = args.course_url
     output_dir = args.output_dir
@@ -225,12 +446,20 @@ def main():
 
         # Initialize API client
         print("🔌 Initializing API client...")
+        max_retries = 0 if args.no_retry else args.max_retries
         api_client = UdemyAPIClient(
             base_url=course_info['base_url'],
             auth_headers=auth_headers,
-            project_root=project_root
+            project_root=project_root,
+            max_retries=max_retries
         )
         print("  ✓ API client ready\n")
+
+        # Run pre-extraction validation
+        validation = validate_prerequisites(api_client, course_info['course_slug'], course_url)
+        if not validation['success']:
+            _print_error("\n❌ Cannot proceed with extraction. Please resolve the issues above.")
+            sys.exit(1)
 
         # Initialize content extractors
         print("🔧 Initializing content extractors...")
@@ -245,7 +474,8 @@ def main():
         course_data = api_client.get_course_structure(course_info['course_slug'])
 
         if not course_data:
-            print("  ✗ Failed to fetch course structure")
+            _print_error("❌ Failed to fetch course structure")
+            _print_error("    Verify you're enrolled in the course and cookies are valid")
             sys.exit(1)
 
         course_title = course_data.get('title', course_info['course_slug'])
@@ -266,6 +496,17 @@ def main():
         )
         file_writer.create_directory_structure()
         print("  ✓ Directory structure created\n")
+
+        # Handle resume functionality
+        if args.no_resume and file_writer.progress_file.exists():
+            print("🔄 Clearing previous progress (--no-resume flag)...")
+            file_writer.clear_progress()
+            print("  ✓ Progress cleared\n")
+        elif file_writer.progress_file.exists():
+            completed_count = len(file_writer.completed_lectures)
+            remaining_count = total_lectures - completed_count
+            _print_progress(f"🔄 Resuming previous extraction...")
+            print(f"  {completed_count} lectures already completed, {remaining_count} remaining\n")
 
         # Save course metadata
         print("📝 Saving course metadata...")
@@ -303,6 +544,12 @@ def main():
                     lecture_number += 1
                     continue
 
+                # Check if lecture already completed (resume functionality)
+                if file_writer.is_lecture_complete(lecture_id):
+                    print(f"    [{lecture_number:03d}] ⏭️  {lecture_title} - Already extracted (skipping)")
+                    lecture_number += 1
+                    continue
+
                 # Detect content type
                 content_type = api_client.detect_content_type(lecture)
 
@@ -319,8 +566,9 @@ def main():
                 # Extract video transcript
                 if content_type == 'video' and 'video' in content_types:
                     transcript = api_client.get_lecture_transcript(
-                        course_id=course_data['id'],
-                        lecture_id=lecture_id
+                        course_id=course_data.get('slug', course_data['id']),
+                        lecture_id=lecture_id,
+                        lecture_data=lecture
                     )
                     if transcript:
                         file_writer.save_transcript(
@@ -405,6 +653,9 @@ def main():
                     print(f"    [{lecture_number:03d}] ⚠️  {lecture_title} - No extractable content")
                     extraction_counts['skipped'] += 1
 
+                # Mark lecture as complete for resume functionality
+                file_writer.mark_lecture_complete(lecture_id)
+
                 lecture_number += 1
 
                 # Rate limiting: wait 0.5 seconds between requests
@@ -428,6 +679,10 @@ def main():
         print("\n📝 Updating README with extraction statistics...")
         links_count = links_summary.get('total_resources', 0) if links_summary else 0
         file_writer.update_readme_with_stats(course_data, links_count)
+
+        # Clear progress file after successful completion
+        if file_writer.progress_file.exists():
+            file_writer.clear_progress()
 
         # Summary
         print("\n" + "=" * 60)
@@ -494,10 +749,10 @@ def main():
         print("\n✓ Done!")
 
     except KeyboardInterrupt:
-        print("\n\n⚠️  Extraction interrupted by user")
+        _print_warning("\n\n⚠️  Extraction interrupted by user")
         sys.exit(1)
     except Exception as error:
-        print(f"\n✗ Error: {str(error)}")
+        _print_error(f"\n❌ Unexpected error: {str(error)}")
         import traceback
         traceback.print_exc()
         sys.exit(1)
