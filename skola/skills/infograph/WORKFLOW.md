@@ -8,13 +8,13 @@
 4) **Content fill** — Insert text/code into regions (≤80 words per region, add alt text).  
 5) **Style tokens** — Define type scale, accent color, neutral palette, and stroke weight.  
 6) **Checklist** — Run through `08_Checklist.md` for clarity, hierarchy, flow, and accessibility.  
-7) **Render** — Use one of the engines below:  
+7) **Render** — Use one of the engines below:
    ```bash
    # Gemini (structured and precise)
-   python3 scripts/generate_infograph.py --engine gemini --mode structured --layout-file layout.json
+   uv run scripts/generate_infograph.py --engine gemini --mode structured --layout-file layout.json
 
    # Nano Banana (aesthetic and styled)
-   python3 scripts/generate_infograph.py --engine nanobanana --mode structured --layout-file layout.json
+   uv run scripts/generate_infograph.py --engine nanobanana --mode structured --layout-file layout.json
 ````
 
 8. **Export** — Outputs are saved to `./output/`.

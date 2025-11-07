@@ -25,7 +25,7 @@ This file provides ready-to-run examples showing how to generate and improve inf
 
 #### Option A — Gemini (structured, layout-accurate)
 ```bash
-python3 scripts/generate_infograph.py \
+uv run scripts/generate_infograph.py \
   --engine gemini \
   --mode structured \
   --layout-file layouts/dijkstra.json \
@@ -35,7 +35,7 @@ python3 scripts/generate_infograph.py \
 #### Option B — Nano Banana (aesthetic, styled)
 
 ```bash
-python3 scripts/generate_infograph.py \
+uv run scripts/generate_infograph.py \
   --engine nanobanana \
   --mode structured \
   --layout-file layouts/dijkstra.json \
@@ -73,7 +73,7 @@ python3 scripts/generate_infograph.py \
 #### Gemini (structured)
 
 ```bash
-python3 scripts/generate_infograph.py \
+uv run scripts/generate_infograph.py \
   --engine gemini \
   --mode structured \
   --layout-file layouts/microservices.json \
@@ -83,7 +83,7 @@ python3 scripts/generate_infograph.py \
 #### Nano Banana (styled)
 
 ```bash
-python3 scripts/generate_infograph.py \
+uv run scripts/generate_infograph.py \
   --engine nanobanana \
   --mode structured \
   --layout-file layouts/microservices.json \
@@ -114,7 +114,7 @@ A JSON layout file (`layouts/old_algorithm.json`) with verbose labels and poor s
 ### Command
 
 ```bash
-python3 scripts/generate_infograph.py \
+uv run scripts/generate_infograph.py \
   --engine gemini \
   --mode structured \
   --layout-file layouts/old_algorithm_revised.json \

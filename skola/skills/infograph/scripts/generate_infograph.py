@@ -1,5 +1,9 @@
-```python
-#!/usr/bin/env python3
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.8"
+# dependencies = ["google-genai>=0.2.0"]
+# ///
+# -*- coding: utf-8 -*-
 """
 Render technical-education infographics via Gemini or Nano Banana.
 
@@ -9,9 +13,9 @@ Supports:
 - Dual-engine toggle: gemini | nanobanana
 
 Usage:
-  python3 scripts/generate_infograph.py --engine gemini --mode text --prompt-file brief.txt --output-dir ./output
-  python3 scripts/generate_infograph.py --engine gemini --mode structured --layout-file layout.json --output-dir ./output
-  python3 scripts/generate_infograph.py --engine nanobanana --mode structured --layout-file layout.json --output-dir ./output
+  uv run generate_infograph.py --engine gemini --mode text --prompt-file brief.txt --output-dir ./output
+  uv run generate_infograph.py --engine gemini --mode structured --layout-file layout.json --output-dir ./output
+  uv run generate_infograph.py --engine nanobanana --mode structured --layout-file layout.json --output-dir ./output
 """
 
 import argparse
@@ -29,6 +33,18 @@ try:
 except ImportError:
     genai = None
     types = None
+
+
+def validate_environment():
+    """Validate required environment variables."""
+    api_key = os.environ.get("GEMINI_API_KEY")
+    if not api_key:
+        raise RuntimeError(
+            "❌ GEMINI_API_KEY environment variable not set.\n"
+            "   Get your API key: https://aistudio.google.com/apikey\n"
+            "   Set it with: export GEMINI_API_KEY='your-key-here'"
+        )
+    return api_key
 
 
 def ensure_dir(p: pathlib.Path):
@@ -78,27 +94,39 @@ def build_structured_prompt(layout: dict) -> str:
 def call_gemini(prompt_text: str, model: str, outdir: pathlib.Path, basename: str):
     """Render image via Gemini."""
     if genai is None:
-        raise RuntimeError("google-genai not installed. Run: pip install google-genai")
+        raise RuntimeError(
+            "❌ google-genai not installed.\n"
+            "   Install with: uv pip install google-genai\n"
+            "   Or run this script with: uv run generate_infograph.py"
+        )
 
-    client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
+    api_key = validate_environment()
+    client = genai.Client(api_key=api_key)
     contents = [types.Content(role="user", parts=[types.Part.from_text(text=prompt_text)])]
     cfg = types.GenerateContentConfig(
         response_modalities=["IMAGE", "TEXT"],
         image_config=types.ImageConfig(image_size="1K"),
     )
-    file_index = 0
-    for chunk in client.models.generate_content_stream(model=model, contents=contents, config=cfg):
-        if not chunk.candidates:
-            continue
-        part = chunk.candidates[0].content.parts[0]
-        if getattr(part, "inline_data", None) and getattr(part.inline_data, "data", None):
-            ext = mimetypes.guess_extension(part.inline_data.mime_type) or ".png"
-            ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-            path = outdir / f"{basename}_{file_index}_{ts}{ext}"
-            save_binary_file(path, part.inline_data.data)
-            file_index += 1
-        elif getattr(chunk, "text", None):
-            (outdir / f"{basename}.txt").write_text(chunk.text, encoding="utf-8")
+
+    try:
+        file_index = 0
+        for chunk in client.models.generate_content_stream(model=model, contents=contents, config=cfg):
+            if not chunk.candidates:
+                continue
+            part = chunk.candidates[0].content.parts[0]
+            if getattr(part, "inline_data", None) and getattr(part.inline_data, "data", None):
+                ext = mimetypes.guess_extension(part.inline_data.mime_type) or ".png"
+                ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+                path = outdir / f"{basename}_{file_index}_{ts}{ext}"
+                save_binary_file(path, part.inline_data.data)
+                file_index += 1
+            elif getattr(chunk, "text", None):
+                (outdir / f"{basename}.txt").write_text(chunk.text, encoding="utf-8")
+    except Exception as e:
+        raise RuntimeError(
+            f"❌ Image generation failed: {e}\n"
+            f"   Check: API key validity, model name, rate limits"
+        ) from e
 
 
 def call_nanobanana(prompt_text: str, outdir: pathlib.Path, basename: str):
@@ -128,7 +156,7 @@ def main():
     parser.add_argument("--mode", choices=["text", "structured"], required=True)
     parser.add_argument("--prompt-file")
     parser.add_argument("--layout-file")
-    parser.add_argument("--model", default="gemini-2.5-flash-image")
+    parser.add_argument("--model", default="gemini-1.5-flash")
     parser.add_argument("--output-dir", default="./output")
     parser.add_argument("--basename", default="infographic")
     args = parser.parse_args()
