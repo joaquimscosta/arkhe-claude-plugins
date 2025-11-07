@@ -1,6 +1,6 @@
 ---
 name: creating-commit
-description: Creates context-aware git commits with smart pre-commit checks, submodule support, and conventional commit message generation. Use when user requests to commit changes, run /commit command, or needs help creating git commits.
+description: Creates context-aware git commits with smart pre-commit checks, submodule support, and conventional commit message generation. Use when user requests to commit changes, stage and commit, check in code, save work, create commits, run /commit command, or mentions "git commit", "commit message", "conventional commits", "stage files", or needs help with commits.
 ---
 
 # Git Commit Workflow

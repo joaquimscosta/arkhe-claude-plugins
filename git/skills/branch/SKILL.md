@@ -1,6 +1,6 @@
 ---
 name: creating-branch
-description: Creates feature branches with optimized short naming, auto-incrementing, and commit type detection. Supports manual descriptions and auto-generation from uncommitted git changes. Use when user requests to create/start/make a new branch, mentions creating/making/starting a branch, runs /create-branch command, or asks to begin work with a new branch.
+description: Creates feature branches with optimized short naming, auto-incrementing, and commit type detection (feat/fix/refactor). Supports manual descriptions and auto-generation from uncommitted git changes. Use when user requests to create branch, start new branch, make branch, checkout new branch, begin work on feature, run /create-branch command, or mentions "branch", "feature", "new feature", "feat", "fix", or "checkout".
 ---
 
 # Git Branch Workflow

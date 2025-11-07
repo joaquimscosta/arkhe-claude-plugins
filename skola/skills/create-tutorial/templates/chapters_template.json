@@ -1,0 +1,50 @@
+[
+  {
+    "time": "00:00",
+    "title": "Hook & Outcome"
+  },
+  {
+    "time": "00:20",
+    "title": "What We'll Cover"
+  },
+  {
+    "time": "00:45",
+    "title": "Why This Matters"
+  },
+  {
+    "time": "01:30",
+    "title": "Prerequisites & Setup"
+  },
+  {
+    "time": "02:00",
+    "title": "Core Concept Explained"
+  },
+  {
+    "time": "03:30",
+    "title": "Hands-on Implementation"
+  },
+  {
+    "time": "05:15",
+    "title": "Building Feature 1"
+  },
+  {
+    "time": "07:00",
+    "title": "Building Feature 2"
+  },
+  {
+    "time": "08:45",
+    "title": "Testing & Demo"
+  },
+  {
+    "time": "09:30",
+    "title": "Common Pitfalls"
+  },
+  {
+    "time": "10:15",
+    "title": "Recap & Challenge"
+  },
+  {
+    "time": "11:00",
+    "title": "Next Steps & Resources"
+  }
+]
