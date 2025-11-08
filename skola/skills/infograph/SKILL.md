@@ -1,5 +1,5 @@
 ---
-name: infographic-designer
+name: infographic
 description: Generates or improves technical-education infographics (programming, AI/ML, algorithms, cloud, architecture) using a modular framework. Use when asked to plan, draft, or refine an infographic; when given a topic + audience; or when provided a structured layout/wireframe to render. Allows structured JSON layout input for deterministic composition. Allowed tools: Read, Write, Execute.
 allowed-tools: Read, Write, Execute
 ---
