@@ -48,7 +48,14 @@ arguments: root --draft --base develop
 
 Execute the PR workflow by running the bash script with the provided arguments.
 
-**IMPORTANT**: Use the Bash tool to execute the script directly:
+**CRITICAL INSTRUCTIONS**:
+1. Use the Bash tool to execute the script directly (do NOT use Write or Edit tools)
+2. The script handles ALL PR title and body generation internally
+3. **DO NOT add any Claude Code footer, attribution, or "Generated with Claude Code" text to PR titles or descriptions**
+4. The script's PR content must be used exactly as generated
+5. Never modify, wrap, or append attribution to PR content created by the script
+
+**Execute the script**:
 
 ```bash
 git/skills/pr/scripts/pr.sh $ARGUMENTS
@@ -103,7 +110,7 @@ The skill produces:
 
 6. **Submodule Support**: Can create PRs for both root repository and submodules
 
-7. **No Claude Code Footer**: Never include Claude Code attribution in PR titles or descriptions unless explicitly requested by user
+7. **NO CLAUDE CODE FOOTER**: The script generates PR titles and descriptions internally. DO NOT add, modify, or append any Claude Code attribution, footer, or "Generated with Claude Code" text to PR content. The script's PR content must be used exactly as generated unless explicitly requested by user.
 
 ## Supporting Documentation
 

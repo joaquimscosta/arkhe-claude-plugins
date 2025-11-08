@@ -59,7 +59,14 @@ arguments: root --full-verify
 
 Execute the commit workflow by running the bash script with the provided arguments.
 
-**IMPORTANT**: Use the Bash tool to execute the script directly:
+**CRITICAL INSTRUCTIONS**:
+1. Use the Bash tool to execute the script directly (do NOT use Write or Edit tools)
+2. The script handles ALL commit message generation internally
+3. **DO NOT add any Claude Code footer, attribution, or "Generated with Claude Code" text to ANY commit messages**
+4. The script's `git commit` commands must execute with the exact messages it generates
+5. Never modify, wrap, or append to commit messages created by the script
+
+**Execute the script**:
 
 ```bash
 git/skills/commit/scripts/commit.sh $ARGUMENTS
@@ -91,11 +98,11 @@ The skill produces:
 
 ## Important Notes
 
-- Works from any directory in the project
-- Uses absolute paths for all git operations
-- Respects branch protection rules
-- Never includes Claude Code footer in commit messages unless explicitly requested by user
-- Handles both clean and mixed submodule scenarios
+- **Works from any directory** in the project
+- **Uses absolute paths** for all git operations
+- **Respects branch protection rules**
+- **NO CLAUDE CODE FOOTER**: The script generates commit messages internally. DO NOT add, modify, or append any Claude Code attribution, footer, or "Generated with Claude Code" text to commit messages. The script's commit messages must be used exactly as generated unless explicitly requested by user.
+- **Handles both clean and mixed submodule scenarios**
 
 ## Supporting Documentation
 
