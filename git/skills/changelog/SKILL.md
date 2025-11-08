@@ -1,9 +1,6 @@
 ---
 name: generating-changelog
-description: Analyzes git commit history and generates professional changelogs with semantic versioning, conventional commit support, and multiple output formats (Keep a Changelog, Conventional, GitHub). Use when editing CHANGELOG.md, preparing release notes, creating releases, bumping versions, or when user mentions "changelog", "release notes", "version history", "release", "semantic versioning", or "conventional commits".
-triggers:
-  - editing: ['**/CHANGELOG.md', '**/CHANGELOG.txt', '**/HISTORY.md']
-  - keywords: ['changelog', 'release notes', 'version', 'semantic versioning', 'conventional commits']
+description: Analyzes git commit history and generates professional changelogs with semantic versioning, conventional commit support, and multiple output formats (Keep a Changelog, Conventional, GitHub). Use when editing CHANGELOG.md, CHANGELOG.txt, or HISTORY.md files, preparing release notes, creating releases, bumping versions, updating changelog, documenting changes, writing release notes, tracking changes, version bump, tag release, or when user mentions "changelog", "release notes", "version history", "release", "semantic versioning", or "conventional commits".
 ---
 
 # Git Changelog Generation
@@ -206,6 +203,7 @@ cd services/api
 - **PR Linking**: Automatic GitHub PR number extraction
 - **Date Formatting**: ISO 8601 dates (YYYY-MM-DD)
 - **Markdown Formatting**: Valid markdown with proper headers
+- **No Claude Code Footer**: Never include Claude Code attribution in changelog entries unless explicitly requested by user
 
 ## See Also
 

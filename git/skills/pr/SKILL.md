@@ -1,6 +1,6 @@
 ---
 name: creating-pr
-description: Creates GitHub Pull Requests with existing PR detection, branch pushing, and intelligent title/body generation. Use when user requests to create pull request, open PR, update PR, push for review, create draft PR, submit for review, run /create-pr command, or mentions "PR", "pull request", "merge request", "code review", "GitHub PR", or "draft".
+description: Creates GitHub Pull Requests with existing PR detection, branch pushing, and intelligent title/body generation. Use when user requests to create pull request, open PR, update PR, push for review, ready for review, send for review, get this reviewed, make a PR, share code, request review, create draft PR, submit for review, run /create-pr command, or mentions "PR", "pull request", "merge request", "code review", "GitHub PR", or "draft".
 ---
 
 # Git PR Workflow
@@ -102,6 +102,8 @@ The skill produces:
 5. **Works Anywhere**: Executes from any directory, resolves paths absolutely
 
 6. **Submodule Support**: Can create PRs for both root repository and submodules
+
+7. **No Claude Code Footer**: Never include Claude Code attribution in PR titles or descriptions unless explicitly requested by user
 
 ## Supporting Documentation
 
