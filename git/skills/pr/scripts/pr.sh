@@ -357,17 +357,44 @@ update_pull_request() {
 
     # Update PR title and body
     if gh pr edit "$pr_number" --title "$title" --body "$body"; then
-        success "Pull request updated successfully!"
-
         # Get updated PR details
         local pr_details
-        pr_details=$(gh pr view "$pr_number" --json url,state,isDraft --jq '.')
+        pr_details=$(gh pr view "$pr_number" --json url,state,isDraft,title,body --jq '.')
         local pr_url
         pr_url=$(echo "$pr_details" | jq -r '.url')
         local pr_state
         pr_state=$(echo "$pr_details" | jq -r '.state')
         local is_draft
         is_draft=$(echo "$pr_details" | jq -r '.isDraft')
+
+        # Verify no Claude Code footer was added to PR
+        local pr_title_check
+        pr_title_check=$(echo "$pr_details" | jq -r '.title')
+        local pr_body_check
+        pr_body_check=$(echo "$pr_details" | jq -r '.body')
+
+        if echo "$pr_title_check" | grep -q "Generated with.*Claude Code\|Co-Authored-By: Claude"; then
+            error "CRITICAL: Claude Code footer detected in updated PR title!"
+            error "This violates the no-footer policy."
+            echo ""
+            echo "PR title contains prohibited attribution:"
+            echo "$pr_title_check"
+            echo ""
+            error "Please report this issue - the PR was updated but contains unwanted attribution."
+            exit 1
+        fi
+
+        if echo "$pr_body_check" | grep -q "Generated with.*Claude Code\|Co-Authored-By: Claude"; then
+            error "CRITICAL: Claude Code footer detected in updated PR description!"
+            error "This violates the no-footer policy."
+            echo ""
+            echo "PR description contains prohibited attribution"
+            echo ""
+            error "Please report this issue - the PR was updated but contains unwanted attribution."
+            exit 1
+        fi
+
+        success "Pull request updated successfully!"
 
         echo ""
         echo "📝 Updated Title: $title"
@@ -417,11 +444,42 @@ create_pull_request() {
     pr_url=$(eval "$gh_cmd" 2>&1)
 
     if [[ $? -eq 0 ]]; then
-        success "Pull request created successfully!"
-
         # Extract PR number from URL
         local pr_number
         pr_number=$(echo "$pr_url" | grep -oE "[0-9]+$" || echo "")
+
+        # Verify no Claude Code footer was added to PR
+        if [[ -n "$pr_number" ]]; then
+            local pr_details
+            pr_details=$(gh pr view "$pr_number" --json title,body --jq '.')
+            local pr_title_check
+            pr_title_check=$(echo "$pr_details" | jq -r '.title')
+            local pr_body_check
+            pr_body_check=$(echo "$pr_details" | jq -r '.body')
+
+            if echo "$pr_title_check" | grep -q "Generated with.*Claude Code\|Co-Authored-By: Claude"; then
+                error "CRITICAL: Claude Code footer detected in PR title!"
+                error "This violates the no-footer policy."
+                echo ""
+                echo "PR title contains prohibited attribution:"
+                echo "$pr_title_check"
+                echo ""
+                error "Please report this issue - the PR was created but contains unwanted attribution."
+                exit 1
+            fi
+
+            if echo "$pr_body_check" | grep -q "Generated with.*Claude Code\|Co-Authored-By: Claude"; then
+                error "CRITICAL: Claude Code footer detected in PR description!"
+                error "This violates the no-footer policy."
+                echo ""
+                echo "PR description contains prohibited attribution"
+                echo ""
+                error "Please report this issue - the PR was created but contains unwanted attribution."
+                exit 1
+            fi
+        fi
+
+        success "Pull request created successfully!"
 
         echo ""
         echo "📝 Title: $title"

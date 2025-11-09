@@ -636,6 +636,62 @@ BODY_TEMPLATE="## Changes\n...\n\n## Testing\n..."
 
 ---
 
+## Important: No Claude Code Footer Policy
+
+**The pr.sh script generates clean PR content without any attribution.**
+
+⚠️ **CRITICAL CONSTRAINT**: Never add Claude Code footers or attribution to PR titles or descriptions.
+
+**Prohibited Content**:
+- ❌ "🤖 Generated with [Claude Code]" in PR title
+- ❌ "🤖 Generated with [Claude Code]" in PR body
+- ❌ "Co-Authored-By: Claude <noreply@anthropic.com>"
+- ❌ Any Claude Code branding or attribution
+
+**Why This Matters**:
+- PRs should reflect actual contributors
+- Professional appearance for code review
+- Clean, focused content without marketing material
+
+**Runtime Verification**:
+The `pr.sh` script automatically verifies that no footer was added to PR titles or descriptions. If detected, the script will fail with an error message.
+
+**Example of Correct PR**:
+```
+Title: feat(auth): add OAuth2 login support
+
+Body:
+## Issue
+- resolves: #123
+
+## Why is this change needed?
+This PR includes the following changes:
+- feat(auth): implement OAuth2 flow
+- feat(auth): add token refresh
+
+## Testing
+- [x] Tests added/updated
+- [x] Manual testing completed
+```
+
+**Example of Incorrect PR** (will be rejected):
+```
+Title: feat(auth): add OAuth2 login support
+
+Body:
+## Issue
+- resolves: #123
+
+## Why is this change needed?
+...
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+```
+
+---
+
 ## Best Practices
 
 1. **Create feature branches**: Never PR from `main`

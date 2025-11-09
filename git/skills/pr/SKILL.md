@@ -3,6 +3,21 @@ name: creating-pr
 description: Creates GitHub Pull Requests with existing PR detection, branch pushing, and intelligent title/body generation. Use when user requests to create pull request, open PR, update PR, push for review, ready for review, send for review, get this reviewed, make a PR, share code, request review, create draft PR, submit for review, run /create-pr command, or mentions "PR", "pull request", "merge request", "code review", "GitHub PR", or "draft".
 ---
 
+# ⚠️ CRITICAL CONSTRAINTS
+
+## No Claude Code Footer Policy
+
+**YOU MUST NEVER add Claude Code attribution to pull requests.**
+
+- ❌ **NO** "🤖 Generated with [Claude Code]" in PR titles or descriptions
+- ❌ **NO** "Co-Authored-By: Claude <noreply@anthropic.com>" in PR content
+- ❌ **NO** Claude Code attribution, footer, or branding of any kind
+- ❌ **NO** modification of script-generated PR content
+
+**The pr.sh script generates ALL PR content internally.** Use its output exactly as provided. Do NOT add, modify, wrap, or append any text to PR titles or descriptions created by the script.
+
+---
+
 # Git PR Workflow
 
 Execute GitHub Pull Request workflows with automatic repository detection, branch management, and intelligent PR content generation.
@@ -51,9 +66,8 @@ Execute the PR workflow by running the bash script with the provided arguments.
 **CRITICAL INSTRUCTIONS**:
 1. Use the Bash tool to execute the script directly (do NOT use Write or Edit tools)
 2. The script handles ALL PR title and body generation internally
-3. **DO NOT add any Claude Code footer, attribution, or "Generated with Claude Code" text to PR titles or descriptions**
-4. The script's PR content must be used exactly as generated
-5. Never modify, wrap, or append attribution to PR content created by the script
+3. The script's PR content must be used exactly as generated
+4. Never modify, wrap, or append attribution to PR content created by the script
 
 **Execute the script**:
 
@@ -109,8 +123,6 @@ The skill produces:
 5. **Works Anywhere**: Executes from any directory, resolves paths absolutely
 
 6. **Submodule Support**: Can create PRs for both root repository and submodules
-
-7. **NO CLAUDE CODE FOOTER**: The script generates PR titles and descriptions internally. DO NOT add, modify, or append any Claude Code attribution, footer, or "Generated with Claude Code" text to PR content. The script's PR content must be used exactly as generated unless explicitly requested by user.
 
 ## Supporting Documentation
 

@@ -211,6 +211,21 @@ create_commit() {
     git commit -m "$message"
 
     if [[ $? -eq 0 ]]; then
+        # Verify no Claude Code footer was added
+        local commit_msg
+        commit_msg=$(git log -1 --pretty=%B)
+
+        if echo "$commit_msg" | grep -q "Generated with.*Claude Code\|Co-Authored-By: Claude"; then
+            error "CRITICAL: Claude Code footer detected in commit message!"
+            error "This violates the no-footer policy."
+            echo ""
+            echo "Commit message contains prohibited attribution:"
+            echo "$commit_msg" | grep -E "Generated with.*Claude Code|Co-Authored-By: Claude"
+            echo ""
+            error "Please report this issue - the commit was created but contains unwanted attribution."
+            exit 1
+        fi
+
         success "Committed changes in $SCOPE"
         echo "📝 Commit: $message"
         local branch
@@ -315,6 +330,21 @@ handle_submodule_reference_update() {
 
     # Create the commit
     if git commit -m "$commit_message" >/dev/null 2>&1; then
+        # Verify no Claude Code footer was added
+        local commit_msg
+        commit_msg=$(git log -1 --pretty=%B)
+
+        if echo "$commit_msg" | grep -q "Generated with.*Claude Code\|Co-Authored-By: Claude"; then
+            error "CRITICAL: Claude Code footer detected in submodule commit!"
+            error "This violates the no-footer policy."
+            echo ""
+            echo "Commit message contains prohibited attribution:"
+            echo "$commit_msg" | grep -E "Generated with.*Claude Code|Co-Authored-By: Claude"
+            echo ""
+            error "Please report this issue - the commit was created but contains unwanted attribution."
+            return 1
+        fi
+
         success "Submodule reference committed"
         echo "📝 Commit: $commit_message"
         echo "🔗 Branch: $(git rev-parse --abbrev-ref HEAD)"

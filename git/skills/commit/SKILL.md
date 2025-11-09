@@ -3,6 +3,21 @@ name: creating-commit
 description: Creates context-aware git commits with smart pre-commit checks, submodule support, and conventional commit message generation. Use when user requests to commit changes, stage and commit, check in code, save work, save changes, push my code, finalize changes, add to git, create commits, run /commit command, or mentions "git commit", "commit message", "conventional commits", "stage files", "git add", or needs help with commits.
 ---
 
+# ⚠️ CRITICAL CONSTRAINTS
+
+## No Claude Code Footer Policy
+
+**YOU MUST NEVER add Claude Code attribution to git commits.**
+
+- ❌ **NO** "🤖 Generated with [Claude Code]" in commit messages
+- ❌ **NO** "Co-Authored-By: Claude <noreply@anthropic.com>" in commit messages
+- ❌ **NO** Claude Code attribution, footer, or branding of any kind
+- ❌ **NO** modification of script-generated commit messages
+
+**The commit.sh script generates ALL commit messages internally.** Use its output exactly as provided. Do NOT add, modify, wrap, or append any text to commit messages created by the script.
+
+---
+
 # Git Commit Workflow
 
 Execute intelligent git commit workflows with automatic repository detection, smart pre-commit checks, and conventional commit message generation.
@@ -62,9 +77,8 @@ Execute the commit workflow by running the bash script with the provided argumen
 **CRITICAL INSTRUCTIONS**:
 1. Use the Bash tool to execute the script directly (do NOT use Write or Edit tools)
 2. The script handles ALL commit message generation internally
-3. **DO NOT add any Claude Code footer, attribution, or "Generated with Claude Code" text to ANY commit messages**
-4. The script's `git commit` commands must execute with the exact messages it generates
-5. Never modify, wrap, or append to commit messages created by the script
+3. The script's `git commit` commands must execute with the exact messages it generates
+4. Never modify, wrap, or append to commit messages created by the script
 
 **Execute the script**:
 
@@ -101,7 +115,6 @@ The skill produces:
 - **Works from any directory** in the project
 - **Uses absolute paths** for all git operations
 - **Respects branch protection rules**
-- **NO CLAUDE CODE FOOTER**: The script generates commit messages internally. DO NOT add, modify, or append any Claude Code attribution, footer, or "Generated with Claude Code" text to commit messages. The script's commit messages must be used exactly as generated unless explicitly requested by user.
 - **Handles both clean and mixed submodule scenarios**
 
 ## Supporting Documentation

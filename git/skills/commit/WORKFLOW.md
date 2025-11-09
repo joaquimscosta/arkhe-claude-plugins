@@ -588,6 +588,47 @@ fi
 
 ---
 
+## Important: No Claude Code Footer Policy
+
+**The commit.sh script generates clean commit messages without any attribution.**
+
+⚠️ **CRITICAL CONSTRAINT**: Never add Claude Code footers or attribution to commit messages.
+
+**Prohibited Content**:
+- ❌ "🤖 Generated with [Claude Code]"
+- ❌ "Co-Authored-By: Claude <noreply@anthropic.com>"
+- ❌ Any Claude Code branding or attribution
+
+**Why This Matters**:
+- Git history should reflect actual contributors
+- Commit messages should be clean and professional
+- Attribution pollutes version control history
+
+**Runtime Verification**:
+The `commit.sh` script automatically verifies that no footer was added to commit messages. If detected, the script will fail with an error message.
+
+**Example of Correct Commit**:
+```
+feat(auth): add OAuth2 login support
+
+Implemented OAuth2 authentication flow with token refresh
+and secure session management.
+```
+
+**Example of Incorrect Commit** (will be rejected):
+```
+feat(auth): add OAuth2 login support
+
+Implemented OAuth2 authentication flow with token refresh
+and secure session management.
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+```
+
+---
+
 ## Best Practices
 
 1. **Run checks before committing**: Let the script detect and run appropriate checks

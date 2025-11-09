@@ -28,6 +28,8 @@ Context-aware GitHub Pull Request assistant that automatically detects root repo
 
 ## Implementation
 
+⚠️ **CRITICAL**: Do NOT add Claude Code footers, attribution, or "Generated with Claude Code" text to PR titles or descriptions. The skill generates clean PR content internally. See `git/skills/pr/SKILL.md` for details.
+
 Invoke the Skill tool with skill name "git:pr" and arguments: `$ARGUMENTS`
 
 The skill will handle repository detection, existing PR handling, branch pushing, and PR title/body generation.
