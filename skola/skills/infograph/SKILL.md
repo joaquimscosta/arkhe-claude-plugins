@@ -50,6 +50,7 @@ A Claude Code Skill that plans, drafts, and improves **technical education infog
 
 * **Plan** (always): numbered wireframe + content (≤80 words/panel), style tokens, accessibility notes.
 * **Image file(s)** (optional): PNG(s) saved to `./output/`.
+* **Nano Banana prompts** (when using nanobanana engine): SAE-ALD styled natural-language prompt saved to `{basename}_{timestamp}_nanobanana_prompt.txt`.
 
 ## Core procedure
 
@@ -58,7 +59,15 @@ A Claude Code Skill that plans, drafts, and improves **technical education infog
 3. Generate **numbered wireframe** with regions and labels.
 4. Place content into regions; keep one takeaway; 3–5 chunks; avoid color-only semantics; add alt text .
 5. Run **Checklist** from `08_Checklist.md`; adjust.
-6. (Optional) Execute `scripts/generate_infograph.py` to render.
+6. (Optional) Execute `scripts/generate_infograph.py` to render via Gemini (precise, layout-aware) or Nano Banana (styled, SAE-ALD).
+
+## Engine Behavior
+
+- **Gemini** → Structured rendering from JSON (layout-aware, region coordinates respected)
+- **Nano Banana** → Uses SAE-ALD (Subject–Action–Environment–Art Style–Lighting–Details) natural-language prompts
+  - Layout JSON is *flattened* into a narrative description
+  - Ideal for aesthetic, brand-friendly, or conceptual infographic styles
+  - Output prompt logged to `{basename}_{timestamp}_nanobanana_prompt.txt` for reproducibility
 
 ## File map
 

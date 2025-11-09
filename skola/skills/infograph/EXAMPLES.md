@@ -44,8 +44,8 @@ uv run scripts/generate_infograph.py \
 
 **Result**
 
-* Gemini → precise diagram (`dijkstra_image.png`)
-* Nano Banana → prompt file (`dijkstra_nanobanana_prompt.txt`) for styled rendering
+* Gemini → precise diagram (`dijkstra_0_<timestamp>.png`)
+* Nano Banana → prompt file (`dijkstra_<timestamp>_nanobanana_prompt.txt`) for styled rendering
 
 ---
 
@@ -113,6 +113,7 @@ A JSON layout file (`layouts/old_algorithm.json`) with verbose labels and poor s
 
 ### Command
 
+#### Gemini (precise re-render)
 ```bash
 uv run scripts/generate_infograph.py \
   --engine gemini \
@@ -120,6 +121,59 @@ uv run scripts/generate_infograph.py \
   --layout-file layouts/old_algorithm_revised.json \
   --output-dir ./output
 ```
+
+#### Nano Banana (styled re-render)
+```bash
+uv run scripts/generate_infograph.py \
+  --engine nanobanana \
+  --mode structured \
+  --layout-file layouts/old_algorithm_revised.json \
+  --output-dir ./output
+```
+
+---
+
+## 🎨 Example 4 — Nano Banana SAE-ALD Prompt Generation
+
+**Goal:** Demonstrate how Nano Banana converts structured JSON layouts into natural-language SAE-ALD prompts.
+
+### Scenario
+
+You have a structured layout (`layouts/cloud_microservices.json`) and want to generate a styled, aesthetic infographic using Nano Banana's SAE-ALD (Subject–Action–Environment–Art Style–Lighting–Details) approach.
+
+### Command
+
+```bash
+uv run scripts/generate_infograph.py \
+  --engine nanobanana \
+  --mode structured \
+  --layout-file layouts/cloud_microservices.json \
+  --output-dir ./output
+```
+
+### Generated Prompt Example
+
+The system automatically converts your structured JSON into this natural-language prompt:
+
+```text
+A modern minimalist infographic style with soft colors, crisp icons, and readable typography depiction of an educational infographic titled 'Cloud Microservices System Overview', illustrating key concepts such as Clients, API Gateway, Services, Databases, set in a clean, flat vector layout with balanced spacing and neutral background, illuminated by even diffuse lighting with subtle shadows for clarity. The design emphasizes consistent iconography, clear hierarchy, and smooth flow between panels. no extra text beyond labels; no watermarks or signatures; avoid clutter; icons appear natural and proportional.
+```
+
+### Output
+
+* **Prompt file:** `cloud_microservices_<timestamp>_nanobanana_prompt.txt`
+* **Usage:** Copy this prompt to Nano Banana (Gemini 2.5 Flash Image) for creative rendering
+
+### Why SAE-ALD?
+
+- **Subject:** Defines what the infographic depicts
+- **Action:** Describes the key concepts being illustrated
+- **Environment:** Sets the visual context (layout, background)
+- **Art Style:** Specifies the design aesthetic
+- **Lighting:** Defines the illumination approach
+- **Details:** Emphasizes design priorities
+
+This structured approach ensures consistent, high-quality styled renders without manual prompt engineering.
 
 ---
 

@@ -43,3 +43,7 @@ Desktop.ini
 # Claude Code local settings
 .claude/settings.local.json
 .claude/*.local.json
+
+# Infograph skill test data and outputs
+skola/skills/infograph/layouts/
+skola/skills/infograph/output/

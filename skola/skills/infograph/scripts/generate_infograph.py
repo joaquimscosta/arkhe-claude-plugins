@@ -91,6 +91,48 @@ def build_structured_prompt(layout: dict) -> str:
     return "\n".join(lines)
 
 
+def build_prompt_nano_banana(layout: dict) -> str:
+    """
+    Convert structured infographic layout JSON into a natural-language SAE-ALD prompt
+    compatible with Nano Banana (Gemini 2.5 Flash Image).
+
+    SAE-ALD = Subject + Action + Environment + Art Style + Lighting + Details
+    """
+    title = layout.get("title", "Technical Infographic")
+    notes = layout.get("notes", "")
+    regions = layout.get("regions", [])
+
+    # Collect key region labels or text snippets
+    key_panels = [
+        (r.get("label") or r.get("text") or r.get("type"))
+        for r in regions if (r.get("label") or r.get("text"))
+    ]
+
+    # Compose SAE-ALD fields
+    subject = f"an educational infographic titled '{title}'"
+    action = ("illustrating key concepts such as " + ", ".join(key_panels[:5])) if key_panels else "explaining its main components"
+    environment = "a clean, flat vector layout with balanced spacing and neutral background"
+    style = "modern minimalist infographic style with soft colors, crisp icons, and readable typography"
+    lighting = "even diffuse lighting with subtle shadows for clarity"
+    details = "consistent iconography, clear hierarchy, and smooth flow between panels"
+    constraints = (
+        "no extra text beyond labels; no watermarks or signatures; "
+        "avoid clutter; icons appear natural and proportional."
+    )
+
+    # Construct SAE-ALD narrative
+    prompt = (
+        f"A {style} depiction of {subject}, {action}, set in {environment}, "
+        f"illuminated by {lighting}. The design emphasizes {details}. {constraints}"
+    )
+
+    # Optional contextual notes (≤80 words)
+    if notes:
+        prompt += f" Context: {notes.strip()}"
+
+    return prompt.strip()
+
+
 def call_gemini(prompt_text: str, model: str, outdir: pathlib.Path, basename: str):
     """Render image via Gemini."""
     if genai is None:
@@ -130,24 +172,16 @@ def call_gemini(prompt_text: str, model: str, outdir: pathlib.Path, basename: st
 
 
 def call_nanobanana(prompt_text: str, outdir: pathlib.Path, basename: str):
-    """Simulate Nano Banana prompt structure based on your best practices guide."""
-    print("[Nano Banana] Preparing prompt...")
-    prompt = f"""SAE-ALD Structure:
-- Subject: Educational Infographic
-- Action: Design
-- Emotion: Clear, balanced, instructive
-- Aesthetic: Minimalist, tech-diagram style, modern typography
-- Layout: Centered title, modular regions, equal spacing
-- Details: Use a consistent color palette, crisp lines, and no heavy shadows.
+    """Save Nano Banana SAE-ALD optimized prompt for manual rendering."""
+    print("[Nano Banana] Preparing SAE-ALD optimized prompt...")
 
-PROMPT:
-{prompt_text}
-"""
+    # Save the pre-built SAE-ALD prompt
     ts = datetime.now().strftime("%Y%m%d_%H%M%S")
     out_file = outdir / f"{basename}_{ts}_nanobanana_prompt.txt"
-    out_file.write_text(prompt, encoding="utf-8")
+    out_file.write_text(prompt_text, encoding="utf-8")
+
     print(f"[Nano Banana] Prompt saved for rendering: {out_file}")
-    print("Note: Send this prompt to Nano Banana for visual generation.")
+    print("Note: Send this prompt to Nano Banana (Gemini 2.5 Flash Image) for visual generation.")
 
 
 def main():
@@ -156,7 +190,7 @@ def main():
     parser.add_argument("--mode", choices=["text", "structured"], required=True)
     parser.add_argument("--prompt-file")
     parser.add_argument("--layout-file")
-    parser.add_argument("--model", default="gemini-1.5-flash")
+    parser.add_argument("--model", default="gemini-2.5-flash-image")
     parser.add_argument("--output-dir", default="./output")
     parser.add_argument("--basename", default="infographic")
     args = parser.parse_args()
@@ -166,8 +200,13 @@ def main():
 
     if args.mode == "structured":
         layout = json.loads(read_text(pathlib.Path(args.layout_file)))
-        prompt = build_structured_prompt(layout)
+        # Use engine-specific prompt builders
+        if args.engine == "gemini":
+            prompt = build_structured_prompt(layout)
+        else:  # nanobanana
+            prompt = build_prompt_nano_banana(layout)
     else:
+        # Text mode: use raw text for both engines
         prompt = read_text(pathlib.Path(args.prompt_file))
 
     if args.engine == "gemini":

@@ -17,6 +17,10 @@
    uv run scripts/generate_infograph.py --engine nanobanana --mode structured --layout-file layout.json
 ````
 
+> 🆕 **Nano Banana update:**
+> When using Nano Banana, the system converts structured layout JSON into a natural-language prompt (SAE-ALD).
+> This improves creative fidelity and avoids over-structured scene composition.
+
 8. **Export** — Outputs are saved to `./output/`.
 
 ---
@@ -32,10 +36,10 @@
 
 ## C) Engine Integration Notes
 
-| Engine          | Purpose                                                  | Strengths                             | Best For                                                    |
-| --------------- | -------------------------------------------------------- | ------------------------------------- | ----------------------------------------------------------- |
-| **Gemini**      | Structured, technical rendering from JSON or text prompt | Accurate, reproducible, layout-aware  | Algorithms, architecture diagrams, process flows            |
-| **Nano Banana** | Creative visual rendering using SAE-ALD prompt style     | Aesthetic, expressive, brand-friendly | Styled infographics, marketing visuals, educational posters |
+| Engine          | Purpose                                                                                                            | Strengths                             | Best For                                                    |
+| --------------- | ------------------------------------------------------------------------------------------------------------------ | ------------------------------------- | ----------------------------------------------------------- |
+| **Gemini**      | Structured, technical rendering from JSON or text prompt                                                           | Accurate, reproducible, layout-aware  | Algorithms, architecture diagrams, process flows            |
+| **Nano Banana** | Creative visual rendering using SAE-ALD (Subject–Action–Environment–Art Style–Lighting–Details) prompt style | Aesthetic, expressive, brand-friendly | Styled infographics, marketing visuals, conceptual posters  |
 
 **Recommended Workflow**
 
