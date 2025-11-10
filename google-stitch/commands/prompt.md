@@ -11,7 +11,7 @@ Convert natural-language descriptions, revision notes, or spec files into Stitch
 
 ```bash
 /prompt "Design a fintech dashboard with KPI cards and charts"
-/prompt /specs/mobile-app.md
+/prompt @specs/mobile-app.md
 /prompt "Move the KPI cards above the chart and add a region filter"
 ```
 

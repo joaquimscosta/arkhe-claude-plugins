@@ -11,17 +11,17 @@ allowed-tools: Read, Write, List, Grep
 # Stitch Session Manager
 
 ## Quick Start
-- `Start a new Stitch session for [project]` → creates `.claude/sessions/<project>/session.json`.
-- `Add a screen called [name] with this brief: ...` → optimizes prompt via `stitch-prompt`, logs as `<slug>-###.json`.
+- `Start a new Stitch session for [project]` → creates `.google-stitch/sessions/<project>/session.json`.
+- `Add a screen called [name] with this brief: ...` → optimizes prompt via `stitch-prompt`, saves Markdown to `.google-stitch/prompts/<slug>-###-prompt.md`, and logs metadata as `<slug>-###.json`.
 - `Summarize my current Stitch session` → returns screen list, visual patterns, next-step suggestions.
 - `Generate a new prompt for [screen] using current session style` → reuses stored cues before calling the authoring skill.
 - `End this Stitch session and export summary` → writes Markdown summary under the session folder.
 
 ## Output Structure
-- `session.json`: metadata (`session_name`, timestamps, style guide notes, prompt index).
-- `screen-log/<slug>-###.json`: individual prompt payloads (raw brief, optimized prompt, status, references).
-- `summary.md`: exportable brief for reviews or handoffs.
-- All files live under `.claude/sessions/<project>/`.
+- `.google-stitch/sessions/<project>/session.json`: metadata (`session_name`, timestamps, style guide notes, prompt index).
+- `.google-stitch/sessions/<project>/screen-log/<slug>-###.json`: individual prompt payloads (raw brief, status, references) plus the path of the saved Markdown prompt.
+- `.google-stitch/prompts/<slug>-###-prompt.md`: source-of-truth prompt text produced by `stitch-prompt`.
+- `.google-stitch/sessions/<project>/summary.md`: exportable brief for reviews or handoffs.
 
 ## Commands & Triggers
 | Command | Trigger phrases | Result |
@@ -37,6 +37,11 @@ allowed-tools: Read, Write, List, Grep
 Follow the abbreviated loop: initialize → add/update screens → reference session memory → export.  
 See [WORKFLOW.md](WORKFLOW.md) for detailed branching logic, file formats, and pseudo-commands.
 
+## Prompt Storage Alignment
+- Reuse the same slug + zero-padded index rules from `stitch-prompt` when calling the authoring Skill.
+- Pass the computed path (`.google-stitch/prompts/<slug>-###-prompt.md`) to the logger so summaries and exports can link directly to the Markdown file.
+- Never duplicate prompt text inside the JSON logs—store pointers only to keep history lightweight.
+
 ## Style Memory & Integration
 - Before writing a new prompt, the Skill scans existing `session.json` + latest screen logs to extract design cues (color, typography, density, component patterns).
 - It then calls **`stitch-prompt`** with:
@@ -51,7 +56,7 @@ Representative transcripts for starting sessions, logging iterations, and export
 
 ## Common Issues
 High-level fixes are below; detailed diagnosis (including directory repair scripts) is in [TROUBLESHOOTING.md](TROUBLESHOOTING.md).
-- Missing session folder → re-run `session:new` or point to existing `.claude/sessions/<project>`.
+- Missing session folder → re-run `session:new` or point to existing `.google-stitch/sessions/<project>`.
 - Style drift → run `session:style` to restate cues before adding new screens.
 - Duplicate screen names → the Skill auto-increments suffixes; confirm desired slug before export.
 

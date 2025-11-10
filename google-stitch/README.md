@@ -76,7 +76,7 @@ Run this command when you want Claude to rewrite any brief into a Stitch-ready p
 
 ```bash
 /prompt "Design a fintech dashboard with KPI cards and charts"
-/prompt /specs/mobile-app.md
+/prompt @specs/mobile-app.md
 ```
 
 The command automatically invokes **stitch-prompt**, passes along attached files, and returns a templated Stitch prompt.
@@ -122,26 +122,6 @@ Supporting drafts or research notes (e.g., `skills/session-manager/draft.md`) st
    /plugin install google-stitch@arkhe-claude-plugins
    ```
 3. **Restart Claude Code** to load the new Skills.
-
-### Manual Skill Installation (optional)
-If you only need the Skills outside the marketplace flow, copy the individual skill folders into Claude’s skill paths and restart Claude Code.
-
-- **Personal (per user):**
-  ```bash
-  mkdir -p ~/.claude/skills/stitch-prompt ~/.claude/skills/session-manager
-  cp -R skills/stitch-prompt ~/.claude/skills/stitch-prompt
-  cp -R skills/session-manager ~/.claude/skills/session-manager
-  ```
-- **Project (shared via git):**
-  ```bash
-  mkdir -p .claude/skills/stitch-prompt .claude/skills/session-manager
-  cp -R skills/stitch-prompt .claude/skills/stitch-prompt
-  cp -R skills/session-manager .claude/skills/session-manager
-  ```
-
-Commit the `.claude/skills` folders if you want teammates to inherit the skills automatically.
-
----
 
 ## 🧩 Combined Workflow
 

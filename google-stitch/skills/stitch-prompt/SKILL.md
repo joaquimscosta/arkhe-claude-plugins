@@ -1,3 +1,4 @@
+---
 name: stitch-prompt
 description: >
   Converts natural-language descriptions or UI spec files into optimized Google Stitch prompts.
@@ -18,6 +19,19 @@ allowed-tools: Read, Grep, Write
 5. **Validate** – ensure UI nouns are present, word count <1,000, and tone stays directive before returning the prompt.
 
 Use this Skill whenever users need Stitch-ready wording, prompt refinements, or style-consistent rewrites.
+
+---
+
+## File Output (.google-stitch/prompts)
+
+Normalize prompt exports so both this Skill and `stitch-session-manager` rely on the same directory:
+
+1. **Slug** – Use the screen/feature name from the prompt header. Lowercase it, replace whitespace with hyphens, strip non `a-z0-9-` chars, collapse duplicate hyphens, and trim ends. If fewer than 3 chars remain, ask the user for a short slug.
+2. **Directory** – Resolve repo root via `git rev-parse --show-toplevel`, then `mkdir -p {root}/.google-stitch/prompts`.
+3. **Filename** – Write the Markdown prompt to `{slug}-{index}-prompt.md`, where `{index}` is a zero-padded counter (`001`, `002`, …). Scan existing matches for the slug, grab the highest index, and increment; start at `001` when no files exist.
+4. **Report** – After presenting the prompt inline, append `Saved to .google-stitch/prompts/{slug}-{index}-prompt.md` so the session-manager Skill can reuse the file path.
+
+Keep the storage single-file-per-prompt; no nested folders or additional metadata needed in this directory.
 
 ---
 
