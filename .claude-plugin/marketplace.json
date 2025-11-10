@@ -38,6 +38,11 @@
       "description": "UI/UX design and design system toolkit"
     },
     {
+      "name": "google-stitch",
+      "source": "./google-stitch",
+      "description": "Claude + Google Stitch prompting toolkit (prompt authoring + session management)"
+    },
+    {
       "name": "git",
       "source": "./git",
       "description": "Git workflow automation (commit, PR, branching, changelog)"

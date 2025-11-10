@@ -1,5 +1,5 @@
 {
-  "skill": "authoring-stitch-prompts",
+  "skill": "stitch-prompt",
   "version": "1.0.0",
   "description": "Evaluation suite for testing the Google Stitch Prompt Authoring Skill.",
   "tests": [

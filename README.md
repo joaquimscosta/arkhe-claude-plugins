@@ -88,7 +88,21 @@ UI/UX design and design system toolkit.
 
 ---
 
-### 8. Git Plugin
+### 8. Google Stitch Plugin
+
+Claude + Google Stitch prompting toolkit that pairs optimized prompt authoring with session tracking.
+
+**Components:**
+- 1 command: `/prompt`
+- 2 skills: `stitch-prompt`, `stitch-session-manager`
+
+**Use for:** Generating Stitch-ready prompts, maintaining multi-screen design sessions, exporting Stitch handoff summaries
+
+[View Google Stitch Plugin Details →](./google-stitch/README.md)
+
+---
+
+### 9. Git Plugin
 
 Git workflow automation for commit, PR, branching, and changelog generation.
 
@@ -121,6 +135,7 @@ Install all plugins:
 /plugin install skola@arkhe-claude-plugins
 /plugin install review@arkhe-claude-plugins
 /plugin install ui@arkhe-claude-plugins
+/plugin install google-stitch@arkhe-claude-plugins
 /plugin install git@arkhe-claude-plugins
 ```
 
@@ -153,6 +168,9 @@ After installation, restart Claude Code and use:
 
 **For UI/UX design and design systems:**
 → Install `ui`
+
+**For Google Stitch prompt generation + session tracking:**
+→ Install `google-stitch`
 
 **For Git workflow automation:**
 → Install `git`
@@ -215,6 +233,14 @@ arkhe-claude-plugins/
 │   ├── skills/
 │   │   └── extract-udemy/
 │   └── README.md
+├── google-stitch/
+│   ├── .claude-plugin/plugin.json
+│   ├── commands/
+│   │   └── prompt.md
+│   ├── README.md
+│   └── skills/
+│       ├── stitch-prompt/
+│       └── session-manager/
 ├── README.md
 └── INSTALLATION.md
 ```

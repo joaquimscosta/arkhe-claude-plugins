@@ -132,5 +132,4 @@ Optimize this input into a Google Stitch prompt:
 "A dashboard for subscription analytics with revenue chart and customer table."
 ```
 
-Claude should automatically invoke the **authoring-stitch-prompts** Skill and return a concise, directive, and visually structured Stitch-ready output.
-
+Claude should automatically invoke the **stitch-prompt** Skill and return a concise, directive, and visually structured Stitch-ready output.

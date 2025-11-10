@@ -25,6 +25,7 @@ arkhe-claude-plugins/
 ├── doc/                           # Documentation generation
 ├── review/                        # Code review and quality
 ├── ui/                            # UI/UX design and design systems
+├── google-stitch/                 # Google Stitch prompting toolkit
 ├── git/                           # Git workflow automation
 └── docs/                          # Developer documentation
 ```
@@ -84,6 +85,12 @@ UI/UX design and design system toolkit.
 - **Agents**: `ui-ux-designer`
 - **Commands**: None (all capabilities via agent)
 
+### Google Stitch Plugin
+Claude + Google Stitch prompting toolkit for prompt authoring and session management.
+- **Commands**: `/prompt`
+- **Skills**: `stitch-prompt`, `stitch-session-manager`
+- **Use**: Generate Stitch-ready prompts, maintain multi-screen session logs, export summaries
+
 ### Git Plugin
 Git workflow automation for commits, pull requests, branching, and changelog generation.
 - **Commands**: `/commit`, `/create-pr`, `/create-branch`, `/changelog`
@@ -105,6 +112,7 @@ Git workflow automation for commits, pull requests, branching, and changelog gen
 /plugin install skola@arkhe-claude-plugins     # Includes Udemy extraction
 /plugin install review@arkhe-claude-plugins
 /plugin install ui@arkhe-claude-plugins
+/plugin install google-stitch@arkhe-claude-plugins
 /plugin install git@arkhe-claude-plugins
 
 # Verify installation
