@@ -1,0 +1,59 @@
+{
+  "skill": "authoring-stitch-prompts",
+  "version": "1.0.0",
+  "description": "Evaluation suite for testing the Google Stitch Prompt Authoring Skill.",
+  "tests": [
+    {
+      "id": "dashboard_basic",
+      "query": "Create a web dashboard for tracking team productivity with charts and filters.",
+      "expected_behavior": [
+        "Generates one Stitch-ready prompt under 1000 words.",
+        "Uses clear UI nouns (dashboard, charts, filters, sidebar, etc.).",
+        "Includes visual style cues (3–6).",
+        "Avoids conversational phrasing.",
+        "Includes responsiveness or layout detail (desktop/mobile)."
+      ]
+    },
+    {
+      "id": "spec_conversion",
+      "query": "Convert the following spec into a Stitch prompt:\n# Mobile Fitness App\n- Tabs: Dashboard, Workouts, Profile\n- Dashboard: daily summary and progress ring\n- Style: vibrant, energetic, bold typography",
+      "expected_behavior": [
+        "Creates structured Stitch prompt describing screens and layout.",
+        "Includes explicit style cues (vibrant, energetic, bold typography).",
+        "Maintains clear layout terms (tabs, progress ring).",
+        "Omits meta commentary or redundant explanations."
+      ]
+    },
+    {
+      "id": "refinement_prompt",
+      "query": "On the dashboard, add a new column showing average session time next to the existing KPI cards.",
+      "expected_behavior": [
+        "Generates a concise, single-action Stitch edit instruction.",
+        "Uses directive verbs (Add, Place, Align).",
+        "Specifies placement (next to existing KPI cards).",
+        "Keeps previous layout intact."
+      ]
+    },
+    {
+      "id": "image_reference",
+      "query": "Use the uploaded wireframe as base for a budgeting app. Keep layout, change colors to navy and cream, modernize typography.",
+      "expected_behavior": [
+        "Mentions the uploaded wireframe explicitly.",
+        "Specifies visual update (navy and cream color scheme).",
+        "Includes typography and tone adjustments.",
+        "Avoids regenerating unrelated elements."
+      ]
+    },
+    {
+      "id": "overlong_input_trimming",
+      "query": "Write a detailed Stitch prompt for an all-in-one enterprise management platform with 20 modules including analytics, billing, HR, CRM, and inventory. Each module should have charts, forms, tables, settings, and export options.",
+      "expected_behavior": [
+        "Condenses input into a focused Stitch prompt covering only the primary module or screen.",
+        "Avoids reproducing full list of modules verbatim.",
+        "Keeps total length concise.",
+        "Includes layout and visual style cues.",
+        "Uses enterprise tone with component reuse hints."
+      ]
+    }
+  ]
+}
