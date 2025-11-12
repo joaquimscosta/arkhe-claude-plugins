@@ -56,7 +56,185 @@ Example:
 
 ---
 
-## 4. Common Pitfalls
+## 4. Layout Prompts: Foundation/Wireframe Approach
+
+When generating prompts for **multi-component pages** (2+ components or full screens), create two types of prompts:
+
+1. **Layout prompt** — Foundation/wireframe showing spatial structure
+2. **Component prompts** — Detailed specifications for individual elements
+
+### Purpose of Layout Prompts
+
+Layout prompts create the **high-level page structure** that:
+- Shows spatial relationships between major regions
+- Defines page-level interactions and user flows
+- Uses generic descriptive terms (NOT file/component references)
+- Works independently in Stitch as a standalone foundation prompt
+- Can be enhanced later with detailed component prompts
+
+### Key Characteristics
+
+| Aspect | Layout Prompt | Component Prompt |
+|--------|---------------|------------------|
+| **Focus** | Page structure & regions | Individual element details |
+| **Scope** | Multiple areas/sections | Single component |
+| **Detail level** | High-level purpose | Implementation specifics |
+| **Terminology** | Generic ("metrics section") | Specific ("4 KPI cards with sparklines") |
+| **Interactions** | Cross-region flows | Internal micro-interactions |
+| **Word count** | 150-200 words | 150-250 words |
+| **Independence** | Standalone foundation | Standalone specification |
+
+### Generic Terminology Guidelines
+
+**✅ Use generic descriptive terms:**
+- "key performance metrics section" (purpose-focused)
+- "analytics chart area" (function-focused)
+- "activity feed panel" (content-focused)
+- "top section", "main content area", "side panel" (position-focused)
+
+**❌ Avoid file/component references:**
+- "kpi-cards component" (references specific component)
+- "revenue-chart-v1" (references file name)
+- "subscription-table component" (references implementation)
+
+### Layout Prompt Structure
+
+```
+Design a [platform] [page/screen type] for [purpose].
+
+Include:
+- [Region] with [generic description] ([spatial position], [key behavior])
+- [Region] with [generic description] ([relative position], [interaction])
+- [Region] for [purpose] ([position], [relationship to others])
+
+Interactions:
+- [How regions relate/communicate at high level]
+- [Primary user flows between sections]
+
+Style: [page-level style cues: layout mood, spacing, visual hierarchy]
+
+Optimize for [page-level concerns: responsiveness, scrolling, transitions]
+```
+
+### Example: Multi-Component Dashboard
+
+**Layout Prompt (Foundation):**
+```
+Design a web dashboard page for SaaS analytics overview.
+
+Include:
+- Top section with key performance metrics (4-column grid spanning full width, cards displaying primary KPIs)
+- Main content area with revenue analytics chart (below metrics, left side 60% width, interactive time controls)
+- Side panel with recent subscription activity (right of chart, 40% width, scrollable list)
+
+Interactions:
+- Metric cards filter chart and activity panel when clicked
+- Chart time range selector updates entire page data
+- Activity panel scrolls independently from main content
+
+Style: clean dashboard aesthetic, ample whitespace, card-based sections, subtle depth
+
+Optimize for desktop-first responsive layout, smooth transitions between filtered states
+```
+
+**Component Prompts (Detailed sections in same file):**
+Following the layout prompt, separate component sections provide detailed specifications for:
+- KPI Metrics: Detailed spec for metric cards with sparklines, deltas, color coding
+- Revenue Chart: Detailed spec for interactive line chart with tooltips, annotations
+- Subscription Activity: Detailed spec for activity table with avatars, status badges
+
+All sections combined in single file `analytics-dashboard-v1.md`, separated by `---`.
+
+### When to Generate Layout Prompts
+
+**Generate layout prompt when:**
+- 2+ distinct UI components mentioned
+- Full page/screen keywords present ("dashboard", "page", "screen", "app")
+- Multiple regions described (header + content, sidebar + main, navigation + body)
+- Layout structure keywords used ("grid", "sections", "panels", "areas")
+
+**Skip layout prompt when:**
+- Single isolated component (button, form field, icon)
+- Partial update/modification to existing design
+- Component is already part of known larger layout
+
+### Single-File Format with --- Separators
+
+**Organization:**
+Each page/feature is a single file containing all prompts separated by `---`:
+
+```
+.google-stitch/prompts/
+├── analytics-dashboard-v1.md
+├── landing-page-v1.md
+├── settings-screen-v1.md
+└── admin-panel-part1-v1.md
+└── admin-panel-part2-v1.md
+```
+
+**File Content Structure:**
+```markdown
+<!-- Layout: {Title Case Name} -->
+[layout prompt content]
+
+---
+
+<!-- Component: {Title Case Name} -->
+[component prompt content]
+
+---
+
+<!-- Component: {Title Case Name} -->
+[component prompt content]
+```
+
+**Naming Convention:**
+- Standard (≤6 prompts): `{page-slug}-v{version}.md`
+- Split files (>6 prompts): `{page-slug}-part{N}-v{version}.md`
+
+**Examples:**
+- `analytics-dashboard-v1.md` (layout + 3 components = 4 prompts)
+- `landing-page-v1.md` (layout + 2 components = 3 prompts)
+- `admin-panel-part1-v1.md` (layout + 5 components = 6 prompts)
+- `admin-panel-part2-v1.md` (2 remaining components = 2 prompts)
+
+**HTML Comment Labels:**
+- `<!-- Layout: Analytics Dashboard -->` - For layout/foundation prompts
+- `<!-- Component: KPI Metrics -->` - For component detail prompts
+- Title case names for readability
+- Labels help navigate within large files
+
+**6-Prompt Stitch Limit:**
+- Stitch can generate maximum 6 screens/components at once
+- Files automatically split if >6 prompts needed
+- Part 1 always contains layout + first 5 components
+- Subsequent parts contain max 6 components each
+- Users must process part files sequentially in Stitch
+
+### Using Single-File Prompts in Stitch
+
+**Workflow option 1: Batch generation (recommended)**
+1. Copy entire file content
+2. Paste into Stitch prompt interface
+3. Stitch processes all prompts separated by `---`
+4. Generates complete page with all components
+
+**Workflow option 2: Targeted refinement**
+1. Copy specific component section (between `---` separators)
+2. Paste into Stitch for individual component generation
+3. Use for iterative refinement of specific elements
+
+**Workflow option 3: Split files (>6 prompts)**
+1. Use part1 file first → generates layout + first 5 components
+2. Use part2 file next → generates remaining components
+3. Process sequentially due to Stitch's 6-screen limit
+
+**Independence principle:**
+Each prompt within the file works standalone when separated by `---`.
+
+---
+
+## 5. Common Pitfalls
 
 ❌ Vague prompts  
 > “Make it look modern and cool.”  
@@ -75,7 +253,7 @@ Example:
 
 ---
 
-## 5. Advanced Usage
+## 6. Advanced Usage
 
 **With Spec Files**  
 When input comes from structured specs:
@@ -88,7 +266,7 @@ When input comes from structured specs:
 
 ---
 
-## 6. Validation Checklist
+## 7. Validation Checklist
 
 Before finalizing an optimized Stitch prompt:
 - [ ] ≤ 250 words (absolute max 400)
@@ -107,7 +285,7 @@ Before finalizing an optimized Stitch prompt:
 
 ---
 
-## 7. Tone and Formatting
+## 8. Tone and Formatting
 
 - Use imperative, professional tone.
 - Prefer Markdown-style bulleting.
@@ -116,7 +294,7 @@ Before finalizing an optimized Stitch prompt:
 
 ---
 
-## 8. Iteration & Experimentation
+## 9. Iteration & Experimentation
 
 Stitch works best with iterative refinement:
 

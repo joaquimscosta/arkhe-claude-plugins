@@ -26,59 +26,133 @@ Use this Skill whenever users need Stitch-ready wording, prompt refinements, or 
 
 ## File Output (.google-stitch/prompts)
 
-Generate optimized prompts as standalone Markdown files:
+Generate optimized prompts as **single Markdown files** containing layout + components separated by `---`:
 
-1. **Component Slug**:
-   - Derive from the prompt's header text
+1. **Page/Feature Slug**:
+   - Derive from main screen/page purpose
    - Lowercase, replace whitespace with hyphens
    - Strip non `a-z0-9-` characters, collapse duplicate hyphens, trim ends
-   - Keep concise (prefer last 1-2 key words: "Content Engagement Toolbar" → "toolbar")
-   - If <3 chars or ambiguous, ask user for descriptive slug
+   - Examples: "analytics dashboard" → `analytics-dashboard`, "landing page" → `landing-page`
 
-2. **Version**:
-   - Scan `.google-stitch/prompts/{component-slug}-v*.md`
+2. **File Composition**:
+   - Start with `<!-- Layout: {Title Case Name} -->` HTML comment label
+   - Add layout prompt content
+   - Add `---` separator line
+   - For each component:
+     * Add `<!-- Component: {Title Case Name} -->` HTML comment label
+     * Add component prompt content
+     * Add `---` separator (between components, not after last)
+
+3. **6-Prompt Stitch Limit**:
+   - Count total prompts (layout + all components)
+   - If ≤6 prompts: Save as single file `{page-slug}-v{version}.md`
+   - If >6 prompts: Split into multiple part files
+     * Part 1: Layout + first 5 components (6 prompts)
+     * Part 2: Next 6 components
+     * Part N: Remaining components (max 6 per part)
+     * Save as: `{page-slug}-part{N}-v{version}.md`
+     * Warn user about Stitch's 6-screen generation limit
+
+4. **Version**:
+   - Scan `.google-stitch/prompts/{page-slug}-v*.md`
    - Find highest version number, increment
    - Start at v1 if no matches
+   - Note: Entire file versioned together (not per-component)
 
-3. **Filename**: `{component-slug}-v{version}.md`
-
-4. **Directory**:
+5. **File Path**:
    - Resolve repo root via `git rev-parse --show-toplevel`
    - Create `{root}/.google-stitch/prompts/` if needed
-   - Write Markdown prompt to file
+   - Write composed Markdown file
 
-5. **Report**:
-   - After presenting prompt inline, append:
-     `Saved to .google-stitch/prompts/{component-slug}-v{version}.md`
+6. **Report**:
+   - After presenting prompts inline, show file info:
+     ```
+     📄 File: {page-slug}-v{version}.md
+
+     Contains {N} prompts (within 6-prompt limit ✓):
+       • Layout: {Title}
+       • Component: {Title}
+       • Component: {Title}
+
+     Usage:
+       1. Copy entire file → Paste into Stitch → Generates complete page
+       2. OR copy specific component section for targeted refinement
+     ```
 
 **Examples:**
 
-Split scenario:
+Multi-component page (4 prompts):
 ```
-Input: "Cultural heritage page with toolbar and grid"
-Prompts:
-  1. Header: "Content Engagement Toolbar" → File: toolbar-v1.md
-  2. Header: "Related Content Grid" → File: grid-v1.md
+Input: "Analytics dashboard with KPI cards, revenue chart, and subscriptions table"
+
+Output: analytics-dashboard-v1.md
+
+<!-- Layout: Analytics Dashboard -->
+Design a web dashboard page for SaaS analytics overview.
+[...layout prompt content...]
+
+---
+
+<!-- Component: KPI Metrics -->
+Design metric cards displaying key SaaS performance indicators.
+[...component prompt content...]
+
+---
+
+<!-- Component: Revenue Chart -->
+Design an interactive line chart for monthly revenue tracking.
+[...component prompt content...]
+
+---
+
+<!-- Component: Subscriptions Table -->
+Design a subscription activity table showing recent changes.
+[...component prompt content...]
 ```
 
-Single prompt:
+Single component (1 prompt):
 ```
 Input: "Login form with email and password"
-Prompt header: "Login Form" → File: login-form-v1.md
+
+Output: login-form-v1.md
+
+<!-- Component: Login Form -->
+Design a login form for web application.
+[...component prompt content...]
+```
+
+Large page split (8 prompts → 2 files):
+```
+Input: "Admin panel with navigation, dashboard, users, roles, settings, audit logs, notifications"
+
+Output: admin-panel-part1-v1.md (6 prompts)
+- Layout: Admin Panel
+- Component: Navigation
+- Component: Dashboard
+- Component: Users
+- Component: Roles
+- Component: Settings
+
+Output: admin-panel-part2-v1.md (2 prompts)
+- Component: Audit Logs
+- Component: Notifications
+
+⚠️ Warning: Use part1 first, then part2 in separate Stitch session
 ```
 
 Iteration:
 ```
-Updating "toolbar-v1.md"
-New version → File: toolbar-v2.md
+Updating "analytics-dashboard-v1.md"
+New version → analytics-dashboard-v2.md
+(Entire file versioned together)
 ```
 
-**Grouping split prompts:**
-- Use git commits (prompts from same split committed together)
-- Check file timestamps (`ls -lt` shows recent files)
-- Rely on conversation context
-
-Keep the storage single-file-per-prompt; no nested folders or additional metadata needed in this directory.
+**Single-File Approach Benefits:**
+- **Stitch-native**: Uses Stitch's `---` separator convention
+- **Batch generation**: Copy one file, generate entire page
+- **Constraint enforcement**: Automatically respects 6-prompt Stitch limit
+- **Simplicity**: One file per page/feature, fewer files to manage
+- **Copy-paste ready**: File content works directly in Stitch interface
 
 ---
 

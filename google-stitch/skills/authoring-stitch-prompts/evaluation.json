@@ -54,6 +54,51 @@
         "Includes layout and visual style cues.",
         "Uses enterprise tone with component reuse hints."
       ]
+    },
+    {
+      "id": "multi_component_layout_foundation",
+      "query": "Create an analytics dashboard with KPI cards at the top, a revenue chart on the left, and a subscriptions table on the right.",
+      "expected_behavior": [
+        "Detects multi-component scenario (3 components: KPI cards, revenue chart, subscriptions table).",
+        "Total: 4 prompts (layout + 3 components) - within 6-prompt limit.",
+        "Creates single file: analytics-dashboard-v1.md (not directory structure).",
+        "File starts with HTML comment label: <!-- Layout: Analytics Dashboard -->.",
+        "Layout prompt uses generic descriptive terms ('key performance metrics', 'analytics chart area', 'subscription activity').",
+        "Layout prompt does NOT reference component files or use component names.",
+        "Layout prompt includes spatial relationships (top section, left side, right side, above, below).",
+        "Layout prompt includes page-level interactions (how regions communicate).",
+        "Layout prompt is 150-200 words (foundation-focused, not over-detailed).",
+        "After layout prompt, adds --- separator line.",
+        "Each component starts with HTML comment label: <!-- Component: {Name} -->.",
+        "Component prompts include implementation details (sparklines, tooltips, status badges, etc.).",
+        "Components separated by --- (between components, not after last one).",
+        "All prompts are independently usable in Stitch when separated by ---.",
+        "Presents clear distinction: layout = structure, components = details.",
+        "Entire file can be copy-pasted directly into Stitch for batch generation.",
+        "Presents file info showing prompt count and usage instructions."
+      ]
+    },
+    {
+      "id": "large_multi_component_split",
+      "query": "Create an admin panel with navigation sidebar, dashboard overview, user management table, role permissions matrix, system settings form, audit logs viewer, and notification center.",
+      "expected_behavior": [
+        "Detects multi-component scenario (7 components listed).",
+        "Total: 8 prompts (layout + 7 components) - exceeds 6-prompt limit.",
+        "Automatically splits into 2 part files due to Stitch's 6-screen limit.",
+        "Creates part1 file: admin-panel-part1-v1.md containing 6 prompts (layout + first 5 components).",
+        "Part1 starts with <!-- Layout: Admin Panel --> followed by layout prompt.",
+        "Part1 contains first 5 components with HTML comment labels.",
+        "Part1 prompts separated by --- (between sections, not after last).",
+        "Creates part2 file: admin-panel-part2-v1.md containing 2 remaining components.",
+        "Part2 contains only component prompts (no layout).",
+        "Part2 prompts also use HTML comment labels and --- separators.",
+        "Displays warning message about sequential processing requirement.",
+        "Warning indicates: 'Use part1 first in Stitch, then part2 in separate session'.",
+        "Shows total prompt count across both files (8 prompts across 2 files).",
+        "Provides usage workflow explaining how to process both files sequentially.",
+        "Each part file independently copy-pasteable into Stitch.",
+        "Part numbering makes processing order explicit (-part1, -part2)."
+      ]
     }
   ]
 }

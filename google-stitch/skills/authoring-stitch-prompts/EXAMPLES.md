@@ -330,3 +330,407 @@ Additional prompts needed:
 `.google-stitch/prompts/header-v3.md`
 
 **Note:** Micro-refinements focus on single, specific changes while explicitly maintaining all other existing elements.
+
+---
+
+## Example 14 — Multi-Component Dashboard (Single File Format)
+
+**Input:**
+> Create an analytics dashboard with KPI cards at the top, a revenue chart on the left, and a subscriptions table on the right
+
+**Detection:**
+- Multiple components: KPI cards, revenue chart, subscriptions table (3 components)
+- Full page keyword: "dashboard"
+- Multiple regions: top section, left side, right side
+- Total: 4 prompts (layout + 3 components) - within 6-prompt limit ✓
+- **Generates single file with --- separators**
+
+**File Generated:** `.google-stitch/prompts/analytics-dashboard-v1.md`
+
+**File Content:**
+
+```markdown
+<!-- Layout: Analytics Dashboard -->
+Design a web dashboard page for SaaS analytics overview.
+
+Include:
+- Top section with key performance metrics (4-column grid spanning full width, cards displaying primary KPIs)
+- Main content area with revenue analytics chart (below metrics, left side 60% width, interactive time controls)
+- Side panel with recent subscription activity (right of chart, 40% width, scrollable list)
+
+Interactions:
+- Metric cards filter chart and activity panel when clicked
+- Chart time range selector updates entire page data
+- Activity panel scrolls independently from main content
+
+Style: clean dashboard aesthetic, ample whitespace, card-based sections, subtle depth
+
+Optimize for desktop-first responsive layout, smooth transitions between filtered states
+
+---
+
+<!-- Component: KPI Metrics -->
+Design metric cards displaying key SaaS performance indicators.
+
+Include:
+- Four cards showing revenue, active users, churn rate, and MRR
+- Each card with large primary number, label, and delta percentage
+- Sparkline chart showing 7-day trend below each metric
+- Color-coded delta indicators (green for positive, red for negative)
+- Clickable cards that act as filters
+
+Style: minimal cards, light background, prominent numbers, subtle borders, blue accent for positive trends
+
+Optimize for responsive 4-column grid on desktop, 2-column on tablet, single-column on mobile
+
+---
+
+<!-- Component: Revenue Chart -->
+Design an interactive line chart for monthly revenue tracking.
+
+Include:
+- Line chart with monthly data points for current year
+- Time range selector (7D, 30D, 90D, 1Y, All)
+- Hover tooltips showing exact values and dates
+- Y-axis with formatted currency labels
+- Vertical grid lines for readability
+- Highlighted current month with annotation
+
+Style: clean chart design, blue line color, light gray gridlines, smooth curves, professional typography
+
+Optimize for responsive scaling, touch-friendly hover states on mobile
+
+---
+
+<!-- Component: Subscription Activity -->
+Design a subscription activity table showing recent changes.
+
+Include:
+- Scrollable list of recent subscriptions (upgrades, downgrades, cancellations)
+- Each row with user avatar, name, action type, plan name, and timestamp
+- Status badges (upgraded, downgraded, cancelled) with color coding
+- Sort controls for date and action type
+- Show 10 items with "Load more" button at bottom
+
+Style: compact table design, neutral backgrounds, green/yellow/red status badges, small avatar thumbnails
+
+Optimize for fixed height with internal scrolling, responsive single-column on mobile
+```
+
+**Presentation:**
+```
+📄 File: analytics-dashboard-v1.md
+
+Contains 4 prompts (within 6-prompt limit ✓):
+  • Layout: Analytics Dashboard
+  • Component: KPI Metrics
+  • Component: Revenue Chart
+  • Component: Subscription Activity
+
+Usage:
+  1. Copy entire file → Paste into Stitch → Generates complete page
+  2. OR copy specific component section for targeted refinement
+```
+
+**Key Points:**
+- Single file contains all prompts separated by `---`
+- HTML comment labels for easy navigation
+- Layout uses generic terms (no file references)
+- Each prompt independently usable when separated
+- File can be copy-pasted directly into Stitch
+- Total 4 prompts stays within Stitch's 6-screen limit
+
+---
+
+## Example 15 — Two-Region Landing Page (Single File Format)
+
+**Input:**
+> Landing page with hero section and feature highlights grid below it
+
+**Detection:**
+- Multiple components: hero section, feature grid (2 components)
+- Full page keyword: "landing page"
+- Multiple regions: hero, features section
+- Total: 3 prompts (layout + 2 components) - within 6-prompt limit ✓
+- **Generates single file with --- separators**
+
+**File Generated:** `.google-stitch/prompts/landing-page-v1.md`
+
+**File Content:**
+
+```markdown
+<!-- Layout: Landing Page -->
+Design a responsive web landing page for SaaS product marketing.
+
+Include:
+- Hero section with headline and primary call-to-action (full width, above fold, centered content)
+- Feature highlights grid below hero (3-column layout on desktop, icon-led feature descriptions)
+
+Interactions:
+- Hero CTA button scrolls smoothly to feature section when clicked
+- Feature cards expand slightly on hover to reveal more detail
+
+Style: modern design, bold typography, vibrant blue gradient hero background, white feature section
+
+Optimize for mobile-first responsive design, single-column stacked layout on mobile, smooth scroll behavior
+
+---
+
+<!-- Component: Hero Section -->
+Design a hero section for SaaS product landing page.
+
+Include:
+- Large headline emphasizing main value proposition
+- Supporting subheadline with brief product description
+- Primary CTA button ("Start Free Trial") with high contrast
+- Secondary text link below CTA ("See demo video")
+- Product screenshot or illustration on right side (desktop only)
+
+Style: bold sans-serif headline, vibrant blue gradient background, white text, prominent orange CTA button, clean spacing
+
+Optimize for centered single-column on mobile, two-column on desktop with text left and image right
+
+---
+
+<!-- Component: Feature Grid -->
+Design a feature highlights grid showcasing product capabilities.
+
+Include:
+- Three feature cards in horizontal grid layout
+- Each card with icon, feature title, short description (2-3 sentences)
+- Icons in circular backgrounds with brand color
+- Cards with subtle shadow and rounded corners
+- Equal height cards with consistent spacing
+
+Style: clean white cards, subtle shadows, blue circular icon backgrounds, dark text, generous padding
+
+Optimize for 3-column grid on desktop, 2-column on tablet, single-column on mobile, equal card heights
+```
+
+**Presentation:**
+```
+📄 File: landing-page-v1.md
+
+Contains 3 prompts (within 6-prompt limit ✓):
+  • Layout: Landing Page
+  • Component: Hero Section
+  • Component: Feature Grid
+
+Usage:
+  1. Copy entire file → Paste into Stitch → Generates complete page
+  2. OR copy specific component section for targeted refinement
+```
+
+**Key Points:**
+- Simpler example with just 3 total prompts shows scalability
+- Single file contains all prompts separated by `---`
+- Layout describes high-level interactions (CTA scroll, hover effects)
+- Component prompts add specific implementation details
+- File can be copy-pasted directly into Stitch
+
+---
+
+## Example 16 — Large Multi-Component Split (>6 Prompts)
+
+**Input:**
+> Create an admin panel with navigation sidebar, dashboard overview, user management table, role permissions matrix, system settings form, audit logs viewer, and notification center
+
+**Detection:**
+- Multiple components: navigation, dashboard, users, roles, settings, audit logs, notifications (7 components)
+- Full page keyword: "admin panel"
+- Total: 8 prompts (layout + 7 components) - **exceeds 6-prompt limit** ⚠️
+- **Generates multiple part files**
+
+**File Generated Part 1:** `.google-stitch/prompts/admin-panel-part1-v1.md`
+
+**File Content:**
+
+```markdown
+<!-- Layout: Admin Panel -->
+Design a comprehensive web admin panel for application management.
+
+Include:
+- Left sidebar with navigation menu (fixed width 240px, icons + labels for Dashboard, Users, Roles, Settings, Logs, Notifications)
+- Top header bar spanning full width (breadcrumbs, search, user profile dropdown)
+- Main content area for active section (right of sidebar, responsive width, scrollable content)
+
+Interactions:
+- Sidebar navigation highlights active section
+- Main content area updates when navigation items clicked
+- Header breadcrumbs reflect current section hierarchy
+- All data tables support sorting, filtering, and pagination
+
+Style: clean enterprise interface, neutral gray sidebar (#F8F9FA), white main area, Ocean Blue (#005A8D) accents, modern sans-serif typography
+
+Optimize for desktop-first layout, collapsible sidebar on tablet, hamburger menu on mobile
+
+---
+
+<!-- Component: Navigation Sidebar -->
+Design a navigation sidebar for admin panel.
+
+Include:
+- Logo and app name at top
+- Vertical menu with 6 items (Dashboard, Users, Roles, Settings, Logs, Notifications)
+- Each item with icon and label
+- Active state highlighting
+- Collapse/expand toggle button at bottom
+- Version number at footer
+
+Style: light gray background (#F8F9FA), dark text (#212529), Ocean Blue (#005A8D) active state, icons from modern icon set, 16px spacing between items
+
+Optimize for fixed positioning, smooth transitions on hover/active, keyboard navigation support
+
+---
+
+<!-- Component: Dashboard Overview -->
+Design an admin dashboard overview with key metrics.
+
+Include:
+- 4 metric cards in horizontal row (Total Users, Active Sessions, System Health, Storage Used)
+- Each card with large number, label, trend indicator (up/down arrow), and sparkline chart
+- Activity timeline below cards showing recent admin actions
+- System status panel on right (server status, database status, API status with colored indicators)
+
+Style: white card backgrounds, subtle shadows, Ocean Blue (#005A8D) for positive trends, red for alerts, green for healthy status
+
+Optimize for responsive 4-column grid on desktop, 2-column on tablet, single-column on mobile
+
+---
+
+<!-- Component: User Management Table -->
+Design a user management table with actions.
+
+Include:
+- Search and filter controls above table (search by name/email, filter by role/status)
+- Table columns: Avatar, Name, Email, Role, Status, Last Login, Actions
+- Inline actions per row (Edit, Delete, Reset Password icons)
+- Bulk actions toolbar when rows selected (Delete, Export, Change Role)
+- Pagination controls at bottom (showing 25 per page, total count)
+- "Add New User" button at top right
+
+Style: clean table design, alternating row colors, hover highlight, Ocean Blue (#005A8D) action icons, status badges (green Active, gray Inactive, red Suspended)
+
+Optimize for responsive table with horizontal scroll on mobile, sticky header row
+
+---
+
+<!-- Component: Role Permissions Matrix -->
+Design a role permissions configuration matrix.
+
+Include:
+- Roles as rows (Admin, Manager, Editor, Viewer, Guest)
+- Permission categories as columns (Users, Content, Settings, Reports, System)
+- Checkbox toggles at intersections for granular permissions
+- "Select All" checkboxes for rows and columns
+- Save/Cancel buttons at bottom
+- Permission descriptions on hover tooltips
+
+Style: grid layout with borders, checkboxes in Ocean Blue (#005A8D), alternating row backgrounds, clear visual hierarchy
+
+Optimize for wide desktop layout, simplified mobile view with expandable role sections
+
+---
+
+<!-- Component: System Settings Form -->
+Design a system settings configuration form.
+
+Include:
+- Tabbed sections (General, Security, Email, Integrations, Advanced)
+- Each tab with relevant form fields (text inputs, toggles, dropdowns, file uploads)
+- Field validation indicators and help text
+- "Save Changes" and "Reset to Defaults" buttons at bottom
+- Change notification banner when unsaved changes present
+
+Style: clean form layout, single-column with labels above fields, Ocean Blue (#005A8D) for toggle switches, subtle borders, clear section dividers
+
+Optimize for vertical scroll, sticky save buttons, responsive single-column on mobile
+```
+
+**Presentation:**
+```
+📄 File: admin-panel-part1-v1.md
+
+Contains 6 prompts (Stitch limit reached ✓):
+  • Layout: Admin Panel
+  • Component: Navigation Sidebar
+  • Component: Dashboard Overview
+  • Component: User Management Table
+  • Component: Role Permissions Matrix
+  • Component: System Settings Form
+
+⚠️ This page requires 8 total prompts - additional components in part2
+```
+
+---
+
+**File Generated Part 2:** `.google-stitch/prompts/admin-panel-part2-v1.md`
+
+**File Content:**
+
+```markdown
+<!-- Component: Audit Logs Viewer -->
+Design an audit logs viewer with filtering and search.
+
+Include:
+- Date range selector at top (preset ranges: Today, Last 7 Days, Last 30 Days, Custom)
+- Filter controls (by user, action type, resource type, severity level)
+- Log entries table with columns: Timestamp, User, Action, Resource, Details, IP Address
+- Expandable rows showing full event details in JSON format
+- Export button for filtered results (CSV, JSON formats)
+- Real-time log streaming toggle
+
+Style: monospace font for log details, color-coded severity badges (green Info, yellow Warning, red Error), compact table design, dark text on light background
+
+Optimize for horizontal scroll on narrow screens, sticky filter controls, efficient rendering for large datasets
+
+---
+
+<!-- Component: Notification Center -->
+Design a notification center panel for system alerts.
+
+Include:
+- Notification list with timestamps and icons (newest first)
+- Notification types: System alerts, user activity, security events, scheduled tasks
+- Mark as read/unread toggle per notification
+- "Mark all as read" and "Clear all" buttons at top
+- Filter by notification type dropdown
+- Unread count badge
+- Individual notification actions (View Details, Dismiss, Snooze)
+
+Style: card-based list layout, unread notifications with blue left border, icons color-coded by type (blue info, yellow warning, red critical), relative timestamps
+
+Optimize for scrollable panel with lazy loading, real-time updates via WebSocket, mobile-friendly tap targets
+```
+
+**Presentation:**
+```
+📄 File: admin-panel-part2-v1.md
+
+Contains 2 prompts (remainder):
+  • Component: Audit Logs Viewer
+  • Component: Notification Center
+
+⚠️ Warning: Use part1 first in Stitch, then part2 in separate session
+Total: 8 prompts across 2 files
+```
+
+**Usage Workflow:**
+```
+Step 1: Copy admin-panel-part1-v1.md → Paste into Stitch
+        → Generates layout + first 5 components (6 screens)
+
+Step 2: Copy admin-panel-part2-v1.md → Paste into Stitch
+        → Generates remaining 2 components
+
+Result: Complete 8-screen admin panel (processed in 2 batches)
+```
+
+**Key Points:**
+- Demonstrates automatic splitting when >6 prompts detected
+- Part 1 always includes layout + first 5 components (6 total)
+- Part 2 contains remaining components (max 6 per part)
+- Clear warnings about sequential processing requirement
+- Each file independently copy-pasteable into Stitch
+- Part numbering makes processing order explicit
+- Total prompt count communicated clearly to user

@@ -94,6 +94,92 @@ User can request alternative approach at any time:
 - "Regenerate as [N] prompts: [grouping]"
 - "Keep first prompt, regenerate second as..."
 
+## 1.7. Detect Layout Prompt Need
+
+After determining split/combine strategy, detect if a **layout/foundation prompt** should be generated:
+
+**Detection Criteria (ANY of these triggers layout prompt generation):**
+1. **Multiple components** (2+ distinct UI components mentioned)
+2. **Full page/screen keywords** ("dashboard", "page", "screen", "app", "view")
+3. **Multiple regions** (header + content, sidebar + main, navigation + body)
+4. **Layout structure keywords** ("grid", "sections", "panels", "areas", "zones")
+
+**Layout Prompt Purpose:**
+- Creates foundation/wireframe showing spatial structure
+- Uses generic descriptive terms (NOT file/component references)
+- Focuses on high-level regions, positioning, and interactions
+- Independently usable in Stitch as standalone prompt
+- Target 150-200 words (foundation-focused)
+
+**When Layout Prompt IS Generated:**
+1. Extract region information:
+   - Major page sections/areas
+   - Spatial relationships between regions
+   - High-level purpose of each area
+   - Page-level interactions
+2. Generate page/feature slug from main intent
+3. Compose single file with layout + components:
+   - Start with `<!-- Layout: {Title Case Name} -->` comment label
+   - Add layout prompt content
+   - Add `---` separator
+   - For each component:
+     * Add `<!-- Component: {Title Case Name} -->` comment label
+     * Add component prompt content
+     * Add `---` separator (between components)
+4. Count total prompts (layout + components)
+5. Apply 6-prompt limit:
+   - If ≤6 prompts: Save as `{page-slug}-v{version}.md`
+   - If >6 prompts: Split into `{page-slug}-part{N}-v{version}.md` files
+6. Use generic terms: "metrics section", "chart area" (NOT "kpi-cards component")
+
+**When Layout Prompt is NOT Generated:**
+- Single isolated component (button, form field, icon)
+- Partial update/modification to existing design
+- Component is already part of known larger layout
+
+**File Output Pattern (Single File with --- Separators):**
+```
+.google-stitch/prompts/
+└── analytics-dashboard-v1.md
+    (contains layout + all components with --- separators)
+```
+
+**File Content Format:**
+```markdown
+<!-- Layout: Analytics Dashboard -->
+[layout prompt content]
+
+---
+
+<!-- Component: KPI Metrics -->
+[component prompt content]
+
+---
+
+<!-- Component: Revenue Chart -->
+[component prompt content]
+```
+
+**Page/Feature Slug Generation:**
+- Derive from main screen/page purpose
+- Use kebab-case (lowercase with hyphens)
+- Examples:
+  - "analytics dashboard" → `analytics-dashboard-v1.md`
+  - "landing page" → `landing-page-v1.md`
+  - "settings screen" → `settings-screen-v1.md`
+  - "user profile" → `user-profile-v1.md`
+
+**6-Prompt Stitch Limit:**
+- Stitch can process maximum 6 screens/components at once
+- Layout + components must total ≤6 prompts per file
+- If >6 prompts needed, automatically split into part files:
+  * Part 1: Layout + first 5 components (6 total)
+  * Part 2: Next 6 components
+  * Part N: Remaining components (max 6 per part)
+- Example: 8 prompts → `page-part1-v1.md` (6 prompts) + `page-part2-v1.md` (2 prompts)
+
+See templates/layout-prompt-template.md for layout prompt structure and examples.
+
 ## 2. Condense & Reframe
 1. Rewrite the brief into a single-screen/single-goal directive using Stitch verbs ("Design/Create/Add/Update").
 2. **Aggressively filter non-UI concerns**—remove ALL:
@@ -154,7 +240,139 @@ User can request alternative approach at any time:
      ```
    - User can request subsequent prompts explicitly
 
-## 3.5. Post-Processing Cleanup
+## 3.5. Generate Layout Prompt (If Detected)
+
+If Section 1.7 detected the need for a layout prompt, generate it now:
+
+**Layout Prompt Generation Steps:**
+
+1. **Extract region information from parsed input:**
+   - Identify major page sections (top section, main area, sidebar, footer, etc.)
+   - Note spatial relationships (above, below, left of, right of, spanning, etc.)
+   - Capture high-level purpose of each region
+   - Identify page-level interactions between regions
+
+2. **Use generic descriptive terminology:**
+   - ✅ "key performance metrics section", "analytics chart area", "activity feed panel"
+   - ✅ "top section", "main content area", "side panel", "navigation region"
+   - ❌ "kpi-cards component", "revenue-chart-v1", file/component references
+
+3. **Follow layout prompt template structure:**
+   ```
+   Design a [platform] [page/screen type] for [purpose].
+
+   Include:
+   - [Region] with [generic description] ([spatial position], [behavior])
+   - [Region] with [generic description] ([relative position], [interaction])
+
+   Interactions:
+   - [High-level cross-region interactions]
+
+   Style: [page-level style cues]
+
+   Optimize for [page-level concerns]
+   ```
+
+4. **Keep foundation-focused:**
+   - Target 150-200 words maximum
+   - High-level purpose, not implementation details
+   - Spatial structure and relationships
+   - Page-level interactions only
+   - Must be independently usable in Stitch
+
+5. **Generate page/feature slug:**
+   - Derive from page purpose: "analytics dashboard" → `analytics-dashboard`
+   - Use kebab-case: lowercase with hyphens
+   - Keep concise: 2-4 words maximum
+   - Examples: `analytics-dashboard`, `landing-page`, `settings-screen`
+
+6. **Compose single file with all prompts:**
+   - Start with HTML comment label: `<!-- Layout: {Title Case Name} -->`
+   - Add layout prompt content
+   - Add separator line: `---`
+   - For each component prompt:
+     * Add HTML comment label: `<!-- Component: {Title Case Name} -->`
+     * Add component prompt content
+     * Add separator line: `---` (between components, not after last one)
+
+7. **Apply 6-prompt limit and save file:**
+   - Count total prompts (layout + all components)
+   - If ≤6 prompts total:
+     * Save as: `.google-stitch/prompts/{page-slug}-v{version}.md`
+     * Example: `.google-stitch/prompts/analytics-dashboard-v1.md`
+   - If >6 prompts total:
+     * Split into multiple part files
+     * Part 1 gets: Layout + first 5 components (6 prompts)
+     * Part 2 gets: Next 6 components
+     * Part N gets: Remaining components (max 6)
+     * Save as: `.google-stitch/prompts/{page-slug}-part{N}-v{version}.md`
+     * Examples: `admin-panel-part1-v1.md`, `admin-panel-part2-v1.md`
+     * Warn user: "⚠️ Generated {total} prompts split across {N} files. Stitch can process maximum 6 screens at once. Use each part file separately."
+
+8. **Present generated file(s):**
+   - Show file path(s)
+   - Indicate total prompt count per file
+   - Note relationship: layout = structure, components = details
+   - If split: Explain to use part files sequentially
+
+**Example Layout Prompt Output:**
+
+```markdown
+Design a web dashboard page for SaaS analytics overview.
+
+Include:
+- Top section with key performance metrics (4-column grid spanning full width, cards displaying primary KPIs)
+- Main content area with revenue analytics chart (below metrics, left side 60% width, interactive time controls)
+- Side panel with recent subscription activity (right of chart, 40% width, scrollable list)
+
+Interactions:
+- Metric cards filter chart and activity panel when clicked
+- Chart time range selector updates entire page data
+- Activity panel scrolls independently from main content
+
+Style: clean dashboard aesthetic, ample whitespace, card-based sections, subtle depth
+
+Optimize for desktop-first responsive layout, smooth transitions between filtered states
+```
+
+**File Presentation Format:**
+Present generated file with clear prompt inventory:
+```
+📄 File: analytics-dashboard-v1.md
+
+Contains 4 prompts (within 6-prompt limit ✓):
+  • Layout: Analytics Dashboard
+  • Component: KPI Metrics
+  • Component: Revenue Chart
+  • Component: Subscription Activity
+
+Usage:
+  1. Copy entire file → Paste into Stitch → Generates complete page
+  2. OR copy specific component section for targeted refinement
+```
+
+**For split files (>6 prompts):**
+```
+📄 Files Generated (8 total prompts):
+
+admin-panel-part1-v1.md (6 prompts):
+  • Layout: Admin Panel
+  • Component: Navigation
+  • Component: Dashboard
+  • Component: Users
+  • Component: Roles
+  • Component: Settings
+
+admin-panel-part2-v1.md (2 prompts):
+  • Component: Audit Logs
+  • Component: Notifications
+
+⚠️ Stitch Limit: Use part1 first, then part2 in separate session.
+```
+
+See templates/layout-prompt-template.md for detailed guidance and additional examples.
+
+## 3.6. Post-Processing Cleanup
 
 Before validation, apply final cleanup to remove edge-case technical details:
 
@@ -202,6 +420,14 @@ Before validation, apply final cleanup to remove edge-case technical details:
 6. When revising existing prompts:
    - Specify which elements stay untouched.
    - Highlight only the delta (e.g., "Move KPI cards above chart").
+7. **Layout prompt validation** (if layout prompt generated):
+   - **Word count**: Target 150-200 words (absolute max 250 for complex layouts).
+   - **Generic terminology**: Uses descriptive terms ("metrics section", "chart area") NOT file/component references ("kpi-cards-v1", "component").
+   - **Spatial relationships**: Includes explicit positioning for all major regions (above, below, left, right, spanning).
+   - **High-level focus**: Describes purpose and behavior, NOT implementation details or micro-interactions.
+   - **Independence**: Can be used standalone in Stitch without other prompts or file context.
+   - **Interactions**: Includes page-level cross-region interactions (how regions relate/communicate).
+   - **Structure**: Follows template format (directive → regions → interactions → style → optimize).
 
 ## 5. Finalize & Return
 1. Present the final prompt in Markdown with short paragraphs or bullet lists for readability.
