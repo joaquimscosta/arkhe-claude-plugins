@@ -88,7 +88,7 @@ UI/UX design and design system toolkit.
 ### Google Stitch Plugin
 Claude + Google Stitch prompting toolkit for prompt authoring and session management.
 - **Commands**: `/prompt`
-- **Skills**: `stitch-prompt`, `stitch-session-manager`
+- **Skills**: `authoring-stitch-prompts`, `stitch-session-manager`
 - **Use**: Generate Stitch-ready prompts, maintain multi-screen session logs, export summaries
 
 ### Git Plugin

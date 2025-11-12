@@ -22,7 +22,7 @@
 ## 2. Add Screen / Prompt (`session:add`)
 1. Parse user brief (screen name + intent).
 2. Read latest `session.json` to capture style cues (`style_guide` or aggregated attributes).
-3. Call `stitch-prompt` with payload:
+3. Call `authoring-stitch-prompts` with payload:
    ```json
    {
      "screen": "<user screen name>",
@@ -61,7 +61,7 @@
 ## 4. Reuse Style (`session:style`)
 1. Collect palette + tone descriptors from previous prompts (simple frequency count or manual review).
 2. Present summary back to the user.
-3. Attach the same summary when routing future briefs to `stitch-prompt`.
+3. Attach the same summary when routing future briefs to `authoring-stitch-prompts`.
 
 ## 5. Export Session (`session:export`)
 1. Read `session.json` and all `screen-log/*.json`.

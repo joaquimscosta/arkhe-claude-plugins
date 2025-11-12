@@ -12,7 +12,7 @@ allowed-tools: Read, Write, List, Grep
 
 ## Quick Start
 - `Start a new Stitch session for [project]` → creates `.google-stitch/sessions/<project>/session.json`.
-- `Add a screen called [name] with this brief: ...` → optimizes prompt via `stitch-prompt`, saves Markdown to `.google-stitch/prompts/<slug>-###-prompt.md`, and logs metadata as `<slug>-###.json`.
+- `Add a screen called [name] with this brief: ...` → optimizes prompt via `authoring-stitch-prompts`, saves Markdown to `.google-stitch/prompts/<slug>-###-prompt.md`, and logs metadata as `<slug>-###.json`.
 - `Summarize my current Stitch session` → returns screen list, visual patterns, next-step suggestions.
 - `Generate a new prompt for [screen] using current session style` → reuses stored cues before calling the authoring skill.
 - `End this Stitch session and export summary` → writes Markdown summary under the session folder.
@@ -20,7 +20,7 @@ allowed-tools: Read, Write, List, Grep
 ## Output Structure
 - `.google-stitch/sessions/<project>/session.json`: metadata (`session_name`, timestamps, style guide notes, prompt index).
 - `.google-stitch/sessions/<project>/screen-log/<slug>-###.json`: individual prompt payloads (raw brief, status, references) plus the path of the saved Markdown prompt.
-- `.google-stitch/prompts/<slug>-###-prompt.md`: source-of-truth prompt text produced by `stitch-prompt`.
+- `.google-stitch/prompts/<slug>-###-prompt.md`: source-of-truth prompt text produced by `authoring-stitch-prompts`.
 - `.google-stitch/sessions/<project>/summary.md`: exportable brief for reviews or handoffs.
 
 ## Commands & Triggers
@@ -38,13 +38,13 @@ Follow the abbreviated loop: initialize → add/update screens → reference ses
 See [WORKFLOW.md](WORKFLOW.md) for detailed branching logic, file formats, and pseudo-commands.
 
 ## Prompt Storage Alignment
-- Reuse the same slug + zero-padded index rules from `stitch-prompt` when calling the authoring Skill.
+- Reuse the same slug + zero-padded index rules from `authoring-stitch-prompts` when calling the authoring Skill.
 - Pass the computed path (`.google-stitch/prompts/<slug>-###-prompt.md`) to the logger so summaries and exports can link directly to the Markdown file.
 - Never duplicate prompt text inside the JSON logs—store pointers only to keep history lightweight.
 
 ## Style Memory & Integration
 - Before writing a new prompt, the Skill scans existing `session.json` + latest screen logs to extract design cues (color, typography, density, component patterns).
-- It then calls **`stitch-prompt`** with:
+- It then calls **`authoring-stitch-prompts`** with:
   - Original user brief.
   - Session style payload (palette, layout bias, voice).
   - Optional constraints (responsive targets, export needs).
@@ -61,4 +61,4 @@ High-level fixes are below; detailed diagnosis (including directory repair scrip
 - Duplicate screen names → the Skill auto-increments suffixes; confirm desired slug before export.
 
 ## Version History
-- v1.0.0 (2025-02-10): Initial release — session management companion to `stitch-prompt`.
+- v1.0.0 (2025-02-10): Initial release — session management companion to `authoring-stitch-prompts`.

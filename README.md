@@ -94,7 +94,7 @@ Claude + Google Stitch prompting toolkit that pairs optimized prompt authoring w
 
 **Components:**
 - 1 command: `/prompt`
-- 2 skills: `stitch-prompt`, `stitch-session-manager`
+- 2 skills: `authoring-stitch-prompts`, `stitch-session-manager`
 
 **Use for:** Generating Stitch-ready prompts, maintaining multi-screen design sessions, exporting Stitch handoff summaries
 
@@ -239,7 +239,7 @@ arkhe-claude-plugins/
 │   │   └── prompt.md
 │   ├── README.md
 │   └── skills/
-│       ├── stitch-prompt/
+│       ├── authoring-stitch-prompts/
 │       └── session-manager/
 ├── README.md
 └── INSTALLATION.md

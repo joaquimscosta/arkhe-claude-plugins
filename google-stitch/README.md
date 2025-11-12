@@ -11,14 +11,14 @@ The Google Stitch plugin bundles two complementary **Agent Skills** plus a short
 | Component | Type | Purpose |
 | --- | --- | --- |
 | `/prompt` | Command | One-step invocation of the Stitch prompt skill from any conversation. |
-| 🧠 `stitch-prompt` | Skill | Converts freeform descriptions or spec files into optimized Stitch prompts that follow Google’s recommended structure. |
+| 🧠 `authoring-stitch-prompts` | Skill | Converts freeform descriptions or spec files into optimized Stitch prompts that follow Google's recommended structure. |
 | 📂 `stitch-session-manager` | Skill | Logs every Stitch prompt in a project, preserves style cues, and exports summaries for reviews or handoff. |
 
 Install the plugin to keep Claude aware of your Stitch projects, enforce atomic prompting, and maintain consistent art direction across iterative sessions.
 
 ---
 
-## 🧠 Skill: `stitch-prompt`
+## 🧠 Skill: `authoring-stitch-prompts`
 
 **Purpose**  
 Transforms plain text or structured specs into Stitch-ready prompts with directive language, UI nouns, and 3–6 visual cues.
@@ -57,7 +57,7 @@ Tracks multi-screen Stitch projects, ensuring every screen prompt, style decisio
 
 **Highlights**
 - `session:new`, `session:add`, `session:summary`, `session:export` flow
-- Calls `stitch-prompt` automatically before logging new screens
+- Calls `authoring-stitch-prompts` automatically before logging new screens
 - Extracts palette/typography cues to keep future prompts aligned
 - Exports Markdown summaries for PM/design reviews
 
@@ -79,7 +79,7 @@ Run this command when you want Claude to rewrite any brief into a Stitch-ready p
 /prompt @specs/mobile-app.md
 ```
 
-The command automatically invokes **stitch-prompt**, passes along attached files, and returns a templated Stitch prompt.
+The command automatically invokes **authoring-stitch-prompts**, passes along attached files, and returns a templated Stitch prompt.
 
 ---
 
@@ -93,13 +93,13 @@ google-stitch/
 │   └── prompt.md
 ├── README.md
 └── skills/
-    ├── stitch-prompt/
+    ├── authoring-stitch-prompts/
     │   ├── SKILL.md
     │   ├── REFERENCE.md
     │   ├── EXAMPLES.md
     │   ├── evaluation.json
     │   └── templates/
-    │       └── stitch-prompt-template.md
+    │       └── authoring-stitch-prompts-template.md
     └── session-manager/
         ├── SKILL.md
         ├── WORKFLOW.md
@@ -129,7 +129,7 @@ Supporting drafts or research notes (e.g., `skills/session-manager/draft.md`) st
    → Session directories created under `.claude/sessions/mobile-banking/`.
 
 2. `Add a Dashboard screen showing MRR, Churn, and Revenue charts.`  
-   → `stitch-prompt` condenses the brief and logs it via `session:add`.
+   → `authoring-stitch-prompts` condenses the brief and logs it via `session:add`.
 
 3. `Add a Settings screen with same color palette and typography.`  
    → `session:style` extracts palette cues before the new prompt is authored.
@@ -143,9 +143,9 @@ Supporting drafts or research notes (e.g., `skills/session-manager/draft.md`) st
 
 Run the included regression tests from Claude Code:
 ```
-Evaluate the stitch-prompt Skill using evaluation.json
+Evaluate the authoring-stitch-prompts Skill using evaluation.json
 ```
-The harness checks prompt structure, UI noun usage, style cue count, and atomicity. Extend `skills/stitch-prompt/evaluation.json` with new cases as you expand coverage.
+The harness checks prompt structure, UI noun usage, style cue count, and atomicity. Extend `skills/authoring-stitch-prompts/evaluation.json` with new cases as you expand coverage.
 
 ---
 

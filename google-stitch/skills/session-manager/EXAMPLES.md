@@ -20,7 +20,7 @@ Use same style as existing session.
 ```
 **Skill actions:**
 1. Fetch palette + tone from session logs (e.g., deep blue, rounded, sans-serif).
-2. Call `stitch-prompt` with extracted cues.
+2. Call `authoring-stitch-prompts` with extracted cues.
 3. Save `screen-log/dashboard-001.json`.
 4. Reply:
    ```

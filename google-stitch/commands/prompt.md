@@ -5,7 +5,7 @@ argument-hint: <brief or @/path/to/spec>
 
 # Prompt Command
 
-Convert natural-language descriptions, revision notes, or spec files into Stitch-optimized prompts in one step. This command guarantees the **`stitch-prompt`** Skill runs with your latest instructions.
+Convert natural-language descriptions, revision notes, or spec files into Stitch-optimized prompts in one step. This command guarantees the **`authoring-stitch-prompts`** Skill runs with your latest instructions.
 
 ## Usage
 
@@ -26,12 +26,14 @@ Attach files or reference repository paths as needed; the Skill will read them b
 
 1. Collects your text + referenced files.
 2. Routes everything to the Google Stitch prompt skill.
-3. Returns a Stitch-ready prompt following the template (screen summary → layout bullets → style cues → constraints).
+3. The skill automatically applies smart defaults for split decisions (split if >2 screens/intents).
+4. Returns a Stitch-ready prompt following the template (screen summary → layout bullets → style cues → constraints).
+5. You can request regeneration with different approach if needed ("combine" or "split into N").
 
 ---
 
 ## Execution
 
 - Treat `$ARGUMENTS` as the exact brief or spec path to optimize.
-- Invoke the Skill tool with name **`stitch-prompt`** and arguments `$ARGUMENTS`.
-- The Skill handles parsing, condensing, formatting, and validation. Reference `skills/stitch-prompt/SKILL.md` for the full workflow.
+- Invoke the Skill tool with name **`authoring-stitch-prompts`** and arguments `$ARGUMENTS`.
+- The Skill handles parsing, condensing, formatting, and validation. Reference `skills/authoring-stitch-prompts/SKILL.md` for the full workflow.
