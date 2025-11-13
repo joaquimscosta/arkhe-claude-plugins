@@ -61,7 +61,9 @@
       "expected_behavior": [
         "Detects multi-component scenario (3 components: KPI cards, revenue chart, subscriptions table).",
         "Total: 4 prompts (layout + 3 components) - within 6-prompt limit.",
-        "Creates single file: analytics-dashboard-v1.md (not directory structure).",
+        "Creates feature directory: .google-stitch/dashboard/",
+        "Pre-creates subdirectories: dashboard/exports/ and dashboard/wireframes/",
+        "Creates prompt file: dashboard/prompt-v1.md (not flat file structure).",
         "File starts with HTML comment label: <!-- Layout: Analytics Dashboard -->.",
         "Layout prompt uses generic descriptive terms ('key performance metrics', 'analytics chart area', 'subscription activity').",
         "Layout prompt does NOT reference component files or use component names.",
@@ -75,7 +77,8 @@
         "All prompts are independently usable in Stitch when separated by ---.",
         "Presents clear distinction: layout = structure, components = details.",
         "Entire file can be copy-pasted directly into Stitch for batch generation.",
-        "Presents file info showing prompt count and usage instructions."
+        "Presents file info showing feature directory, prompt count, directory structure, and usage instructions.",
+        "Explains purpose of exports/ and wireframes/ subdirectories."
       ]
     },
     {
@@ -84,20 +87,24 @@
       "expected_behavior": [
         "Detects multi-component scenario (7 components listed).",
         "Total: 8 prompts (layout + 7 components) - exceeds 6-prompt limit.",
+        "Creates feature directory: .google-stitch/admin-panel/",
+        "Pre-creates subdirectories: admin-panel/exports/ and admin-panel/wireframes/",
         "Automatically splits into 2 part files due to Stitch's 6-screen limit.",
-        "Creates part1 file: admin-panel-part1-v1.md containing 6 prompts (layout + first 5 components).",
+        "Creates part1 file: admin-panel/prompt-v1-part1.md containing 6 prompts (layout + first 5 components).",
         "Part1 starts with <!-- Layout: Admin Panel --> followed by layout prompt.",
         "Part1 contains first 5 components with HTML comment labels.",
         "Part1 prompts separated by --- (between sections, not after last).",
-        "Creates part2 file: admin-panel-part2-v1.md containing 2 remaining components.",
+        "Creates part2 file: admin-panel/prompt-v1-part2.md containing 2 remaining components.",
         "Part2 contains only component prompts (no layout).",
         "Part2 prompts also use HTML comment labels and --- separators.",
         "Displays warning message about sequential processing requirement.",
         "Warning indicates: 'Use part1 first in Stitch, then part2 in separate session'.",
         "Shows total prompt count across both files (8 prompts across 2 files).",
+        "Shows directory structure with both part files and subdirectories.",
         "Provides usage workflow explaining how to process both files sequentially.",
         "Each part file independently copy-pasteable into Stitch.",
-        "Part numbering makes processing order explicit (-part1, -part2)."
+        "Part numbering makes processing order explicit (prompt-v1-part1, prompt-v1-part2).",
+        "Explains purpose of exports/ and wireframes/ subdirectories."
       ]
     }
   ]

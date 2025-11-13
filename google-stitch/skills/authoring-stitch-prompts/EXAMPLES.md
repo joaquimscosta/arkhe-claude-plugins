@@ -333,7 +333,7 @@ Additional prompts needed:
 
 ---
 
-## Example 14 — Multi-Component Dashboard (Single File Format)
+## Example 14 — Multi-Component Dashboard (Feature Directory Format)
 
 **Input:**
 > Create an analytics dashboard with KPI cards at the top, a revenue chart on the left, and a subscriptions table on the right
@@ -343,9 +343,11 @@ Additional prompts needed:
 - Full page keyword: "dashboard"
 - Multiple regions: top section, left side, right side
 - Total: 4 prompts (layout + 3 components) - within 6-prompt limit ✓
-- **Generates single file with --- separators**
+- **Generates feature directory with prompt file and subdirectories**
 
-**File Generated:** `.google-stitch/prompts/analytics-dashboard-v1.md`
+**Directory Created:** `.google-stitch/dashboard/`
+
+**File Generated:** `dashboard/prompt-v1.md`
 
 **File Content:**
 
@@ -419,7 +421,8 @@ Optimize for fixed height with internal scrolling, responsive single-column on m
 
 **Presentation:**
 ```
-📄 File: analytics-dashboard-v1.md
+📂 Feature: dashboard/
+📄 File: prompt-v1.md
 
 Contains 4 prompts (within 6-prompt limit ✓):
   • Layout: Analytics Dashboard
@@ -427,22 +430,31 @@ Contains 4 prompts (within 6-prompt limit ✓):
   • Component: Revenue Chart
   • Component: Subscription Activity
 
+Directory structure:
+  .google-stitch/dashboard/
+  ├── prompt-v1.md      ← Generated prompt
+  ├── exports/          ← Place Stitch outputs here
+  └── wireframes/       ← Place mockups/references here
+
 Usage:
-  1. Copy entire file → Paste into Stitch → Generates complete page
-  2. OR copy specific component section for targeted refinement
+  1. Copy prompt file → Paste into Stitch → Generate designs
+  2. Save Stitch exports to exports/ directory
+  3. Store wireframes/mockups in wireframes/ directory
 ```
 
 **Key Points:**
+- Feature directory groups all related artifacts
 - Single file contains all prompts separated by `---`
 - HTML comment labels for easy navigation
 - Layout uses generic terms (no file references)
+- Pre-created subdirectories for exports and wireframes
 - Each prompt independently usable when separated
 - File can be copy-pasted directly into Stitch
 - Total 4 prompts stays within Stitch's 6-screen limit
 
 ---
 
-## Example 15 — Two-Region Landing Page (Single File Format)
+## Example 15 — Two-Region Landing Page (Feature Directory Format)
 
 **Input:**
 > Landing page with hero section and feature highlights grid below it
@@ -452,9 +464,11 @@ Usage:
 - Full page keyword: "landing page"
 - Multiple regions: hero, features section
 - Total: 3 prompts (layout + 2 components) - within 6-prompt limit ✓
-- **Generates single file with --- separators**
+- **Generates feature directory with prompt file and subdirectories**
 
-**File Generated:** `.google-stitch/prompts/landing-page-v1.md`
+**Directory Created:** `.google-stitch/landing/`
+
+**File Generated:** `landing/prompt-v1.md`
 
 **File Content:**
 
@@ -509,23 +523,33 @@ Optimize for 3-column grid on desktop, 2-column on tablet, single-column on mobi
 
 **Presentation:**
 ```
-📄 File: landing-page-v1.md
+📂 Feature: landing/
+📄 File: prompt-v1.md
 
 Contains 3 prompts (within 6-prompt limit ✓):
   • Layout: Landing Page
   • Component: Hero Section
   • Component: Feature Grid
 
+Directory structure:
+  .google-stitch/landing/
+  ├── prompt-v1.md      ← Generated prompt
+  ├── exports/          ← Place Stitch outputs here
+  └── wireframes/       ← Place mockups/references here
+
 Usage:
-  1. Copy entire file → Paste into Stitch → Generates complete page
-  2. OR copy specific component section for targeted refinement
+  1. Copy prompt file → Paste into Stitch → Generate designs
+  2. Save Stitch exports to exports/ directory
+  3. Store wireframes/mockups in wireframes/ directory
 ```
 
 **Key Points:**
 - Simpler example with just 3 total prompts shows scalability
+- Feature directory organizes all page artifacts
 - Single file contains all prompts separated by `---`
 - Layout describes high-level interactions (CTA scroll, hover effects)
 - Component prompts add specific implementation details
+- Pre-created subdirectories for exports and wireframes
 - File can be copy-pasted directly into Stitch
 
 ---
@@ -539,9 +563,11 @@ Usage:
 - Multiple components: navigation, dashboard, users, roles, settings, audit logs, notifications (7 components)
 - Full page keyword: "admin panel"
 - Total: 8 prompts (layout + 7 components) - **exceeds 6-prompt limit** ⚠️
-- **Generates multiple part files**
+- **Generates feature directory with multiple part files**
 
-**File Generated Part 1:** `.google-stitch/prompts/admin-panel-part1-v1.md`
+**Directory Created:** `.google-stitch/admin-panel/`
+
+**File Generated Part 1:** `admin-panel/prompt-v1-part1.md`
 
 **File Content:**
 
@@ -649,7 +675,8 @@ Optimize for vertical scroll, sticky save buttons, responsive single-column on m
 
 **Presentation:**
 ```
-📄 File: admin-panel-part1-v1.md
+📂 Feature: admin-panel/
+📄 File: prompt-v1-part1.md
 
 Contains 6 prompts (Stitch limit reached ✓):
   • Layout: Admin Panel
@@ -664,7 +691,7 @@ Contains 6 prompts (Stitch limit reached ✓):
 
 ---
 
-**File Generated Part 2:** `.google-stitch/prompts/admin-panel-part2-v1.md`
+**File Generated Part 2:** `admin-panel/prompt-v1-part2.md`
 
 **File Content:**
 
@@ -705,11 +732,19 @@ Optimize for scrollable panel with lazy loading, real-time updates via WebSocket
 
 **Presentation:**
 ```
-📄 File: admin-panel-part2-v1.md
+📂 Feature: admin-panel/
+📄 File: prompt-v1-part2.md
 
 Contains 2 prompts (remainder):
   • Component: Audit Logs Viewer
   • Component: Notification Center
+
+Directory structure:
+  .google-stitch/admin-panel/
+  ├── prompt-v1-part1.md    ← First 6 prompts
+  ├── prompt-v1-part2.md    ← Remaining 2 prompts
+  ├── exports/              ← Place Stitch outputs here
+  └── wireframes/           ← Place mockups/references here
 
 ⚠️ Warning: Use part1 first in Stitch, then part2 in separate session
 Total: 8 prompts across 2 files
@@ -717,20 +752,24 @@ Total: 8 prompts across 2 files
 
 **Usage Workflow:**
 ```
-Step 1: Copy admin-panel-part1-v1.md → Paste into Stitch
+Step 1: Copy admin-panel/prompt-v1-part1.md → Paste into Stitch
         → Generates layout + first 5 components (6 screens)
 
-Step 2: Copy admin-panel-part2-v1.md → Paste into Stitch
+Step 2: Copy admin-panel/prompt-v1-part2.md → Paste into Stitch
         → Generates remaining 2 components
+
+Step 3: Save all Stitch exports to admin-panel/exports/ directory
 
 Result: Complete 8-screen admin panel (processed in 2 batches)
 ```
 
 **Key Points:**
 - Demonstrates automatic splitting when >6 prompts detected
+- Feature directory contains all part files and subdirectories
 - Part 1 always includes layout + first 5 components (6 total)
 - Part 2 contains remaining components (max 6 per part)
 - Clear warnings about sequential processing requirement
 - Each file independently copy-pasteable into Stitch
-- Part numbering makes processing order explicit
+- Part numbering makes processing order explicit (part1, part2)
+- Pre-created subdirectories for exports and wireframes
 - Total prompt count communicated clearly to user

@@ -158,18 +158,31 @@ All sections combined in single file `analytics-dashboard-v1.md`, separated by `
 - Partial update/modification to existing design
 - Component is already part of known larger layout
 
-### Single-File Format with --- Separators
+### Feature-Based Directories with --- Separators
 
 **Organization:**
-Each page/feature is a single file containing all prompts separated by `---`:
+Each feature gets its own directory containing prompts and design artifacts:
 
 ```
-.google-stitch/prompts/
-├── analytics-dashboard-v1.md
-├── landing-page-v1.md
-├── settings-screen-v1.md
-└── admin-panel-part1-v1.md
-└── admin-panel-part2-v1.md
+.google-stitch/
+├── dashboard/
+│   ├── prompt-v1.md           (all prompts in one file with --- separators)
+│   ├── prompt-v2.md           (version history in same directory)
+│   ├── exports/               (Stitch-generated outputs: PNG, SVG, HTML)
+│   └── wireframes/            (pre-work mockups and references)
+├── landing/
+│   ├── prompt-v1.md
+│   ├── exports/
+│   └── wireframes/
+├── settings/
+│   ├── prompt-v1.md
+│   ├── exports/
+│   └── wireframes/
+└── admin-panel/
+    ├── prompt-v1-part1.md     (split files for >6 prompts)
+    ├── prompt-v1-part2.md
+    ├── exports/
+    └── wireframes/
 ```
 
 **File Content Structure:**
@@ -189,14 +202,16 @@ Each page/feature is a single file containing all prompts separated by `---`:
 ```
 
 **Naming Convention:**
-- Standard (≤6 prompts): `{page-slug}-v{version}.md`
-- Split files (>6 prompts): `{page-slug}-part{N}-v{version}.md`
+- Feature directory: `{feature}/` (semantic name, kebab-case)
+- Standard (≤6 prompts): `prompt-v{version}.md`
+- Split files (>6 prompts): `prompt-v{version}-part{N}.md`
+- Subdirectories: `exports/` and `wireframes/` (pre-created)
 
 **Examples:**
-- `analytics-dashboard-v1.md` (layout + 3 components = 4 prompts)
-- `landing-page-v1.md` (layout + 2 components = 3 prompts)
-- `admin-panel-part1-v1.md` (layout + 5 components = 6 prompts)
-- `admin-panel-part2-v1.md` (2 remaining components = 2 prompts)
+- `dashboard/prompt-v1.md` (layout + 3 components = 4 prompts)
+- `landing/prompt-v1.md` (layout + 2 components = 3 prompts)
+- `admin-panel/prompt-v1-part1.md` (layout + 5 components = 6 prompts)
+- `admin-panel/prompt-v1-part2.md` (2 remaining components = 2 prompts)
 
 **HTML Comment Labels:**
 - `<!-- Layout: Analytics Dashboard -->` - For layout/foundation prompts

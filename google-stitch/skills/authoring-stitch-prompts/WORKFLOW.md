@@ -137,11 +137,22 @@ After determining split/combine strategy, detect if a **layout/foundation prompt
 - Partial update/modification to existing design
 - Component is already part of known larger layout
 
-**File Output Pattern (Single File with --- Separators):**
+**File Output Pattern (Feature Directories with --- Separators):**
 ```
-.google-stitch/prompts/
-└── analytics-dashboard-v1.md
-    (contains layout + all components with --- separators)
+.google-stitch/
+├── dashboard/
+│   ├── prompt-v1.md           (contains layout + all components with --- separators)
+│   ├── exports/               (for Stitch-generated outputs)
+│   └── wireframes/            (for pre-work mockups)
+├── landing/
+│   ├── prompt-v1.md
+│   ├── exports/
+│   └── wireframes/
+└── admin-panel/
+    ├── prompt-v1-part1.md     (split files for >6 prompts)
+    ├── prompt-v1-part2.md
+    ├── exports/
+    └── wireframes/
 ```
 
 **File Content Format:**
@@ -160,14 +171,15 @@ After determining split/combine strategy, detect if a **layout/foundation prompt
 [component prompt content]
 ```
 
-**Page/Feature Slug Generation:**
+**Feature Name Generation:**
 - Derive from main screen/page purpose
 - Use kebab-case (lowercase with hyphens)
+- Keep semantic and concise
 - Examples:
-  - "analytics dashboard" → `analytics-dashboard-v1.md`
-  - "landing page" → `landing-page-v1.md`
-  - "settings screen" → `settings-screen-v1.md`
-  - "user profile" → `user-profile-v1.md`
+  - "analytics dashboard" → `dashboard/` (or `analytics-dashboard/` if specific)
+  - "landing page" → `landing/`
+  - "settings screen" → `settings/`
+  - "user profile" → `profile/`
 
 **6-Prompt Stitch Limit:**
 - Stitch can process maximum 6 screens/components at once
@@ -176,7 +188,7 @@ After determining split/combine strategy, detect if a **layout/foundation prompt
   * Part 1: Layout + first 5 components (6 total)
   * Part 2: Next 6 components
   * Part N: Remaining components (max 6 per part)
-- Example: 8 prompts → `page-part1-v1.md` (6 prompts) + `page-part2-v1.md` (2 prompts)
+- Example: 8 prompts → `admin-panel/prompt-v1-part1.md` (6) + `prompt-v1-part2.md` (2)
 
 See templates/layout-prompt-template.md for layout prompt structure and examples.
 
@@ -280,13 +292,27 @@ If Section 1.7 detected the need for a layout prompt, generate it now:
    - Page-level interactions only
    - Must be independently usable in Stitch
 
-5. **Generate page/feature slug:**
-   - Derive from page purpose: "analytics dashboard" → `analytics-dashboard`
+5. **Generate feature name (directory):**
+   - Derive from page/feature purpose: "analytics dashboard" → `dashboard`
    - Use kebab-case: lowercase with hyphens
-   - Keep concise: 2-4 words maximum
-   - Examples: `analytics-dashboard`, `landing-page`, `settings-screen`
+   - Keep semantic and concise (prefer "dashboard" over "analytics-dashboard")
+   - Examples: `dashboard`, `landing`, `admin-panel`, `settings`
 
-6. **Compose single file with all prompts:**
+6. **Create feature directory structure:**
+   - Create: `.google-stitch/{feature}/`
+   - Pre-create subdirectories:
+     * `{feature}/exports/` - For Stitch-generated outputs (PNG, SVG, HTML)
+     * `{feature}/wireframes/` - For pre-work mockups and reference images
+   - Prompt files will be saved to feature root
+
+7. **Detect existing versions and auto-increment:**
+   - Scan `.google-stitch/{feature}/prompt-v*.md`
+   - Find highest version number (e.g., v1, v2, v3)
+   - Increment to next version automatically
+   - If no existing prompts, start at v1
+   - Each feature maintains independent version history
+
+8. **Compose single file with all prompts:**
    - Start with HTML comment label: `<!-- Layout: {Title Case Name} -->`
    - Add layout prompt content
    - Add separator line: `---`
@@ -295,24 +321,26 @@ If Section 1.7 detected the need for a layout prompt, generate it now:
      * Add component prompt content
      * Add separator line: `---` (between components, not after last one)
 
-7. **Apply 6-prompt limit and save file:**
+9. **Apply 6-prompt limit and save file:**
    - Count total prompts (layout + all components)
    - If ≤6 prompts total:
-     * Save as: `.google-stitch/prompts/{page-slug}-v{version}.md`
-     * Example: `.google-stitch/prompts/analytics-dashboard-v1.md`
+     * Save as: `.google-stitch/{feature}/prompt-v{version}.md`
+     * Example: `.google-stitch/dashboard/prompt-v1.md`
    - If >6 prompts total:
      * Split into multiple part files
      * Part 1 gets: Layout + first 5 components (6 prompts)
      * Part 2 gets: Next 6 components
      * Part N gets: Remaining components (max 6)
-     * Save as: `.google-stitch/prompts/{page-slug}-part{N}-v{version}.md`
-     * Examples: `admin-panel-part1-v1.md`, `admin-panel-part2-v1.md`
+     * Save as: `.google-stitch/{feature}/prompt-v{version}-part{N}.md`
+     * Examples: `admin-panel/prompt-v1-part1.md`, `admin-panel/prompt-v1-part2.md`
      * Warn user: "⚠️ Generated {total} prompts split across {N} files. Stitch can process maximum 6 screens at once. Use each part file separately."
 
-8. **Present generated file(s):**
-   - Show file path(s)
+10. **Present generated file(s):**
+   - Show feature directory and file path(s)
+   - Show directory structure with exports/ and wireframes/ subdirectories
    - Indicate total prompt count per file
    - Note relationship: layout = structure, components = details
+   - Explain subdirectory purposes
    - If split: Explain to use part files sequentially
 
 **Example Layout Prompt Output:**
@@ -336,9 +364,10 @@ Optimize for desktop-first responsive layout, smooth transitions between filtere
 ```
 
 **File Presentation Format:**
-Present generated file with clear prompt inventory:
+Present generated file with clear prompt inventory and directory structure:
 ```
-📄 File: analytics-dashboard-v1.md
+📂 Feature: dashboard/
+📄 File: prompt-v1.md
 
 Contains 4 prompts (within 6-prompt limit ✓):
   • Layout: Analytics Dashboard
@@ -346,16 +375,24 @@ Contains 4 prompts (within 6-prompt limit ✓):
   • Component: Revenue Chart
   • Component: Subscription Activity
 
+Directory structure:
+  .google-stitch/dashboard/
+  ├── prompt-v1.md      ← Generated prompt
+  ├── exports/          ← Place Stitch outputs here
+  └── wireframes/       ← Place mockups/references here
+
 Usage:
-  1. Copy entire file → Paste into Stitch → Generates complete page
-  2. OR copy specific component section for targeted refinement
+  1. Copy prompt file → Paste into Stitch → Generate designs
+  2. Save Stitch exports to exports/ directory
+  3. Store wireframes/mockups in wireframes/ directory
 ```
 
 **For split files (>6 prompts):**
 ```
+📂 Feature: admin-panel/
 📄 Files Generated (8 total prompts):
 
-admin-panel-part1-v1.md (6 prompts):
+prompt-v1-part1.md (6 prompts):
   • Layout: Admin Panel
   • Component: Navigation
   • Component: Dashboard
@@ -363,9 +400,16 @@ admin-panel-part1-v1.md (6 prompts):
   • Component: Roles
   • Component: Settings
 
-admin-panel-part2-v1.md (2 prompts):
+prompt-v1-part2.md (2 prompts):
   • Component: Audit Logs
   • Component: Notifications
+
+Directory structure:
+  .google-stitch/admin-panel/
+  ├── prompt-v1-part1.md
+  ├── prompt-v1-part2.md
+  ├── exports/
+  └── wireframes/
 
 ⚠️ Stitch Limit: Use part1 first, then part2 in separate session.
 ```

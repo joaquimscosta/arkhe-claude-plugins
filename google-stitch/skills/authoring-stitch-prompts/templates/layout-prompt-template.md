@@ -117,10 +117,18 @@ Before finalizing layout prompt:
 - Multiple regions (header + content, sidebar + main)
 - Layout structure keywords (grid, sections, panels, areas)
 
-**Single-file format with --- separators:**
+**Feature directory format with --- separators:**
 
-Each page/feature is saved as **one Markdown file** containing layout + all components:
+Each page/feature gets **its own directory** containing prompt file and artifact subdirectories:
 
+```
+.google-stitch/{feature}/
+├── prompt-v{version}.md      (layout + all components with --- separators)
+├── exports/                  (Stitch-generated outputs)
+└── wireframes/               (pre-work mockups)
+```
+
+**Prompt file content:**
 ```markdown
 <!-- Layout: {Title Case Name} -->
 [layout prompt content]
@@ -137,14 +145,16 @@ Each page/feature is saved as **one Markdown file** containing layout + all comp
 ```
 
 **File naming:**
-- Standard (≤6 prompts): `.google-stitch/prompts/{page-slug}-v{version}.md`
-- Split files (>6 prompts): `.google-stitch/prompts/{page-slug}-part{N}-v{version}.md`
+- Feature directory: `.google-stitch/{feature}/` (semantic name, kebab-case)
+- Standard (≤6 prompts): `{feature}/prompt-v{version}.md`
+- Split files (>6 prompts): `{feature}/prompt-v{version}-part{N}.md`
+- Subdirectories: `exports/` and `wireframes/` (pre-created)
 
 **Examples:**
-- `analytics-dashboard-v1.md` (layout + 3 components = 4 prompts)
-- `landing-page-v1.md` (layout + 2 components = 3 prompts)
-- `admin-panel-part1-v1.md` (layout + 5 components = 6 prompts)
-- `admin-panel-part2-v1.md` (2 remaining components = 2 prompts)
+- `dashboard/prompt-v1.md` (layout + 3 components = 4 prompts)
+- `landing/prompt-v1.md` (layout + 2 components = 3 prompts)
+- `admin-panel/prompt-v1-part1.md` (layout + 5 components = 6 prompts)
+- `admin-panel/prompt-v1-part2.md` (2 remaining components = 2 prompts)
 
 **6-Prompt Stitch limit:**
 - Stitch can generate maximum 6 screens/components at once
@@ -153,6 +163,12 @@ Each page/feature is saved as **one Markdown file** containing layout + all comp
 - Subsequent parts contain max 6 components each
 - Users must process part files sequentially in Stitch
 
+**Directory structure benefits:**
+- All feature artifacts grouped together (prompts, exports, wireframes)
+- Version history maintained in same directory
+- Pre-created subdirectories ready for design files
+- Natural workflow: generate prompts → run in Stitch → save exports
+
 **Relationship to component prompts:**
 - All prompts for a page/feature combined in one file
 - Layout prompt = Foundation/wireframe (first section)
@@ -160,3 +176,4 @@ Each page/feature is saved as **one Markdown file** containing layout + all comp
 - Each section independently usable when separated by `---`
 - No cross-references between sections
 - File can be copy-pasted directly into Stitch
+- Exports and wireframes stored alongside prompts for easy reference
