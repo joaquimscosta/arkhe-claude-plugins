@@ -81,7 +81,7 @@ Optimize for mobile-first (320px minimum), full keyboard navigation, screen read
 ```
 
 **File saved as:**
-`toolbar-v1.md`
+`.google-stitch/toolbar/prompt-v1.md`
 
 **Key Differences:**
 - ❌ Removed: JWT, Supabase, API details, rate limiting, `<15kb bundle`, `<100ms feedback`, browser versions (`Last 2 versions...`), `WCAG 2.1 AA`, `3:1 contrast minimum`, `(iOS/Android)`, "graceful degradation", "clipboard action"

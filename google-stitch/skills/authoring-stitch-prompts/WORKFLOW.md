@@ -226,7 +226,7 @@ See templates/layout-prompt-template.md for layout prompt structure and examples
 2. Default to English if no language specified.
 3. For multi-language requests (multiple languages for same design):
    - Recommend separate prompts per language
-   - Suggest naming convention: `{component-slug}-{lang-code}-v{version}.md` (e.g., `login-form-es-v1.md`, `login-form-fr-v1.md`)
+   - Suggest naming convention: `{feature}/prompt-{lang-code}-v{version}.md` (e.g., `login-form/prompt-es-v1.md`, `login-form/prompt-fr-v1.md`)
 
 ## 3. Structure Output
 1. Follow template sections:

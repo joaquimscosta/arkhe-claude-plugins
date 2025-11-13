@@ -143,7 +143,7 @@ Following the layout prompt, separate component sections provide detailed specif
 - Revenue Chart: Detailed spec for interactive line chart with tooltips, annotations
 - Subscription Activity: Detailed spec for activity table with avatars, status badges
 
-All sections combined in single file `analytics-dashboard-v1.md`, separated by `---`.
+All sections combined in single file `dashboard/prompt-v1.md`, separated by `---`.
 
 ### When to Generate Layout Prompts
 

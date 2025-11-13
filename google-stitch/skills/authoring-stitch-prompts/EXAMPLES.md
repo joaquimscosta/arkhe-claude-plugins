@@ -155,14 +155,22 @@ Claude should automatically invoke the **authoring-stitch-prompts** Skill and re
 > Optimize for desktop first, single-column layout on mobile.
 
 **File Created:**
-`.google-stitch/prompts/dashboard-v1.md`
+`.google-stitch/dashboard/prompt-v1.md`
+
+**Directory Created:**
+```
+.google-stitch/dashboard/
+├── prompt-v1.md
+├── exports/
+└── wireframes/
+```
 
 **Note:**
 ```
 ---
 Additional prompts needed:
 2. Settings page: User preferences with profile, notifications, billing
-   → Will save as: settings-v1.md
+   → Will save as: settings/prompt-v1.md
 ```
 
 **Optimized Prompt 2 (Settings):**
@@ -172,7 +180,15 @@ Additional prompts needed:
 > Optimize for desktop, stack sections on mobile.
 
 **File Created:**
-`.google-stitch/prompts/settings-v1.md`
+`.google-stitch/settings/prompt-v1.md`
+
+**Directory Created:**
+```
+.google-stitch/settings/
+├── prompt-v1.md
+├── exports/
+└── wireframes/
+```
 
 ---
 
@@ -211,9 +227,11 @@ Additional prompts needed:
 > Optimize for mobile-first responsive layout.
 
 **Files Created:**
-- `.google-stitch/prompts/reading-pane-v1.md`
-- `.google-stitch/prompts/comments-v1.md`
-- `.google-stitch/prompts/related-grid-v1.md`
+- `.google-stitch/reading-pane/prompt-v1.md`
+- `.google-stitch/comments/prompt-v1.md`
+- `.google-stitch/related-grid/prompt-v1.md`
+
+**Directories Created:** Each feature gets its own directory with exports/ and wireframes/ subdirectories.
 
 ---
 
@@ -235,7 +253,15 @@ Additional prompts needed:
 > Optimize for mobile-first, full keyboard navigation.
 
 **File Created:**
-`.google-stitch/prompts/login-form-v1.md`
+`.google-stitch/login/prompt-v1.md`
+
+**Directory Created:**
+```
+.google-stitch/login/
+├── prompt-v1.md
+├── exports/
+└── wireframes/
+```
 
 ---
 
@@ -251,9 +277,12 @@ Additional prompts needed:
 > Optimize for mobile-first, full keyboard navigation.
 
 **File Created:**
-`.google-stitch/prompts/login-form-es-v1.md`
+`.google-stitch/login/prompt-es-v1.md`
 
-**Note:** Technical UI terms (button, input field, card) remain in English—only user-facing labels are translated.
+**Note:**
+- Technical UI terms (button, input field, card) remain in English—only user-facing labels are translated.
+- Localized versions use language suffix: `prompt-es-v1.md`, `prompt-fr-v1.md`, etc.
+- All versions stored in same feature directory (login/)
 
 ---
 
@@ -268,7 +297,16 @@ Additional prompts needed:
 > Ensure image coordinates with the deep blue accent theme and modern aesthetic.
 
 **File Updated:**
-`.google-stitch/prompts/dashboard-v2.md`
+`.google-stitch/dashboard/prompt-v2.md`
+
+**Note:** Auto-increment detected existing prompt-v1.md, created prompt-v2.md in same directory. Both versions coexist:
+```
+.google-stitch/dashboard/
+├── prompt-v1.md      ← Original version
+├── prompt-v2.md      ← Updated version
+├── exports/
+└── wireframes/
+```
 
 ---
 
@@ -281,9 +319,11 @@ Additional prompts needed:
 > Maintain existing thumbnail sizes and grid layout.
 
 **File Updated:**
-`.google-stitch/prompts/user-grid-v2.md`
+`.google-stitch/user-grid/prompt-v2.md`
 
-**Note:** Image modifications should be specific (which images), precise (what changes), and coordinated with the overall theme.
+**Note:**
+- Image modifications should be specific (which images), precise (what changes), and coordinated with the overall theme.
+- Version history maintained in same directory for easy comparison
 
 ---
 
@@ -301,7 +341,15 @@ Additional prompts needed:
 **Note:** Stitch accepts minimal inputs—adjectives like "professional" guide visual direction when specific details aren't provided. The skill infers common patterns for the app type.
 
 **File Created:**
-`.google-stitch/prompts/pm-dashboard-v1.md`
+`.google-stitch/pm-dashboard/prompt-v1.md`
+
+**Directory Created:**
+```
+.google-stitch/pm-dashboard/
+├── prompt-v1.md
+├── exports/
+└── wireframes/
+```
 
 ---
 
@@ -315,7 +363,7 @@ Additional prompts needed:
 > Maintain all other colors, layout, and typography.
 
 **File Updated:**
-`.google-stitch/prompts/login-form-v2.md`
+`.google-stitch/login-form/prompt-v2.md`
 
 ---
 
@@ -327,7 +375,7 @@ Additional prompts needed:
 > Keep all other header elements (notifications, user avatar) in current positions.
 
 **File Updated:**
-`.google-stitch/prompts/header-v3.md`
+`.google-stitch/header/prompt-v3.md`
 
 **Note:** Micro-refinements focus on single, specific changes while explicitly maintaining all other existing elements.
 
