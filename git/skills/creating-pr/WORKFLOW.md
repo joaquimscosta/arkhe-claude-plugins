@@ -58,10 +58,10 @@ cd /Users/you/projects/myapp/plugins/arkhe-claude-plugins/
 
 **Direct Mode** (with scope):
 ```bash
-git/skills/pr/scripts/pr.sh root
+/create-pr root
 # Force PR for root repository
 
-git/skills/pr/scripts/pr.sh arkhe-claude-plugins
+/create-pr arkhe-claude-plugins
 # Force PR for specific submodule
 ```
 
@@ -410,7 +410,7 @@ Next steps:
 
 **Command**:
 ```bash
-git/skills/pr/scripts/pr.sh
+/create-pr
 ```
 
 **Workflow**:
@@ -459,7 +459,7 @@ URL: https://github.com/user/myapp/pull/43
 
 **Command**:
 ```bash
-git/skills/pr/scripts/pr.sh
+/create-pr
 ```
 
 **Workflow**:
@@ -495,7 +495,7 @@ https://github.com/user/myapp/pull/43
 
 **Command**:
 ```bash
-git/skills/pr/scripts/pr.sh --draft
+/create-pr --draft
 ```
 
 **Workflow**:
@@ -519,7 +519,7 @@ Convert to ready for review when done:
 
 **Command**:
 ```bash
-git/skills/pr/scripts/pr.sh --base develop
+/create-pr --base develop
 ```
 
 **Workflow**:
@@ -543,7 +543,7 @@ Note: Merging will update develop branch, not main
 **Command**:
 ```bash
 cd plugins/arkhe-claude-plugins/
-../../git/skills/pr/scripts/pr.sh
+../..//create-pr
 ```
 
 **Workflow**:
@@ -623,7 +623,7 @@ Explicitly set repository (useful for forks)
 
 **Override**:
 ```bash
-git/skills/pr/scripts/pr.sh --base develop
+/create-pr --base develop
 ```
 
 ### Custom PR Template

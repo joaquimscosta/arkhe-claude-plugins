@@ -12,6 +12,7 @@ Tutorial creation and educational content extraction toolkit for Claude Code.
 
 - **extracting-udemy**: Extract complete Udemy course content including video transcripts, articles, quizzes, downloadable resources (PDFs, code files), and external links. Auto-invoked when Udemy URLs are provided.
 - **extracting-youtube**: Extract YouTube video transcripts and metadata including video details, playlist structure, and English captions. Auto-invoked when YouTube URLs are provided.
+- **reveal-slidegen**: Generate polished Reveal.js v5 HTML slide decks (with Mermaid diagrams, speaker notes, and syntax-highlighted code) from structured tutorial outlines, slide plans, or narration scripts.
 
 ### Commands
 

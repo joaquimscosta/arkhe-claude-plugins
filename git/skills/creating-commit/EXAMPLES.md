@@ -14,7 +14,7 @@ Adding a new authentication feature in the root repository.
 
 ### Command
 ```bash
-git/skills/commit/scripts/commit.sh
+/commit
 ```
 
 ### Execution
@@ -66,7 +66,7 @@ Fixing a null pointer exception in Kotlin code.
 
 ### Command
 ```bash
-git/skills/commit/scripts/commit.sh
+/commit
 ```
 
 ### Execution
@@ -108,7 +108,7 @@ Updating documentation in a plugin submodule.
 
 ### Command
 ```bash
-git/skills/commit/scripts/commit.sh arkhe-claude-plugins
+/commit arkhe-claude-plugins
 ```
 
 ### Execution
@@ -118,8 +118,8 @@ git/skills/commit/scripts/commit.sh arkhe-claude-plugins
 **Changes**:
 ```
 Submodule: arkhe-claude-plugins
-  M git/skills/commit/SKILL.md
-  A git/skills/commit/WORKFLOW.md
+  M git/skills/creating-commit/SKILL.md
+  A git/skills/creating-commit/WORKFLOW.md
 ```
 
 **Pre-commit**: None required (documentation)
@@ -148,7 +148,7 @@ Commit to submodule, then update the submodule reference in root.
 
 ### Command
 ```bash
-git/skills/commit/scripts/commit.sh
+/commit
 ```
 
 ### Execution
@@ -201,7 +201,7 @@ Documentation-only changes, want to skip all checks for speed.
 
 ### Command
 ```bash
-git/skills/commit/scripts/commit.sh --no-verify
+/commit --no-verify
 ```
 
 ### Execution
@@ -242,7 +242,7 @@ Before pushing to production, want comprehensive checks.
 
 ### Command
 ```bash
-git/skills/commit/scripts/commit.sh --full-verify
+/commit --full-verify
 ```
 
 ### Execution
@@ -293,7 +293,7 @@ TypeScript compilation error prevents commit.
 
 ### Command
 ```bash
-git/skills/commit/scripts/commit.sh
+/commit
 ```
 
 ### Execution
@@ -334,7 +334,7 @@ authenticate(Number(userId));  // Convert to number
 
 **Option 2: Skip verification** (if confident)
 ```bash
-git/skills/commit/scripts/commit.sh --no-verify
+/commit --no-verify
 ```
 
 ---
@@ -346,7 +346,7 @@ Committing changes to a Rust project.
 
 ### Command
 ```bash
-git/skills/commit/scripts/commit.sh
+/commit
 ```
 
 ### Execution
@@ -391,7 +391,7 @@ Changes in both root and submodule, need to choose which to commit.
 
 ### Command
 ```bash
-git/skills/commit/scripts/commit.sh
+/commit
 ```
 
 ### Execution
@@ -405,7 +405,7 @@ Multiple repositories with changes detected:
    - src/config/database.ts
 
 2. arkhe-claude-plugins (submodule)
-   - git/skills/commit/SKILL.md
+   - git/skills/creating-commit/SKILL.md
 
 Select repository to commit (1 or 2): 2
 ```
@@ -433,7 +433,7 @@ Commit directly to root, ignoring submodule changes.
 
 ### Command
 ```bash
-git/skills/commit/scripts/commit.sh root
+/commit root
 ```
 
 ### Execution
@@ -477,7 +477,7 @@ git pull
 vim src/feature.ts
 
 # Commit with checks (interactive)
-git/skills/commit/scripts/commit.sh
+/commit
 
 # Repeat throughout day
 ```
@@ -489,14 +489,14 @@ git/skills/commit/scripts/commit.sh
 vim README.md docs/guide.md
 
 # Fast commit (skip checks)
-git/skills/commit/scripts/commit.sh --no-verify
+/commit --no-verify
 ```
 
 ### Pre-Production Checklist
 
 ```bash
 # Final commit before release
-git/skills/commit/scripts/commit.sh --full-verify
+/commit --full-verify
 
 # Ensure all tests pass before pushing
 git push origin main
@@ -507,11 +507,11 @@ git push origin main
 ```bash
 # Work in submodule
 cd plugins/arkhe-claude-plugins
-vim git/skills/commit/SKILL.md
+vim git/skills/creating-commit/SKILL.md
 
 # Commit submodule
 cd ../..
-git/skills/commit/scripts/commit.sh arkhe-claude-plugins
+/commit arkhe-claude-plugins
 
 # Update root reference
 # (prompted automatically)

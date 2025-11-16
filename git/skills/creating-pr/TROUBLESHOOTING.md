@@ -124,7 +124,7 @@ Choose option 2 to open PR in browser
 gh pr close 42
 
 # Create new PR
-git/skills/pr/scripts/pr.sh
+/create-pr
 ```
 
 **Note**: Updating is usually better than creating a new PR
@@ -204,7 +204,7 @@ git branch -r
 **Solution B: Use Correct Base Branch**
 ```bash
 # If trying to use 'develop' but it doesn't exist, use 'main'
-git/skills/pr/scripts/pr.sh --base main
+/create-pr --base main
 ```
 
 **Solution C: Create Base Branch First** (If Needed)
@@ -218,7 +218,7 @@ git push -u origin develop
 
 # Now create PR to develop
 git checkout feat/003-user-auth
-git/skills/pr/scripts/pr.sh --base develop
+/create-pr --base develop
 ```
 
 ---
@@ -343,7 +343,7 @@ gh --version
 
 **Symptom**:
 ```
-bash: git/skills/pr/scripts/pr.sh: No such file or directory
+bash: /create-pr: No such file or directory
 ```
 
 **Causes & Solutions**:
@@ -357,7 +357,7 @@ pwd
 cd /path/to/your/project
 
 # Verify file exists
-ls -la git/skills/pr/scripts/pr.sh
+ls -la /create-pr
 ```
 
 **Solution B: Reinstall Plugin**
@@ -368,8 +368,8 @@ ls -la git/skills/pr/scripts/pr.sh
 
 **Solution C: Fix Permissions**
 ```bash
-chmod +x git/skills/pr/scripts/pr.sh
-chmod +x git/skills/pr/scripts/common.sh
+chmod +x /create-pr
+Skills are loaded automatically - no manual setup needed
 ```
 
 ---
@@ -401,7 +401,7 @@ curl -I https://github.com
 git remote set-url origin git@github.com:user/repo.git
 
 # Retry
-git/skills/pr/scripts/pr.sh
+/create-pr
 ```
 
 **Solution C: Increase Timeout**
@@ -433,7 +433,7 @@ git pull origin feat/003-user-auth
 git push
 
 # Then create PR
-git/skills/pr/scripts/pr.sh
+/create-pr
 ```
 
 **Solution B: Rebase** (Cleaner history)
@@ -443,7 +443,7 @@ git pull --rebase origin feat/003-user-auth
 git push --force-with-lease
 
 # Then create PR
-git/skills/pr/scripts/pr.sh
+/create-pr
 ```
 
 **Solution C: Force Push** (Use with caution)
@@ -452,7 +452,7 @@ git/skills/pr/scripts/pr.sh
 git push --force origin feat/003-user-auth
 
 # Then create PR
-git/skills/pr/scripts/pr.sh
+/create-pr
 ```
 
 ---
@@ -528,7 +528,7 @@ gh pr list
 gh pr status
 
 # Verify script
-ls -la git/skills/pr/scripts/pr.sh
+ls -la /create-pr
 ```
 
 ### Debugging
@@ -536,7 +536,7 @@ ls -la git/skills/pr/scripts/pr.sh
 **Enable Verbose Output**:
 ```bash
 # Run with debugging
-bash -x git/skills/pr/scripts/pr.sh
+bash -x /create-pr
 ```
 
 **Check GitHub CLI**:

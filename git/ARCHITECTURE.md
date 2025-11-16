@@ -2,46 +2,47 @@
 
 ## Overview
 
-The Git plugin uses a **Hybrid Commands + Skills** pattern that aligns with Claude Code's official plugin system documentation.
+The Git plugin uses a **Commands + Skills** pattern with inline Bash workflows that aligns with Claude Code's official plugin system documentation.
 
 ## Naming Convention
 
 ### Hybrid Approach: Simple Directories + Descriptive Names
 
-**Directory Names**: Simple, clean (`commit/`, `pr/`, `branch/`, `changelog/`)
-- Brief and concise
-- No redundancy with parent directory structure (`git/skills/`)
-- Matches existing `changelog/` pattern
+**Directory Names**: Match skill names using gerund form (`creating-commit/`, `creating-pr/`, `creating-branch/`, `generating-changelog/`)
+- Matches YAML `name` field exactly
+- Follows official Anthropic `skill-creator` pattern
+- Uses gerund form (verb + -ing) for clarity
+- Improves discoverability and consistency
 
-**Skill Names** (YAML frontmatter): Descriptive with context (`Git Commit Workflow`)
-- Includes "Git" prefix for clarity when Claude verbalizes
-- Natural reading: "I'm using the Git Commit Workflow"
-- Provides plugin context without directory redundancy
+**Skill Names** (YAML frontmatter): Gerund form describing the action
+- Uses verb + -ing format (creating, generating, etc.)
+- Aligns with best practices documentation
+- Descriptive and action-oriented
 
 **Example**:
 ```yaml
-# Directory: git/skills/commit/
+# Directory: git/skills/creating-commit/
 # Skill name in SKILL.md:
 ---
-name: Git Commit Workflow
+name: creating-commit
 ---
 ```
 
-This gives us the best of both approaches:
-- ✅ Clean, brief directory structure
-- ✅ Descriptive skill names for user communication
-- ✅ Plugin context clear in skill names
-- ✅ No path redundancy (`git/skills/git-commit/` ❌)
+This follows best practices:
+- ✅ Directory name matches YAML name exactly
+- ✅ Gerund form (verb + -ing) for clarity
+- ✅ Follows official Anthropic pattern
+- ✅ Consistent with other plugins in arkhe-claude-plugins
 
 ## Architecture Pattern
 
 ### Why This Pattern?
 
 According to Claude Code documentation:
-- **Commands**: Simple prompts with optional inline bash commands
-- **Skills**: Complex capabilities with scripts and multiple files
+- **Commands**: Simple prompts that delegate to skills
+- **Skills**: Complex capabilities with inline Bash workflows and supporting documentation
 
-The git plugin requires complex bash scripts (10KB+), making Skills the appropriate choice.
+The git plugin requires complex git workflows with multi-repo support, making Skills with inline Bash the appropriate choice.
 
 ### Structure
 
@@ -52,24 +53,27 @@ git/
 │   ├── create-pr.md       # /create-pr command
 │   ├── create-branch.md   # /create-branch command
 │   └── changelog.md       # /changelog command
-├── skills/                # Skills with scripts
-│   ├── commit/            # Simple directory name
-│   │   ├── SKILL.md       # Skill name: "Git Commit Workflow"
-│   │   └── scripts/
-│   │       ├── commit.sh  # Main workflow script
-│   │       └── common.sh  # Shared utilities
-│   ├── pr/                # Simple directory name
-│   │   ├── SKILL.md       # Skill name: "Git PR Workflow"
-│   │   └── scripts/
-│   │       ├── pr.sh
-│   │       └── common.sh
-│   ├── branch/            # Simple directory name
-│   │   ├── SKILL.md       # Skill name: "Git Branch Workflow"
-│   │   └── scripts/
-│   │       ├── branch.sh
-│   │       └── common.sh
-│   └── changelog/         # Simple directory name
-│       └── SKILL.md       # Skill name: "Git Changelog Generation"
+├── skills/                # Skills with inline Bash workflows
+│   ├── creating-commit/
+│   │   ├── SKILL.md           # Inline Bash workflow (414 lines)
+│   │   ├── WORKFLOW.md        # Detailed step-by-step process
+│   │   ├── EXAMPLES.md        # Real-world usage examples
+│   │   └── TROUBLESHOOTING.md # Common issues and solutions
+│   ├── creating-pr/
+│   │   ├── SKILL.md           # Inline Bash workflow (458 lines)
+│   │   ├── WORKFLOW.md
+│   │   ├── EXAMPLES.md
+│   │   └── TROUBLESHOOTING.md
+│   ├── creating-branch/
+│   │   ├── SKILL.md           # Inline Bash workflow (370 lines)
+│   │   ├── WORKFLOW.md
+│   │   ├── EXAMPLES.md
+│   │   └── TROUBLESHOOTING.md
+│   └── generating-changelog/
+│       ├── SKILL.md           # Inline Bash workflow (217 lines)
+│       ├── WORKFLOW.md
+│       ├── EXAMPLES.md
+│       └── TROUBLESHOOTING.md
 └── README.md
 ```
 
@@ -92,19 +96,29 @@ Use the **Git Commit Workflow** skill to execute the commit workflow with argume
 ```
 
 ### 3. Skill Execution
-The skill's SKILL.md file instructs Claude to execute the bash script:
+The skill's SKILL.md file contains inline Bash workflow that Claude executes:
 
 ```markdown
-# skills/commit/SKILL.md
+# skills/creating-commit/SKILL.md
 ---
-name: Git Commit Workflow
+name: creating-commit
 ---
-Execute the commit workflow by running the bash script:
-git/skills/commit/scripts/commit.sh $ARGUMENTS
+## Commit Workflow Steps
+
+### Step 1: Detect Repositories with Changes
+```bash
+# Find monorepo root (works from submodules too)
+if SUPERPROJECT=$(git rev-parse --show-superproject-working-tree 2>/dev/null)...
 ```
 
-### 4. Script Processing
-Claude uses the Bash tool to execute the script, which handles all complex logic.
+### Step 2: Select Target Repository
+...
+
+(Complete inline workflow in SKILL.md)
+```
+
+### 4. Workflow Execution
+Claude executes the inline Bash commands using the Bash tool, following the step-by-step workflow in SKILL.md.
 
 ## Key Principles
 
@@ -115,16 +129,16 @@ Claude uses the Bash tool to execute the script, which handles all complex logic
 - Maintain explicit user control (not auto-invoked)
 
 ### 2. Skills = Implementation
-- Contain complex logic and scripts
-- Scripts travel with the plugin when installed
-- Can include multiple supporting files
+- Contain inline Bash workflows in SKILL.md
+- Progressive disclosure via WORKFLOW.md, EXAMPLES.md, TROUBLESHOOTING.md
+- All logic visible and maintainable in markdown files
 - Follow Claude Code Skills documentation pattern
 
-### 3. Script Organization
-- Each skill has its own scripts/ directory
-- Common utilities can be copied or shared
-- Scripts use absolute path resolution internally
-- Executable permission required (`chmod +x`)
+### 3. Workflow Organization
+- Each skill contains complete workflow in SKILL.md
+- SKILL.md stays under 500-line official limit
+- Supporting docs loaded on-demand
+- Bash commands executed via Claude's Bash tool
 
 ## Installation Behavior
 
@@ -132,46 +146,45 @@ When a user installs the git plugin via `/plugin install git@arkhe-claude-plugin
 
 1. **Plugin files are stored** in Claude Code's plugin storage
 2. **Commands become available** as slash commands (e.g., `/commit`)
-3. **Skills are available** for Claude to invoke
-4. **Scripts travel with the plugin** (no manual copying needed)
+3. **Skills are loaded** with inline Bash workflows
+4. **Documentation available** on-demand (WORKFLOW.md, EXAMPLES.md)
 5. **Works immediately** after installation and restart
 
 ## Why This Pattern?
 
-### The Old Approach (What We Avoided)
+### The Evolution
 
-Some early attempts used inline script references in commands:
-
+**Early Approach: External Scripts**
 ```markdown
-# commands/commit.md
-!.claude/scripts/commit.sh $ARGUMENTS
+# skills/creating-commit/scripts/commit.sh
+#!/usr/bin/env bash
+# 848 lines of bash code
 ```
 
-**Problems with this approach:**
-- `.claude/scripts/` doesn't exist after plugin install
-- No documented mechanism to distribute scripts
-- Only works if users manually copy scripts
-- Incompatible with Claude Code plugin system
+**Problems:**
+- 2,557 lines of bash scripts to maintain
+- 1,164 lines of duplicated common.sh utilities
+- Hidden logic not visible in SKILL.md
+- Harder to modify and understand
 
-### The Correct Approach (Current Implementation)
-
-**Commands delegate to Skills:**
+**Current Approach: Inline Bash Workflows**
 ```markdown
-# commands/commit.md
-Use the **Git Commit Workflow** skill with arguments: $ARGUMENTS
+# skills/creating-commit/SKILL.md (414 lines)
+## Commit Workflow Steps
+
+### Step 1: Detect Repositories
+```bash
+if SUPERPROJECT=$(git rev-parse --show-superproject-working-tree...
+```
+...
 ```
 
-**Skills contain scripts:**
-```markdown
-# skills/commit/SKILL.md
-Execute: git/skills/commit/scripts/commit.sh $ARGUMENTS
-```
-
-**Why this works:**
-- Skills are the official way to include scripts in plugins
-- Scripts are bundled with the plugin during installation
-- Follows documented Claude Code patterns
-- Works identically in development and production
+**Why this works better:**
+- All logic visible in SKILL.md files
+- No code duplication (eliminated 1,164 lines)
+- Easier to maintain and modify
+- Progressive disclosure keeps SKILL.md under 500-line limit
+- Follows changelog skill pattern (already script-free)
 
 ## Benefits of This Architecture
 
@@ -188,7 +201,8 @@ Execute: git/skills/commit/scripts/commit.sh $ARGUMENTS
 
 ### ✅ Maintainable
 - Clear separation: Commands (UX) vs Skills (logic)
-- Scripts organized by function
+- All logic visible in SKILL.md files
+- No hidden scripts or duplicated code
 - Easy to test and debug
 - Scalable for new commands
 

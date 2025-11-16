@@ -122,16 +122,16 @@ Root repository (myapp):
   - No changes
 
 Submodule (arkhe-claude-plugins):
-  M git/skills/commit/SKILL.md
-  M git/skills/commit/scripts/commit.sh
-  ?? git/skills/commit/WORKFLOW.md
+  M git/skills/creating-commit/SKILL.md
+  M git/skills/creating-commit/WORKFLOW.md
+  M git/skills/creating-commit/EXAMPLES.md
 ```
 
 **Analysis**:
 - Repository: `arkhe-claude-plugins` (submodule)
-- File types: `.md` (3 files), `.sh` (1 file)
-- Pre-commit checks: None required (documentation + shell script)
-- Commit type suggestion: `docs` or `feat`
+- File types: `.md` (3 files)
+- Pre-commit checks: None required (documentation)
+- Commit type suggestion: `docs`
 
 ---
 
@@ -178,14 +178,14 @@ cargo check
 
 **Standard Mode** (default):
 ```bash
-git/skills/commit/scripts/commit.sh
+/commit
 ```
 - Runs checks for modified file types only
 - Fast feedback loop
 
 **Full Verification** (`--full-verify`):
 ```bash
-git/skills/commit/scripts/commit.sh --full-verify
+/commit --full-verify
 ```
 - Runs complete build process
 - Backend + Frontend verification
@@ -193,7 +193,7 @@ git/skills/commit/scripts/commit.sh --full-verify
 
 **Skip Verification** (`--no-verify`):
 ```bash
-git/skills/commit/scripts/commit.sh --no-verify
+/commit --no-verify
 ```
 - Skips all pre-commit checks
 - Faster commit process
@@ -285,7 +285,7 @@ Generate conventional commit messages with appropriate type and scope.
 
 **Example**:
 ```
-Modified: git/skills/commit/SKILL.md
+Modified: git/skills/creating-commit/SKILL.md
 Scope: commit
 Type: docs
 Message: docs(commit): update skill documentation
@@ -309,7 +309,7 @@ Message: docs(commit): update skill documentation
 
 ### Interactive Approval
 
-**Script Presents**:
+**Claude Presents**:
 ```
 Suggested commit message:
 ────────────────────────────────
@@ -326,7 +326,7 @@ Proceed with this commit? (y/n):
 **User Options**:
 - `y` → Commit with this message
 - `n` → Abort
-- `e` → Edit message (opens editor)
+- Custom message → Provide alternative commit message
 
 ---
 
@@ -355,7 +355,7 @@ Handle submodule reference updates in root repository.
 
 ### Update Prompt
 
-**Script Asks**:
+**Claude Asks**:
 ```
 ✅ Committed in submodule: arkhe-claude-plugins
 
@@ -367,10 +367,10 @@ Would you like to update the submodule reference in root? (y/n):
 
 **Yes** (`y`):
 ```bash
-# Automatic execution:
+# Claude executes:
 cd /root
 git add plugins/arkhe-claude-plugins
-git commit -m "chore: update arkhe-claude-plugins submodule
+git commit -m "build: update arkhe-claude-plugins submodule
 
 Updated to include latest changes:
 - docs(commit): add workflow documentation"
@@ -386,19 +386,19 @@ Updated to include latest changes:
 
 **Option 1**: Commit to submodule first
 ```bash
-git/skills/commit/scripts/commit.sh arkhe-claude-plugins
+/commit arkhe-claude-plugins
 ```
 → Then prompted to update root
 
 **Option 2**: Commit to root first
 ```bash
-git/skills/commit/scripts/commit.sh root
+/commit root
 ```
 → Submodule changes remain uncommitted
 
 **Option 3**: Interactive mode
 ```bash
-git/skills/commit/scripts/commit.sh
+/commit
 ```
 → Choose which repository to commit first
 
@@ -456,7 +456,7 @@ Root repository: myapp
   - Submodule has changes
 
 Submodule: arkhe-claude-plugins
-  - Modified: git/skills/commit/SKILL.md
+  - Modified: git/skills/creating-commit/SKILL.md
 ```
 
 **Step 2: Interactive Selection**
@@ -499,7 +499,7 @@ chore: update arkhe-claude-plugins submodule
 
 **Command**:
 ```bash
-git/skills/commit/scripts/commit.sh --no-verify
+/commit --no-verify
 ```
 
 **Workflow**:
@@ -519,28 +519,28 @@ Step 5: Commit ✅
 
 ### Absolute Path Resolution
 
-**The script works from any directory**:
+**The skill works from any directory**:
 
 ```bash
 # From root
 cd /Users/you/projects/myapp
-git/skills/commit/scripts/commit.sh
+/commit
 
 # From subdirectory
 cd /Users/you/projects/myapp/src/auth
-../../git/skills/commit/scripts/commit.sh
+/commit
 
 # From submodule
 cd /Users/you/projects/myapp/plugins/arkhe-claude-plugins
-../../git/skills/commit/scripts/commit.sh
+/commit
 ```
 
-All paths are resolved absolutely, ensuring consistent behavior.
+All paths are resolved absolutely using git commands, ensuring consistent behavior.
 
 ### Branch Protection Awareness
 
 **Protected Branches** (main, master, production):
-- Script warns before committing
+- Skill warns before committing
 - Suggests creating feature branch
 - Prevents accidental commits to protected branches
 
@@ -561,28 +561,22 @@ All paths are resolved absolutely, ensuring consistent behavior.
 
 ## Configuration
 
-### Environment Variables
+### Customizing Pre-commit Checks
 
-**GIT_COMMIT_NO_VERIFY** (optional):
-```bash
-export GIT_COMMIT_NO_VERIFY=1
-```
-Always skip pre-commit checks
+The skill automatically detects and runs appropriate checks based on file types. To customize:
 
-**GIT_COMMIT_FULL_VERIFY** (optional):
-```bash
-export GIT_COMMIT_FULL_VERIFY=1
-```
-Always run full verification
-
-### Custom Pre-commit Commands
-
-Edit `git/skills/commit/scripts/commit.sh` to customize checks:
+Edit `git/skills/creating-commit/SKILL.md` to add custom pre-commit commands:
 
 ```bash
-# Add custom Python linting
-if [[ $HAS_PYTHON_FILES == true ]]; then
-    flake8 --max-line-length=100 || exit 1
+# Example: Add custom Python linting
+if echo "$CHANGED_FILES" | grep -q '\.py$'; then
+    echo "Running Python checks..."
+    if [ -f "$REPO_PATH/requirements.txt" ]; then
+        flake8 --max-line-length=100 || {
+            echo "❌ Python linting failed" >&2
+            exit 1
+        }
+    fi
 fi
 ```
 
@@ -590,7 +584,7 @@ fi
 
 ## Important: No Claude Code Footer Policy
 
-**The commit.sh script generates clean commit messages without any attribution.**
+**The skill generates clean commit messages without any attribution.**
 
 ⚠️ **CRITICAL CONSTRAINT**: Never add Claude Code footers or attribution to commit messages.
 
@@ -604,9 +598,6 @@ fi
 - Commit messages should be clean and professional
 - Attribution pollutes version control history
 
-**Runtime Verification**:
-The `commit.sh` script automatically verifies that no footer was added to commit messages. If detected, the script will fail with an error message.
-
 **Example of Correct Commit**:
 ```
 feat(auth): add OAuth2 login support
@@ -615,7 +606,7 @@ Implemented OAuth2 authentication flow with token refresh
 and secure session management.
 ```
 
-**Example of Incorrect Commit** (will be rejected):
+**Example of Incorrect Commit** (NEVER do this):
 ```
 feat(auth): add OAuth2 login support
 
@@ -631,11 +622,11 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 
 ## Best Practices
 
-1. **Run checks before committing**: Let the script detect and run appropriate checks
-2. **Use meaningful commit messages**: The script generates good defaults, but customize if needed
+1. **Run checks before committing**: Let Claude detect and run appropriate checks
+2. **Use meaningful commit messages**: Claude generates good defaults, but customize if needed
 3. **Commit frequently**: Small, focused commits are easier to review
 4. **Keep submodules in sync**: Always update root when submodule changes
-5. **Review staged changes**: Check `git status` before running commit script
+5. **Review staged changes**: Check `git status` before running commit
 6. **Use scoped commits**: Commit to specific repository when working on mixed changes
 
 ---
