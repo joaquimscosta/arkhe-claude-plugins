@@ -33,8 +33,8 @@ Generate professional changelogs from git commit history with automatic categori
 
 ## Implementation
 
-Invoke the Skill tool with skill name "git:changelog" and arguments: `$ARGUMENTS`
+Invoke the Skill tool with skill name "git:generating-changelog" and arguments: `$ARGUMENTS`
 
 The skill will handle git history analysis, commit categorization, semantic versioning detection, and multiple output formats.
 
-For detailed documentation, see `git/skills/changelog/SKILL.md`.
+For detailed documentation, see `git/skills/generating-changelog/SKILL.md`.

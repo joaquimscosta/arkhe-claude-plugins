@@ -27,10 +27,10 @@ Context-aware Git commit assistant that automatically detects root repository an
 
 ## Implementation
 
-⚠️ **CRITICAL**: Do NOT add Claude Code footers, attribution, or "Generated with Claude Code" text to commit messages. The skill generates clean commit messages internally. See `git/skills/commit/SKILL.md` for details.
+⚠️ **CRITICAL**: Do NOT add Claude Code footers, attribution, or "Generated with Claude Code" text to commit messages. The skill generates clean commit messages internally. See `git/skills/creating-commit/SKILL.md` for details.
 
-Invoke the Skill tool with skill name "git:commit" and arguments: `$ARGUMENTS`
+Invoke the Skill tool with skill name "git:creating-commit" and arguments: `$ARGUMENTS`
 
 The skill will handle repository detection, pre-commit checks, commit message generation, and submodule reference updates.
 
-For detailed documentation, see `git/skills/commit/SKILL.md`.
+For detailed documentation, see `git/skills/creating-commit/SKILL.md`.

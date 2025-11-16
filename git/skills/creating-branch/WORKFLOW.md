@@ -260,8 +260,8 @@ Adds prefix to all branch names: `myteam-feat/001-user-auth`
 ### Script Location
 
 The workflow is implemented in shell scripts:
-- **Main**: `git/skills/branch/scripts/branch.sh`
-- **Utilities**: `git/skills/branch/scripts/common.sh`
+- **Main**: `/create-branch`
+- **Utilities**: `git/skills/creating-branch/scripts/common.sh`
 
 ---
 

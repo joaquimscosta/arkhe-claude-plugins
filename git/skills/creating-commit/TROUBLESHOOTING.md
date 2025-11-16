@@ -35,13 +35,13 @@ npx tsc --noEmit
 vim src/file.ts
 
 # Try committing again
-git/skills/commit/scripts/commit.sh
+/commit
 ```
 
 **Solution B: Skip Verification** (Use Sparingly)
 ```bash
 # Only for documentation or minor changes
-git/skills/commit/scripts/commit.sh --no-verify
+/commit --no-verify
 ```
 
 **Warning**: Skipping checks can lead to broken code in repository.
@@ -133,7 +133,7 @@ style:
 
 **Solution C: Skip for This Commit**
 ```bash
-git/skills/commit/scripts/commit.sh --no-verify
+/commit --no-verify
 ```
 
 ---
@@ -177,7 +177,7 @@ cargo check
 cargo check --verbose
 
 # Fix errors then commit
-git/skills/commit/scripts/commit.sh
+/commit
 ```
 
 ---
@@ -208,7 +208,7 @@ git pull origin main
 cd ../..
 
 # Try commit again
-git/skills/commit/scripts/commit.sh
+/commit
 ```
 
 **Solution B: Reset Submodule**
@@ -217,13 +217,13 @@ git/skills/commit/scripts/commit.sh
 git submodule update --init --recursive
 
 # Then commit
-git/skills/commit/scripts/commit.sh
+/commit
 ```
 
 **Solution C: Commit Submodule First**
 ```bash
 # Explicitly commit to submodule
-git/skills/commit/scripts/commit.sh arkhe-claude-plugins
+/commit arkhe-claude-plugins
 
 # Then update root
 # (prompted automatically)
@@ -235,7 +235,7 @@ git/skills/commit/scripts/commit.sh arkhe-claude-plugins
 
 **Symptom**:
 ```
-bash: git/skills/commit/scripts/commit.sh: No such file or directory
+bash: /commit: No such file or directory
 ```
 
 **Causes**:
@@ -254,7 +254,7 @@ pwd
 cd /path/to/your/project
 
 # Verify file exists
-ls -la git/skills/commit/scripts/commit.sh
+ls -la /commit
 ```
 
 **Solution B: Reinstall Plugin**
@@ -265,8 +265,8 @@ ls -la git/skills/commit/scripts/commit.sh
 
 **Solution C: Fix Permissions**
 ```bash
-chmod +x git/skills/commit/scripts/commit.sh
-chmod +x git/skills/commit/scripts/common.sh
+chmod +x /commit
+Skills are loaded automatically - no manual setup needed
 ```
 
 ---
@@ -291,7 +291,7 @@ git status
 git add src/file.ts
 
 # Then commit
-git/skills/commit/scripts/commit.sh
+/commit
 ```
 
 **Solution B: Check for Untracked Files**
@@ -303,7 +303,7 @@ git status
 git add .
 
 # Commit
-git/skills/commit/scripts/commit.sh
+/commit
 ```
 
 ---
@@ -331,7 +331,7 @@ Proceed? (y/n/e): e
 
 **Solution B: Bypass Hook** (If Confident)
 ```bash
-git/skills/commit/scripts/commit.sh --no-verify
+/commit --no-verify
 ```
 
 **Note**: This skips all hooks, including commit-msg validation
@@ -353,14 +353,14 @@ Committed to root when intended to commit to submodule (or vice versa).
 git reset --soft HEAD~1
 
 # Re-run with explicit scope
-git/skills/commit/scripts/commit.sh arkhe-claude-plugins
+/commit arkhe-claude-plugins
 ```
 
 **Solution B: Use Explicit Scope**
 ```bash
 # Always specify scope to avoid selection
-git/skills/commit/scripts/commit.sh root
-git/skills/commit/scripts/commit.sh arkhe-claude-plugins
+/commit root
+/commit arkhe-claude-plugins
 ```
 
 ---
@@ -385,7 +385,7 @@ Proceed anyway? (y/n):
 /create-branch add my feature
 
 # Then commit
-git/skills/commit/scripts/commit.sh
+/commit
 ```
 
 **Solution B: Proceed with Caution**
@@ -449,7 +449,7 @@ find . -name ".git" -type d
 ```bash
 # Specify exact repository
 cd /path/to/intended/repository
-../../git/skills/commit/scripts/commit.sh
+../..//commit
 ```
 
 ---
@@ -462,7 +462,7 @@ cd /path/to/intended/repository
 |-------|--------------|-----------|
 | `Pre-commit checks failed` | Code errors | Fix errors or use `--no-verify` |
 | `No such file or directory` | Wrong directory | Navigate to project root |
-| `Permission denied` | Not executable | `chmod +x scripts/commit.sh` |
+| `Permission denied` | Not executable | `Skills execute via Claude - no manual setup needed` |
 | `No changes detected` | Nothing staged | `git add` files first |
 | `Submodule conflicts` | Outdated submodule | `git submodule update` |
 | `TypeScript errors` | Type mismatch | Fix types or check config |
@@ -490,7 +490,7 @@ npx tsc --noEmit
 cargo check
 
 # Verify script exists
-ls -la git/skills/commit/scripts/commit.sh
+ls -la /commit
 ```
 
 ### Debugging
@@ -498,7 +498,7 @@ ls -la git/skills/commit/scripts/commit.sh
 **Enable Verbose Output**:
 ```bash
 # Run script with bash -x for debugging
-bash -x git/skills/commit/scripts/commit.sh
+bash -x /commit
 ```
 
 **Check Script Logs**:

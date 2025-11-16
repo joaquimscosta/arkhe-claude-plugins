@@ -41,7 +41,7 @@ Context-aware Git commit assistant with smart pre-commit checks and submodule su
 - `--no-verify`: Skip all pre-commit checks
 - `--full-verify`: Run full builds (backend + frontend)
 
-**Skill**: `git/skills/commit/` (creating-commit)
+**Skill**: `git/skills/creating-commit/` (creating-commit)
 
 ---
 
@@ -73,7 +73,7 @@ GitHub Pull Request creation and update assistant with existing PR detection.
 
 **Requirements**: GitHub CLI (`gh`) installed and authenticated
 
-**Skill**: `git/skills/pr/` (creating-pr)
+**Skill**: `git/skills/creating-pr/` (creating-pr)
 
 ---
 
@@ -110,7 +110,7 @@ export FEATURE_DIR=".claude/specs"   # Where to create feature dirs (optional)
 export BRANCH_PREFIX=""               # Additional prefix (optional)
 ```
 
-**Skill**: `git/skills/branch/` (creating-branch)
+**Skill**: `git/skills/creating-branch/` (creating-branch)
 
 ---
 
@@ -146,37 +146,37 @@ Generate comprehensive changelogs from git commit history with semantic versioni
 
 ### Skills (4)
 
-All commands are implemented as **Hybrid Commands + Skills** - slash commands delegate to skills that contain executable scripts.
+All commands are implemented as **Skills** - slash commands delegate to skills that contain inline Bash workflows executed by Claude.
 
 #### 1. creating-commit
 
 Executes the commit workflow with repository detection, pre-commit checks, and conventional commit generation.
 
-**Location**: `skills/commit/`
-**Scripts**: `commit.sh`, `common.sh`
+**Location**: `skills/creating-commit/`
+**Implementation**: Inline Bash workflow in SKILL.md
 **Invoked by**: `/commit` command
 
 #### 2. creating-pr
 
 Handles PR creation and updates with GitHub CLI integration.
 
-**Location**: `skills/pr/`
-**Scripts**: `pr.sh`, `common.sh`
+**Location**: `skills/creating-pr/`
+**Implementation**: Inline Bash workflow in SKILL.md
 **Invoked by**: `/create-pr` command
 
 #### 3. creating-branch
 
 Creates feature branches with smart naming and auto-incrementing.
 
-**Location**: `skills/branch/`
-**Scripts**: `branch.sh`, `common.sh`
+**Location**: `skills/creating-branch/`
+**Implementation**: Inline Bash workflow in SKILL.md
 **Invoked by**: `/create-branch` command
 
 #### 4. generating-changelog (Auto-Invoke)
 
 Automatically generates changelogs when editing changelog files or mentioning release-related keywords.
 
-**Location**: `skills/changelog/`
+**Location**: `skills/generating-changelog/`
 **Invoked by**: `/changelog` command and auto-triggers
 
 **Auto-Invoke Triggers**:
@@ -190,7 +190,7 @@ Automatically generates changelogs when editing changelog files or mentioning re
 2. **Formatted Changelog** - Industry-standard formats (Keep a Changelog, Conventional, GitHub)
 3. **Update Strategy** - Append/overwrite options with version management
 
-**Documentation**: See `skills/changelog/` directory for WORKFLOW, EXAMPLES, and TROUBLESHOOTING guides.
+**Documentation**: See `skills/generating-changelog/` directory for WORKFLOW, EXAMPLES, and TROUBLESHOOTING guides.
 
 ---
 
@@ -275,36 +275,40 @@ Pre-commit checks are automatically detected based on file changes:
 
 ## Architecture
 
-The plugin uses a **Hybrid Commands + Skills** pattern where:
+The plugin uses a **Commands + Skills** pattern where:
 
 1. **Commands** (`commands/*.md`) - User interface via slash commands
-2. **Skills** (`skills/*/`) - Implementation with scripts and documentation
-3. **Scripts** (`skills/*/scripts/`) - Executable bash scripts that travel with the plugin
+2. **Skills** (`skills/*/`) - Implementation with inline Bash workflows and documentation
 
-### Script Organization
+### Skill Organization
 
-Each skill contains its own scripts directory:
+Each skill contains workflow documentation and inline Bash:
 
-**skills/commit/scripts/**
-- `commit.sh` - Main commit workflow
-- `common.sh` - Shared utilities
+**skills/creating-commit/**
+- `SKILL.md` - Complete inline Bash workflow for commits
+- `WORKFLOW.md` - Detailed step-by-step process
+- `EXAMPLES.md` - Real-world usage examples
+- `TROUBLESHOOTING.md` - Common issues and solutions
 
-**skills/pr/scripts/**
-- `pr.sh` - PR creation and updates
-- `common.sh` - Shared utilities
+**skills/creating-pr/**
+- `SKILL.md` - Complete inline Bash workflow for PRs
+- `WORKFLOW.md`, `EXAMPLES.md`, `TROUBLESHOOTING.md`
 
-**skills/branch/scripts/**
-- `branch.sh` - Branch creation workflow
-- `common.sh` - Shared utilities
+**skills/creating-branch/**
+- `SKILL.md` - Complete inline Bash workflow for branch creation
+- `WORKFLOW.md`, `EXAMPLES.md`, `TROUBLESHOOTING.md`
 
-**skills/changelog/** (No scripts - pure skill with WORKFLOW.md)
+**skills/generating-changelog/**
+- `SKILL.md` - Complete inline Bash workflow for changelogs
+- `WORKFLOW.md`, `EXAMPLES.md`, `TROUBLESHOOTING.md`
 
 ### Key Features
 
-- **Self-contained**: Scripts travel with the plugin
-- **Executable**: All scripts have execute permissions
-- **Reliable**: Use absolute paths and proper error handling
-- **Documented**: Each skill includes SKILL.md with detailed instructions
+- **Transparent**: All logic visible in SKILL.md files
+- **Maintainable**: No hidden scripts to track
+- **Multi-repo Support**: Full submodule and monorepo awareness
+- **Progressive Disclosure**: Supporting docs loaded on-demand
+- **Documented**: Each skill includes comprehensive documentation
 
 ## Examples
 
@@ -390,7 +394,7 @@ Default: No → Commit later with other changes
 ### Required
 
 - **Git**: Version 2.0+ (for submodule support)
-- **Bash**: Version 4.0+ (for scripts)
+- **Bash**: Standard bash (for inline workflows)
 
 ### Optional (for specific features)
 
@@ -464,16 +468,14 @@ git submodule update --init --recursive
 /commit submodule-name
 ```
 
-### Script Permission Issues
+### Skills Not Loading
 
-If scripts aren't executable (unlikely, as they're bundled with the plugin):
-```bash
-# Verify scripts are executable
-ls -la git/skills/*/scripts/*.sh
+If skills aren't executing workflows:
 
-# If needed, make executable
-chmod +x git/skills/*/scripts/*.sh
-```
+1. **Verify plugin installation**: Run `/plugin` to check if git plugin is installed
+2. **Restart Claude Code**: Skills are loaded at startup
+3. **Check skill files**: Verify SKILL.md files exist in plugin storage
+4. **Review error messages**: Look for syntax errors in Bash workflows
 
 ## Best Practices
 

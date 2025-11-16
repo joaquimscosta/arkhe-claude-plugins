@@ -99,11 +99,11 @@ The script automatically sanitizes branch names, but if you encounter this error
 
 **Symptom**:
 ```
-bash: git/skills/branch/scripts/branch.sh: No such file or directory
+bash: /create-branch: No such file or directory
 ```
 or
 ```
-bash: git/skills/branch/scripts/branch.sh: Permission denied
+bash: /create-branch: Permission denied
 ```
 
 **Causes & Solutions**:
@@ -119,15 +119,15 @@ pwd
 cd /path/to/arkhe-claude-plugins
 
 # Then run
-git/skills/branch/scripts/branch.sh "add user auth"
+/create-branch "add user auth"
 ```
 
 **Cause B: Script Not Executable**
 
 **Solution**: Make script executable
 ```bash
-chmod +x git/skills/branch/scripts/branch.sh
-chmod +x git/skills/branch/scripts/common.sh
+chmod +x /create-branch
+chmod +x git/skills/creating-branch/shared utilities
 ```
 
 **Cause C: File Doesn't Exist**
@@ -135,11 +135,11 @@ chmod +x git/skills/branch/scripts/common.sh
 **Solution**: Verify installation
 ```bash
 # Check if files exist
-ls -la git/skills/branch/scripts/
+ls -la inline Bash in SKILL.md
 
 # Expected output:
-# branch.sh
-# common.sh
+Branch creation workflow
+Shared utilities (now inline)
 ```
 
 If files are missing, reinstall the git plugin:
@@ -461,7 +461,7 @@ No error message, but branch is not created.
 
 **Solution**: Use bash explicitly
 ```bash
-bash git/skills/branch/scripts/branch.sh "add user auth"
+bash /create-branch "add user auth"
 ```
 
 **Cause B: Missing Dependencies**
@@ -484,7 +484,7 @@ sudo yum install git       # RHEL/CentOS
 **Solution**: Check script integrity
 ```bash
 # Verify script syntax
-bash -n git/skills/branch/scripts/branch.sh
+bash -n /create-branch
 
 # If errors appear, reinstall plugin
 /plugin uninstall git@arkhe-claude-plugins
@@ -582,7 +582,7 @@ git push origin --delete feat/003-user-auth
 |-------|--------------|-----------|
 | `fatal: A branch named '...' already exists` | Branch exists | Use different description or delete existing |
 | `fatal: not a git repository` | Not in git repo | Navigate to git project |
-| `Permission denied` | Script not executable | `chmod +x scripts/branch.sh` |
+| `Permission denied` | Script not executable | `chmod +x the branch creation workflow` |
 | `No such file or directory` | Wrong working directory | Navigate to project root |
 | `fatal: '...' is not a valid branch name` | Invalid characters | Remove special characters from description |
 
@@ -596,7 +596,7 @@ git branch --show-current
 git branch -a
 
 # Check script permissions
-ls -la git/skills/branch/scripts/
+ls -la inline Bash in SKILL.md
 
 # Verify git repository
 git status
@@ -610,13 +610,13 @@ echo $FEATURE_DIR
 **Enable Verbose Output**:
 ```bash
 # Run script directly with bash -x for debugging
-bash -x git/skills/branch/scripts/branch.sh "add user auth"
+bash -x /create-branch "add user auth"
 ```
 
 **Check Script Execution**:
 ```bash
 # Verify script runs
-bash git/skills/branch/scripts/branch.sh --help
+bash /create-branch --help
 ```
 
 ---

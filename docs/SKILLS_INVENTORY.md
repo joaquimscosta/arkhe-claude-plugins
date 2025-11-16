@@ -204,7 +204,7 @@ The Git plugin provides 4 distinct workflow automation skills for branch managem
 - **Name**: Git Branch Workflow
 - **Description**: Feature branch creation with optimized short naming, auto-incrementing, and commit type detection
 - **Triggers**: "create new branches", "/create-branch command", "start a new branch for a task"
-- **Location**: `git/skills/branch/`
+- **Location**: `git/skills/creating-branch/`
 
 **Token Analysis**:
 - **SKILL.md Tokens**: 672 tokens (✅ within 1,000 target)
@@ -216,7 +216,7 @@ The Git plugin provides 4 distinct workflow automation skills for branch managem
 **File Structure**:
 
 ```text
-git/skills/branch/
+git/skills/creating-branch/
 ├── SKILL.md                           # Main skill instructions (134 lines, 672 tokens)
 └── scripts/
     ├── branch.sh                      # Main workflow script
@@ -278,7 +278,7 @@ git/skills/branch/
 - **Triggers**:
   - **Files**: `CHANGELOG.md`, `CHANGELOG.txt`, `HISTORY.md`
   - **Keywords**: "changelog", "release notes", "version", "semantic versioning", "conventional commits"
-- **Location**: `git/skills/changelog/`
+- **Location**: `git/skills/generating-changelog/`
 
 **Token Analysis**:
 - **SKILL.md Tokens**: 1,170 tokens (⚠️ exceeds 1,000 target)
@@ -290,7 +290,7 @@ git/skills/branch/
 **File Structure**:
 
 ```text
-git/skills/changelog/
+git/skills/generating-changelog/
 ├── SKILL.md                           # Main skill instructions (219 lines, 1,170 tokens)
 ├── WORKFLOW.md                        # 6-phase methodology
 ├── EXAMPLES.md                        # Real-world changelog examples
@@ -352,7 +352,7 @@ git/skills/changelog/
 - **Name**: Git Commit Workflow
 - **Description**: Context-aware Git commit assistant with smart pre-commit checks, submodule support, and conventional commit message generation
 - **Triggers**: "/commit command", "commit changes", "create git commits"
-- **Location**: `git/skills/commit/`
+- **Location**: `git/skills/creating-commit/`
 
 **Token Analysis**:
 - **SKILL.md Tokens**: 566 tokens (✅ within 1,000 target)
@@ -364,7 +364,7 @@ git/skills/changelog/
 **File Structure**:
 
 ```text
-git/skills/commit/
+git/skills/creating-commit/
 ├── SKILL.md                           # Main skill instructions (98 lines, 566 tokens)
 └── scripts/
     ├── commit.sh                      # Main workflow script
@@ -425,7 +425,7 @@ git/skills/commit/
 - **Name**: Git PR Workflow
 - **Description**: GitHub Pull Request creation and update with existing PR detection, branch pushing, and intelligent title/body generation
 - **Triggers**: "/create-pr command", "create pull request", "open a PR", "push changes for review"
-- **Location**: `git/skills/pr/`
+- **Location**: `git/skills/creating-pr/`
 
 **Token Analysis**:
 - **SKILL.md Tokens**: 582 tokens (✅ within 1,000 target)
@@ -437,7 +437,7 @@ git/skills/commit/
 **File Structure**:
 
 ```text
-git/skills/pr/
+git/skills/creating-pr/
 ├── SKILL.md                           # Main skill instructions (104 lines, 582 tokens)
 └── scripts/
     ├── pr.sh                          # Main workflow script

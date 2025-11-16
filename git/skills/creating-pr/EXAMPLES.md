@@ -14,7 +14,7 @@ Created a feature branch with authentication code, ready to create PR.
 
 ### Command
 ```bash
-git/skills/pr/scripts/pr.sh
+/create-pr
 ```
 
 ### Execution
@@ -91,7 +91,7 @@ Fixed a critical bug, need to create PR quickly.
 
 ### Command
 ```bash
-git/skills/pr/scripts/pr.sh
+/create-pr
 ```
 
 ### Execution
@@ -134,7 +134,7 @@ PR already exists, made additional commits after code review feedback.
 
 ### Command
 ```bash
-git/skills/pr/scripts/pr.sh
+/create-pr
 ```
 
 ### Execution
@@ -190,7 +190,7 @@ Feature is not complete, want to show progress with draft PR.
 
 ### Command
 ```bash
-git/skills/pr/scripts/pr.sh --draft
+/create-pr --draft
 ```
 
 ### Execution
@@ -243,7 +243,7 @@ Feature targets `develop` branch, not `main`.
 
 ### Command
 ```bash
-git/skills/pr/scripts/pr.sh --base develop
+/create-pr --base develop
 ```
 
 ### Execution
@@ -287,7 +287,7 @@ Made changes in a submodule, need to create PR for submodule's repository.
 ### Command
 ```bash
 cd plugins/arkhe-claude-plugins/
-../../git/skills/pr/scripts/pr.sh
+../..//create-pr
 ```
 
 ### Execution
@@ -331,7 +331,7 @@ Creating WIP PR targeting staging branch.
 
 ### Command
 ```bash
-git/skills/pr/scripts/pr.sh --draft --base staging
+/create-pr --draft --base staging
 ```
 
 ### Execution
@@ -361,7 +361,7 @@ Accidentally tried to create PR while on main branch.
 ### Command
 ```bash
 git checkout main
-git/skills/pr/scripts/pr.sh
+/create-pr
 ```
 
 ### Execution
@@ -398,7 +398,7 @@ Branch already exists on remote, has new local commits.
 
 ### Command
 ```bash
-git/skills/pr/scripts/pr.sh
+/create-pr
 ```
 
 ### Execution
@@ -427,7 +427,7 @@ PR already exists, just want to view it.
 
 ### Command
 ```bash
-git/skills/pr/scripts/pr.sh
+/create-pr
 ```
 
 ### Execution
