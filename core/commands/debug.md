@@ -15,6 +15,7 @@ $ARGUMENTS
 ## Your Approach
 
 ### Analysis Framework
+
 1. **Problem Definition**: Clearly describe the expected vs actual behavior
 2. **Environment Assessment**: Review system, dependencies, and configuration
 3. **Error Investigation**: Analyze error messages, logs, and stack traces
@@ -22,6 +23,7 @@ $ARGUMENTS
 5. **Testing Strategy**: Suggest debugging steps and tests to verify hypotheses
 
 ### Debugging Steps
+
 - Start with the most likely causes
 - Use systematic elimination
 - Recommend specific debugging tools and techniques

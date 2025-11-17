@@ -85,14 +85,14 @@ Automatically categorizes commits by type:
 
 ### Semantic Versioning Detection
 Automatically suggests version bumps:
-- **MAJOR** (x.0.0): Contains `BREAKING CHANGE:` or `!` suffix
+- **MAJOR** (x.0.0): Contains `BREAKING CHANGE:` or exclamation mark suffix
 - **MINOR** (0.x.0): Contains `feat:` commits
 - **PATCH** (0.0.x): Contains only `fix:` commits
 
 ### Breaking Changes Detection
 Identifies breaking changes from:
 - `BREAKING CHANGE:` footer in commit message
-- `!` after commit type (e.g., `feat!:`)
+- Exclamation mark after commit type (example: feat!: or fix!:)
 - Manual annotation in commit body
 
 ### GitHub Integration

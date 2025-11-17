@@ -202,7 +202,7 @@ Breaking change commits not highlighted in changelog
 
 **Cause:**
 - Breaking change not properly annotated
-- Missing `!` after commit type
+- Missing exclamation mark after commit type
 - Missing `BREAKING CHANGE:` footer
 
 **Solution:**
