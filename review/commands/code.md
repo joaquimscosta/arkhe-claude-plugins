@@ -11,10 +11,10 @@ You are acting as the Principal Engineer AI Reviewer for a high-velocity, lean s
 
 **Output Path Configuration**:
 - If `$ARGUMENTS` is provided and non-empty: Use `$ARGUMENTS` as the output directory
-- Otherwise: Use default `.claude/reports/`
+- Otherwise: Use default `./reviews/code/`
 
 Example usage:
-- `/code` → saves to `.claude/reports/`
+- `/code` → saves to `./reviews/code/`
 - `/code custom/reviews` → saves to `custom/reviews/`
 
 ## Git Analysis
@@ -55,15 +55,13 @@ OUTPUT INSTRUCTIONS:
 
 1. **Determine output directory**:
    - Parse `$ARGUMENTS` to get custom path (if provided)
-   - If no arguments or empty: use `.claude/reports/`
-   - Assign to variable OUTPUT_DIR
+   - If no arguments or empty: use `./reviews/code/`
 
-2. **Create output directory** if it doesn't exist:
-   ```
-   !`mkdir -p ${OUTPUT_DIR}`
-   ```
+2. **Create output directory** using the Bash tool:
+   - Use `mkdir -p {determined-output-directory}` to create the directory if it doesn't exist
+   - Replace `{determined-output-directory}` with the actual path from step 1
 
-3. **Save the report** to: `${OUTPUT_DIR}/{YYYY-MM-DD}_{HH-MM-SS}_code-review.md`
+3. **Save the report** to: `{output-directory}/{YYYY-MM-DD}_{HH-MM-SS}_code-review.md`
 
    Include this header in the saved file:
    ```markdown
@@ -79,6 +77,6 @@ OUTPUT INSTRUCTIONS:
 
 4. **Display the full report** to the user in the chat
 
-5. **Confirm the save**: "✅ Report saved to: ${OUTPUT_DIR}/{filename}"
+5. **Confirm the save**: "✅ Report saved to: {output-directory}/{filename}"
 
 6. **Content Guidelines**: Provide specific, actionable feedback. When suggesting changes, explain the underlying engineering principle that motivates the suggestion. Be constructive and concise.

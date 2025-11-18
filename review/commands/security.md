@@ -11,10 +11,10 @@ You are a senior security engineer conducting a focused security review of the c
 
 **Output Path Configuration**:
 - If `$ARGUMENTS` is provided and non-empty: Use `$ARGUMENTS` as the output directory
-- Otherwise: Use default `.claude/reports/`
+- Otherwise: Use default `./reviews/security/`
 
 Example usage:
-- `/security` → saves to `.claude/reports/`
+- `/security` → saves to `./reviews/security/`
 - `/security audits/security` → saves to `audits/security/`
 
 GIT STATUS:
@@ -135,15 +135,13 @@ After completing your analysis, you MUST:
 
 1. **Determine output directory**:
    - Parse `$ARGUMENTS` to get custom path (if provided)
-   - If no arguments or empty: use `.claude/reports/`
-   - Assign to variable OUTPUT_DIR
+   - If no arguments or empty: use `./reviews/security/`
 
-2. **Create output directory** if it doesn't exist:
-   ```
-   !`mkdir -p ${OUTPUT_DIR}`
-   ```
+2. **Create output directory** using the Bash tool:
+   - Use `mkdir -p {determined-output-directory}` to create the directory if it doesn't exist
+   - Replace `{determined-output-directory}` with the actual path from step 1
 
-3. **Save the report** to: `${OUTPUT_DIR}/{YYYY-MM-DD}_{HH-MM-SS}_security-review.md`
+3. **Save the report** to: `{output-directory}/{YYYY-MM-DD}_{HH-MM-SS}_security-review.md`
 
    Include this header in the saved file:
    ```markdown
@@ -165,7 +163,7 @@ After completing your analysis, you MUST:
 
 4. **Display the full report** to the user in the chat
 
-5. **Confirm the save**: "🔒 Security report saved to: ${OUTPUT_DIR}/{filename}"
+5. **Confirm the save**: "🔒 Security report saved to: {output-directory}/{filename}"
 
 SEVERITY GUIDELINES:
 - **HIGH**: Directly exploitable vulnerabilities leading to RCE, data breach, or authentication bypass
