@@ -116,11 +116,11 @@ Official prompt engineering guide for Claude 4 models.
 
 ## Plugin Development Resources
 
-Now that you understand the foundational concepts and specialized features, explore the five reference implementations that demonstrate these patterns in practice.
+Now that you understand the foundational concepts and specialized features, explore the reference implementations that demonstrate these patterns in practice.
 
-### Understanding All Five Plugins
+### Understanding Marketplace Plugins
 
-The Arkhe Claude Plugins marketplace demonstrates all plugin component types across five reference implementations. Study these to understand different architectural patterns and use cases.
+The Arkhe Claude Plugins marketplace demonstrates all plugin component types across multiple reference implementations. Study these to understand different architectural patterns and use cases.
 
 #### Component Distribution
 
@@ -131,6 +131,8 @@ The Arkhe Claude Plugins marketplace demonstrates all plugin component types acr
 - **skola**: 1 command - `/teach-code`
 - **git**: 4 commands - `/commit`, `/create-pr`, `/create-branch`, `/changelog`
 - **review**: 4 commands - `/code`, `/security`, `/design`, `/codebase`
+- **google-stitch**: 1 command - `/prompt`
+- **design-intent**: 7 commands - `/setup`, `/feature`, `/plan`, `/design`, `/implement`, `/document-design-intent`, `/diary`
 
 **Agents** (specialized AI assistants):
 - **ai**: 3 agents - `ai-engineer`, `prompt-engineer`, `context-manager`
@@ -141,8 +143,10 @@ The Arkhe Claude Plugins marketplace demonstrates all plugin component types acr
 
 **Skills** (model-invoked capabilities):
 - **doc**: 1 skill - `mermaid` (auto-activates on diagram/flowchart keywords)
-- **udemy**: 1 skill - `extract` (auto-activates on Udemy URLs)
+- **skola**: 1 skill - `extracting-udemy` (auto-activates on Udemy URLs)
 - **git**: 1 skill - `changelog` (auto-activates on CHANGELOG.md editing)
+- **google-stitch**: 2 skills - `authoring-stitch-prompts`, `stitch-session-manager`
+- **design-intent**: 1 skill - `design-intent-specialist` (auto-activates for visual implementation work)
 
 **Scripts** (executable automation):
 - **git**: 4 scripts - commit.sh, pr.sh, branch.sh, common.sh
@@ -248,6 +252,25 @@ Use these plugins as templates for your own development. Each demonstrates diffe
 - Cross-plugin integration (complements review plugin)
 
 [View UI Plugin Details →](../ui/README.md)
+
+---
+
+#### **design-intent** - Spec-Driven Design Workflows
+
+**Structure**: 7 commands + 1 auto-invoked skill
+**Complexity**: High
+**Key Features**:
+- `/setup`, `/feature`, and `/plan` commands scaffold design-intent memory plus implementation plans
+- `/design` and `/implement` pair AI execution with documented pattern checks
+- `/document-design-intent` captures reusable patterns; `/diary` maintains session handoffs
+- `design-intent-specialist` skill enforces pattern review before implementing from Figma/screenshots
+
+**Best for learning**:
+- Multi-command workflows that operate on project files
+- Progressive disclosure skill instructions tied to commands
+- Combining templates, memory structures, and automation into one plugin
+
+[View Design Intent Plugin Details →](../design-intent/README.md)
 
 ---
 
@@ -519,7 +542,7 @@ The sync script includes comprehensive safety features:
 Want to contribute to these plugins or create your own?
 
 1. Fork or clone this repository
-2. Study the existing plugin structures (all five reference implementations)
+2. Study the existing plugin structures (the reference implementations above)
 3. Follow the patterns and best practices documented here
 4. Test thoroughly using a local marketplace
 5. Submit contributions or share your own plugins

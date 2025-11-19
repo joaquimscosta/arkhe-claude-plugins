@@ -97,6 +97,12 @@ Git workflow automation for commits, pull requests, branching, and changelog gen
 - **Skills**: `changelog` (auto-invoke)
 - **Scripts**: 4 shell scripts for git workflow automation
 
+### Design Intent Plugin
+Design Intent for Spec-Driven Development that combines AI-assisted implementation with persistent pattern memory.
+- **Commands**: `/setup`, `/feature`, `/plan`, `/design`, `/implement`, `/document-design-intent`, `/diary`
+- **Skills**: `design-intent-specialist` (auto-invoked for visual implementation work)
+- **Use**: Build React prototypes from Figma/screenshots, capture proven patterns, and maintain design-intent diaries
+
 ## Common Development Commands
 
 ### Plugin Management
@@ -114,6 +120,7 @@ Git workflow automation for commits, pull requests, branching, and changelog gen
 /plugin install ui@arkhe-claude-plugins
 /plugin install google-stitch@arkhe-claude-plugins
 /plugin install git@arkhe-claude-plugins
+/plugin install design-intent@arkhe-claude-plugins
 
 # Verify installation
 /plugin                    # View installed plugins

@@ -27,6 +27,7 @@ From within Claude Code, navigate to the parent directory of the cloned reposito
 /plugin install review@arkhe-claude-plugins
 /plugin install ui@arkhe-claude-plugins
 /plugin install git@arkhe-claude-plugins
+/plugin install design-intent@arkhe-claude-plugins
 ```
 
 ### 3. Restart Claude Code
@@ -115,6 +116,19 @@ Git workflow automation for commits, pull requests, branching, and changelog gen
 
 ---
 
+### Design Intent Plugin
+Design Intent for Spec-Driven Development that combines AI-assisted implementation with documented design patterns.
+
+**Install**: `/plugin install design-intent@arkhe-claude-plugins`
+
+**Components**:
+- 7 commands: `/setup`, `/feature`, `/plan`, `/design`, `/implement`, `/document-design-intent`, `/diary`
+- 1 skill: `design-intent-specialist` (auto-invoked when implementing from visual references)
+
+**Use for:** Capturing team-specific design intent, translating Figma/screenshots into React implementations, and keeping pattern memory plus diaries synchronized.
+
+---
+
 ## Selective Installation
 
 Install only the plugins you need:
@@ -154,6 +168,11 @@ Install only the plugins you need:
 ### For Git Workflow Automation
 ```bash
 /plugin install git@arkhe-claude-plugins
+```
+
+### For AI-Assisted Frontend Implementation & Design Memory
+```bash
+/plugin install design-intent@arkhe-claude-plugins
 ```
 
 ---
@@ -196,13 +215,15 @@ You should see commands from installed plugins:
 - **skola**: `/teach-code`
 - **review**: `/code`, `/security`, `/design`, `/codebase`
 - **git**: `/commit`, `/create-pr`, `/create-branch`, `/changelog`
+- **design-intent**: `/setup`, `/feature`, `/plan`, `/design`, `/implement`, `/document-design-intent`, `/diary`
 
 ### Check Skills
 
 Skills are automatically invoked when relevant context is detected:
 - **doc**: `mermaid` skill activates when you mention diagrams, flowcharts, or visualization keywords
-- **udemy**: `extract` skill activates when you provide Udemy URLs or mention Udemy content extraction
+- **skola**: `extracting-udemy` skill activates when you provide Udemy URLs or mention Udemy content extraction
 - **git**: `changelog` skill activates when you edit CHANGELOG.md or request changelog generation
+- **design-intent**: `design-intent-specialist` activates when you're implementing UI from visual references or running `/design` or `/implement`
 
 ---
 
@@ -267,7 +288,7 @@ Skills are automatically invoked when relevant context is detected:
 /doc-generate tutorial for building a REST API
 ```
 
-### Udemy Plugin
+### Skola Udemy Extraction Skill
 
 ```bash
 # The skill auto-activates when you mention Udemy
@@ -306,6 +327,25 @@ I need to extract transcripts from my Udemy course on React
 "Help me create a design token system for our product"
 "Review our interface for WCAG 2.1 AA compliance"
 "Design accessible form validation patterns"
+```
+
+### Design Intent Plugin
+
+```bash
+# Initialize the design-intent folder structure with memory + templates
+/setup
+
+# Create a feature spec + implementation plan scaffolding
+/feature onboarding dashboard layout
+
+# Turn Figma or screenshot references into React code
+/design https://www.figma.com/file/EXAMPLE
+
+# Capture successful patterns for reuse
+/document-design-intent
+
+# Create a handoff summary before ending the session
+/diary
 ```
 
 ### Git Plugin

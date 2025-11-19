@@ -117,6 +117,20 @@ Git workflow automation for commit, PR, branching, and changelog generation.
 
 ---
 
+### 10. Design Intent Plugin
+
+Design Intent for Spec-Driven Development (SDD) combines AI-assisted implementation with a documented design dialect to keep React prototypes visually accurate.
+
+**Components:**
+- 7 commands: `/setup`, `/feature`, `/plan`, `/design`, `/implement`, `/document-design-intent`, `/diary`
+- 1 skill: `design-intent-specialist` (auto-invoked for visual implementation work)
+
+**Use for:** Translating Figma references or screenshots into faithful React components, capturing emerging design patterns, and maintaining session diaries plus project memory.
+
+[View Design Intent Plugin Details →](./design-intent/README.md)
+
+---
+
 ## Quick Start
 
 ### 1. Add the Marketplace
@@ -137,6 +151,7 @@ Install all plugins:
 /plugin install ui@arkhe-claude-plugins
 /plugin install google-stitch@arkhe-claude-plugins
 /plugin install git@arkhe-claude-plugins
+/plugin install design-intent@arkhe-claude-plugins
 ```
 
 Or install selectively based on your needs.
@@ -174,6 +189,9 @@ After installation, restart Claude Code and use:
 
 **For Git workflow automation:**
 → Install `git`
+
+**For AI-assisted frontend implementation with documented design intent:**
+→ Install `design-intent`
 
 ## Developer Documentation
 
