@@ -51,6 +51,11 @@
       "name": "specprep",
       "source": "./specprep",
       "description": "AI meta-prompt framework for Spec Kit workflow optimization"
+    },
+    {
+      "name": "design-intent",
+      "source": "./design-intent",
+      "description": "Design Intent for Spec-Driven Development - Build React prototypes with AI while maintaining design consistency"
     }
   ]
 }
