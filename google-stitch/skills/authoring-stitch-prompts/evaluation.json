@@ -1,0 +1,111 @@
+{
+  "skill": "stitch-prompt",
+  "version": "1.0.0",
+  "description": "Evaluation suite for testing the Google Stitch Prompt Authoring Skill.",
+  "tests": [
+    {
+      "id": "dashboard_basic",
+      "query": "Create a web dashboard for tracking team productivity with charts and filters.",
+      "expected_behavior": [
+        "Generates one Stitch-ready prompt under 1000 words.",
+        "Uses clear UI nouns (dashboard, charts, filters, sidebar, etc.).",
+        "Includes visual style cues (3–6).",
+        "Avoids conversational phrasing.",
+        "Includes responsiveness or layout detail (desktop/mobile)."
+      ]
+    },
+    {
+      "id": "spec_conversion",
+      "query": "Convert the following spec into a Stitch prompt:\n# Mobile Fitness App\n- Tabs: Dashboard, Workouts, Profile\n- Dashboard: daily summary and progress ring\n- Style: vibrant, energetic, bold typography",
+      "expected_behavior": [
+        "Creates structured Stitch prompt describing screens and layout.",
+        "Includes explicit style cues (vibrant, energetic, bold typography).",
+        "Maintains clear layout terms (tabs, progress ring).",
+        "Omits meta commentary or redundant explanations."
+      ]
+    },
+    {
+      "id": "refinement_prompt",
+      "query": "On the dashboard, add a new column showing average session time next to the existing KPI cards.",
+      "expected_behavior": [
+        "Generates a concise, single-action Stitch edit instruction.",
+        "Uses directive verbs (Add, Place, Align).",
+        "Specifies placement (next to existing KPI cards).",
+        "Keeps previous layout intact."
+      ]
+    },
+    {
+      "id": "image_reference",
+      "query": "Use the uploaded wireframe as base for a budgeting app. Keep layout, change colors to navy and cream, modernize typography.",
+      "expected_behavior": [
+        "Mentions the uploaded wireframe explicitly.",
+        "Specifies visual update (navy and cream color scheme).",
+        "Includes typography and tone adjustments.",
+        "Avoids regenerating unrelated elements."
+      ]
+    },
+    {
+      "id": "overlong_input_trimming",
+      "query": "Write a detailed Stitch prompt for an all-in-one enterprise management platform with 20 modules including analytics, billing, HR, CRM, and inventory. Each module should have charts, forms, tables, settings, and export options.",
+      "expected_behavior": [
+        "Condenses input into a focused Stitch prompt covering only the primary module or screen.",
+        "Avoids reproducing full list of modules verbatim.",
+        "Keeps total length concise.",
+        "Includes layout and visual style cues.",
+        "Uses enterprise tone with component reuse hints."
+      ]
+    },
+    {
+      "id": "multi_component_layout_foundation",
+      "query": "Create an analytics dashboard with KPI cards at the top, a revenue chart on the left, and a subscriptions table on the right.",
+      "expected_behavior": [
+        "Detects multi-component scenario (3 components: KPI cards, revenue chart, subscriptions table).",
+        "Total: 4 prompts (layout + 3 components) - within 6-prompt limit.",
+        "Creates feature directory: .google-stitch/dashboard/",
+        "Pre-creates subdirectories: dashboard/exports/ and dashboard/wireframes/",
+        "Creates prompt file: dashboard/prompt-v1.md (not flat file structure).",
+        "File starts with HTML comment label: <!-- Layout: Analytics Dashboard -->.",
+        "Layout prompt uses generic descriptive terms ('key performance metrics', 'analytics chart area', 'subscription activity').",
+        "Layout prompt does NOT reference component files or use component names.",
+        "Layout prompt includes spatial relationships (top section, left side, right side, above, below).",
+        "Layout prompt includes page-level interactions (how regions communicate).",
+        "Layout prompt is 150-200 words (foundation-focused, not over-detailed).",
+        "After layout prompt, adds --- separator line.",
+        "Each component starts with HTML comment label: <!-- Component: {Name} -->.",
+        "Component prompts include implementation details (sparklines, tooltips, status badges, etc.).",
+        "Components separated by --- (between components, not after last one).",
+        "All prompts are independently usable in Stitch when separated by ---.",
+        "Presents clear distinction: layout = structure, components = details.",
+        "Entire file can be copy-pasted directly into Stitch for batch generation.",
+        "Presents file info showing feature directory, prompt count, directory structure, and usage instructions.",
+        "Explains purpose of exports/ and wireframes/ subdirectories."
+      ]
+    },
+    {
+      "id": "large_multi_component_split",
+      "query": "Create an admin panel with navigation sidebar, dashboard overview, user management table, role permissions matrix, system settings form, audit logs viewer, and notification center.",
+      "expected_behavior": [
+        "Detects multi-component scenario (7 components listed).",
+        "Total: 8 prompts (layout + 7 components) - exceeds 6-prompt limit.",
+        "Creates feature directory: .google-stitch/admin-panel/",
+        "Pre-creates subdirectories: admin-panel/exports/ and admin-panel/wireframes/",
+        "Automatically splits into 2 part files due to Stitch's 6-screen limit.",
+        "Creates part1 file: admin-panel/prompt-v1-part1.md containing 6 prompts (layout + first 5 components).",
+        "Part1 starts with <!-- Layout: Admin Panel --> followed by layout prompt.",
+        "Part1 contains first 5 components with HTML comment labels.",
+        "Part1 prompts separated by --- (between sections, not after last).",
+        "Creates part2 file: admin-panel/prompt-v1-part2.md containing 2 remaining components.",
+        "Part2 contains only component prompts (no layout).",
+        "Part2 prompts also use HTML comment labels and --- separators.",
+        "Displays warning message about sequential processing requirement.",
+        "Warning indicates: 'Use part1 first in Stitch, then part2 in separate session'.",
+        "Shows total prompt count across both files (8 prompts across 2 files).",
+        "Shows directory structure with both part files and subdirectories.",
+        "Provides usage workflow explaining how to process both files sequentially.",
+        "Each part file independently copy-pasteable into Stitch.",
+        "Part numbering makes processing order explicit (prompt-v1-part1, prompt-v1-part2).",
+        "Explains purpose of exports/ and wireframes/ subdirectories."
+      ]
+    }
+  ]
+}

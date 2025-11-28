@@ -1,0 +1,8 @@
+{
+  "name": "lang",
+  "description": "Language-specific programming skills (Bash, Python, Rust, TypeScript)",
+  "version": "1.0.0",
+  "author": {
+    "name": "Arkhe"
+  }
+}
