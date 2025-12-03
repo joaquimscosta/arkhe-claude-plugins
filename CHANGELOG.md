@@ -19,6 +19,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+#### Documentation
+- Added GitHub shorthand installation method as recommended option (`/plugin marketplace add joaquimscosta/arkhe-claude-plugins`)
+- Updated README.md Quick Start with dual installation options (GitHub direct vs local clone)
+- Updated INSTALLATION.md with streamlined prerequisites and installation options
+- Fixed README.md markdown formatting issues (code blocks, escaped HTML, broken links)
+- Added thematic emojis to plugin table for better visual identification
+- Removed component emojis from Key Components column for cleaner presentation
+- Fixed placeholder GitHub URLs (replaced `yourusername` with actual repository owner)
+- Fixed broken documentation links that pointed to Google search URLs
+
 #### Google Stitch Plugin
 - Refactored `authoring-stitch-prompts` skill to single-file format with `---` separators (replacing directory-based multi-file structure)
 - Implemented layout prompt generation with foundation/wireframe approach for multi-component pages
@@ -33,7 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0.0] - 2025-11-12
 
-Initial release of the Arkhe Claude Plugins marketplace with 8 specialized plugins providing agents, commands, and skills for documentation, AI engineering, code review, git workflows, and educational content creation.
+Initial release of the Arkhe Claude Plugins marketplace with 10 specialized plugins providing agents, commands, and skills for documentation, AI engineering, code review, UI/UX design, git workflows, Google Stitch prompting, Spec-Driven Development, and language-specific programming.
 
 ### Added
 

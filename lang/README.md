@@ -130,7 +130,7 @@ For technical details about the plugin architecture and skill patterns, see [ARC
 
 ## License
 
-[Your license here]
+MIT License
 
 ## Support
 

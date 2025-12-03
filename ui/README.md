@@ -163,7 +163,7 @@ Issues and pull requests welcome at the arkhe-claude-plugins repository.
 
 ## License
 
-See individual plugin directories for licensing information.
+MIT License
 
 ## Version
 

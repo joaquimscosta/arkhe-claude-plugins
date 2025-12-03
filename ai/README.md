@@ -18,6 +18,8 @@ AI engineering toolkit for building production-ready LLM applications and intell
 
 - **/multi-agent-optimize**: Optimizes multi-agent workflows for better collaboration, communication, and task coordination. Use when coordinating multiple agents in complex development tasks.
 
+- **/lyra**: AI prompt optimization specialist that transforms vague inputs into precision-crafted prompts. Supports DETAIL (clarifying questions) or BASIC (quick optimization) modes for ChatGPT, Claude, Gemini, and other platforms. Uses a 4-D methodology: Deconstruct, Diagnose, Develop, Deliver.
+
 ## Use Cases
 
 ✅ Building AI-powered features (search, analytics, recommendations)

@@ -8,7 +8,7 @@ The Git plugin provides intelligent Git workflow automation with context-aware r
 
 ## Components
 
-### Commands (4)
+### Commands (5)
 
 #### 1. /commit
 Context-aware Git commit assistant with smart pre-commit checks and submodule support.
@@ -141,6 +141,35 @@ Generate comprehensive changelogs from git commit history with semantic versioni
 - `--version <version>`: Version number for release
 - `--append`: Append instead of overwrite
 - `--no-group`: Flat list without type grouping
+
+---
+
+#### 5. /pr-issue-resolve
+Analyze and systematically resolve GitHub PR review suggestions.
+
+**Features**:
+- Fetch complete PR context (details, diff, comments)
+- Categorize comments (Bugs, Code Changes, Style/Nitpicks, Questions, Approvals)
+- Create resolution plan with prioritization
+- Apply changes with incremental commits
+- Run tests and verification
+- Reply to comments and re-request reviews
+
+**Usage**:
+```bash
+/pr-issue-resolve 123                          # Resolve PR #123
+/pr-issue-resolve https://github.com/org/repo/pull/123  # With full URL
+```
+
+**Process**:
+1. Fetch PR context with `gh` CLI
+2. Analyze and categorize all review comments
+3. Plan resolutions (Blockers → Features → Style → Questions)
+4. Checkout branch, apply fixes in small commits
+5. Test and verify changes
+6. Update PR and request re-review
+
+**Requirements**: GitHub CLI (`gh`) installed and authenticated
 
 ---
 
@@ -525,7 +554,7 @@ Issues and pull requests welcome at the arkhe-claude-plugins repository.
 
 ## License
 
-See individual plugin directories for licensing information.
+MIT License
 
 ## Version
 

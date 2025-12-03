@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**Arkhe Claude Plugins** is a collection of Claude Code plugins providing specialized agents, commands, and skills for documentation, AI engineering, code review, git workflows, and educational content extraction.
+**Arkhe Claude Plugins** is a collection of Claude Code plugins providing specialized agents, commands, and skills for documentation, AI engineering, code review, UI/UX design, git workflows, Google Stitch prompting, Spec-Driven Development, and language-specific programming.
 
 ## Plugin Architecture
 
@@ -18,7 +18,7 @@ This repository uses a **marketplace-based plugin system** where each plugin is 
 ```
 arkhe-claude-plugins/
 ├── .claude-plugin/
-│   └── marketplace.json          # Marketplace catalog
+│   └── marketplace.json          # Marketplace catalog (10 plugins)
 ├── core/                          # Quality control and workflow orchestration
 ├── ai/                            # AI engineering and LLM development
 ├── doc/                           # Documentation generation
@@ -26,6 +26,9 @@ arkhe-claude-plugins/
 ├── ui/                            # UI/UX design and design systems
 ├── google-stitch/                 # Google Stitch prompting toolkit
 ├── git/                           # Git workflow automation
+├── design-intent/                 # Design Intent for SDD
+├── specprep/                      # Spec Kit workflow optimization
+├── lang/                          # Language-specific programming skills
 └── docs/                          # Developer documentation
 ```
 
@@ -55,12 +58,13 @@ plugin-name/
 
 ### Core Plugin
 Quality control and workflow orchestration utilities.
-- **Commands**: `/discuss`, `/double-check`, `/ultrathink`, `/workflow`
+- **Agents**: `deep-think-partner`
+- **Commands**: `/discuss`, `/double-check`, `/ultrathink`, `/workflow`, `/debug`, `/think`
 
 ### AI Plugin
 AI engineering toolkit for production-ready LLM applications.
 - **Agents**: `ai-engineer`, `prompt-engineer`, `context-manager`
-- **Commands**: `/improve-agent`, `/multi-agent-optimize`
+- **Commands**: `/improve-agent`, `/multi-agent-optimize`, `/lyra`
 
 ### Doc Plugin
 Multi-purpose documentation toolkit.
@@ -81,13 +85,13 @@ UI/UX design and design system toolkit.
 ### Google Stitch Plugin
 Claude + Google Stitch prompting toolkit for prompt authoring and session management.
 - **Commands**: `/prompt`
-- **Skills**: `authoring-stitch-prompts`, `stitch-session-manager`
-- **Use**: Generate Stitch-ready prompts, maintain multi-screen session logs, export summaries
+- **Skills**: `authoring-stitch-prompts`, `extracting-stitch-mockups`, `session-manager`
+- **Use**: Generate Stitch-ready prompts, extract mockups, maintain multi-screen session logs, export summaries
 
 ### Git Plugin
 Git workflow automation for commits, pull requests, branching, and changelog generation.
-- **Commands**: `/commit`, `/create-pr`, `/create-branch`, `/changelog`
-- **Skills**: `changelog` (auto-invoke)
+- **Commands**: `/commit`, `/create-pr`, `/create-branch`, `/changelog`, `/pr-issue-resolve`
+- **Skills**: 4 skills (1 auto-invoke: `generating-changelog`, 3 command-invoke)
 - **Scripts**: 4 shell scripts for git workflow automation
 
 ### Design Intent Plugin
@@ -95,6 +99,16 @@ Design Intent for Spec-Driven Development that combines AI-assisted implementati
 - **Commands**: `/setup`, `/feature`, `/plan`, `/design`, `/implement`, `/save-patterns`, `/diary`
 - **Skills**: `design-intent-specialist` (auto-invoked for visual implementation work)
 - **Use**: Build React prototypes from Figma/screenshots, capture proven patterns, and maintain design-intent diaries
+
+### Specprep Plugin
+AI meta-prompt framework for Spec Kit workflow optimization.
+- **Commands**: `/specprep:specify`, `/specprep:plan`
+- **Use**: Optimize requirements and architecture specs, ensure SDD compliance, automated workflow chaining
+
+### Lang Plugin
+Language-specific programming skills for production-grade code.
+- **Skills**: `scripting-bash` (auto-invoked for Bash scripting)
+- **Use**: Production-ready Bash scripting, defensive programming, CI/CD scripts
 
 ## Common Development Commands
 
@@ -110,9 +124,11 @@ Design Intent for Spec-Driven Development that combines AI-assisted implementati
 /plugin install doc@arkhe-claude-plugins
 /plugin install review@arkhe-claude-plugins
 /plugin install ui@arkhe-claude-plugins
-/plugin install google-stitch@arkhe-claude-plugins
-/plugin install git@arkhe-claude-plugins
 /plugin install design-intent@arkhe-claude-plugins
+/plugin install git@arkhe-claude-plugins
+/plugin install specprep@arkhe-claude-plugins
+/plugin install google-stitch@arkhe-claude-plugins
+/plugin install lang@arkhe-claude-plugins
 
 # Verify installation
 /plugin                    # View installed plugins

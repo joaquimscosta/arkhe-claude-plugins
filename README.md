@@ -1,240 +1,179 @@
-# Arkhe Claude Plugins
+<div align="center">
+  <h1>Arkhe Claude Plugins</h1>
 
-Collection of Claude Code plugins for documentation, AI engineering, and educational content creation.
+  <img src="assets/banner.jpg" alt="Arkhe Claude Plugins Banner" width="100%" />
 
-## Available Plugins
 
-### 1. Core Plugin
+  <p>
+    <b>A collection of 10 Claude Code plugins</b> for documentation, AI engineering, code review, <br />
+    UI/UX design, git workflows, Google Stitch prompting, and Spec-Driven Development.
+  </p>
 
-Quality control and workflow orchestration utilities.
+  <p>
+    <a href="LICENSE">
+      <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License" />
+    </a>
+    <img src="https://img.shields.io/badge/Plugins-10-blue" alt="Plugins Count" />
+    <img src="https://img.shields.io/badge/Version-1.0.0-orange" alt="Version" />
+    <a href="https://github.com/joaquimscosta/arkhe-claude-plugins/stargazers">
+      <img src="https://img.shields.io/github/stars/joaquimscosta/arkhe-claude-plugins" alt="Stars" />
+    </a>
+  </p>
 
-**Components:**
-- 4 commands: `/discuss`, `/double-check`, `/ultrathink`, `/workflow`
+  <h4>
+    <a href="#rocket-quick-start">Quick Start</a>
+    <span> · </span>
+    <a href="#electric_plug-available-plugins">Browse Plugins</a>
+    <span> · </span>
+    <a href="#books-developer-documentation">Developer Docs</a>
+    <span> · </span>
+    <a href="https://github.com/joaquimscosta/arkhe-claude-plugins/issues">Report Bug</a>
+  </h4>
+</div>
 
-**Use for:** Technical discussions, quality validation, workflow orchestration
-
-[View Core Plugin Details →](./core/README.md)
-
----
-
-### 2. AI Plugin
-
-AI engineering toolkit for building production-ready LLM applications.
-
-**Components:**
-- 3 agents: `ai-engineer`, `prompt-engineer`, `context-manager`
-- 2 commands: `/improve-agent`, `/multi-agent-optimize`
-
-**Use for:** Building AI-powered features, optimizing prompts, managing context in multi-agent workflows
-
-[View AI Plugin Details →](./ai/README.md)
-
----
-
-### 3. Doc Plugin
-
-Multi-purpose documentation toolkit.
-
-**Components:**
-- 1 agent: `docs-architect`
-- 1 skill: `mermaid` (auto-invoked diagram generation)
-- 3 commands: `/doc-generate`, `/code-explain`, `/diagram`
-
-**Use for:** Generating technical documentation, creating architecture diagrams, explaining complex code
-
-[View Doc Plugin Details →](./doc/README.md)
+<br />
 
 ---
 
-### 4. Review Plugin
+## :electric_plug: Available Plugins
 
-Code quality review tools for development teams.
-
-**Components:**
-- 2 agents: `pragmatic-code-review`, `design-review`
-- 4 commands: `/code`, `/security`, `/design`, `/codebase`
-
-**Use for:** Code review, security assessment, design review with Playwright MCP, codebase documentation
-
-[View Review Plugin Details →](./review/README.md)
-
----
-
-### 5. UI Plugin
-
-UI/UX design and design system toolkit.
-
-**Components:**
-- 1 agent: `ui-ux-designer`
-
-**Use for:** Design systems, accessibility compliance, user research, component library design, design-to-development handoff
-
-[View UI Plugin Details →](./ui/README.md)
+| Plugin | Description | Key Components | Docs |
+| :--- | :--- | :--- | :---: |
+| 🧠 **Core** | Quality control & workflow orchestration. | `deep-think-partner`, `/discuss`, `/debug` | [View](./core/README.md) |
+| 🤖 **AI** | Engineering toolkit for production LLM apps. | `ai-engineer`, `prompt-engineer`, `/improve-agent` | [View](./ai/README.md) |
+| 📝 **Doc** | Multi-purpose documentation toolkit. | `docs-architect`, `/doc-generate`, `/diagram` | [View](./doc/README.md) |
+| 🔍 **Review** | Code quality & security review tools. | `pragmatic-code-review`, `/code`, `/security` | [View](./review/README.md) |
+| 🎨 **UI** | UI/UX design & system toolkit. | `ui-ux-designer`, Accessibility & Handoff | [View](./ui/README.md) |
+| 🧵 **Stitch** | Google Stitch prompting & session tracking. | `/prompt`, `extracting-stitch-mockups` | [View](./google-stitch/README.md) |
+| 🔀 **Git** | Workflow automation (PRs, Commits, Changelogs). | `/commit`, `/create-pr`, Smart pre-commit | [View](./git/README.md) |
+| 📐 **Design Intent** | Spec-Driven Development (SDD) & Figma Dialect. | `/feature`, `/plan`, `design-intent-specialist` | [View](./design-intent/README.md) |
+| 📋 **Specprep** | Meta-prompt framework for Spec Kit workflow. | `/specprep:specify`, SDD compliance | [View](./specprep/README.md) |
+| 💻 **Lang** | Language-specific skills (Bash/Shell). | `scripting-bash`, POSIX compliance | [View](./lang/README.md) |
 
 ---
 
-### 6. Google Stitch Plugin
-
-Claude + Google Stitch prompting toolkit that pairs optimized prompt authoring with session tracking.
-
-**Components:**
-- 1 command: `/prompt`
-- 2 skills: `authoring-stitch-prompts`, `stitch-session-manager`
-
-**Use for:** Generating Stitch-ready prompts, maintaining multi-screen design sessions, exporting Stitch handoff summaries
-
-[View Google Stitch Plugin Details →](./google-stitch/README.md)
-
----
-
-### 7. Git Plugin
-
-Git workflow automation for commit, PR, branching, and changelog generation.
-
-**Components:**
-- 4 commands: `/commit`, `/create-pr`, `/create-branch`, `/changelog`
-- 1 skill: `changelog` (auto-invoked)
-- 4 scripts: Smart pre-commit checks, PR creation/update, branch naming
-
-**Use for:** Git workflows, automated commits, pull requests, feature branching, changelog generation
-
-[View Git Plugin Details →](./git/README.md)
-
----
-
-### 8. Design Intent Plugin
-
-Design Intent for Spec-Driven Development (SDD) combines AI-assisted implementation with a documented design dialect to keep React prototypes visually accurate.
-
-**Components:**
-- 7 commands: `/setup`, `/feature`, `/plan`, `/design`, `/implement`, `/save-patterns`, `/diary`
-- 1 skill: `design-intent-specialist` (auto-invoked for visual implementation work)
-
-**Use for:** Translating Figma references or screenshots into faithful React components, capturing emerging design patterns, and maintaining session diaries plus project memory.
-
-[View Design Intent Plugin Details →](./design-intent/README.md)
-
----
-
-## Quick Start
+## :rocket: Quick Start
 
 ### 1. Add the Marketplace
 
+**Option A: Install directly from GitHub (recommended)**
+
 ```bash
+/plugin marketplace add joaquimscosta/arkhe-claude-plugins
+```
+
+**Option B: Clone and install locally**
+
+```bash
+git clone https://github.com/joaquimscosta/arkhe-claude-plugins.git
 /plugin marketplace add ./arkhe-claude-plugins
 ```
 
 ### 2. Install Plugins
 
-Install all plugins:
+You can install all plugins at once:
+
 ```bash
 /plugin install core@arkhe-claude-plugins
 /plugin install ai@arkhe-claude-plugins
 /plugin install doc@arkhe-claude-plugins
 /plugin install review@arkhe-claude-plugins
 /plugin install ui@arkhe-claude-plugins
-/plugin install google-stitch@arkhe-claude-plugins
-/plugin install git@arkhe-claude-plugins
 /plugin install design-intent@arkhe-claude-plugins
+/plugin install git@arkhe-claude-plugins
+/plugin install specprep@arkhe-claude-plugins
+/plugin install google-stitch@arkhe-claude-plugins
+/plugin install lang@arkhe-claude-plugins
 ```
 
-Or install selectively based on your needs.
+*Or install selectively based on your needs.*
 
-### 3. Use the Plugins
+### 3. Usage
 
 After installation, restart Claude Code and use:
 
-- **Agents**: Type `/agents` to see and select available agents
-- **Commands**: Type `/help` to see all available commands
-- **Skills**: Skills are automatically invoked when Claude detects relevant tasks
+- **Agents:** Type `/agents` to see and select available agents.
+- **Commands:** Type `/help` to see all available commands.
+- **Skills:** Skills are automatically invoked when Claude detects relevant tasks.
 
-## Plugin Recommendations
+---
 
-**For documentation work:**
-→ Install `core` and `doc`
+## :compass: Recommendations & Namespacing
 
-**For AI/LLM development:**
-→ Install `ai`
+### Best Practices by Role
 
-**For code quality and review:**
-→ Install `review`
+- **Documentation:** `core` + `doc`
+- **AI/LLM Dev:** `ai`
+- **Code Quality:** `review`
+- **UI/Design:** `ui` + `design-intent`
+- **DevOps/Git:** `git` + `lang`
 
-**For UI/UX design and design systems:**
-→ Install `ui`
+### Namespacing
 
-**For Google Stitch prompt generation + session tracking:**
-→ Install `google-stitch`
+If multiple plugins provide commands with similar names, use namespaced invocation:
 
-**For Git workflow automation:**
-→ Install `git`
+```bash
+# Direct invocation
+/commit
 
-**For AI-assisted frontend implementation with documented design intent:**
-→ Install `design-intent`
+# Namespaced invocation (to avoid conflicts)
+/git:commit
+/specprep:plan
+```
 
-## Developer Documentation
+---
 
-**For plugin developers and contributors:**
+## :books: Developer Documentation
+
+<details>
+<summary><b>Click to expand Developer Resources</b></summary>
 
 ### Skills Development
 
-- **[Skills Guide](./docs/SKILLS.md)** - Practical guide to creating, managing, and sharing Agent Skills in Claude Code
-- **[Agent Skills Overview](./docs/AGENT_SKILLS_OVERVIEW.md)** - Complete guide to understanding and using Agent Skills, including architecture, progressive disclosure, and best practices
-- **[Skill Development Best Practices](./docs/SKILL_DEVELOPMENT_BEST_PRACTICES.md)** - Lessons learned from real-world skill implementation, token optimization, and common pitfalls
-- **[Anthropic Skills Repository](https://github.com/anthropics/skills)** - Official reference implementations with real-world examples and patterns
+- **[Skills Guide](./docs/SKILLS.md)** - Creating and managing Agent Skills.
+- **[Agent Skills Overview](./docs/AGENT_SKILLS_OVERVIEW.md)** - Architecture and progressive disclosure.
+- **[Skill Development Best Practices](./docs/SKILL_DEVELOPMENT_BEST_PRACTICES.md)** - Real-world lessons and token optimization.
+- **[Anthropic Skills Repository](https://github.com/anthropics/skills)** - Reference implementations.
 
-### Prompt Engineering & Best Practices
+### Prompt Engineering
 
-- **[Claude 4 Best Practices](./docs/CLAUDE_4_BEST_PRACTICES.md)** - Official prompt engineering techniques for Claude 4 models (Sonnet 4.5, Opus 4.1, Haiku 4.5) including instruction following, context optimization, and migration guidance
+- **[Claude 4 Best Practices](./docs/CLAUDE_4_BEST_PRACTICES.md)** - Official techniques for Sonnet 4.5, Opus 4.1.
 
-### Creating Your Own Plugins
+### Creating Plugins
 
-Want to extend these plugins or create your own?
+1. Review the existing plugin structure.
+2. Read the [Skills Development Best Practices](./docs/SKILL_DEVELOPMENT_BEST_PRACTICES.md).
+3. Follow patterns in `core`, `doc`, and `git`.
 
-1. Review the existing plugin structure in this repository
-2. Read the [Skills Development Best Practices](./docs/SKILL_DEVELOPMENT_BEST_PRACTICES.md) for technical guidance
-3. Follow the patterns established in `core`, `doc`, and `git`
-4. Test locally using the marketplace structure
+</details>
 
-## Directory Structure
+<details>
+<summary><b>Directory Structure</b></summary>
 
 ```
 arkhe-claude-plugins/
 ├── .claude-plugin/
-│   └── marketplace.json
-├── docs/                                      # Developer documentation
-│   ├── AGENT_SKILLS_OVERVIEW.md              # ← Synced from Claude docs
-│   ├── CLAUDE_4_BEST_PRACTICES.md            # ← Synced from Claude docs
-│   ├── COMMANDS.md                           # ← Synced from Claude docs
-│   ├── HOOKS.md                              # ← Synced from Claude docs
-│   ├── PLUGINS.md                            # ← Synced from Claude docs
-│   ├── SKILL_DEVELOPMENT_BEST_PRACTICES.md   # Custom lessons learned
-│   ├── SUBAGENTS.md                          # ← Synced from Claude docs
-│   ├── README.md                             # Documentation index
-│   └── update-claude-docs.sh                 # Automated doc sync script
-├── core/
-│   ├── .claude-plugin/plugin.json
-│   ├── agents/
-│   ├── commands/
-│   │   ├── discuss.md
-│   │   ├── double-check.md
-│   │   └── ultrathink.md
-│   └── README.md
-├── google-stitch/
-│   ├── .claude-plugin/plugin.json
-│   ├── commands/
-│   │   └── prompt.md
-│   ├── README.md
-│   └── skills/
-│       ├── authoring-stitch-prompts/
-│       └── session-manager/
+│   └── marketplace.json              # Marketplace catalog
+├── docs/                             # Developer documentation
+├── core/                             # 1. Quality control & orchestration
+├── ai/                               # 2. AI engineering toolkit
+├── doc/                              # 3. Documentation toolkit
+├── review/                           # 4. Code review tools
+├── ui/                               # 5. UI/UX design toolkit
+├── google-stitch/                    # 6. Google Stitch prompting
+├── git/                              # 7. Git workflow automation
+├── design-intent/                    # 8. Design Intent for SDD
+├── specprep/                         # 9. Spec Kit optimization
+├── lang/                             # 10. Language-specific skills
 ├── README.md
-└── INSTALLATION.md
+├── INSTALLATION.md
+└── CLAUDE.md
 ```
 
-## Version
+</details>
 
-All plugins are currently at version 1.0.0
+---
 
-## License
+## :warning: License
 
-See individual plugin directories for licensing information.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

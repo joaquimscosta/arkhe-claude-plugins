@@ -1,7 +1,7 @@
 {
   "name": "arkhe-claude-plugins",
   "metadata": {
-    "description": "Collection of Claude Code plugins for documentation, AI engineering, and educational content creation"
+    "description": "Collection of 10 Claude Code plugins for documentation, AI engineering, code review, UI/UX design, git workflows, Google Stitch prompting, Spec-Driven Development, and language-specific programming"
   },
   "owner": {
     "name": "Arkhe"
@@ -51,6 +51,11 @@
       "name": "design-intent",
       "source": "./design-intent",
       "description": "Design Intent for Spec-Driven Development - Build React prototypes with AI while maintaining design consistency"
+    },
+    {
+      "name": "lang",
+      "source": "./lang",
+      "description": "Language-specific programming skills (Bash, Python, Rust, TypeScript)"
     }
   ]
 }

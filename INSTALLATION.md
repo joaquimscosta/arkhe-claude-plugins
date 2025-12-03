@@ -5,15 +5,25 @@ Complete guide to installing and using the Arkhe Claude Plugins marketplace.
 ## Prerequisites
 
 - Claude Code installed and running
-- This repository cloned or accessible locally
 
 ## Quick Start
 
 ### 1. Add the Marketplace
 
-From within Claude Code, navigate to the parent directory of the cloned repository and run:
+**Option A: Install directly from GitHub (recommended)**
+
+No cloning required! Run this command in Claude Code:
 
 ```bash
+/plugin marketplace add joaquimscosta/arkhe-claude-plugins
+```
+
+**Option B: Clone and install locally**
+
+If you prefer a local copy or want to contribute:
+
+```bash
+git clone https://github.com/joaquimscosta/arkhe-claude-plugins.git
 /plugin marketplace add ./arkhe-claude-plugins
 ```
 
@@ -25,8 +35,8 @@ From within Claude Code, navigate to the parent directory of the cloned reposito
 /plugin install doc@arkhe-claude-plugins
 /plugin install review@arkhe-claude-plugins
 /plugin install ui@arkhe-claude-plugins
-/plugin install git@arkhe-claude-plugins
 /plugin install design-intent@arkhe-claude-plugins
+/plugin install git@arkhe-claude-plugins
 /plugin install specprep@arkhe-claude-plugins
 /plugin install google-stitch@arkhe-claude-plugins
 /plugin install lang@arkhe-claude-plugins
@@ -46,7 +56,8 @@ Quality control and workflow orchestration utilities.
 **Install**: `/plugin install core@arkhe-claude-plugins`
 
 **Components**:
-- 4 commands: `/discuss`, `/double-check`, `/ultrathink`, `/workflow`
+- 1 agent: `deep-think-partner`
+- 6 commands: `/discuss`, `/double-check`, `/ultrathink`, `/workflow`, `/debug`, `/think`
 
 ---
 
@@ -57,7 +68,7 @@ AI engineering toolkit for production-ready LLM applications.
 
 **Components**:
 - 3 agents: `ai-engineer`, `prompt-engineer`, `context-manager`
-- 2 commands: `/improve-agent`, `/multi-agent-optimize`
+- 3 commands: `/improve-agent`, `/multi-agent-optimize`, `/lyra`
 
 ---
 
@@ -99,9 +110,11 @@ Git workflow automation for commits, pull requests, branching, and changelog gen
 
 **Install**: `/plugin install git@arkhe-claude-plugins`
 
+**Requirements**: GitHub CLI (`gh`) for PR commands
+
 **Components**:
-- 4 commands: `/commit`, `/create-pr`, `/create-branch`, `/changelog`
-- 1 skill: `changelog` (auto-invoked)
+- 5 commands: `/commit`, `/create-pr`, `/create-branch`, `/changelog`, `/pr-issue-resolve`
+- 4 skills: 1 auto-invoke (`generating-changelog`) + 3 command-invoke
 - 4 scripts: Shell scripts for git workflow automation
 
 ---
@@ -124,8 +137,10 @@ AI meta-prompt framework for Spec Kit workflow optimization.
 
 **Install**: `/plugin install specprep@arkhe-claude-plugins`
 
+**Requirements**: Spec Kit plugin for full workflow integration
+
 **Components**:
-- 2 commands: `/plan`, `/specify`
+- 2 commands: `/specprep:specify`, `/specprep:plan`
 
 ---
 
@@ -148,9 +163,9 @@ Language-specific programming skills for various languages.
 **Install**: `/plugin install lang@arkhe-claude-plugins`
 
 **Components**:
-- 1 skill: `bash` (auto-invoked for Bash scripting)
+- 1 skill: `scripting-bash` (auto-invoked for Bash scripting)
 
-**Use for:** Enhanced language-specific guidance for Bash, Python, Rust, and TypeScript.
+**Use for:** Production-ready Bash scripting, defensive programming patterns, CI/CD scripts, POSIX compliance.
 
 ---
 
@@ -225,6 +240,7 @@ You should see all 10 plugins listed.
 ```
 
 You should see agents from installed plugins:
+- **core**: `deep-think-partner`
 - **ai**: `ai-engineer`, `prompt-engineer`, `context-manager`
 - **doc**: `docs-architect`
 - **review**: `pragmatic-code-review`, `design-review`
@@ -237,13 +253,13 @@ You should see agents from installed plugins:
 ```
 
 You should see commands from installed plugins:
-- **core**: `/discuss`, `/double-check`, `/ultrathink`, `/workflow`
-- **ai**: `/improve-agent`, `/multi-agent-optimize`
+- **core**: `/discuss`, `/double-check`, `/ultrathink`, `/workflow`, `/debug`, `/think`
+- **ai**: `/improve-agent`, `/multi-agent-optimize`, `/lyra`
 - **doc**: `/doc-generate`, `/code-explain`, `/diagram`
 - **review**: `/code`, `/security`, `/design`, `/codebase`
-- **git**: `/commit`, `/create-pr`, `/create-branch`, `/changelog`
+- **git**: `/commit`, `/create-pr`, `/create-branch`, `/changelog`, `/pr-issue-resolve`
 - **design-intent**: `/setup`, `/feature`, `/plan`, `/design`, `/implement`, `/save-patterns`, `/diary`
-- **specprep**: `/plan`, `/specify`
+- **specprep**: `/specprep:specify`, `/specprep:plan`
 - **google-stitch**: `/prompt`
 
 ### Check Skills
@@ -253,7 +269,7 @@ Skills are automatically invoked when relevant context is detected:
 - **git**: `changelog` skill activates when you edit CHANGELOG.md or request changelog generation
 - **design-intent**: `design-intent-specialist` activates when you're implementing UI from visual references or running `/design` or `/implement`
 - **google-stitch**: `authoring-stitch-prompts`, `extracting-stitch-mockups`, `session-manager` activate for Stitch prompt work
-- **lang**: `bash` skill activates for Bash scripting guidance
+- **lang**: `scripting-bash` skill activates for Bash scripting guidance
 
 ---
 
@@ -376,10 +392,10 @@ Skills are automatically invoked when relevant context is detected:
 
 ```bash
 # Generate implementation plan for spec
-/plan
+/specprep:plan @specs/002-feature/plan.md
 
 # Create detailed specification
-/specify user authentication flow
+/specprep:specify @notes/feature-idea.txt
 ```
 
 ### Google Stitch Plugin
