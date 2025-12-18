@@ -1,0 +1,8 @@
+{
+  "name": "domain-driven-design",
+  "description": "Domain-Driven Design guidance for complex business systems",
+  "version": "1.0.0",
+  "author": {
+    "name": "Arkhe"
+  }
+}

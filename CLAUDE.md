@@ -110,6 +110,11 @@ Language-specific programming skills for production-grade code.
 - **Skills**: `scripting-bash` (auto-invoked for Bash scripting)
 - **Use**: Production-ready Bash scripting, defensive programming, CI/CD scripts
 
+### Domain-Driven Design Plugin
+Domain-Driven Design guidance for complex business systems.
+- **Skills**: `domain-driven-design` (auto-invoked for DDD architecture guidance)
+- **Use**: Strategic design, bounded contexts, aggregates, context mapping, modular monolith vs microservices decisions
+
 ## Common Development Commands
 
 ### Plugin Management
@@ -129,6 +134,7 @@ Language-specific programming skills for production-grade code.
 /plugin install specprep@arkhe-claude-plugins
 /plugin install google-stitch@arkhe-claude-plugins
 /plugin install lang@arkhe-claude-plugins
+/plugin install domain-driven-design@arkhe-claude-plugins
 
 # Verify installation
 /plugin                    # View installed plugins

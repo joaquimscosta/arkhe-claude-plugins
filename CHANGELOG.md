@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+#### Domain-Driven Design Plugin
+- New plugin: Domain-Driven Design guidance for complex business systems
+- `domain-driven-design` skill with auto-invocation for DDD concepts ("bounded context", "aggregate", "domain model", "ubiquitous language", "event storming", "context mapping", "domain events", "anemic domain model")
+- Strategic patterns reference: subdomains, bounded contexts, context mapping, event storming
+- Tactical patterns reference: entities, value objects, aggregates, domain services, repositories
+- Architecture alignment reference: clean architecture, hexagonal, modular monolith, microservices
+- Anti-patterns reference: anemic domain model, over-engineering, leaky abstractions
+- README with installation guide and usage examples
+- Registered in marketplace.json as 11th plugin
+
 #### Design Intent Plugin
 - New plugin: Design Intent for Spec-Driven Development
 - 7 commands: `/setup`, `/design`, `/feature`, `/plan`, `/implement`, `/document-design-intent`, `/diary`
