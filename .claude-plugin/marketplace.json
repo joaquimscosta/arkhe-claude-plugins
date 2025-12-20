@@ -58,9 +58,9 @@
       "description": "Language-specific programming skills (Bash, Python, Rust, TypeScript)"
     },
     {
-      "name": "domain-driven-design",
-      "source": "./domain-driven-design",
-      "description": "Domain-Driven Design guidance for complex business systems (strategic patterns, tactical implementation, architecture decisions)"
+      "name": "spring-boot",
+      "source": "./spring-boot",
+      "description": "Domain-Driven Design with Spring Boot 4 (DDD patterns, Spring Data, REST APIs, Spring Modulith)"
     }
   ]
 }

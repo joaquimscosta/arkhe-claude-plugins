@@ -1,0 +1,8 @@
+{
+  "name": "spring-boot",
+  "description": "Domain-Driven Design patterns and Spring Boot 4 implementation for complex business systems",
+  "version": "1.0.0",
+  "author": {
+    "name": "Arkhe"
+  }
+}

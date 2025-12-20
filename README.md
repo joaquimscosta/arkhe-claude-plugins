@@ -49,7 +49,7 @@
 | 📐 **Design Intent** | Spec-Driven Development (SDD) & Figma Dialect. | `/feature`, `/plan`, `design-intent-specialist` | [View](./design-intent/README.md) |
 | 📋 **Specprep** | Meta-prompt framework for Spec Kit workflow. | `/specprep:specify`, SDD compliance | [View](./specprep/README.md) |
 | 💻 **Lang** | Language-specific skills (Bash/Shell). | `scripting-bash`, POSIX compliance | [View](./lang/README.md) |
-| 🏛️ **DDD** | Domain-Driven Design for complex systems. | `domain-driven-design`, Strategic & Tactical patterns | [View](./domain-driven-design/README.md) |
+| 🍃 **Spring Boot** | DDD with Spring Boot 4 implementation. | 7 skills: DDD, data, web-api, modulith, security, observability, testing | [View](./spring-boot/README.md) |
 
 ---
 

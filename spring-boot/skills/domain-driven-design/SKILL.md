@@ -84,3 +84,13 @@ Consider microservices when:
 3. **Apply tactical patterns selectively** - Only in core domains where complexity warrants
 4. **One aggregate per transaction** - Cross-aggregate consistency via domain events
 5. **Persistence ignorance** - Domain layer has no infrastructure dependencies
+
+## Implementation Skills
+
+For framework-specific implementation of these patterns:
+
+- **Spring Boot data layer**: See `spring-boot-data-ddd` skill for JPA/JDBC aggregates, repositories, transactions
+- **Spring Boot web layer**: See `spring-boot-web-api` skill for controllers, validation, exception handling  
+- **Spring Modulith**: See `spring-boot-modulith` skill for module structure and event-driven communication
+
+These skills provide Spring Boot 4 implementation patterns for the DDD concepts defined here.

@@ -110,10 +110,10 @@ Language-specific programming skills for production-grade code.
 - **Skills**: `scripting-bash` (auto-invoked for Bash scripting)
 - **Use**: Production-ready Bash scripting, defensive programming, CI/CD scripts
 
-### Domain-Driven Design Plugin
-Domain-Driven Design guidance for complex business systems.
-- **Skills**: `domain-driven-design` (auto-invoked for DDD architecture guidance)
-- **Use**: Strategic design, bounded contexts, aggregates, context mapping, modular monolith vs microservices decisions
+### Spring Boot Plugin
+Domain-Driven Design patterns with Spring Boot 4 implementation.
+- **Skills**: `domain-driven-design`, `spring-boot-data-ddd`, `spring-boot-web-api`, `spring-boot-modulith`, `spring-boot-security`, `spring-boot-observability`, `spring-boot-testing` (all auto-invoked)
+- **Use**: DDD architecture, Spring Data, REST APIs, Spring Modulith, Spring Security 7, observability, testing
 
 ## Common Development Commands
 
@@ -134,7 +134,7 @@ Domain-Driven Design guidance for complex business systems.
 /plugin install specprep@arkhe-claude-plugins
 /plugin install google-stitch@arkhe-claude-plugins
 /plugin install lang@arkhe-claude-plugins
-/plugin install domain-driven-design@arkhe-claude-plugins
+/plugin install spring-boot@arkhe-claude-plugins
 
 # Verify installation
 /plugin                    # View installed plugins
