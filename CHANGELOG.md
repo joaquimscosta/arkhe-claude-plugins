@@ -7,16 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2025-12-20
+
 ### Added
 
-#### Domain-Driven Design Plugin
-- New plugin: Domain-Driven Design guidance for complex business systems
-- `domain-driven-design` skill with auto-invocation for DDD concepts ("bounded context", "aggregate", "domain model", "ubiquitous language", "event storming", "context mapping", "domain events", "anemic domain model")
-- Strategic patterns reference: subdomains, bounded contexts, context mapping, event storming
-- Tactical patterns reference: entities, value objects, aggregates, domain services, repositories
-- Architecture alignment reference: clean architecture, hexagonal, modular monolith, microservices
-- Anti-patterns reference: anemic domain model, over-engineering, leaky abstractions
-- README with installation guide and usage examples
+#### Spring Boot Plugin
+- New plugin: Domain-Driven Design patterns with Spring Boot 4 implementation
+- 7 specialized skills for DDD with Spring Boot:
+  - `domain-driven-design`: Strategic and tactical DDD guidance (subdomains, bounded contexts, aggregates, domain services)
+  - `spring-boot-data-ddd`: JPA/JDBC implementation patterns (strongly-typed IDs, value objects, repositories)
+  - `spring-boot-web-api`: REST API patterns (validation, ProblemDetail RFC 9457, WebFlux)
+  - `spring-boot-modulith`: Modular monolith with Spring Modulith 2.0 (module structure, event publishing)
+  - `spring-boot-security`: Spring Security 7 Lambda DSL, JWT/OAuth2, method security
+  - `spring-boot-observability`: Actuator, Micrometer, OpenTelemetry distributed tracing
+  - `spring-boot-testing`: Slice tests, Testcontainers, @MockitoBean, Scenario API
+- Tech stack: Spring Boot 4, Spring Framework 7, Java 21+, Jakarta EE 11, JSpecify
+- Migration checklist for Spring Security 7 breaking changes
 - Registered in marketplace.json as 11th plugin
 
 #### Design Intent Plugin
@@ -50,6 +56,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced EXAMPLES.md with Examples 14-16 demonstrating new format (including split file scenario)
 - Created layout-prompt-template.md with structure guidelines and validation checklist
 - Updated evaluation.json test cases to verify single-file generation behavior
+
+### Fixed
+
+- README.md banner image display issue
 
 ## [1.0.0] - 2025-11-12
 
@@ -210,5 +220,6 @@ The `/specprep:tasks` command has been removed in favor of automatic command cha
 - **Documentation**: See README.md and docs/ directory
 - **Installation**: See INSTALLATION.md
 
-[Unreleased]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/releases/tag/v1.0.0
