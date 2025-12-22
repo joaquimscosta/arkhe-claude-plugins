@@ -24,122 +24,26 @@ Spring Data JDBC enforces aggregate boundaries naturally—recommended for new D
 4. **Implement service layer** → `@Transactional` on public methods, one aggregate per transaction
 5. **Add projections** → Interface or record-based for read operations
 
-## Quick Implementation Patterns
+## Quick Patterns
 
-### Aggregate Root with Domain Events
-
-```java
-@Entity
-public class Order extends AbstractAggregateRoot<Order> {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    
-    @Embedded
-    private CustomerId customerId;  // Value object
-    
-    @Enumerated(EnumType.STRING)
-    private OrderStatus status = OrderStatus.DRAFT;
-    
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "order_id")
-    private Set<OrderLine> lines = new HashSet<>();
-    
-    public void submit() {
-        if (lines.isEmpty()) throw new IllegalStateException("Empty order");
-        this.status = OrderStatus.SUBMITTED;
-        registerEvent(new OrderSubmitted(this.id));
-    }
-}
-```
-
-```kotlin
-@Entity
-class Order : AbstractAggregateRoot<Order>() {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    var id: Long? = null
-        private set
-    
-    @Embedded
-    lateinit var customerId: CustomerId
-        private set
-    
-    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true)
-    @JoinColumn(name = "order_id")
-    private val _lines: MutableSet<OrderLine> = mutableSetOf()
-    val lines: Set<OrderLine> get() = _lines.toSet()
-    
-    fun submit(): Order {
-        check(_lines.isNotEmpty()) { "Empty order" }
-        status = OrderStatus.SUBMITTED
-        registerEvent(OrderSubmitted(id!!))
-        return this
-    }
-}
-```
-
-### Repository with EntityGraph
-
-```java
-public interface OrderRepository extends JpaRepository<Order, Long> {
-    
-    @EntityGraph(attributePaths = {"lines", "lines.product"})
-    Optional<Order> findWithLinesById(Long id);
-    
-    List<OrderSummary> findByStatus(OrderStatus status);  // Projection
-    
-    @Query("SELECT o FROM Order o WHERE o.customerId.value = :customerId")
-    List<Order> findByCustomerId(@Param("customerId") String customerId);
-}
-```
-
-### Transactional Service
-
-```java
-@Service
-@Transactional
-public class OrderService {
-    private final OrderRepository orders;
-    
-    @Transactional(readOnly = true)
-    public OrderDto findById(Long id) {
-        return orders.findById(id)
-            .map(OrderDto::from)
-            .orElseThrow(() -> new OrderNotFoundException(id));
-    }
-    
-    public OrderDto submit(Long orderId) {
-        Order order = orders.findWithLinesById(orderId)
-            .orElseThrow(() -> new OrderNotFoundException(orderId));
-        order.submit();
-        return OrderDto.from(orders.save(order));
-    }
-}
-```
+See [EXAMPLES.md](EXAMPLES.md) for complete working examples including:
+- **Aggregate Root** with AbstractAggregateRoot and domain events (Java + Kotlin)
+- **Repository with EntityGraph** for N+1 prevention
+- **Transactional Service** with proper boundaries
+- **Value Objects** (Strongly-typed IDs, Money pattern)
+- **Projections** for efficient read operations
+- **Auditing** with automatic timestamps
 
 ## Spring Boot 4 Specifics
 
-### JSpecify Null-Safety
-```java
-@NullMarked  // All params/returns non-null by default
-@Service
-public class OrderService {
-    public @Nullable Order findByIdOrNull(Long id) {
-        return orders.findById(id).orElse(null);
-    }
-}
-```
-
-### AOT Repository Compilation
-Enabled by default—query methods compile to source code for faster startup. No configuration needed.
-
-### Jakarta EE 11 Namespaces
-All imports use `jakarta.*`:
-- `jakarta.persistence.*` (JPA)
-- `jakarta.validation.*` (Bean Validation)
-- `jakarta.transaction.Transactional` (or Spring's)
+- **JSpecify null-safety**: `@NullMarked` and `@Nullable` annotations
+- **AOT Repository Compilation**: Enabled by default for faster startup
+- **Jakarta EE 11**: All imports use `jakarta.*` namespace
 
 ## Detailed References
 
+- **Examples**: See [EXAMPLES.md](EXAMPLES.md) for complete working code examples
+- **Troubleshooting**: See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for common issues and Boot 4 migration
 - **Aggregates & Entities**: See [references/aggregates.md](references/aggregates.md) for complete patterns with value objects, typed IDs, auditing
 - **Repositories & Queries**: See [references/repositories.md](references/repositories.md) for custom queries, projections, specifications
 - **Transactions**: See [references/transactions.md](references/transactions.md) for propagation, isolation, cross-aggregate consistency

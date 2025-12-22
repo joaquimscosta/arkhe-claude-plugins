@@ -25,169 +25,26 @@ Implements authentication and authorization with Spring Security 7's mandatory L
 4. **Add method security** → `@EnableMethodSecurity` + `@PreAuthorize`
 5. **Handle CORS/CSRF** → Configure for REST APIs
 
-## Quick Implementation Patterns
+## Quick Patterns
 
-### Minimal REST API Security
-
-```java
-@Configuration
-@EnableWebSecurity
-public class SecurityConfig {
-    
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/public/**", "/actuator/health").permitAll()
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                .anyRequest().authenticated()
-            )
-            .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
-            .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .csrf(csrf -> csrf.disable());  // Stateless API
-        return http.build();
-    }
-}
-```
-
-```kotlin
-import org.springframework.security.config.annotation.web.invoke
-
-@Configuration
-@EnableWebSecurity
-class SecurityConfig {
-    
-    @Bean
-    fun filterChain(http: HttpSecurity): SecurityFilterChain {
-        http {
-            authorizeHttpRequests {
-                authorize("/public/**", permitAll)
-                authorize("/api/admin/**", hasRole("ADMIN"))
-                authorize(anyRequest, authenticated)
-            }
-            oauth2ResourceServer { jwt { } }
-            sessionManagement { sessionCreationPolicy = SessionCreationPolicy.STATELESS }
-            csrf { disable() }
-        }
-        return http.build()
-    }
-}
-```
-
-### Form Login + Session Security
-
-```java
-@Bean
-public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    http
-        .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/login", "/register", "/css/**", "/js/**").permitAll()
-            .anyRequest().authenticated()
-        )
-        .formLogin(form -> form
-            .loginPage("/login")
-            .defaultSuccessUrl("/dashboard", true)
-            .failureUrl("/login?error=true")
-            .permitAll()
-        )
-        .logout(logout -> logout
-            .logoutSuccessUrl("/login?logout=true")
-            .invalidateHttpSession(true)
-            .deleteCookies("JSESSIONID")
-        )
-        .sessionManagement(session -> session
-            .maximumSessions(1)
-            .expiredUrl("/login?expired=true")
-        )
-        .csrf(csrf -> csrf.csrfTokenRepository(
-            CookieCsrfTokenRepository.withHttpOnlyFalse()  // For SPA
-        ));
-    return http.build();
-}
-```
-
-### Method Security
-
-```java
-@Configuration
-@EnableMethodSecurity(prePostEnabled = true, securedEnabled = true)
-public class MethodSecurityConfig {}
-
-@Service
-public class OrderService {
-    
-    @PreAuthorize("hasRole('ADMIN') or #customerId == authentication.principal.id")
-    public Order getOrder(Long customerId, Long orderId) {
-        // Admin or owner can access
-    }
-    
-    @PreAuthorize("@orderSecurity.canModify(authentication, #orderId)")
-    public void updateOrder(Long orderId, OrderRequest request) {
-        // Delegates to security bean
-    }
-    
-    @PostFilter("filterObject.isPublic or filterObject.ownerId == authentication.name")
-    public List<Order> findAll() {
-        // Filters results after execution
-    }
-}
-
-@Component("orderSecurity")
-public class OrderSecurityEvaluator {
-    public boolean canModify(Authentication auth, Long orderId) {
-        // Custom authorization logic
-        return orderRepository.findById(orderId)
-            .map(order -> order.getOwnerId().equals(auth.getName()))
-            .orElse(false);
-    }
-}
-```
+See [EXAMPLES.md](EXAMPLES.md) for complete working examples including:
+- **REST API Security** with JWT/OAuth2 (Java + Kotlin)
+- **Form Login with Session Security** and CSRF
+- **Method Security** with @PreAuthorize and SpEL
+- **CORS Configuration** for cross-origin APIs
+- **Password Encoder** (Argon2 for Security 7)
 
 ## Spring Boot 4 Specifics
 
-### Password Encoder (Argon2 recommended)
-
-```java
-@Bean
-public PasswordEncoder passwordEncoder() {
-    return Argon2PasswordEncoder.defaultsForSpring7();
-}
-```
-
-### SPA-Friendly CSRF
-
-```java
-.csrf(csrf -> csrf.csrfTokenRepository(
-    CookieCsrfTokenRepository.withHttpOnlyFalse()
-))
-// Or for stateless APIs with JWT:
-.csrf(csrf -> csrf.disable())
-```
-
-### CORS Configuration
-
-```java
-@Bean
-public CorsConfigurationSource corsConfigurationSource() {
-    CorsConfiguration config = new CorsConfiguration();
-    config.setAllowedOrigins(List.of("https://frontend.example.com"));
-    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-    config.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With"));
-    config.setAllowCredentials(true);
-    config.setMaxAge(3600L);
-    
-    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-    source.registerCorsConfiguration("/api/**", config);
-    return source;
-}
-
-// In SecurityFilterChain:
-.cors(cors -> cors.configurationSource(corsConfigurationSource()))
-```
+- **Lambda DSL** is mandatory (no `and()` chaining)
+- **Argon2** password encoder: `Argon2PasswordEncoder.defaultsForSpring7()`
+- **CSRF for SPAs**: `CookieCsrfTokenRepository.withHttpOnlyFalse()`
+- **@EnableMethodSecurity** replaces `@EnableGlobalMethodSecurity`
 
 ## Detailed References
 
+- **Examples**: See [EXAMPLES.md](EXAMPLES.md) for complete working code examples
+- **Troubleshooting**: See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for common issues and Boot 4 migration
 - **Security Configuration**: See [references/security-config.md](references/security-config.md) for complete SecurityFilterChain patterns
 - **Authentication**: See [references/authentication.md](references/authentication.md) for UserDetailsService, password encoding
 - **JWT/OAuth2**: See [references/jwt-oauth2.md](references/jwt-oauth2.md) for resource server, token validation

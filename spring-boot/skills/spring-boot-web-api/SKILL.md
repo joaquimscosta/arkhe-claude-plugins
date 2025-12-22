@@ -24,187 +24,27 @@ With Virtual Threads (Java 21+), MVC handles high concurrency without WebFlux co
 4. **Handle exceptions** → `@RestControllerAdvice` with `ProblemDetail`
 5. **Configure versioning** → Native API versioning (Spring Boot 4)
 
-## Quick Implementation Patterns
+## Quick Patterns
 
-### REST Controller
-
-```java
-@RestController
-@RequestMapping("/api/orders")
-@Validated
-public class OrderController {
-    
-    private final OrderService orderService;
-    
-    @GetMapping("/{id}")
-    public OrderDto getById(@PathVariable Long id) {
-        return orderService.findById(id);
-    }
-    
-    @GetMapping
-    public Page<OrderSummary> list(
-        @RequestParam(defaultValue = "SUBMITTED") OrderStatus status,
-        @PageableDefault(size = 20, sort = "createdAt", direction = DESC) Pageable pageable
-    ) {
-        return orderService.findByStatus(status, pageable);
-    }
-    
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<OrderDto> create(@Valid @RequestBody CreateOrderRequest request) {
-        OrderDto created = orderService.create(request);
-        URI location = URI.create("/api/orders/" + created.id());
-        return ResponseEntity.created(location).body(created);
-    }
-    
-    @PutMapping("/{id}")
-    public OrderDto update(@PathVariable Long id, @Valid @RequestBody UpdateOrderRequest request) {
-        return orderService.update(id, request);
-    }
-    
-    @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long id) {
-        orderService.delete(id);
-    }
-}
-```
-
-```kotlin
-@RestController
-@RequestMapping("/api/orders")
-@Validated
-class OrderController(private val orderService: OrderService) {
-    
-    @GetMapping("/{id}")
-    fun getById(@PathVariable id: Long): OrderDto = orderService.findById(id)
-    
-    @PostMapping
-    fun create(@Valid @RequestBody request: CreateOrderRequest): ResponseEntity<OrderDto> {
-        val created = orderService.create(request)
-        return ResponseEntity
-            .created(URI.create("/api/orders/${created.id}"))
-            .body(created)
-    }
-}
-```
-
-### Request/Response DTOs (Records)
-
-```java
-public record CreateOrderRequest(
-    @NotNull CustomerId customerId,
-    @NotEmpty List<@Valid OrderLineRequest> lines
-) {}
-
-public record OrderLineRequest(
-    @NotNull ProductId productId,
-    @Min(1) int quantity
-) {}
-
-public record OrderDto(
-    Long id,
-    String status,
-    BigDecimal totalAmount,
-    List<OrderLineDto> lines,
-    Instant createdAt
-) {
-    public static OrderDto from(Order order) {
-        return new OrderDto(
-            order.getId(),
-            order.getStatus().name(),
-            order.getTotal().amount(),
-            order.getLines().stream().map(OrderLineDto::from).toList(),
-            order.getCreatedAt()
-        );
-    }
-}
-```
-
-### Global Exception Handler
-
-```java
-@RestControllerAdvice
-public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
-    
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ProblemDetail handleNotFound(ResourceNotFoundException ex, HttpServletRequest request) {
-        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
-            HttpStatus.NOT_FOUND, ex.getMessage()
-        );
-        problem.setType(URI.create("https://api.example.com/errors/not-found"));
-        problem.setTitle("Resource Not Found");
-        problem.setInstance(URI.create(request.getRequestURI()));
-        problem.setProperty("resourceId", ex.getResourceId());
-        return problem;
-    }
-    
-    @ExceptionHandler(BusinessRuleException.class)
-    public ProblemDetail handleBusinessRule(BusinessRuleException ex) {
-        ProblemDetail problem = ProblemDetail.forStatusAndDetail(
-            HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage()
-        );
-        problem.setType(URI.create("https://api.example.com/errors/business-rule"));
-        problem.setTitle("Business Rule Violation");
-        return problem;
-    }
-}
-```
+See [EXAMPLES.md](EXAMPLES.md) for complete working examples including:
+- **REST Controller** with CRUD operations and pagination (Java + Kotlin)
+- **Request/Response DTOs** with Bean Validation 3.1
+- **Global Exception Handler** using ProblemDetail (RFC 9457)
+- **Native API Versioning** with header configuration
+- **Jackson 3 Configuration** for custom serialization
+- **Controller Testing** with @WebMvcTest
 
 ## Spring Boot 4 Specifics
 
-### Native API Versioning
-
-```java
-@RestController
-@RequestMapping("/api/products")
-public class ProductController {
-    
-    @GetMapping(path = "/{id}", version = "1.0")
-    public ProductV1 getV1(@PathVariable String id) {
-        return productService.findByIdV1(id);
-    }
-    
-    @GetMapping(path = "/{id}", version = "2.0")
-    public ProductV2 getV2(@PathVariable String id) {
-        return productService.findByIdV2(id);
-    }
-}
-```
-
-```properties
-# application.properties
-spring.mvc.apiversion.use.header=API-Version
-spring.mvc.apiversion.default=1
-spring.mvc.apiversion.supported=1,2
-```
-
-### Jackson 3 Configuration
-
-```java
-@Configuration
-public class JacksonConfig {
-    
-    @Bean
-    public Jackson3ObjectMapperBuilderCustomizer jsonCustomizer() {
-        return builder -> builder
-            .featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-            .featuresToEnable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-            .serializationInclusion(JsonInclude.Include.NON_NULL);
-    }
-}
-```
-
-**Note:** Jackson 3 uses `tools.jackson` package (not `com.fasterxml.jackson`).
-
-### ProblemDetail Enabled by Default
-
-```properties
-spring.mvc.problemdetails.enabled=true  # Default in Boot 4
-```
+- **Jackson 3** uses `tools.jackson` package (not `com.fasterxml.jackson`)
+- **ProblemDetail** enabled by default: `spring.mvc.problemdetails.enabled=true`
+- **API Versioning** via `version` attribute in mapping annotations
+- **@MockitoBean** replaces `@MockBean` in tests
 
 ## Detailed References
 
+- **Examples**: See [EXAMPLES.md](EXAMPLES.md) for complete working code examples
+- **Troubleshooting**: See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for common issues and Boot 4 migration
 - **Controllers & Validation**: See [references/controllers.md](references/controllers.md) for validation groups, custom validators, content negotiation
 - **Error Handling**: See [references/error-handling.md](references/error-handling.md) for ProblemDetail patterns, exception hierarchy
 - **WebFlux Patterns**: See [references/webflux.md](references/webflux.md) for reactive endpoints, functional routers, WebTestClient
@@ -219,35 +59,6 @@ spring.mvc.problemdetails.enabled=true  # Default in Boot 4
 | Missing validation | Add `@Valid` on `@RequestBody` |
 | Blocking calls in WebFlux | Use reactive operators only |
 | Catching exceptions silently | Let propagate to `@RestControllerAdvice` |
-
-## Testing
-
-```java
-@WebMvcTest(OrderController.class)
-class OrderControllerTest {
-    
-    @Autowired
-    private MockMvc mockMvc;
-    
-    @MockitoBean
-    private OrderService orderService;
-    
-    @Test
-    void createOrder_ValidInput_ReturnsCreated() throws Exception {
-        var request = new CreateOrderRequest(CustomerId.generate(), List.of());
-        var response = new OrderDto(1L, "DRAFT", BigDecimal.ZERO, List.of(), Instant.now());
-        
-        when(orderService.create(any())).thenReturn(response);
-        
-        mockMvc.perform(post("/api/orders")
-                .contentType(APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-            .andExpect(status().isCreated())
-            .andExpect(header().exists("Location"))
-            .andExpect(jsonPath("$.id").value(1));
-    }
-}
-```
 
 ## Critical Reminders
 
