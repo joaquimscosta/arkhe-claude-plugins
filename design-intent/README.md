@@ -1,4 +1,4 @@
-# 🎨 Design Intent Plugin
+# Design Intent Plugin
 
 Design Intent for Spec-Driven Development (SDD) - Build React prototypes with AI while maintaining design consistency through documented patterns.
 
@@ -6,9 +6,10 @@ Design Intent for Spec-Driven Development (SDD) - Build React prototypes with AI
 
 This plugin provides a complete workflow for building frontend prototypes with AI assistance while maintaining design consistency. It combines:
 
-- **Spec-Driven Development (SDD)** - Structured workflow from specification to implementation
+- **7-Phase Structured Workflow** - Discovery, exploration, questions, architecture, implementation, review, patterns
+- **Specialized UI Agents** - Explorer, architect, and reviewer for thorough UI development
 - **Design Intent Documentation** - Capture your team's design dialect for consistency
-- **Specialized Agents** - Visual accuracy specialist for UI implementation
+- **Parallel Agent Execution** - Multiple agents working simultaneously for efficiency
 
 ## Background & Credits
 
@@ -60,43 +61,92 @@ This plugin is based on [design-intent-for-sdd](https://github.com/HugoPalomares
 
 This creates the complete design intent structure in your project with all templates.
 
-### 2. Start Building
+### 2. Full Structured Workflow (Recommended)
 
-**Create a feature:**
+Use the main orchestrating command for comprehensive UI development:
+
 ```bash
-/feature user authentication flow
+/design-intent Add a user profile card with avatar and stats
 ```
 
-**Plan implementation:**
+This launches the **7-phase workflow**:
+1. **Discovery** - Understand requirements
+2. **Exploration** - Analyze existing UI patterns (2-3 agents in parallel)
+3. **Questions** - Clarify visual preferences, responsive needs
+4. **Architecture** - Design approaches with trade-offs (2-3 agents in parallel)
+5. **Implementation** - Build with design-intent-specialist skill
+6. **Review** - Quality check (3 agents in parallel)
+7. **Patterns** - Document reusable patterns
+
+**Quick Mode** for small changes:
 ```bash
-/plan
+/design-intent --quick Fix button spacing in header
+```
+Skips exploration and architecture phases.
+
+### 3. Standalone Commands
+
+For specific tasks, use individual commands:
+
+```bash
+/feature user authentication flow   # Create feature spec
+/plan                               # Generate implementation plan
+/design [screenshot or Figma URL]   # Quick visual implementation
+/implement                          # Execute implementation plan
+/save-patterns                      # Capture successful patterns
+/diary                              # Create session diary
 ```
 
-**Implement from visual reference:**
-```bash
-/design [screenshot or Figma URL]
+## Workflow Diagrams
+
+### Full 7-Phase Workflow (`/design-intent`)
+
+```mermaid
+flowchart TD
+    A["Phase 1: Discovery"] --> B["Phase 2: Exploration"]
+    B --> C["Phase 3: Questions"]
+    C --> D["Phase 4: Architecture"]
+    D --> E["Phase 5: Implementation"]
+    E --> F["Phase 6: Review"]
+    F --> G["Phase 7: Patterns"]
+
+    B -.- B1["ui-explorer x2-3"]
+    D -.- D1["ui-architect x2-3"]
+    E -.- E1["design-intent-specialist"]
+    F -.- F1["design-reviewer x3"]
+
+    A:::phase
+    B:::phase
+    C:::checkpoint
+    D:::phase
+    E:::phase
+    F:::phase
+    G:::phase
+
+    classDef phase fill:#e8f5e9
+    classDef checkpoint fill:#fff3e0
 ```
 
-**Execute full implementation:**
-```bash
-/implement
+### Quick Mode (`/design-intent --quick`)
+
+```mermaid
+flowchart TD
+    A["Phase 1: Discovery"] --> C["Phase 3: Questions"]
+    C --> E["Phase 5: Implementation"]
+    E --> F["Phase 6: Review"]
+    F --> G["Phase 7: Patterns"]
+
+    A:::phase
+    C:::checkpoint
+    E:::phase
+    F:::phase
+    G:::phase
+
+    classDef phase fill:#e8f5e9
+    classDef checkpoint fill:#fff3e0
 ```
 
-### 3. Document Patterns
-
-After completing work, capture successful design patterns:
-```bash
-/save-patterns
-```
-
-### 4. Create Session Diary
-
-Before ending your session:
-```bash
-/diary
-```
-
-## Workflow Diagram
+### Standalone Commands Flow
 
 ```mermaid
 flowchart TD
@@ -127,19 +177,64 @@ flowchart TD
 
 | Command | Description |
 |---------|-------------|
+| `/design-intent [reference]` | **Main workflow** - 7-phase structured UI development with parallel agents |
 | `/setup` | Initialize design intent structure with templates |
 | `/feature [description]` | Create feature specification |
 | `/plan` | Generate implementation plan from spec |
-| `/design [reference]` | Implement from visual references (screenshots, Figma) |
+| `/design [reference]` | Quick implementation from visual references (screenshots, Figma) |
 | `/implement` | Execute implementation plan |
 | `/save-patterns` | Analyze work and suggest patterns to preserve |
 | `/diary` | Create session diary for handoff |
+
+## Agents
+
+### ui-explorer (Cyan)
+
+Analyzes existing UI codebase by tracing component hierarchies, mapping design tokens, understanding styling patterns, and documenting established design system usage.
+
+**Used in**: Phase 2 (Exploration) - 2-3 agents in parallel
+
+**Focus areas**:
+- Component discovery (hierarchies, props, variants)
+- Design token analysis (colors, spacing, typography)
+- Styling pattern analysis (CSS approach, responsive patterns)
+- Design intent review (existing patterns)
+
+**Output**: Component inventory, design token map, styling conventions, 5-10 essential files.
+
+### ui-architect (Green)
+
+Designs UI component architectures by analyzing existing patterns, proposing component structures, and creating implementation blueprints with clear trade-offs.
+
+**Used in**: Phase 4 (Architecture) - 2-3 agents with different approaches
+
+**Design approaches**:
+- **Minimal/Conservative**: Maximum reuse, smallest changes
+- **Clean/Ideal**: Optimal architecture, proper abstractions
+- **Pragmatic/Balanced**: Speed + quality balance
+
+**Output**: Component structure, props/interfaces, styling strategy, file map, build sequence.
+
+### design-reviewer (Magenta)
+
+Reviews UI implementations for visual consistency, accessibility compliance, responsive behavior, and design pattern adherence using confidence-based filtering.
+
+**Used in**: Phase 6 (Review) - 3 agents with different focuses
+
+**Review focuses**:
+- Visual consistency (tokens, spacing, typography)
+- Accessibility/Responsiveness (ARIA, keyboard, breakpoints)
+- Pattern adherence (design intent compliance)
+
+**Confidence scoring**: Only reports issues with confidence >= 80.
 
 ## Skill
 
 ### Design Intent Specialist
 
 Auto-invoked skill for creating accurate frontend implementations from visual references while maintaining design consistency.
+
+**Used in**: Phase 5 (Implementation)
 
 **Capabilities:**
 - Mandatory design intent pattern check before implementation
@@ -153,6 +248,7 @@ Auto-invoked skill for creating accurate frontend implementations from visual re
 - Screenshots/design images
 - UI implementation requests
 - `/design` and `/implement` commands
+- Phase 5 of `/design-intent` workflow
 
 **Documentation:**
 - `skills/design-intent-specialist/SKILL.md` - Quick start
@@ -264,14 +360,40 @@ npm install -g @anthropic/mcp-server-fluent-pilot
 
 ## Workflow
 
-### Complete Development Cycle
+### Recommended: Full 7-Phase Workflow
+
+```
+/design-intent [visual reference or description]
+
+Phase 1: Discovery      → Understand requirements, confirm with user
+Phase 2: Exploration    → 2-3 ui-explorer agents analyze codebase
+Phase 3: Questions      → Clarify all ambiguities (checkpoint)
+Phase 4: Architecture   → 2-3 ui-architect agents propose approaches
+Phase 5: Implementation → design-intent-specialist builds the UI
+Phase 6: Review         → 3 design-reviewer agents check quality
+Phase 7: Patterns       → Extract and document reusable patterns
+```
+
+### Quick Mode for Small Changes
+
+```
+/design-intent --quick [change description]
+
+Phase 1: Discovery      → Understand requirements
+Phase 3: Questions      → Clarify ambiguities
+Phase 5: Implementation → Build the UI
+Phase 6: Review         → Quality check
+Phase 7: Patterns       → Document patterns
+```
+
+### Standalone Commands Cycle
 
 ```
 1. /setup              → Initialize project structure
 2. /feature            → Create feature specification
 3. /plan               → Generate implementation plan
 4. /implement or /design → Build the feature
-5. /save-patterns → Capture successful patterns
+5. /save-patterns      → Capture successful patterns
 6. /diary              → Document session for handoff
 ```
 

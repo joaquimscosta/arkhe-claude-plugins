@@ -1,5 +1,5 @@
 ---
-name: Design Intent Specialist
+name: design-intent-specialist
 description: Creates accurate frontend implementations from visual references while maintaining design consistency. Use when user provides Figma URLs, screenshots, design images, or requests UI implementation from visual references. Automatically checks existing design intent patterns before implementation.
 ---
 
@@ -96,5 +96,17 @@ Triggered by:
 
 - `/design` command with visual references
 - `/implement` command for UI components
+- **Phase 5 of `/design-intent` workflow** (automatic invocation)
 - User providing Figma URLs or screenshots
 - Requests to implement UI from visual references
+
+## Workflow Integration
+
+When invoked from `/design-intent` Phase 5:
+
+- **Architecture decisions from Phase 4 are already made** - follow the chosen approach
+- **Exploration findings from Phase 2 are available** - existing components and patterns identified
+- **Clarifying questions from Phase 3 are answered** - no ambiguity in requirements
+- **Focus on execution, not planning** - the structured workflow handled discovery
+
+The skill receives richer context when invoked through the structured `/design-intent` workflow, enabling more accurate implementation with fewer iterations.

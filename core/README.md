@@ -4,6 +4,10 @@ Quality control and workflow orchestration utilities for Claude Code.
 
 ## Components
 
+### Skills
+
+- **workflow-orchestration** (auto-invoke): Coordinates structured thinking and multi-agent parallel execution for complex tasks. Auto-triggered when tackling multi-step projects, planning parallel work, breaking down complex problems, or when user mentions "workflow", "orchestration", "multi-step", "coordinate", "parallel execution", "structured thinking". Recommends appropriate tools (`/workflow`, `/think`, `/ultrathink`) based on context.
+
 ### Agents
 
 - **deep-think-partner**: Elite reasoning partner for complex logical problems, multi-step reasoning challenges, and strategic decisions. Use when you need collaborative deep thinking for architectural decisions, complex data transformations, or validating reasoning chains. Engages as a peer thinking partner rather than a subordinate.

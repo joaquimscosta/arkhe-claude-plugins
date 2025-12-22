@@ -2,7 +2,6 @@
 name: deep-think-partner
 description: Use this agent when you encounter complex logical problems, multi-step reasoning challenges, strategic decisions requiring deep analysis, or situations where you need to validate your reasoning through collaborative thinking. Examples: (1) User asks: 'How do I build a cash flow valuation model for small caps in the stock market' - Assistant: 'This requires deep architectural thinking. Let me engage the deep-think-partner agent to work through the optimal approach.' (2) User presents a complex data transformation problem - Assistant: 'I'm going to use the deep-think-partner agent to help reason through the edge cases and optimal solution structure.' (3) When you're working through a multi-layered problem and need to validate your logic - Assistant: 'Let me bring in the deep-think-partner agent to collaborate on verifying this reasoning chain.'
 tools: Glob, Grep, Read, WebFetch, TodoWrite, WebSearch, BashOutput, KillShell, ListMcpResourcesTool, ReadMcpResourceTool, mcp__exa__web_search_exa, mcp__exa__get_code_context_exa, mcp__sequential-thinking__sequentialthinking
-model: sonnet
 color: blue
 ---
 

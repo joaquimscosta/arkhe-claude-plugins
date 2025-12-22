@@ -7,6 +7,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2025-12-22
+
+### Added
+
+#### Core Plugin
+- `workflow-orchestration` skill for structured thinking and multi-agent parallel execution
+  - Quick decision matrix for choosing between `/workflow`, `/think`, `/ultrathink`, and `deep-think-partner`
+  - Keyword and context triggers for automatic orchestration detection
+  - Model tier strategy (haiku for gating, sonnet for implementation, opus for deep analysis)
+  - Supporting docs: WORKFLOW.md, EXAMPLES.md, TROUBLESHOOTING.md
+
+#### Design Intent Plugin
+- 3 specialized agents for UI/visual development:
+  - `ui-explorer`: Fast codebase exploration for existing UI patterns, components, and design tokens
+  - `ui-architect`: Design UI component architecture with props, styling, and responsive strategies
+  - `design-reviewer`: Quality review for visual consistency, accessibility, and pattern adherence
+- `/design-intent` command with 7-phase UI development workflow:
+  1. Discovery - Understand UI requirements
+  2. Exploration - Analyze existing patterns (optional with `--quick`)
+  3. Clarifying Questions - Resolve visual ambiguities
+  4. Architecture Design - Multi-approach planning (optional with `--quick`)
+  5. Implementation - Build with design-intent-specialist skill
+  6. Quality Review - Visual consistency and accessibility checks
+  7. Patterns - Extract and document reusable design patterns
+
+### Changed
+
+#### Core Plugin
+- Refactored `/workflow` command to use new `workflow-orchestration` skill (reduced from ~800+ lines to skill-based architecture)
+- Updated `deep-think-partner` agent description
+
+#### Design Intent Plugin
+- Enhanced `design-intent-specialist` skill with improved visual reference handling
+- Updated README with comprehensive plugin documentation
+
+#### Documentation
+- Updated core/README.md with new skill documentation
+- Enhanced design-intent/README.md with full command and agent reference
+
 ## [1.1.0] - 2025-12-20
 
 ### Added
@@ -220,6 +259,7 @@ The `/specprep:tasks` command has been removed in favor of automatic command cha
 - **Documentation**: See README.md and docs/ directory
 - **Installation**: See INSTALLATION.md
 
-[Unreleased]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/releases/tag/v1.0.0
