@@ -129,6 +129,23 @@ Skills auto-invoke based on context:
 | **spring-boot-observability** | `actuator.md`, `metrics.md`, `tracing.md` |
 | **spring-boot-testing** | `slice-tests.md`, `testcontainers.md`, `security-testing.md`, `modulith-testing.md` |
 
+## Skill Supporting Documentation
+
+Each skill (except `domain-driven-design`) includes:
+- **EXAMPLES.md** - Complete working code examples
+- **TROUBLESHOOTING.md** - Common issues and Spring Boot 4 migration
+
+## Deep Dive Resources
+
+For comprehensive background and architectural context, see the research materials:
+
+| Document | Description |
+|----------|-------------|
+| [DDD Fundamentals](../docs/research/domain-driven-design.md) | Strategic DDD, subdomains, bounded contexts, Event Storming |
+| [Spring Boot 4 Ecosystem](../docs/research/spring-boot/ecosystem-research.md) | Framework 7 architecture, Java 25 alignment, Jackson 3, build tools |
+| [DDD Implementation](../docs/research/spring-boot/ddd-implementation.md) | Aggregates, repositories, value objects with Spring Boot 4 |
+| [Security & Observability](../docs/research/spring-boot/security-observability-testing.md) | Security 7 Lambda DSL, OpenTelemetry, testing strategies |
+
 ## Spring Boot 4 Breaking Changes
 
 ### Security (Lambda DSL Mandatory)
