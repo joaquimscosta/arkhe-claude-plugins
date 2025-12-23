@@ -1,6 +1,6 @@
 ---
 name: spring-boot-verify
-description: Verify Spring Boot 4.x projects for correct dependencies, configuration, and migration readiness. Use when analyzing pom.xml, build.gradle, build.gradle.kts, application.yml, application.properties, or discussing Spring Boot project setup, dependency versions, configuration validation, version compatibility, or checking project setup.
+description: Verify Spring Boot 4.x projects for correct dependencies, configuration, and migration readiness. Use when analyzing pom.xml, build.gradle, application.yml, discussing Spring Boot project setup, dependency versions, configuration validation, version compatibility, migration to Spring Boot 4, deprecated dependencies, or when user mentions "verify project", "check dependencies", "upgrade Spring Boot", "migration readiness", "Jackson 3", "@MockBean deprecated", or "Spring Security 7".
 ---
 
 # Spring Boot 4.x Project Verification
