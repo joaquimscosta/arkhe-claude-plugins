@@ -61,6 +61,7 @@ Generate verification reports with this structure:
 
 ## Detailed References
 
+- **Migration Guide**: See [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md) for step-by-step migration from Boot 3.x to 4.0
 - **Examples**: See [EXAMPLES.md](EXAMPLES.md) for sample verification outputs
 - **Troubleshooting**: See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for detection issues
 - **Dependencies**: See [references/dependencies.md](references/dependencies.md) for complete version matrix
@@ -73,3 +74,11 @@ Generate verification reports with this structure:
 3. **Security 7 Lambda DSL** — `and()` method removed, closures required
 4. **Testing annotations changed** — `@MockBean` to `@MockitoBean`
 5. **Use official docs** — https://docs.spring.io/spring-boot/documentation.html
+
+## Related Skills
+
+- `spring-boot-security` — Deep security configuration verification
+- `spring-boot-testing` — Testing patterns and coverage analysis
+- `spring-boot-observability` — Actuator, metrics, and tracing setup
+- `spring-boot-modulith` — Module structure verification
+- `domain-driven-design` — DDD architecture patterns

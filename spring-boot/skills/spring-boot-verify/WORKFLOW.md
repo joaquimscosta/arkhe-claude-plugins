@@ -132,6 +132,8 @@ mcp__exa__web_search_exa: "Spring Security 7 lambda DSL site:spring.io"
 
 ## Quick Reference
 
+For comprehensive migration guidance, see [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md).
+
 ### Severity Definitions
 
 | Severity | Meaning | Action |
@@ -142,6 +144,8 @@ mcp__exa__web_search_exa: "Spring Security 7 lambda DSL site:spring.io"
 | INFO | Informational finding | Optional improvement |
 
 ### Common Migration Paths
+
+See [MIGRATION_GUIDE.md](MIGRATION_GUIDE.md) for complete migration checklist and phase-by-phase instructions.
 
 **Jackson 2 to Jackson 3**:
 ```xml
