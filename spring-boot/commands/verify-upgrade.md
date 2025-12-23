@@ -1,5 +1,5 @@
 ---
-description: Verify Spring Boot project for dependency compatibility, configuration correctness, and migration readiness
+description: Verify Spring Boot project upgrade readiness including dependencies, configuration, and migration compatibility
 ---
 
 # Spring Boot Project Verification
