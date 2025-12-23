@@ -6,7 +6,13 @@ description: Analyze recent work and suggest design patterns that should be pres
 
 **Purpose**: Analyze recent work and suggest design patterns that should be preserved as design intent
 
-**Usage**: `/save-patterns`
+**Usage**: `/save-patterns [category]`
+
+**Examples**:
+- `/save-patterns` - Analyze all recent work for patterns
+- `/save-patterns components` - Focus on component patterns only
+- `/save-patterns foundations` - Focus on spacing, typography, color patterns
+- `/save-patterns layouts` - Focus on layout and grid patterns
 
 ## What This Command Does
 

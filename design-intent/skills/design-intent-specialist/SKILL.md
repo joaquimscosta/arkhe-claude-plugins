@@ -52,21 +52,9 @@ Each section analyzed for: layout, spacing, typography, responsiveness, visual t
 3. **Framework components** - Leverage Fluent UI when appropriate
 4. **Custom components** - Create only when necessary for design accuracy
 
-## Custom Component Guidelines
+## Custom Components
 
-When custom components are needed:
-
-- Use clear naming: `CustomCard` vs `Card`
-- Document in header:
-
-```tsx
-/**
- * CUSTOM COMPONENT: CustomCard
- * Base: @fluentui/react-components/Card
- * Reason: Custom hover states for design requirement
- * Created: YYYY-MM-DD
- */
-```
+When creating custom components, use clear naming (`CustomCard` vs `Card`) and document with header comments. See [WORKFLOW.md](WORKFLOW.md) Phase 4 for documentation template.
 
 ## Behavioral Rules
 
@@ -75,14 +63,9 @@ When custom components are needed:
 3. **Ask for guidance on conflicts** - don't assume precedence
 4. **Track custom components** - for maintainability
 
-## MCP Integration (Optional)
+## MCP Integration
 
-If configured:
-
-- **figma-dev-mode-mcp-server**: Extract code, images, design tokens from Figma
-- **fluent-pilot**: Get Fluent UI component guidance
-
-Works without MCPs using screenshots and manual references.
+Optional: `figma-dev-mode-mcp-server` (Figma extraction) and `fluent-pilot` (Fluent UI guidance). Works without MCPs using screenshots.
 
 ## Reference Documentation
 
@@ -102,11 +85,4 @@ Triggered by:
 
 ## Workflow Integration
 
-When invoked from `/design-intent` Phase 5:
-
-- **Architecture decisions from Phase 4 are already made** - follow the chosen approach
-- **Exploration findings from Phase 2 are available** - existing components and patterns identified
-- **Clarifying questions from Phase 3 are answered** - no ambiguity in requirements
-- **Focus on execution, not planning** - the structured workflow handled discovery
-
-The skill receives richer context when invoked through the structured `/design-intent` workflow, enabling more accurate implementation with fewer iterations.
+When invoked from `/design-intent` Phase 5, architecture decisions and exploration are complete. Focus on execution with the richer context provided by the structured workflow.

@@ -32,6 +32,10 @@ Generate a verification report with:
 | Testing | @MockitoBean instead of @MockBean |
 | Actuator | Endpoint exposure limits, sampling rates |
 
-Use the `spring-boot-verify` skill for detailed verification patterns and the latest Spring Boot 4.x compatibility information.
+## Implementation
 
-When uncertain about specific migration details, use the Exa MCP tool to search for the latest Spring Boot 4.x documentation from spring.io.
+Invoke the Skill tool with skill name "spring-boot:spring-boot-verify" and arguments: `$ARGUMENTS`
+
+The skill will handle build system detection, dependency analysis, configuration validation, and report generation.
+
+For detailed documentation, see `spring-boot/skills/spring-boot-verify/SKILL.md`.
