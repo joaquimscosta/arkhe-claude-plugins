@@ -15,6 +15,7 @@ Domain-Driven Design patterns with Spring Boot 4 implementation for complex busi
 | **spring-boot-security** | Spring Security 7, Lambda DSL, JWT/OAuth2 | Authentication, authorization, CORS/CSRF, method security |
 | **spring-boot-observability** | Actuator, Micrometer, OpenTelemetry | Health checks, metrics, distributed tracing, Kubernetes probes |
 | **spring-boot-testing** | Slice tests, Testcontainers, @MockitoBean | Unit/integration tests, security testing, Modulith Scenario API |
+| **spring-boot-verify** | Dependency and configuration verification | pom.xml, build.gradle, application.yml, "verify dependencies", "check configuration" |
 
 ## Tech Stack
 
@@ -52,6 +53,12 @@ Domain-Driven Design patterns with Spring Boot 4 implementation for complex busi
 │   security    │   │  observability  │   │    testing      │
 │    (AuthN/Z)  │   │ (Metrics/Trace) │   │  (All Layers)   │
 └───────────────┘   └─────────────────┘   └─────────────────┘
+                              │
+                              ▼
+              ┌───────────────────────────┐
+              │     spring-boot-verify    │
+              │  (Deps & Config Checker)  │
+              └───────────────────────────┘
 ```
 
 ## Use Cases
@@ -63,6 +70,7 @@ Domain-Driven Design patterns with Spring Boot 4 implementation for complex busi
 - Securing APIs with Spring Security 7 Lambda DSL
 - Production observability with Actuator and OpenTelemetry
 - Comprehensive testing with Testcontainers and slice tests
+- Verifying project dependencies and configuration for Spring Boot 4 compatibility
 
 ## Installation
 
@@ -103,6 +111,10 @@ Skills auto-invoke based on context:
 
 # Testing
 "How do I test my controllers with @WebMvcTest and @MockitoBean?"
+
+# Verification
+"Check my pom.xml for Spring Boot 4 compatibility"
+"Verify this project's dependencies and configuration"
 ```
 
 ## Skill Coverage
@@ -116,6 +128,7 @@ Skills auto-invoke based on context:
 | **spring-boot-security** | Lambda DSL, SecurityFilterChain, OAuth2/JWT, @PreAuthorize, password encoding |
 | **spring-boot-observability** | Actuator endpoints, Micrometer Timer/Counter/Gauge, OpenTelemetry spans |
 | **spring-boot-testing** | @WebMvcTest, @DataJpaTest, Testcontainers, @WithMockUser, Scenario API |
+| **spring-boot-verify** | Version matrix, deprecated dependencies, configuration validation, migration readiness |
 
 ## Skill Reference Files
 
@@ -128,6 +141,7 @@ Skills auto-invoke based on context:
 | **spring-boot-security** | `security-config.md`, `authentication.md`, `jwt-oauth2.md` |
 | **spring-boot-observability** | `actuator.md`, `metrics.md`, `tracing.md` |
 | **spring-boot-testing** | `slice-tests.md`, `testcontainers.md`, `security-testing.md`, `modulith-testing.md` |
+| **spring-boot-verify** | `dependencies.md`, `configuration.md` |
 
 ## Skill Supporting Documentation
 
