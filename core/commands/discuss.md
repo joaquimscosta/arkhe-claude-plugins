@@ -1,13 +1,53 @@
 ---
-description: Thorough technical discussion with focused clarifying questions
+description: Thorough technical discussion with context-aware clarifying questions
+argument-hint: "[topic or problem to discuss]"
 ---
 
-I want to have a thorough technical discussion about: $ARGUMENTS
+# Discuss: $ARGUMENTS
 
-Before proceeding with any implementation or detailed analysis, I need you to gather important context through focused questions. 
-Ask me relevant questions to understand my requirements and constraints, ensuring we build the right solution.
+## Step 1: Quick Context Scan
 
-Ask questions in batches of 3 to keep our discussion focused and efficient. 
-Each batch should be tailored to the specific topic and help uncover the technical details needed to move forward effectively.
+Before asking questions, gather relevant context about "$ARGUMENTS":
 
-Start by asking me questions related to $ARGUMENTS to better understand what I'm looking to achieve and how we should approach this together.
+1. **Read CLAUDE.md** if it exists in the project root (project guidelines and conventions)
+2. **Use Grep/Glob** to find files related to the topic mentioned in arguments
+3. **Note patterns** - existing implementations, naming conventions, or architectural decisions
+
+This context will inform your questions and show the user you understand their codebase.
+
+## Step 2: Ask Informed Questions
+
+Using the context gathered, ask focused questions in batches of 3.
+
+**Question Strategy:**
+- **For open-ended exploration:** Use text-based conversational questions
+- **For key decisions with clear options:** Use the `AskUserQuestion` tool with structured choices
+
+Each batch should be tailored to the topic and informed by what you found in the codebase. Reference specific files or patterns you discovered to show contextual awareness.
+
+**Example structured question:**
+```
+AskUserQuestion with options like:
+- "Use existing pattern from UserService"
+- "Create new pattern optimized for X"
+- "Hybrid approach"
+```
+
+## Step 3: Summarize & Recommend
+
+After gathering sufficient context through discussion:
+
+1. **Summarize** key requirements and constraints discovered
+2. **Recommend next steps:**
+   - Direct implementation if scope is clear
+   - `/think` for single-problem deep reasoning
+   - `/ultrathink` for complex multi-faceted tasks
+   - Further discussion if more clarity needed
+
+## Guidelines
+
+- Ask questions that demonstrate you've read the codebase
+- Don't assume - verify understanding before proceeding
+- Keep batches to 3 questions maximum for focus
+- Use structured choices (AskUserQuestion) when there are clear options to pick from
+- Stay focused on the topic; don't go on tangents

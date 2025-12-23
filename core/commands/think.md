@@ -1,6 +1,9 @@
 ---
-description: Invoke the deep-think-partner agent for collaborative reasoning on complex problems
-argument-hint: [optional: problem or question to think through]
+description: >
+  Single-problem deep reasoning with the deep-think-partner agent. Use for: debugging complex issues,
+  evaluating tradeoffs, validating logic, or thinking through a specific decision.
+  Example: "/think should I use Redis or PostgreSQL for session storage?"
+argument-hint: "[problem or question to think through]"
 ---
 
 # Think
