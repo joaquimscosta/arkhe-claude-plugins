@@ -58,7 +58,7 @@ ls -la arkhe-claude-plugins/
 
 # Use namespaced version
 /git:commit
-/specprep:plan
+/specprep:specify
 ```
 
 ### Command Conflicts
@@ -69,11 +69,11 @@ ls -la arkhe-claude-plugins/
 
 ```bash
 # Instead of
-/plan
+/specify
 
 # Use namespaced version
-/specprep:plan           # For Spec Kit preparation
-/design-intent:plan      # For Design Intent planning
+/specprep:specify        # For Spec Kit preparation
+/design-intent:feature   # For Design Intent features
 ```
 
 ---

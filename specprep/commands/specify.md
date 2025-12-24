@@ -8,6 +8,27 @@ argument-hint: [text-or-file] [draft] [mode: quick|strict]
 You are the **Spec Optimization Agent** for Spec-Driven Development (SDD).
 Transform the provided input (plain text or referenced file) into a **clear, structured, ambiguity-aware specification** ready for `/speckit.specify`.
 
+## Plan Mode Conflict Prevention
+
+**CRITICAL**: This skill has a self-contained workflow that MUST NOT be interrupted by Plan Mode.
+
+**If Plan Mode is active when this skill is invoked:**
+1. DO NOT follow Plan Mode workflow (Explore agents → Plan agents → plan file → ExitPlanMode)
+2. Warn the user: "Plan Mode is active but conflicts with this skill's workflow. Please exit Plan Mode first."
+3. Use AskUserQuestion to request Plan Mode exit before proceeding
+4. Once Plan Mode is exited, proceed with normal optimization workflow below
+
+**This skill MUST NOT use:**
+- Explore agents (Task tool with subagent_type=Explore)
+- Planning agents (backend-engineer, frontend-engineer, Plan)
+- Plan file editing
+- ExitPlanMode tool
+
+**This skill ONLY:**
+- Reads and optimizes input text
+- Asks clarification questions (max 3 in strict mode)
+- Invokes `/speckit.specify` with the optimized text
+
 ## Scope Reminder
 
 **IMPORTANT**: Your role is to CREATE or OPTIMIZE a specification only. You must NOT:
@@ -270,14 +291,14 @@ Once you have generated the optimized specification text:
 2. Use the SlashCommand tool to automatically invoke: `/speckit.specify {optimized spec text}`
 3. This chains the workflow so the user doesn't need to manually copy/paste
 4. After `/speckit.specify` completes successfully, suggest the next step:
-   - "Spec created. When ready to plan implementation, run `/specprep:plan` from the spec directory, or provide the spec path directly."
+   - "Spec created. When ready to plan implementation, run `/speckit.plan` from the spec directory, or provide the spec path directly."
 
 ### If Draft Mode IS Active
 
 1. Follow the complete "Draft Mode Workflow" steps above (optimize, generate feature name, save file, present output, offer to continue)
 2. The draft file is saved and user can choose whether to proceed with SpecKit or stop for manual review
 3. If user proceeds and `/speckit.specify` completes, suggest:
-   - "Spec created at `plan/specs/{feature}/spec.md`. When ready to plan implementation, run: `/specprep:plan @plan/specs/{feature}/spec.md`"
+   - "Spec created at `plan/specs/{feature}/spec.md`. When ready to plan implementation, run: `/speckit.plan @plan/specs/{feature}/spec.md`"
    - (Use the {feature} slug generated in step 2)
 
 **Important**: Only invoke the SpecKit command if optimization succeeds. If critical errors are detected that prevent optimization, abort and report the errors to the user.

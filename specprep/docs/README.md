@@ -27,10 +27,8 @@ Comprehensive philosophy and methodology document covering:
 **SpecPrep** serves as a meta-prompt optimization layer that prepares your inputs to be compliant with Spec Kit's standards:
 
 - `/specprep:specify` - Cleans and structures raw feature ideas for `/speckit:specify`
-- `/specprep:plan` - Validates architectural compliance for `/speckit:plan`
-- `/specprep:tasks` - Organizes and parallelizes tasks for `/speckit:tasks`
 
-Think of SpecPrep as quality control that ensures your inputs meet SDD principles before they enter the Spec Kit workflow.
+Think of SpecPrep as quality control that ensures your specification inputs meet SDD principles before they enter the Spec Kit workflow. Good specs lead to natural plans — the planning and task phases flow directly through SpecKit without preprocessing.
 
 ## Source
 

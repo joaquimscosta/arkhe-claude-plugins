@@ -119,7 +119,7 @@ If multiple plugins provide commands with similar names, use namespaced invocati
 
 # Namespaced invocation (to avoid conflicts)
 /git:commit
-/specprep:plan
+/specprep:specify
 ```
 
 ---

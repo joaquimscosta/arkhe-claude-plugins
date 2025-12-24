@@ -102,8 +102,8 @@ Design Intent for Spec-Driven Development that combines AI-assisted implementati
 
 ### Specprep Plugin
 AI meta-prompt framework for Spec Kit workflow optimization.
-- **Commands**: `/specprep:specify`, `/specprep:plan`
-- **Use**: Optimize requirements and architecture specs, ensure SDD compliance, automated workflow chaining
+- **Commands**: `/specprep:specify`
+- **Use**: Optimize feature specifications for SDD compliance, automated workflow chaining with SpecKit
 
 ### Lang Plugin
 Language-specific programming skills for production-grade code.

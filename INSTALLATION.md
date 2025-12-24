@@ -140,7 +140,7 @@ AI meta-prompt framework for Spec Kit workflow optimization.
 **Requirements**: Spec Kit plugin for full workflow integration
 
 **Components**:
-- 2 commands: `/specprep:specify`, `/specprep:plan`
+- 1 command: `/specprep:specify`
 
 ---
 
@@ -259,7 +259,7 @@ You should see commands from installed plugins:
 - **review**: `/code`, `/security`, `/design`, `/codebase`
 - **git**: `/commit`, `/create-pr`, `/create-branch`, `/changelog`, `/pr-issue-resolve`
 - **design-intent**: `/setup`, `/feature`, `/plan`, `/design`, `/implement`, `/save-patterns`, `/diary`
-- **specprep**: `/specprep:specify`, `/specprep:plan`
+- **specprep**: `/specprep:specify`
 - **google-stitch**: `/prompt`
 
 ### Check Skills
@@ -391,11 +391,11 @@ Skills are automatically invoked when relevant context is detected:
 ### Specprep Plugin
 
 ```bash
-# Generate implementation plan for spec
-/specprep:plan @specs/002-feature/plan.md
-
-# Create detailed specification
+# Create detailed specification (auto-chains to /speckit.specify)
 /specprep:specify @notes/feature-idea.txt
+
+# After spec is created, continue with SpecKit directly
+/speckit.plan @specs/002-feature/spec.md
 ```
 
 ### Google Stitch Plugin
