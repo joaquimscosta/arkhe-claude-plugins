@@ -58,8 +58,8 @@ plugin-name/
 
 ### Core Plugin
 Quality control and workflow orchestration utilities.
-- **Agents**: `deep-think-partner`
-- **Commands**: `/discuss`, `/double-check`, `/ultrathink`, `/workflow`, `/debug`, `/think`
+- **Agents**: `deep-think-partner`, `code-explorer`, `code-architect`, `code-reviewer`
+- **Commands**: `/discuss`, `/double-check`, `/feature`, `/workflow`, `/debug`, `/think`
 
 ### AI Plugin
 AI engineering toolkit for production-ready LLM applications.

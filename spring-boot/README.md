@@ -4,6 +4,14 @@ Domain-Driven Design patterns with Spring Boot 4 implementation for complex busi
 
 ## Components
 
+### Agents
+
+- **spring-boot-reviewer**: Reviews Spring Boot codebases against all spring-boot skills for correctness, best practices, and Spring Boot 4 compatibility. Uses confidence-based filtering (≥80) to report only high-priority issues.
+
+### Commands
+
+- **/spring-review**: Comprehensive Spring Boot implementation review against DDD, security, testing, and other best practices. Supports natural language scopes like "all", "the order module", "security configuration", or specific file paths.
+
 ### Skills
 
 | Skill | Purpose | Auto-Invoked When |
