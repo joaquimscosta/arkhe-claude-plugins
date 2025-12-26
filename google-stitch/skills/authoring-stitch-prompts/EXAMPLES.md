@@ -155,11 +155,11 @@ Claude should automatically invoke the **authoring-stitch-prompts** Skill and re
 > Optimize for desktop first, single-column layout on mobile.
 
 **File Created:**
-`.google-stitch/dashboard/prompt-v1.md`
+`design-intent/google-stitch/dashboard/prompt-v1.md`
 
 **Directory Created:**
 ```
-.google-stitch/dashboard/
+design-intent/google-stitch/dashboard/
 ├── prompt-v1.md
 ├── exports/
 └── wireframes/
@@ -180,11 +180,11 @@ Additional prompts needed:
 > Optimize for desktop, stack sections on mobile.
 
 **File Created:**
-`.google-stitch/settings/prompt-v1.md`
+`design-intent/google-stitch/settings/prompt-v1.md`
 
 **Directory Created:**
 ```
-.google-stitch/settings/
+design-intent/google-stitch/settings/
 ├── prompt-v1.md
 ├── exports/
 └── wireframes/
@@ -227,9 +227,9 @@ Additional prompts needed:
 > Optimize for mobile-first responsive layout.
 
 **Files Created:**
-- `.google-stitch/reading-pane/prompt-v1.md`
-- `.google-stitch/comments/prompt-v1.md`
-- `.google-stitch/related-grid/prompt-v1.md`
+- `design-intent/google-stitch/reading-pane/prompt-v1.md`
+- `design-intent/google-stitch/comments/prompt-v1.md`
+- `design-intent/google-stitch/related-grid/prompt-v1.md`
 
 **Directories Created:** Each feature gets its own directory with exports/ and wireframes/ subdirectories.
 
@@ -253,11 +253,11 @@ Additional prompts needed:
 > Optimize for mobile-first, full keyboard navigation.
 
 **File Created:**
-`.google-stitch/login/prompt-v1.md`
+`design-intent/google-stitch/login/prompt-v1.md`
 
 **Directory Created:**
 ```
-.google-stitch/login/
+design-intent/google-stitch/login/
 ├── prompt-v1.md
 ├── exports/
 └── wireframes/
@@ -277,7 +277,7 @@ Additional prompts needed:
 > Optimize for mobile-first, full keyboard navigation.
 
 **File Created:**
-`.google-stitch/login/prompt-es-v1.md`
+`design-intent/google-stitch/login/prompt-es-v1.md`
 
 **Note:**
 - Technical UI terms (button, input field, card) remain in English—only user-facing labels are translated.
@@ -297,11 +297,11 @@ Additional prompts needed:
 > Ensure image coordinates with the deep blue accent theme and modern aesthetic.
 
 **File Updated:**
-`.google-stitch/dashboard/prompt-v2.md`
+`design-intent/google-stitch/dashboard/prompt-v2.md`
 
 **Note:** Auto-increment detected existing prompt-v1.md, created prompt-v2.md in same directory. Both versions coexist:
 ```
-.google-stitch/dashboard/
+design-intent/google-stitch/dashboard/
 ├── prompt-v1.md      ← Original version
 ├── prompt-v2.md      ← Updated version
 ├── exports/
@@ -319,7 +319,7 @@ Additional prompts needed:
 > Maintain existing thumbnail sizes and grid layout.
 
 **File Updated:**
-`.google-stitch/user-grid/prompt-v2.md`
+`design-intent/google-stitch/user-grid/prompt-v2.md`
 
 **Note:**
 - Image modifications should be specific (which images), precise (what changes), and coordinated with the overall theme.
@@ -341,11 +341,11 @@ Additional prompts needed:
 **Note:** Stitch accepts minimal inputs—adjectives like "professional" guide visual direction when specific details aren't provided. The skill infers common patterns for the app type.
 
 **File Created:**
-`.google-stitch/pm-dashboard/prompt-v1.md`
+`design-intent/google-stitch/pm-dashboard/prompt-v1.md`
 
 **Directory Created:**
 ```
-.google-stitch/pm-dashboard/
+design-intent/google-stitch/pm-dashboard/
 ├── prompt-v1.md
 ├── exports/
 └── wireframes/
@@ -363,7 +363,7 @@ Additional prompts needed:
 > Maintain all other colors, layout, and typography.
 
 **File Updated:**
-`.google-stitch/login-form/prompt-v2.md`
+`design-intent/google-stitch/login-form/prompt-v2.md`
 
 ---
 
@@ -375,7 +375,7 @@ Additional prompts needed:
 > Keep all other header elements (notifications, user avatar) in current positions.
 
 **File Updated:**
-`.google-stitch/header/prompt-v3.md`
+`design-intent/google-stitch/header/prompt-v3.md`
 
 **Note:** Micro-refinements focus on single, specific changes while explicitly maintaining all other existing elements.
 
@@ -393,7 +393,7 @@ Additional prompts needed:
 - Total: 4 prompts (layout + 3 components) - within 6-prompt limit ✓
 - **Generates feature directory with prompt file and subdirectories**
 
-**Directory Created:** `.google-stitch/dashboard/`
+**Directory Created:** `design-intent/google-stitch/dashboard/`
 
 **File Generated:** `dashboard/prompt-v1.md`
 
@@ -479,7 +479,7 @@ Contains 4 prompts (within 6-prompt limit ✓):
   • Component: Subscription Activity
 
 Directory structure:
-  .google-stitch/dashboard/
+  design-intent/google-stitch/dashboard/
   ├── prompt-v1.md      ← Generated prompt
   ├── exports/          ← Place Stitch outputs here
   └── wireframes/       ← Place mockups/references here
@@ -514,7 +514,7 @@ Usage:
 - Total: 3 prompts (layout + 2 components) - within 6-prompt limit ✓
 - **Generates feature directory with prompt file and subdirectories**
 
-**Directory Created:** `.google-stitch/landing/`
+**Directory Created:** `design-intent/google-stitch/landing/`
 
 **File Generated:** `landing/prompt-v1.md`
 
@@ -580,7 +580,7 @@ Contains 3 prompts (within 6-prompt limit ✓):
   • Component: Feature Grid
 
 Directory structure:
-  .google-stitch/landing/
+  design-intent/google-stitch/landing/
   ├── prompt-v1.md      ← Generated prompt
   ├── exports/          ← Place Stitch outputs here
   └── wireframes/       ← Place mockups/references here
@@ -613,7 +613,7 @@ Usage:
 - Total: 8 prompts (layout + 7 components) - **exceeds 6-prompt limit** ⚠️
 - **Generates feature directory with multiple part files**
 
-**Directory Created:** `.google-stitch/admin-panel/`
+**Directory Created:** `design-intent/google-stitch/admin-panel/`
 
 **File Generated Part 1:** `admin-panel/prompt-v1-part1.md`
 
@@ -788,7 +788,7 @@ Contains 2 prompts (remainder):
   • Component: Notification Center
 
 Directory structure:
-  .google-stitch/admin-panel/
+  design-intent/google-stitch/admin-panel/
   ├── prompt-v1-part1.md    ← First 6 prompts
   ├── prompt-v1-part2.md    ← Remaining 2 prompts
   ├── exports/              ← Place Stitch outputs here

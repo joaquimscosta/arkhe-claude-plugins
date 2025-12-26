@@ -139,7 +139,7 @@ After determining split/combine strategy, detect if a **layout/foundation prompt
 
 **File Output Pattern (Feature Directories with --- Separators):**
 ```
-.google-stitch/
+design-intent/google-stitch/
 ├── dashboard/
 │   ├── prompt-v1.md           (contains layout + all components with --- separators)
 │   ├── exports/               (for Stitch-generated outputs)
@@ -299,14 +299,14 @@ If Section 1.7 detected the need for a layout prompt, generate it now:
    - Examples: `dashboard`, `landing`, `admin-panel`, `settings`
 
 6. **Create feature directory structure:**
-   - Create: `.google-stitch/{feature}/`
+   - Create: `design-intent/google-stitch/{feature}/`
    - Pre-create subdirectories:
      * `{feature}/exports/` - For Stitch-generated outputs (PNG, SVG, HTML)
      * `{feature}/wireframes/` - For pre-work mockups and reference images
    - Prompt files will be saved to feature root
 
 7. **Detect existing versions and auto-increment:**
-   - Scan `.google-stitch/{feature}/prompt-v*.md`
+   - Scan `design-intent/google-stitch/{feature}/prompt-v*.md`
    - Find highest version number (e.g., v1, v2, v3)
    - Increment to next version automatically
    - If no existing prompts, start at v1
@@ -324,14 +324,14 @@ If Section 1.7 detected the need for a layout prompt, generate it now:
 9. **Apply 6-prompt limit and save file:**
    - Count total prompts (layout + all components)
    - If ≤6 prompts total:
-     * Save as: `.google-stitch/{feature}/prompt-v{version}.md`
-     * Example: `.google-stitch/dashboard/prompt-v1.md`
+     * Save as: `design-intent/google-stitch/{feature}/prompt-v{version}.md`
+     * Example: `design-intent/google-stitch/dashboard/prompt-v1.md`
    - If >6 prompts total:
      * Split into multiple part files
      * Part 1 gets: Layout + first 5 components (6 prompts)
      * Part 2 gets: Next 6 components
      * Part N gets: Remaining components (max 6)
-     * Save as: `.google-stitch/{feature}/prompt-v{version}-part{N}.md`
+     * Save as: `design-intent/google-stitch/{feature}/prompt-v{version}-part{N}.md`
      * Examples: `admin-panel/prompt-v1-part1.md`, `admin-panel/prompt-v1-part2.md`
      * Warn user: "⚠️ Generated {total} prompts split across {N} files. Stitch can process maximum 6 screens at once. Use each part file separately."
 
@@ -376,7 +376,7 @@ Contains 4 prompts (within 6-prompt limit ✓):
   • Component: Subscription Activity
 
 Directory structure:
-  .google-stitch/dashboard/
+  design-intent/google-stitch/dashboard/
   ├── prompt-v1.md      ← Generated prompt
   ├── exports/          ← Place Stitch outputs here
   └── wireframes/       ← Place mockups/references here
@@ -405,7 +405,7 @@ prompt-v1-part2.md (2 prompts):
   • Component: Notifications
 
 Directory structure:
-  .google-stitch/admin-panel/
+  design-intent/google-stitch/admin-panel/
   ├── prompt-v1-part1.md
   ├── prompt-v1-part2.md
   ├── exports/

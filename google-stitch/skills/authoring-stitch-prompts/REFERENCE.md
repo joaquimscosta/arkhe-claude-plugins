@@ -164,7 +164,7 @@ All sections combined in single file `dashboard/prompt-v1.md`, separated by `---
 Each feature gets its own directory containing prompts and design artifacts:
 
 ```
-.google-stitch/
+design-intent/google-stitch/
 ├── dashboard/
 │   ├── prompt-v1.md           (all prompts in one file with --- separators)
 │   ├── prompt-v2.md           (version history in same directory)

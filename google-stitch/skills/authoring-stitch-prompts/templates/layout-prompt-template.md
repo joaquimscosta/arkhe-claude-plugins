@@ -122,7 +122,7 @@ Before finalizing layout prompt:
 Each page/feature gets **its own directory** containing prompt file and artifact subdirectories:
 
 ```
-.google-stitch/{feature}/
+design-intent/google-stitch/{feature}/
 ├── prompt-v{version}.md      (layout + all components with --- separators)
 ├── exports/                  (Stitch-generated outputs)
 └── wireframes/               (pre-work mockups)
@@ -145,7 +145,7 @@ Each page/feature gets **its own directory** containing prompt file and artifact
 ```
 
 **File naming:**
-- Feature directory: `.google-stitch/{feature}/` (semantic name, kebab-case)
+- Feature directory: `design-intent/google-stitch/{feature}/` (semantic name, kebab-case)
 - Standard (≤6 prompts): `{feature}/prompt-v{version}.md`
 - Split files (>6 prompts): `{feature}/prompt-v{version}-part{N}.md`
 - Subdirectories: `exports/` and `wireframes/` (pre-created)

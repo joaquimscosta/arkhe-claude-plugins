@@ -139,7 +139,7 @@ for i, img_data in enumerate(collected_images, 1):
         f.write(img_data["body"])
 ```
 
-**Output location:** `.google-stitch/{feature}/exports/`
+**Output location:** `design-intent/google-stitch/{feature}/exports/`
 
 ### 10. Generate Report
 

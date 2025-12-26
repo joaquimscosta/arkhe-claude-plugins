@@ -1,20 +1,19 @@
 # 🧩 Google Stitch Plugin
 
-> Claude + Google Stitch prompting toolkit that pairs optimized prompt authoring with session management for multi-screen design work.
+> Claude + Google Stitch prompting toolkit for optimized prompt authoring.
 
 ---
 
 ## 🚀 Overview
 
-The Google Stitch plugin bundles two complementary **Agent Skills** plus a shortcut slash command so Claude Code can ideate, author, and track Stitch design sessions end to end.
+The Google Stitch plugin provides an **Agent Skill** plus a shortcut slash command so Claude Code can ideate and author Stitch design prompts.
 
 | Component | Type | Purpose |
 | --- | --- | --- |
 | `/prompt` | Command | One-step invocation of the Stitch prompt skill from any conversation. |
 | 🧠 `authoring-stitch-prompts` | Skill | Converts freeform descriptions or spec files into optimized Stitch prompts that follow Google's recommended structure. |
-| 📂 `stitch-session-manager` | Skill | Logs every Stitch prompt in a project, preserves style cues, and exports summaries for reviews or handoff. |
 
-Install the plugin to keep Claude aware of your Stitch projects, enforce atomic prompting, and maintain consistent art direction across iterative sessions.
+Install the plugin to enforce atomic prompting and generate high-quality Stitch prompts.
 
 ---
 
@@ -50,26 +49,6 @@ Optimize this description into a Google Stitch prompt:
 
 ---
 
-## 📂 Skill: `stitch-session-manager`
-
-**Purpose**  
-Tracks multi-screen Stitch projects, ensuring every screen prompt, style decision, and recommendation is captured under `.claude/sessions/<project>/`.
-
-**Highlights**
-- `session:new`, `session:add`, `session:summary`, `session:export` flow
-- Calls `authoring-stitch-prompts` automatically before logging new screens
-- Extracts palette/typography cues to keep future prompts aligned
-- Exports Markdown summaries for PM/design reviews
-
-**Typical usage**
-```
-Start a new Stitch session for a fintech dashboard app.
-Add a Dashboard screen with charts and summary cards.
-Summarize my current Stitch session.
-```
-
----
-
 ## ⚡ Command: `/prompt`
 
 Run this command when you want Claude to rewrite any brief into a Stitch-ready prompt without manually referencing the skill.
@@ -93,21 +72,14 @@ google-stitch/
 │   └── prompt.md
 ├── README.md
 └── skills/
-    ├── authoring-stitch-prompts/
-    │   ├── SKILL.md
-    │   ├── REFERENCE.md
-    │   ├── EXAMPLES.md
-    │   ├── evaluation.json
-    │   └── templates/
-    │       └── authoring-stitch-prompts-template.md
-    └── session-manager/
+    └── authoring-stitch-prompts/
         ├── SKILL.md
-        ├── WORKFLOW.md
+        ├── REFERENCE.md
         ├── EXAMPLES.md
-        └── TROUBLESHOOTING.md
+        ├── evaluation.json
+        └── templates/
+            └── authoring-stitch-prompts-template.md
 ```
-
-Supporting drafts or research notes (e.g., `skills/session-manager/draft.md`) stay alongside the production Skill for future revisions.
 
 ---
 
@@ -123,19 +95,16 @@ Supporting drafts or research notes (e.g., `skills/session-manager/draft.md`) st
    ```
 3. **Restart Claude Code** to load the new Skills.
 
-## 🧩 Combined Workflow
+## 🧩 Typical Workflow
 
-1. `Start a new Stitch session for a mobile banking app.`  
-   → Session directories created under `.claude/sessions/mobile-banking/`.
+1. `Optimize this description into a Google Stitch prompt: "A web dashboard with analytics cards and dark theme"`
+   → `authoring-stitch-prompts` transforms the brief into a structured Stitch prompt.
 
-2. `Add a Dashboard screen showing MRR, Churn, and Revenue charts.`  
-   → `authoring-stitch-prompts` condenses the brief and logs it via `session:add`.
+2. `/prompt create a mobile onboarding flow with 3 screens`
+   → The `/prompt` command invokes the skill directly for quick prompt generation.
 
-3. `Add a Settings screen with same color palette and typography.`  
-   → `session:style` extracts palette cues before the new prompt is authored.
-
-4. `Summarize my current Stitch session.` / `End session and export summary.`  
-   → Markdown handoff with screen list, style notes, and recommendations.
+3. `Iterate on the dashboard: move the KPI cards above the chart`
+   → The skill handles iteration briefs without re-authoring the entire screen.
 
 ---
 

@@ -160,7 +160,7 @@ Initial release of the Arkhe Claude Plugins marketplace with 10 specialized plug
 - `/prompt` command for generating Stitch-ready prompts from briefs or spec files
 - `authoring-stitch-prompts` skill for converting descriptions into optimized Stitch prompts
 - `stitch-session-manager` skill for tracking multi-screen design sessions with style continuity
-- Prompt versioning and storage in `.google-stitch/prompts/`
+- Prompt versioning and storage in `design-intent/google-stitch/prompts/`
 - Session logging with metadata and style guide preservation
 
 #### Documentation

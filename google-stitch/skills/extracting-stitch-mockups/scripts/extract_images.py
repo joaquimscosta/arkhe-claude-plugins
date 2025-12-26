@@ -70,8 +70,8 @@ def normalize_feature_name(name):
 
 
 def find_existing_features(repo_root):
-    """Find existing feature directories in .google-stitch/."""
-    stitch_dir = repo_root / ".google-stitch"
+    """Find existing feature directories in design-intent/google-stitch/."""
+    stitch_dir = repo_root / "design-intent" / "google-stitch"
     if not stitch_dir.exists():
         return []
 
@@ -217,7 +217,7 @@ def extract_mockups(url, feature=None, output_dir=None):
     if output_dir:
         save_dir = Path(output_dir)
     elif feature:
-        save_dir = repo_root / ".google-stitch" / feature / "exports"
+        save_dir = repo_root / "design-intent" / "google-stitch" / feature / "exports"
     else:
         # Try to auto-detect feature directory
         existing_features = find_existing_features(repo_root)
@@ -225,7 +225,7 @@ def extract_mockups(url, feature=None, output_dir=None):
 
         if matched_feature:
             print(f"Auto-detected feature directory: {matched_feature}")
-            save_dir = repo_root / ".google-stitch" / matched_feature / "exports"
+            save_dir = repo_root / "design-intent" / "google-stitch" / matched_feature / "exports"
         elif existing_features:
             print("\nCould not auto-detect feature directory.")
             print("Existing feature directories:")
@@ -237,7 +237,7 @@ def extract_mockups(url, feature=None, output_dir=None):
         else:
             # No existing features, create based on project title
             feature_name = normalize_feature_name(project_title)
-            save_dir = repo_root / ".google-stitch" / feature_name / "exports"
+            save_dir = repo_root / "design-intent" / "google-stitch" / feature_name / "exports"
             print(f"Creating new feature directory: {feature_name}")
 
     # Create output directory

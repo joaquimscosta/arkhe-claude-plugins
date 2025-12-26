@@ -145,15 +145,15 @@ AI meta-prompt framework for Spec Kit workflow optimization.
 ---
 
 ### Google Stitch Plugin
-Claude + Google Stitch prompting toolkit for prompt authoring and session management.
+Claude + Google Stitch prompting toolkit for prompt authoring.
 
 **Install**: `/plugin install google-stitch@arkhe-claude-plugins`
 
 **Components**:
 - 1 command: `/prompt`
-- 3 skills: `authoring-stitch-prompts`, `extracting-stitch-mockups`, `session-manager`
+- 2 skills: `authoring-stitch-prompts`, `extracting-stitch-mockups`
 
-**Use for:** Generating Stitch-ready prompts, extracting mockups, and maintaining multi-screen session logs.
+**Use for:** Generating Stitch-ready prompts and extracting mockups.
 
 ---
 
@@ -268,7 +268,7 @@ Skills are automatically invoked when relevant context is detected:
 - **doc**: `mermaid` skill activates when you mention diagrams, flowcharts, or visualization keywords
 - **git**: `changelog` skill activates when you edit CHANGELOG.md or request changelog generation
 - **design-intent**: `design-intent-specialist` activates when you're implementing UI from visual references or running `/design` or `/implement`
-- **google-stitch**: `authoring-stitch-prompts`, `extracting-stitch-mockups`, `session-manager` activate for Stitch prompt work
+- **google-stitch**: `authoring-stitch-prompts`, `extracting-stitch-mockups` activate for Stitch prompt work
 - **lang**: `scripting-bash` skill activates for Bash scripting guidance
 
 ---

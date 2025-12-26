@@ -212,12 +212,12 @@ Please re-run with --feature <name> to specify target directory.
 
 **Error:**
 ```
-PermissionError: [Errno 13] Permission denied: '.google-stitch/feature/exports/mockup-1.png'
+PermissionError: [Errno 13] Permission denied: 'design-intent/google-stitch/feature/exports/mockup-1.png'
 ```
 
 **Solution:**
 ```bash
-chmod -R u+w .google-stitch/
+chmod -R u+w design-intent/google-stitch/
 ```
 
 ### Directory Already Has Files

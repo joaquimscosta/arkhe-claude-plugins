@@ -23,7 +23,7 @@ Use this Skill whenever users need Stitch-ready wording, prompt refinements, or 
 
 ---
 
-## File Output (.google-stitch/{feature}/)
+## File Output (design-intent/google-stitch/{feature}/)
 
 Generate optimized prompts in **feature-based directories** with organized artifact storage:
 
@@ -35,7 +35,7 @@ Generate optimized prompts in **feature-based directories** with organized artif
    - Keep semantic and concise (prefer "dashboard" over "analytics-dashboard" when unambiguous)
 
 2. **Directory Structure**:
-   - Create feature directory: `.google-stitch/{feature}/`
+   - Create feature directory: `design-intent/google-stitch/{feature}/`
    - Pre-create subdirectories:
      * `exports/` - For Stitch-generated outputs (PNG, SVG, HTML)
      * `wireframes/` - For pre-work mockups and reference images
@@ -61,7 +61,7 @@ Generate optimized prompts in **feature-based directories** with organized artif
      * Warn user about Stitch's 6-screen generation limit
 
 5. **Version Auto-Increment**:
-   - Scan `.google-stitch/{feature}/prompt-v*.md`
+   - Scan `design-intent/google-stitch/{feature}/prompt-v*.md`
    - Find highest version number, increment automatically
    - Start at v1 if no matches
    - Each feature maintains independent version history
@@ -69,7 +69,7 @@ Generate optimized prompts in **feature-based directories** with organized artif
 
 6. **File Path Resolution**:
    - Resolve repo root via `git rev-parse --show-toplevel`
-   - Create `{root}/.google-stitch/{feature}/` directory
+   - Create `{root}/design-intent/google-stitch/{feature}/` directory
    - Create `{feature}/exports/` and `{feature}/wireframes/` subdirectories
    - Write composed Markdown file to `{feature}/prompt-v{version}.md`
 
@@ -85,7 +85,7 @@ Generate optimized prompts in **feature-based directories** with organized artif
        • Component: {Title}
 
      Directory structure:
-       .google-stitch/{feature}/
+       design-intent/google-stitch/{feature}/
        ├── prompt-v{version}.md     ← Generated prompt
        ├── exports/                 ← Place Stitch outputs here
        └── wireframes/              ← Place mockups/references here
@@ -102,10 +102,10 @@ Multi-component page (4 prompts):
 ```
 Input: "Analytics dashboard with KPI cards, revenue chart, and subscriptions table"
 
-Output: .google-stitch/dashboard/prompt-v1.md
+Output: design-intent/google-stitch/dashboard/prompt-v1.md
 
 Directory created:
-  .google-stitch/dashboard/
+  design-intent/google-stitch/dashboard/
   ├── prompt-v1.md
   ├── exports/
   └── wireframes/
@@ -138,10 +138,10 @@ Single component (1 prompt):
 ```
 Input: "Login form with email and password"
 
-Output: .google-stitch/login/prompt-v1.md
+Output: design-intent/google-stitch/login/prompt-v1.md
 
 Directory created:
-  .google-stitch/login/
+  design-intent/google-stitch/login/
   ├── prompt-v1.md
   ├── exports/
   └── wireframes/
@@ -156,7 +156,7 @@ Large page split (8 prompts → 2 files):
 ```
 Input: "Admin panel with navigation, dashboard, users, roles, settings, audit logs, notifications"
 
-Output: .google-stitch/admin-panel/prompt-v1-part1.md (6 prompts)
+Output: design-intent/google-stitch/admin-panel/prompt-v1-part1.md (6 prompts)
 - Layout: Admin Panel
 - Component: Navigation
 - Component: Dashboard
@@ -164,12 +164,12 @@ Output: .google-stitch/admin-panel/prompt-v1-part1.md (6 prompts)
 - Component: Roles
 - Component: Settings
 
-Output: .google-stitch/admin-panel/prompt-v1-part2.md (2 prompts)
+Output: design-intent/google-stitch/admin-panel/prompt-v1-part2.md (2 prompts)
 - Component: Audit Logs
 - Component: Notifications
 
 Directory created:
-  .google-stitch/admin-panel/
+  design-intent/google-stitch/admin-panel/
   ├── prompt-v1-part1.md
   ├── prompt-v1-part2.md
   ├── exports/
@@ -180,16 +180,16 @@ Directory created:
 
 Iteration (auto-increment):
 ```
-Existing: .google-stitch/dashboard/prompt-v1.md
+Existing: design-intent/google-stitch/dashboard/prompt-v1.md
 
 Input: "Update analytics dashboard with new metrics"
 
 Auto-detected version → prompt-v2.md
 
-Output: .google-stitch/dashboard/prompt-v2.md
+Output: design-intent/google-stitch/dashboard/prompt-v2.md
 
 Directory structure:
-  .google-stitch/dashboard/
+  design-intent/google-stitch/dashboard/
   ├── prompt-v1.md      ← Previous version
   ├── prompt-v2.md      ← New version
   ├── exports/

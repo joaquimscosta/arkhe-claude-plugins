@@ -83,10 +83,10 @@ UI/UX design and design system toolkit.
 - **Commands**: None (all capabilities via agent)
 
 ### Google Stitch Plugin
-Claude + Google Stitch prompting toolkit for prompt authoring and session management.
+Claude + Google Stitch prompting toolkit for prompt authoring.
 - **Commands**: `/prompt`
-- **Skills**: `authoring-stitch-prompts`, `extracting-stitch-mockups`, `session-manager`
-- **Use**: Generate Stitch-ready prompts, extract mockups, maintain multi-screen session logs, export summaries
+- **Skills**: `authoring-stitch-prompts`, `extracting-stitch-mockups`
+- **Use**: Generate Stitch-ready prompts, extract mockups
 
 ### Git Plugin
 Git workflow automation for commits, pull requests, branching, and changelog generation.

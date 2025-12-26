@@ -32,12 +32,12 @@ Extracted 3 mockups from Stitch project
 Project: Eco-Travel Home Screen
 URL: https://stitch.withgoogle.com/projects/3236066188909813678
 
-Saved to: .google-stitch/eco-travel/exports
+Saved to: design-intent/google-stitch/eco-travel/exports
 ```
 
 ### Result
 ```
-.google-stitch/eco-travel/
+design-intent/google-stitch/eco-travel/
 ├── prompt-v1.md
 ├── exports/
 │   ├── mockup-1.png    <- New
@@ -76,7 +76,7 @@ Extracted 4 mockups from Stitch project
 Project: Analytics Dashboard v2
 URL: https://stitch.withgoogle.com/projects/9876543210
 
-Saved to: .google-stitch/dashboard/exports
+Saved to: design-intent/google-stitch/dashboard/exports
 ```
 
 ---
@@ -202,12 +202,12 @@ Extracted 2 mockups from Stitch project
 Project: Landing Page Hero
 URL: https://stitch.withgoogle.com/projects/4444444444
 
-Saved to: .google-stitch/landing-page-hero/exports
+Saved to: design-intent/google-stitch/landing-page-hero/exports
 ```
 
 ### Result
 ```
-.google-stitch/
+design-intent/google-stitch/
 └── landing-page-hero/
     └── exports/
         ├── mockup-1.png
@@ -224,7 +224,7 @@ Saved to: .google-stitch/landing-page-hero/exports
 ```
 User: Create a Stitch prompt for a mobile banking dashboard
 ```
-Result: `.google-stitch/banking-dashboard/prompt-v1.md`
+Result: `design-intent/google-stitch/banking-dashboard/prompt-v1.md`
 
 2. **Generate in Stitch**
 - Copy prompt to Stitch
@@ -239,7 +239,7 @@ Result: Auto-detects `banking-dashboard` directory
 
 4. **Final structure**
 ```
-.google-stitch/banking-dashboard/
+design-intent/google-stitch/banking-dashboard/
 ├── prompt-v1.md
 ├── exports/
 │   ├── mockup-1.png

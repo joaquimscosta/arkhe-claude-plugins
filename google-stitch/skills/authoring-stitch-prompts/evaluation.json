@@ -61,7 +61,7 @@
       "expected_behavior": [
         "Detects multi-component scenario (3 components: KPI cards, revenue chart, subscriptions table).",
         "Total: 4 prompts (layout + 3 components) - within 6-prompt limit.",
-        "Creates feature directory: .google-stitch/dashboard/",
+        "Creates feature directory: design-intent/google-stitch/dashboard/",
         "Pre-creates subdirectories: dashboard/exports/ and dashboard/wireframes/",
         "Creates prompt file: dashboard/prompt-v1.md (not flat file structure).",
         "File starts with HTML comment label: <!-- Layout: Analytics Dashboard -->.",
@@ -87,7 +87,7 @@
       "expected_behavior": [
         "Detects multi-component scenario (7 components listed).",
         "Total: 8 prompts (layout + 7 components) - exceeds 6-prompt limit.",
-        "Creates feature directory: .google-stitch/admin-panel/",
+        "Creates feature directory: design-intent/google-stitch/admin-panel/",
         "Pre-creates subdirectories: admin-panel/exports/ and admin-panel/wireframes/",
         "Automatically splits into 2 part files due to Stitch's 6-screen limit.",
         "Creates part1 file: admin-panel/prompt-v1-part1.md containing 6 prompts (layout + first 5 components).",

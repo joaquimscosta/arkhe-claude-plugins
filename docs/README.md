@@ -142,7 +142,7 @@ The Arkhe Claude Plugins marketplace demonstrates all plugin component types acr
 **Skills** (model-invoked capabilities):
 - **doc**: 1 skill - `mermaid` (auto-activates on diagram/flowchart keywords)
 - **git**: 1 skill - `changelog` (auto-activates on CHANGELOG.md editing)
-- **google-stitch**: 2 skills - `authoring-stitch-prompts`, `stitch-session-manager`
+- **google-stitch**: 2 skills - `authoring-stitch-prompts`, `extracting-stitch-mockups`
 - **design-intent**: 1 skill - `design-intent-specialist` (auto-activates for visual implementation work)
 
 **Scripts** (executable automation):

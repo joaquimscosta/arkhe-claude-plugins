@@ -14,7 +14,7 @@ allowed-tools: Read, Write, Bash, Grep, Glob
 1. **Get project URL** - User provides `https://stitch.withgoogle.com/projects/{id}`
 2. **Resolve feature directory** - Determine where to save using fallback chain
 3. **Run extraction script** - Execute `scripts/extract_images.py` with Playwright
-4. **Save to exports** - Images saved to `.google-stitch/{feature}/exports/`
+4. **Save to exports** - Images saved to `design-intent/google-stitch/{feature}/exports/`
 
 ---
 
@@ -23,13 +23,13 @@ allowed-tools: Read, Write, Bash, Grep, Glob
 Determine target feature directory using this fallback chain:
 
 1. **User specifies** - Optional `--feature` argument provided
-2. **Auto-detect** - Match Stitch project title to existing `.google-stitch/{feature}/` directories
+2. **Auto-detect** - Match Stitch project title to existing `design-intent/google-stitch/{feature}/` directories
 3. **Prompt user** - List existing directories and ask user to select or create new
 
 ### Auto-Detection Logic
 - Extract project title from Stitch page (e.g., "Eco-Travel Home Screen")
 - Normalize to feature format: lowercase, hyphens, strip special chars
-- Search for matching directory in `.google-stitch/`
+- Search for matching directory in `design-intent/google-stitch/`
 - If multiple partial matches, prompt user to select
 
 ---
@@ -70,7 +70,7 @@ Script checks for "Generating..." status on page:
 Images saved to existing feature's `exports/` directory:
 
 ```
-.google-stitch/{feature}/exports/
+design-intent/google-stitch/{feature}/exports/
 ├── mockup-1.png
 ├── mockup-2.png
 └── mockup-N.png
@@ -93,13 +93,13 @@ Extracted {N} mockups from Stitch project
 Project: {project-title}
 URL: {project-url}
 
-Saved to: .google-stitch/{feature}/exports/
+Saved to: design-intent/google-stitch/{feature}/exports/
   - mockup-1.png (400x800)
   - mockup-2.png (400x800)
   - ...
 
 Feature directory:
-  .google-stitch/{feature}/
+  design-intent/google-stitch/{feature}/
   ├── prompt-v{N}.md
   ├── exports/          <- Mockups saved here
   │   ├── mockup-1.png
