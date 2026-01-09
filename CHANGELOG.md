@@ -7,6 +7,85 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-01-08
+
+### Added
+
+#### Spring Boot Plugin
+- `spring-boot-upgrade-verifier` agent for verifying Spring Boot 4 upgrade readiness
+  - Phase 1: Discovery - detect project version and relevant verifiers
+  - Phase 2: Parallel verification - check dependencies, security, testing, observability
+  - Phase 3: Migration report - unified checklist with severity levels
+- `/verify-upgrade` command for Spring Boot project upgrade verification
+- Parallel multi-skill review in `spring-boot-reviewer` agent
+  - Phase 1: Discovery (haiku) - detect relevant skills from scope
+  - Phase 2: Parallel review (sonnet) - launch skill-specific reviewers
+  - Phase 3: Report & fix - consolidated findings with interactive fixes
+
+#### Core Plugin
+- Smart mode routing in `/workflow` command: auto-detect IMPLEMENT vs PLAN mode
+- Plan persistence pipeline: explore → architect → save plan
+- Quick validation (sonnet sanity check) always runs in workflow
+- Deep validation (opus review) available with `--validate` flag
+- Confidence-based issue filtering in `/double-check` command (≥75 threshold)
+- Auto-scope detection via git commands before verification in `/double-check`
+- `/feature` command replacing `/ultrathink` with 7-phase multi-agent workflow
+- `code-explorer` agent for fast codebase exploration
+- `code-architect` agent for architecture design
+- `code-reviewer` agent for code quality reviews
+
+#### SpecPrep Plugin
+- Multi-file input support in `/specprep:plan`: accept spec, research files alongside plan drafts
+- Dual operating modes in `/specprep:plan`: synthesis (generate from spec+research) and optimization (refine existing plan)
+- Auto-detection of spec and plan draft files from directory
+- Citation format for spec requirements and research sources
+- Traceability matrix in strict mode
+
+### Changed
+
+#### Google Stitch Plugin
+- Changed prompts storage from `.google-stitch/` to `design-intent/google-stitch/` for better discoverability
+- Removed deprecated `stitch-session-manager` skill
+
+#### Core Plugin
+- Replaced `/ultrathink` command with `/feature` command
+- Enhanced `/workflow` command to be spec-kit aware
+
+#### Spring Boot Plugin
+- Both reviewer agents now use TodoWrite for progress tracking
+- 80+ confidence threshold for findings
+
+### Fixed
+
+#### Spring Boot Plugin
+- Added missing `domain-driven-design` TROUBLESHOOTING.md (was referenced but didn't exist)
+  - Common patterns: anemic domain model, god aggregate, cross-aggregate transactions
+  - Entity vs value object confusion, missing bounded contexts
+  - Repository responsibilities, domain layer infrastructure pollution
+
+### Removed
+
+#### SpecPrep Plugin
+- `/specprep:plan` command (use `/speckit.plan` directly after creating specs)
+
+### Breaking Changes
+
+#### SpecPrep Plugin (2026-01-08)
+**Commit**: 85ebcd6
+
+The `/specprep:plan` command has been removed to simplify the plugin.
+
+**Migration**:
+```bash
+# Old workflow (no longer supported)
+/specprep:specify <feature>
+/specprep:plan
+
+# New workflow
+/specprep:specify <feature>
+/speckit.plan  # Use spec-kit directly
+```
+
 ## [1.2.0] - 2025-12-22
 
 ### Added
@@ -259,7 +338,8 @@ The `/specprep:tasks` command has been removed in favor of automatic command cha
 - **Documentation**: See README.md and docs/ directory
 - **Installation**: See INSTALLATION.md
 
-[Unreleased]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/releases/tag/v1.0.0
