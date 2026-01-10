@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+#### Plugin Dev Plugin
+
+- `skill-validator` skill for validating skills against best practices
+  - Frontmatter validation (name length, description quality, field values)
+  - Structure validation (file organization, supporting docs)
+  - Content standards (imperative form, time-sensitive info, progressive disclosure)
+  - Reference integrity checks (broken links, anchor validation)
+  - Security checks (shebang, file permissions, no third-party packages)
+  - Confidence-based filtering with severity levels
+
+### Changed
+
+#### Design Intent Plugin
+
+- Removed redundant `/design` command (skill auto-invokes on visual references)
+- Enhanced `/implement` command with:
+  - `argument-hint: [feature-name]` for better discoverability
+  - Quality Review phase with 3 parallel `design-reviewer` agents
+  - Proper skill reference pattern following Claude Code best practices
+- Updated README with decision tree diagram for command selection
+- Added "When to Use" column to commands table
+- Fixed markdown lint warnings throughout documentation
+
 ## [1.3.0] - 2026-01-08
 
 ### Added
