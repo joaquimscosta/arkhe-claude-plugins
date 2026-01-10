@@ -9,6 +9,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+#### Doc Plugin
+
+- `managing-adrs` skill for Architecture Decision Records
+  - Auto-numbering and template detection (minimal or MADR 4.0)
+  - Python scripts using `uv` for `adr_create`, `adr_index`, `adr_supersede`
+  - Supersession workflow for replacing existing ADRs
+  - Auto-invokes on "ADR", "architecture decision" keywords
+
+#### Google Stitch Plugin
+
+- Design context discovery from `design-intent/memory/constitution.md`
+  - Injects project type cues (Enterprise, Consumer, Internal, Marketing)
+  - Injects design system names (Fluent UI, Material UI, Tailwind, etc.)
+  - Falls back to `package.json` scanning if no design-intent
+- Interactive `/prompt` command with 3-step preference gathering
+  - Component selection (which UI components to include)
+  - Style preferences (Enterprise, Consumer, Minimal, Playful, Custom)
+  - Structure decisions (Combined, Split, Auto-detect)
+  - "Quick generation" option to skip questions
+  - Auto-skips questions for revision requests
+- Structured input parsing for skill invocation
+- 7 new examples (17-23) demonstrating design-aware and interactive flows
+
 #### Plugin Dev Plugin
 
 - `skill-validator` skill for validating skills against best practices
