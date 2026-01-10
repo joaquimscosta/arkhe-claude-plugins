@@ -54,7 +54,7 @@ Each section analyzed for: layout, spacing, typography, responsiveness, visual t
 
 ## Custom Components
 
-When creating custom components, use clear naming (`CustomCard` vs `Card`) and document with header comments. See [WORKFLOW.md](WORKFLOW.md) Phase 4 for documentation template.
+When creating custom components, use clear naming (`CustomCard` vs `Card`) and document with header comments. See [WORKFLOW.md - Custom Component Documentation](WORKFLOW.md#custom-component-documentation) for the documentation template.
 
 ## Behavioral Rules
 
@@ -77,7 +77,6 @@ Optional: `figma-dev-mode-mcp-server` (Figma extraction) and `fluent-pilot` (Flu
 
 Triggered by:
 
-- `/design` command with visual references
 - `/implement` command for UI components
 - **Phase 5 of `/design-intent` workflow** (automatic invocation)
 - User providing Figma URLs or screenshots

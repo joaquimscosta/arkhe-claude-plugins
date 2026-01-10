@@ -2,6 +2,19 @@
 
 Complete implementation process for the Design Intent Specialist skill.
 
+## Table of Contents
+
+- [Phase 1: Mandatory Design Intent Check](#phase-1-mandatory-design-intent-check)
+- [Phase 2: Visual Reference Analysis](#phase-2-visual-reference-analysis)
+- [Phase 3: Section Decomposition](#phase-3-section-decomposition)
+- [Phase 4: Implementation](#phase-4-implementation)
+- [Phase 5: Conflict Resolution](#phase-5-conflict-resolution)
+- [Phase 6: Iteration Support](#phase-6-iteration-support)
+- [Constitution Integration](#constitution-integration)
+- [Output Expectations](#output-expectations)
+
+---
+
 ## Phase 1: Mandatory Design Intent Check
 
 **This step is non-negotiable before any implementation.**
@@ -161,7 +174,7 @@ When creating custom components:
  * CUSTOM COMPONENT: CustomMetricCard
  * Base: @fluentui/react-components/Card
  * Reason: Required gradient background and custom icon positioning
- * Created: 2024-01-15
+ * Created: YYYY-MM-DD
  *
  * Design Reference: dashboard-v2.png, top-left KPI section
  */
@@ -208,7 +221,7 @@ Document Decision
 
 ### Recommendation
 
-[Your recommendation based on context]
+[Recommendation based on context]
 
 **Which approach would you prefer?**
 ```

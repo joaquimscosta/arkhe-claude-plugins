@@ -91,7 +91,6 @@ For specific tasks, use individual commands:
 ```bash
 /feature user authentication flow   # Create feature spec
 /plan                               # Generate implementation plan
-/design [screenshot or Figma URL]   # Quick visual implementation
 /implement                          # Execute implementation plan
 /save-patterns                      # Capture successful patterns
 /diary                              # Create session diary
@@ -152,20 +151,16 @@ flowchart TD
 flowchart TD
     A["/setup"] --> B["/feature"]
     B --> C["/plan"]
-    C --> D{Implementation}
-    D --> E["/design"]
-    D --> F["/implement"]
-    E --> G["/save-patterns"]
-    F --> G
-    G --> H["/diary"]
+    C --> D["/implement"]
+    D --> E["/save-patterns"]
+    E --> F["/diary"]
 
     A:::init
     B:::spec
     C:::spec
-    E:::build
-    F:::build
-    G:::capture
-    H:::capture
+    D:::build
+    E:::capture
+    F:::capture
 
     classDef init fill:#e1f5fe
     classDef spec fill:#fff3e0
@@ -181,7 +176,6 @@ flowchart TD
 | `/setup` | Initialize design intent structure with templates |
 | `/feature [description]` | Create feature specification |
 | `/plan` | Generate implementation plan from spec |
-| `/design [reference]` | Quick implementation from visual references (screenshots, Figma) |
 | `/implement` | Execute implementation plan |
 | `/save-patterns` | Analyze work and suggest patterns to preserve |
 | `/diary` | Create session diary for handoff |
@@ -247,7 +241,7 @@ Auto-invoked skill for creating accurate frontend implementations from visual re
 - Figma URLs
 - Screenshots/design images
 - UI implementation requests
-- `/design` and `/implement` commands
+- `/implement` command for UI components
 - Phase 5 of `/design-intent` workflow
 
 **Documentation:**
@@ -392,7 +386,7 @@ Phase 7: Patterns       → Document patterns
 1. /setup              → Initialize project structure
 2. /feature            → Create feature specification
 3. /plan               → Generate implementation plan
-4. /implement or /design → Build the feature
+4. /implement          → Build the feature
 5. /save-patterns      → Capture successful patterns
 6. /diary              → Document session for handoff
 ```

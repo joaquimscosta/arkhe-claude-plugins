@@ -327,9 +327,9 @@ Context didn't trigger skill invocation.
 ### Solution
 
 Use explicit triggers:
-- `/design [reference]` - Explicit command
 - "Implement this UI from the screenshot"
 - "Create React components matching this Figma design"
+- `/design-intent [reference]` - Full 7-phase workflow
 
 ### Trigger Keywords
 

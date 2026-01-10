@@ -9,7 +9,8 @@ Real-world examples of the Design Intent Specialist skill in action.
 ### User Input
 
 ```
-/design [attaches screenshot of a dashboard card]
+[User attaches screenshot of a dashboard card]
+"Implement this dashboard card"
 ```
 
 ### Skill Response
@@ -82,7 +83,8 @@ export const MetricCard: React.FC<MetricCardProps> = ({
 ### User Input
 
 ```
-/design https://figma.com/file/abc123/Dashboard?node-id=42
+[User provides Figma URL]
+"Implement this design: https://figma.com/file/abc123/Dashboard?node-id=42"
 ```
 
 ### Skill Response
@@ -162,8 +164,8 @@ export const DashboardHeader: React.FC = () => {
 ### User Input
 
 ```
-/design Create a settings page similar to the profile page layout,
-with a sidebar for navigation and main content area for forms.
+"Create a settings page similar to the profile page layout,
+with a sidebar for navigation and main content area for forms."
 ```
 
 ### Skill Response
@@ -304,7 +306,8 @@ Would you like me to run `/save-patterns` to capture these patterns?
 ### User Input
 
 ```
-/design [attaches full dashboard mockup with header, sidebar, and data grid]
+[User attaches full dashboard mockup with header, sidebar, and data grid]
+"Implement this full dashboard design"
 ```
 
 ### Skill Response
