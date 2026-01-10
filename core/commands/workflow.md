@@ -1,7 +1,7 @@
 ---
-allowed-tools: Bash(*), Task, Read, Grep, Glob, WebSearch, WebFetch, AskUserQuestion
+allowed-tools: Bash(*), Task, Read, Grep, Glob, Write, WebSearch, WebFetch, AskUserQuestion
 argument-hint: <request> [--validate]
-description: Multi-agent orchestration with parallel execution and spec-kit awareness
+description: Multi-agent orchestration with smart mode routing, plan persistence, and built-in validation
 ---
 
 # Workflow Orchestration
@@ -14,7 +14,8 @@ You are a **product-manager-orchestrator**. You orchestrate specialist agents bu
 - Maximize parallel execution with multiple Task tool calls
 - Use appropriate model tiers for each phase
 - Provide terminal progress updates
-- **Leverage spec-kit artifacts when available**
+- **Smart mode routing** - detect whether to implement existing plan or create new one
+- **Plan persistence** - save created plans for reuse
 
 ## Skills Awareness
 
@@ -31,7 +32,7 @@ Use it when the task matches a skill's purpose.
 Input: `/workflow <request> [--validate]`
 
 **Flag:**
-- `--validate` - Enable validation phase with confidence scoring and constitution compliance
+- `--validate` - Enable deep validation phase with confidence scoring and constitution compliance
 
 Parse: $ARGUMENTS
 
@@ -59,12 +60,229 @@ Return: PROCEED | CLARIFY:[questions] | DECLINE:[reason]
 
 ---
 
-### Step 2: Spec Discovery (haiku agent)
+### Step 2: Mode Detection (haiku agent)
 
-Launch a haiku agent to gather project context and detect spec-kit:
+Launch a haiku agent to determine execution mode:
 
 ```markdown
-Find relevant context for this request:
+Analyze this request to determine execution mode:
+
+**Request:** [user request]
+
+Tasks:
+1. Extract path references from the request:
+   - @ references: @specs/auth/, @plan/specs/002-auth/
+   - Explicit paths: "from specs/auth", "in plan/specs/feature"
+
+2. Check if plan.md exists at extracted path:
+   - If path is a directory, check for plan.md inside
+   - If path is a file, use it directly
+
+3. Detect project conventions:
+   - Does .specify/ exist? (spec-kit configured)
+   - Does plan/specs/ exist?
+   - Does specs/ exist?
+
+4. Generate feature slug from request:
+   - Extract key words, remove filler
+   - Format: lowercase, hyphens, 10-20 chars
+   - Example: "implement user auth with OAuth" → "oauth-auth"
+
+5. Check for keywords that force PLAN_MODE:
+   - "create plan", "new plan", "draft plan", "generate plan"
+
+Return:
+- MODE: IMPLEMENT_MODE | PLAN_MODE
+- PLAN_PATH: [path if found, null otherwise]
+- FEATURE_SLUG: [generated slug]
+- SPEC_KIT_CONFIGURED: true/false
+- EXISTING_DIRECTORIES: [list of detected convention directories]
+```
+
+**Mode determination:**
+- If plan.md found at explicit path AND no force keywords → **IMPLEMENT_MODE**
+- Otherwise → **PLAN_MODE**
+
+---
+
+### Step 3: Mode Routing
+
+**If IMPLEMENT_MODE:**
+
+Use AskUserQuestion to confirm before proceeding:
+
+```markdown
+Question: "Found plan at `{PLAN_PATH}`. How would you like to proceed?"
+
+Options:
+1. Proceed with implementation - Execute the existing plan
+2. Revise the plan first - Enter Plan Mode to update it
+3. Cancel - Stop workflow
+```
+
+- If "Proceed" → Skip to Step 5 (Spec Discovery)
+- If "Revise" → Continue to Step 4 (Plan Mode)
+- If "Cancel" → Stop with message
+
+**If PLAN_MODE:**
+
+Proceed directly to Step 4 (no confirmation needed).
+
+---
+
+### Step 4: Planning Pipeline (Plan Mode only)
+
+#### Step 4a: Explore (code-explorer agent, sonnet)
+
+Launch the code-explorer agent to understand the codebase:
+
+```markdown
+You are analyzing a codebase to prepare for implementing this feature:
+
+**Feature:** [user request]
+**Feature Slug:** [from Step 2]
+
+## Your Mission:
+1. Find features similar to what's being requested
+2. Map the architecture and relevant abstractions
+3. Identify UI patterns, testing approaches, or extension points
+4. Document key dependencies and integrations
+
+## Output:
+- Entry points with file:line references
+- Key components and their responsibilities
+- Existing patterns that should be followed
+- List of 5-10 essential files for understanding this area
+```
+
+Use `subagent_type: code-explorer` with `model: sonnet`.
+
+---
+
+#### Step 4b: Architect (code-architect agent, sonnet)
+
+Launch the code-architect agent to design the implementation:
+
+```markdown
+Based on the codebase exploration, design an implementation plan:
+
+**Feature:** [user request]
+**Exploration Results:** [from Step 4a]
+
+## Your Mission:
+1. Design the complete feature architecture
+2. Make decisive choices - pick one approach and commit
+3. Ensure seamless integration with existing code
+4. Break implementation into clear phases
+
+## Output Format:
+1. Overview - Brief summary of approach
+2. Technical Architecture - Component structure, data flow
+3. Implementation Steps - Phased checklist with tasks
+4. Dependencies & Risks - What could go wrong
+```
+
+Use `subagent_type: code-architect` with `model: sonnet`.
+
+---
+
+#### Step 4c: Create Plan
+
+Generate plan.md content from the architect's output:
+
+```markdown
+# Implementation Plan: {Feature Name}
+
+**Feature Slug:** {feature_slug}
+**Created:** {date}
+
+---
+
+## Overview
+
+{Summary from architect}
+
+---
+
+## Technical Architecture
+
+### Component Structure
+{From architect output}
+
+### Data Flow
+{From architect output}
+
+---
+
+## Implementation Steps
+
+### Phase 1: Foundation
+{Tasks from architect}
+
+### Phase 2: Core Functionality
+{Tasks from architect}
+
+### Phase 3: Polish
+{Tasks from architect}
+
+---
+
+## Dependencies & Risks
+
+{From architect output}
+```
+
+---
+
+#### Step 4d: Ask Save Location
+
+Use AskUserQuestion with dynamic options based on detected conventions:
+
+```markdown
+Question: "Where should I save the implementation plan?"
+
+Options (generate dynamically):
+1. plan/specs/{feature_slug}/plan.md - Standard spec-driven location
+2. .specify/specs/{feature_slug}/plan.md - Spec-kit integration (only if SPEC_KIT_CONFIGURED)
+3. specs/{feature_slug}/plan.md - Simple specs directory (only if specs/ exists)
+4. Other location - Enter custom path
+```
+
+**If "Other" selected:**
+- Ask: "Enter the full path for the plan file (e.g., docs/plans/auth.md):"
+- Validate: Must end with `.md`
+
+**If plan already exists at chosen location:**
+- Ask: "A plan already exists at `{path}`. Overwrite or choose different location?"
+
+---
+
+#### Step 4e: Save and Continue
+
+1. Create directory if needed: `mkdir -p {parent_directory}`
+2. Write plan.md to chosen location
+3. Report: "Plan saved to `{path}`"
+4. Use AskUserQuestion:
+
+```markdown
+Question: "Proceed with implementation now?"
+
+Options:
+1. Yes, implement the plan - Continue to execution
+2. No, I'll review first - Stop here (user can run `/workflow @{path}` later)
+```
+
+- If "Yes" → Continue to Step 5
+- If "No" → Stop with message about how to resume
+
+---
+
+### Step 5: Spec Discovery (haiku agent)
+
+Launch a haiku agent to gather full project context:
+
+```markdown
+Find relevant context for implementation:
 
 1. Locate all CLAUDE.md files in the repository
 2. Check for spec-kit configuration: Look for `.specify/` directory
@@ -76,10 +294,10 @@ Find relevant context for this request:
      - `plan.md` (phases and approach)
      - `tasks.md` (granular tasks)
      - `research.md` (additional context)
-4. Parse the user request for:
+4. Parse the plan for:
    - Phase references (e.g., "Phase 1", "phase 2", "first phase")
-   - Spec path references (e.g., `@specs/002-auth/` or `@plan/specs/002-auth/`)
-5. Identify key files related to the request
+   - Task dependencies and parallelization opportunities
+5. Identify key files related to the implementation
 
 Return:
 - SPEC_KIT_CONFIGURED: true/false
@@ -102,33 +320,7 @@ Which phase would you like to implement?
 
 ---
 
-### Step 3: Plan Selection
-
-**If spec artifacts exist (plan.md found):**
-- Skip planning - use the existing plan.md
-- Extract the relevant phase tasks based on user selection
-- Map tasks to parallel/sequential execution based on dependencies
-- Load spec.md for requirements context
-
-**If no spec artifacts (fallback mode):**
-- Launch a sonnet agent to analyze and plan:
-
-```markdown
-Analyze the request and create an execution plan:
-
-**Context:** [from Step 2]
-**Request:** [user request]
-
-Produce:
-1. Clear understanding of what needs to be done
-2. List of parallel tasks that can run simultaneously
-3. List of sequential tasks that depend on others
-4. Success criteria for each task
-```
-
----
-
-### Step 4: Parallel Execution (sonnet agents)
+### Step 6: Parallel Execution (sonnet agents)
 
 Deploy specialist agents in parallel waves using multiple Task tool calls.
 
@@ -139,9 +331,6 @@ Deploy specialist agents in parallel waves using multiple Task tool calls.
 **If only plan.md exists:**
 - Extract tasks from the selected phase description
 - Parallelize where tasks are independent
-
-**If no spec (fallback):**
-- Use the plan created in Step 3
 
 **Wave Execution:**
 - **Wave 1:** All independent tasks
@@ -167,9 +356,37 @@ Use `model: sonnet` for standard tasks, `model: opus` for complex analysis.
 
 ---
 
-### Step 5: Validation (if --validate)
+### Step 7: Validation
 
-If `--validate` flag is present, launch opus agents to verify results:
+#### Step 7a: Quick Validation (ALWAYS RUNS)
+
+Launch a sonnet agent to verify results:
+
+```markdown
+Quick sanity check of completed work:
+
+**Original Request:** [user request]
+**Tasks Assigned:** [list from Step 6]
+**Results Received:** [summaries from agents]
+
+Verify:
+1. All tasks completed successfully (no errors or failures reported)
+2. No obvious missing pieces or incomplete work
+3. Results align with original request intent
+
+Return: PASS | ISSUES:[list of specific problems found]
+```
+
+**If ISSUES:** Report to user and ask how to proceed:
+- Fix the issues now
+- Proceed anyway
+- Stop and investigate
+
+---
+
+#### Step 7b: Deep Validation (ONLY WITH --validate flag)
+
+If `--validate` flag is present, launch opus agent for thorough review:
 
 **If constitution.md exists:**
 ```markdown
@@ -215,7 +432,7 @@ Return: Confidence score and any issues found.
 
 ---
 
-### Step 6: Report
+### Step 8: Report
 
 Provide a terminal summary:
 
@@ -236,8 +453,12 @@ Provide a terminal summary:
 - [Task 1]: [result summary]
 - [Task 2]: [result summary]
 
-### Constitution Compliance (if validated)
-- [Principle]: [Followed/Deviation noted]
+### Quick Validation
+[PASS or issues found]
+
+### Deep Validation (if --validate)
+- Confidence: [score]
+- Constitution Compliance: [Followed/Deviations]
 
 ### Issues (if any)
 - [Issue description and recommendation]
@@ -251,11 +472,18 @@ Provide a terminal summary:
 ## Workflow Complete
 
 **Request:** [original request]
+**Plan:** [path to saved plan, if created]
 **Status:** [Complete | Partial | Blocked]
 
 ### Completed
 - [Task 1]: [result summary]
 - [Task 2]: [result summary]
+
+### Quick Validation
+[PASS or issues found]
+
+### Deep Validation (if --validate)
+- Confidence: [score]
 
 ### Issues (if any)
 - [Issue description and recommendation]
@@ -283,40 +511,23 @@ Exclude:
 
 ## Examples
 
-### Example 1: Spec-Aware Phase Implementation
+### Example 1: Implement Existing Plan
 
 ```bash
-/workflow Phase 1 from @plan/specs/002-auth/
+/workflow @specs/auth/
 ```
 
 **Execution:**
 1. Gating: Request is clear, proceed
-2. Spec Discovery: Found `.specify/`, loaded constitution.md, found plan/specs/002-auth/
-3. Plan Selection: Skip planning, use existing plan.md, extract Phase 1 tasks
-4. Execution: Deploy parallel agents for Phase 1 tasks
-5. (No validation without --validate)
-6. Report: Summary with spec compliance mapping
+2. Mode Detection: Found plan at specs/auth/plan.md → IMPLEMENT_MODE
+3. Mode Routing: "Found plan. Proceed?" → User confirms
+4. (Skip planning)
+5. Spec Discovery: Load spec artifacts
+6. Execution: Deploy parallel agents
+7. Quick Validation: Sanity check
+8. Report: Summary
 
-### Example 2: Spec-Aware with Phase Selection
-
-```bash
-/workflow implement @specs/002-auth/ --validate
-```
-
-**Execution:**
-1. Gating: Request is clear, proceed
-2. Spec Discovery: Found spec artifacts, no phase specified
-3. **AskUserQuestion:** "Which phase would you like to implement?"
-   - Phase 1: Core Authentication
-   - Phase 2: Token Management
-   - Phase 3: Integration Tests
-4. User selects Phase 1
-5. Plan Selection: Use plan.md Phase 1
-6. Execution: Deploy agents for Phase 1 tasks
-7. Validation: Verify against constitution + spec requirements
-8. Report: Full compliance report
-
-### Example 3: No Spec-Kit (Fallback)
+### Example 2: Create New Plan
 
 ```bash
 /workflow implement user authentication
@@ -324,36 +535,72 @@ Exclude:
 
 **Execution:**
 1. Gating: Request is clear, proceed
-2. Spec Discovery: No `.specify/` found, fallback mode
-3. Plan Selection: Create execution plan from scratch
-4. Execution: Deploy agents based on created plan
-5. (No validation without --validate)
-6. Report: Standard summary
+2. Mode Detection: No plan found → PLAN_MODE
+3. (No confirmation needed)
+4. Planning Pipeline:
+   - 4a: Explore codebase with code-explorer
+   - 4b: Design architecture with code-architect
+   - 4c: Generate plan.md content
+   - 4d: "Where to save?" → User selects plan/specs/auth/plan.md
+   - 4e: Save → "Implement now?" → User says yes
+5. Spec Discovery: Load created plan
+6. Execution: Deploy agents
+7. Quick Validation: Sanity check
+8. Report: Summary with plan location
+
+### Example 3: Create Plan Only
+
+```bash
+/workflow create plan for user dashboard
+```
+
+**Execution:**
+1. Gating: Request is clear, proceed
+2. Mode Detection: "create plan" keyword → PLAN_MODE (forced)
+3. (No confirmation)
+4. Planning Pipeline:
+   - 4a-4c: Explore, architect, create plan
+   - 4d: "Where to save?" → User selects
+   - 4e: Save → "Implement now?" → User says no
+5. Stop with: "Plan saved to {path}. Run `/workflow @{path}` when ready to implement."
+
+### Example 4: Deep Validation
+
+```bash
+/workflow @specs/auth/ --validate
+```
+
+**Execution:**
+1-6. Same as Example 1
+7. Quick Validation: Sanity check (always)
+7b. Deep Validation: Opus review with confidence scores
+8. Report: Full compliance report with scores
 
 ---
 
 ## Success Criteria
 
 A successful workflow:
-- Detects and leverages spec-kit artifacts when available
-- Uses AskUserQuestion to clarify phase when needed
-- Skips redundant planning when plan.md exists
-- Correctly gates requests (proceeds, clarifies, or declines appropriately)
+- Correctly detects mode (IMPLEMENT vs PLAN) from request
+- Confirms before implementing existing plans
+- Creates thorough plans using code-explorer + code-architect when needed
+- Asks user where to save new plans
+- Always runs quick validation after execution
+- Runs deep validation when --validate flag is present
 - Maximizes parallel execution where possible
 - Uses appropriate model tiers (haiku/sonnet/opus)
-- Validates against constitution when --validate flag is present
-- Reports clear, actionable results with spec compliance mapping
+- Reports clear, actionable results
 
 ---
 
 ## Important Rules
 
 1. **NEVER write code** - Always delegate to specialist agents
-2. **Maximize parallelism** - Use multiple Task tool calls simultaneously
-3. **Use model tiers** - haiku for discovery, sonnet for work, opus for validation
-4. **Leverage spec-kit** - Use existing artifacts instead of recreating plans
-5. **Ask for phase** - Use AskUserQuestion when spec exists but phase is unclear
-6. **Terminal output only** - No file creation, report results directly
-7. **Honor --validate** - Apply validation when flag is specified
+2. **Smart mode routing** - Detect and confirm before implementing existing plans
+3. **Save new plans** - Always ask where to save when creating plans
+4. **Maximize parallelism** - Use multiple Task tool calls simultaneously
+5. **Use model tiers** - haiku for discovery, sonnet for work, opus for deep validation
+6. **Always quick validate** - Run sanity check after every execution
+7. **Honor --validate** - Apply deep validation when flag is specified
 8. **High signal** - Only report objective issues, not suggestions
 9. **Progress updates** - Keep user informed during execution

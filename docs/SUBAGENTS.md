@@ -153,8 +153,8 @@ the subagent should follow.
 | `description`    | Yes      | Natural language description of the subagent's purpose                                                                                                                                                          |
 | `tools`          | No       | Comma-separated list of specific tools. If omitted, inherits all tools from the main thread                                                                                                                     |
 | `model`          | No       | Model to use for this subagent. Can be a model alias (`sonnet`, `opus`, `haiku`) or `'inherit'` to use the main conversation's model. If omitted, defaults to the [configured subagent model](/en/model-config) |
-| `permissionMode` | No       | Permission mode for the subagent. Valid values: `default`, `acceptEdits`, `bypassPermissions`, `plan`, `ignore`. Controls how the subagent handles permission requests                                          |
-| `skills`         | No       | Comma-separated list of skill names to auto-load when the subagent starts. Skills are loaded into the subagent's context automatically                                                                          |
+| `permissionMode` | No       | Permission mode for the subagent. Valid values: `default`, `acceptEdits`, `dontAsk`, `bypassPermissions`, `plan`, `ignore`. Controls how the subagent handles permission requests                               |
+| `skills`         | No       | Comma-separated list of skill names to auto-load when the subagent starts. Subagents do not inherit Skills from the parent conversation. If omitted, no Skills are preloaded.                                   |
 
 ### Model selection
 
@@ -224,6 +224,30 @@ mkdir -p ~/.claude/agents
 <Note>
   Subagents created by manually adding files will be loaded the next time you start a Claude Code session. To create and use a subagent immediately without restarting, use the `/agents` command instead.
 </Note>
+
+### Disabling specific subagents
+
+You can disable specific built-in or custom subagents using the `Task(AgentName)` permission rule syntax. Add these rules to the `deny` array in your [settings](/en/settings#permission-settings) or use the `--disallowedTools` CLI flag.
+
+**Example settings.json configuration:**
+
+```json  theme={null}
+{
+  "permissions": {
+    "deny": ["Task(Explore)", "Task(Plan)"]
+  }
+}
+```
+
+**Example CLI usage:**
+
+```bash  theme={null}
+claude --disallowedTools "Task(Explore)"
+```
+
+This is useful when you want to prevent Claude from delegating tasks to specific subagents, either for security reasons or to enforce a particular workflow.
+
+See [IAM documentation](/en/iam#tool-specific-permission-rules) for more details on permission rules.
 
 ## Using subagents effectively
 

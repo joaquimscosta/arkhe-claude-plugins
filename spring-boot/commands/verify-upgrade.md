@@ -1,41 +1,64 @@
 ---
-description: Verify Spring Boot project upgrade readiness including dependencies, configuration, and migration compatibility
+description: Verify Spring Boot project upgrade readiness with parallel multi-skill analysis
+argument-hint: [project path or scope]
 ---
 
-# Spring Boot Project Verification
+# Spring Boot Upgrade Verification
 
-Analyze the current Spring Boot project and generate a comprehensive verification report.
+Verify a Spring Boot project's readiness for upgrading to Spring Boot 4 using parallel multi-skill analysis.
 
-## Verification Steps
+## Scope
 
-1. **Detect Build System** - Find pom.xml or build.gradle and extract Spring Boot version
-2. **Analyze Dependencies** - Check for deprecated libraries (Jackson 2.x, Undertow, javax.* packages)
-3. **Validate Configuration** - Review application.yml/properties and security configuration
-4. **Check Test Setup** - Identify deprecated test annotations (@MockBean, @SpyBean)
-5. **Generate Report** - Produce structured report with severity levels and remediation steps
+$ARGUMENTS
 
-## Report Format
+## Instructions
 
-Generate a verification report with:
-- Project summary (name, version, target version)
-- Critical issues (must fix before upgrade)
-- Errors (should fix for compatibility)
-- Warnings (recommended improvements)
-- Migration checklist with actionable steps
+Use the Task tool to invoke the `spring-boot-upgrade-verifier` agent with the scope above.
 
-## Key Checks
+The agent orchestrates a 3-phase verification:
 
-| Category | What to Check |
-|----------|---------------|
-| Dependencies | Jackson namespace, Undertow removal, javax to jakarta |
-| Security | Lambda DSL migration, requestMatchers, authorizeHttpRequests |
-| Testing | @MockitoBean instead of @MockBean |
-| Actuator | Endpoint exposure limits, sampling rates |
+**Phase 1: Discovery** (haiku)
+- Detect build system (Maven/Gradle) and current Spring Boot version
+- Identify Java version
+- Determine which verification areas have files to check
+- Skip verifiers with no matching files
 
-## Implementation
+**Phase 2: Parallel Verification** (sonnet agents)
+- Launch skill-specific verifier agents IN PARALLEL
+- Each verifier reads skill docs and checks assigned files
+- Categorize findings by severity (Critical/Error/Warning)
 
-Invoke the Skill tool with skill name "spring-boot:spring-boot-verify" and arguments: `$ARGUMENTS`
+**Phase 3: Migration Report**
+- Consolidate findings from all verifiers
+- Generate unified migration checklist
+- Provide actionable remediation steps
 
-The skill will handle build system detection, dependency analysis, configuration validation, and report generation.
+## What Gets Verified
 
-For detailed documentation, see `spring-boot/skills/spring-boot-verify/SKILL.md`.
+| Area | Checks |
+|------|--------|
+| **Dependencies** | Jackson 3 migration, Undertow removal, javax→jakarta |
+| **Security** | Lambda DSL, requestMatchers, authorizeHttpRequests |
+| **Testing** | @MockitoBean, Testcontainers 2.x, slice tests |
+| **Observability** | Actuator limits, trace sampling, OpenTelemetry |
+
+## Severity Levels
+
+| Severity | Meaning |
+|----------|---------|
+| Critical | Blocks upgrade, must fix before proceeding |
+| Error | Will break functionality after upgrade |
+| Warning | Recommended for best practices |
+
+## Example Usage
+
+```bash
+# Verify entire project
+/verify-upgrade
+
+# Verify specific module
+/verify-upgrade the order module
+
+# Verify from specific path
+/verify-upgrade src/main/java/com/example/
+```
