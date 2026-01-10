@@ -16,6 +16,7 @@ This plugin provides a complete workflow for building frontend prototypes with A
 This plugin is based on [design-intent-for-sdd](https://github.com/HugoPalomares/design-intent-for-sdd) by Hugo Palomares, which builds upon the Spec-Driven Development (SDD) methodology created by [John Lam](https://github.com/jflam) at GitHub.
 
 **Related Resources:**
+
 - [github/spec-kit](https://github.com/github/spec-kit) - The original SDD framework for feature specifications and implementation plans
 - [design-intent-for-sdd](https://github.com/HugoPalomares/design-intent-for-sdd) - The standalone project this plugin was adapted from
 
@@ -32,12 +33,14 @@ This plugin is based on [design-intent-for-sdd](https://github.com/HugoPalomares
 **Language (Design System)**: Data display components (tables, cards, carousels)
 
 **Your Dialect**:
+
 - **Enterprise**: "We default to tables for displaying data because users need to compare many items and export functionality"
 - **Consumer**: "We use card grids and carousels because users browse smaller sets and prioritize visual appeal over density"
 
 **Language (Design System)**: Standard spacing scale (8px, 16px, 24px...)
 
 **Your Dialect**:
+
 - **Enterprise**: "We use 32px between sections for clear information hierarchy in dense dashboards"
 - **Consumer**: "We use 48px between sections to create breathing room and reduce cognitive load"
 
@@ -70,6 +73,7 @@ Use the main orchestrating command for comprehensive UI development:
 ```
 
 This launches the **7-phase workflow**:
+
 1. **Discovery** - Understand requirements
 2. **Exploration** - Analyze existing UI patterns (2-3 agents in parallel)
 3. **Questions** - Clarify visual preferences, responsive needs
@@ -79,9 +83,11 @@ This launches the **7-phase workflow**:
 7. **Patterns** - Document reusable patterns
 
 **Quick Mode** for small changes:
+
 ```bash
 /design-intent --quick Fix button spacing in header
 ```
+
 Skips exploration and architecture phases.
 
 ### 3. Standalone Commands
@@ -94,6 +100,47 @@ For specific tasks, use individual commands:
 /implement                          # Execute implementation plan
 /save-patterns                      # Capture successful patterns
 /diary                              # Create session diary
+```
+
+## Which Command Should I Use?
+
+```mermaid
+flowchart TD
+    START["What do you need?"] --> Q1{"Starting a<br/>new project?"}
+
+    Q1 -->|Yes| SETUP["/setup"]
+    Q1 -->|No| Q2{"Have a visual<br/>reference?"}
+
+    Q2 -->|"Screenshot/Figma"| Q3{"Need full<br/>exploration?"}
+    Q2 -->|"Just a description"| Q4{"Have a feature<br/>spec already?"}
+
+    Q3 -->|"Yes, thorough"| DESIGN_INTENT["/design-intent"]
+    Q3 -->|"No, quick impl"| DESIGN_INTENT_QUICK["/design-intent --quick"]
+
+    Q4 -->|No| FEATURE["/feature"]
+    Q4 -->|Yes| Q5{"Have implementation<br/>plan?"}
+
+    Q5 -->|No| PLAN["/plan"]
+    Q5 -->|Yes| IMPLEMENT["/implement"]
+
+    IMPLEMENT --> Q6{"Done implementing?"}
+    Q6 -->|"Want to save patterns"| SAVE["/save-patterns"]
+    Q6 -->|"End of session"| DIARY["/diary"]
+
+    SETUP:::init
+    FEATURE:::spec
+    PLAN:::spec
+    IMPLEMENT:::build
+    DESIGN_INTENT:::main
+    DESIGN_INTENT_QUICK:::main
+    SAVE:::capture
+    DIARY:::capture
+
+    classDef init fill:#e1f5fe,stroke:#0288d1
+    classDef spec fill:#fff3e0,stroke:#f57c00
+    classDef build fill:#e8f5e9,stroke:#388e3c
+    classDef main fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
+    classDef capture fill:#f3e5f5,stroke:#7b1fa2
 ```
 
 ## Workflow Diagrams
@@ -170,15 +217,16 @@ flowchart TD
 
 ## Commands
 
-| Command | Description |
-|---------|-------------|
-| `/design-intent [reference]` | **Main workflow** - 7-phase structured UI development with parallel agents |
-| `/setup` | Initialize design intent structure with templates |
-| `/feature [description]` | Create feature specification |
-| `/plan` | Generate implementation plan from spec |
-| `/implement` | Execute implementation plan |
-| `/save-patterns` | Analyze work and suggest patterns to preserve |
-| `/diary` | Create session diary for handoff |
+| Command | Description | When to Use |
+| ------- | ----------- | ----------- |
+| `/design-intent [ref]` | 7-phase structured UI workflow | Complex UI work needing exploration and architecture |
+| `/design-intent --quick [ref]` | Streamlined 5-phase workflow | Simple changes, known patterns |
+| `/setup` | Initialize design intent structure | Starting a new project |
+| `/feature [desc]` | Create feature specification | Defining new features for SDD workflow |
+| `/plan` | Generate implementation plan | After feature spec is approved |
+| `/implement [feature]` | Execute plan with quality review | Ready to build from a plan |
+| `/save-patterns` | Extract and document patterns | After successful implementation |
+| `/diary` | Create session handoff doc | End of work session |
 
 ## Agents
 
@@ -189,6 +237,7 @@ Analyzes existing UI codebase by tracing component hierarchies, mapping design t
 **Used in**: Phase 2 (Exploration) - 2-3 agents in parallel
 
 **Focus areas**:
+
 - Component discovery (hierarchies, props, variants)
 - Design token analysis (colors, spacing, typography)
 - Styling pattern analysis (CSS approach, responsive patterns)
@@ -203,6 +252,7 @@ Designs UI component architectures by analyzing existing patterns, proposing com
 **Used in**: Phase 4 (Architecture) - 2-3 agents with different approaches
 
 **Design approaches**:
+
 - **Minimal/Conservative**: Maximum reuse, smallest changes
 - **Clean/Ideal**: Optimal architecture, proper abstractions
 - **Pragmatic/Balanced**: Speed + quality balance
@@ -216,6 +266,7 @@ Reviews UI implementations for visual consistency, accessibility compliance, res
 **Used in**: Phase 6 (Review) - 3 agents with different focuses
 
 **Review focuses**:
+
 - Visual consistency (tokens, spacing, typography)
 - Accessibility/Responsiveness (ARIA, keyboard, breakpoints)
 - Pattern adherence (design intent compliance)
@@ -231,6 +282,7 @@ Auto-invoked skill for creating accurate frontend implementations from visual re
 **Used in**: Phase 5 (Implementation)
 
 **Capabilities:**
+
 - Mandatory design intent pattern check before implementation
 - Visual reference analysis (screenshots, Figma, descriptions)
 - Section-by-section implementation for complex designs
@@ -238,6 +290,7 @@ Auto-invoked skill for creating accurate frontend implementations from visual re
 - Support for iterative "vibe coding" refinement
 
 **Auto-triggers on:**
+
 - Figma URLs
 - Screenshots/design images
 - UI implementation requests
@@ -245,6 +298,7 @@ Auto-invoked skill for creating accurate frontend implementations from visual re
 - Phase 5 of `/design-intent` workflow
 
 **Documentation:**
+
 - `skills/design-intent-specialist/SKILL.md` - Quick start
 - `skills/design-intent-specialist/WORKFLOW.md` - Detailed process
 - `skills/design-intent-specialist/EXAMPLES.md` - Usage examples
@@ -252,7 +306,7 @@ Auto-invoked skill for creating accurate frontend implementations from visual re
 
 ## Project Structure After Setup
 
-```
+```text
 your-project/
 ├── design-intent/
 │   ├── memory/
@@ -288,11 +342,13 @@ For enhanced capabilities, configure these optional MCP servers:
 Enables reading Figma designs, extracting code, and retrieving design tokens.
 
 **Installation:**
+
 ```bash
 npm install -g @anthropic/mcp-server-figma-dev-mode
 ```
 
 **Configuration (`.mcp.json`):**
+
 ```json
 {
   "mcpServers": {
@@ -308,6 +364,7 @@ npm install -g @anthropic/mcp-server-figma-dev-mode
 ```
 
 **Get Figma Token:**
+
 1. Go to Figma → Account Settings → Personal Access Tokens
 2. Generate a new token with read access
 
@@ -316,11 +373,13 @@ npm install -g @anthropic/mcp-server-figma-dev-mode
 Provides Fluent UI v9 component information and guidance.
 
 **Installation:**
+
 ```bash
 npm install -g @anthropic/mcp-server-fluent-pilot
 ```
 
 **Configuration (`.mcp.json`):**
+
 ```json
 {
   "mcpServers": {
@@ -356,7 +415,7 @@ npm install -g @anthropic/mcp-server-fluent-pilot
 
 ### Recommended: Full 7-Phase Workflow
 
-```
+```text
 /design-intent [visual reference or description]
 
 Phase 1: Discovery      → Understand requirements, confirm with user
@@ -370,7 +429,7 @@ Phase 7: Patterns       → Extract and document reusable patterns
 
 ### Quick Mode for Small Changes
 
-```
+```text
 /design-intent --quick [change description]
 
 Phase 1: Discovery      → Understand requirements
@@ -382,7 +441,7 @@ Phase 7: Patterns       → Document patterns
 
 ### Standalone Commands Cycle
 
-```
+```text
 1. /setup              → Initialize project structure
 2. /feature            → Create feature specification
 3. /plan               → Generate implementation plan
