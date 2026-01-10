@@ -52,6 +52,36 @@ Use this structure when generating optimized Google Stitch prompts.
 
 ---
 
+## Design-Aware Style Cues (When Available)
+
+When design context is discovered from `design-intent/`, enhance style cues with project context.
+
+**Pattern:**
+```
+Style: [project-type-tone], [design-system-name], [user-provided-cues], [visual-details].
+```
+
+**Examples:**
+
+With Enterprise + Fluent UI context:
+```
+Style: enterprise-grade, professional, Fluent UI styling, deep blue accents, clean sans-serif typography, organized information hierarchy.
+```
+
+With Consumer + Material UI context:
+```
+Style: friendly, engaging, Material Design patterns, vibrant accents, generous whitespace, smooth hover transitions.
+```
+
+Without design context (standalone):
+```
+Style: clean, modern, neutral background, sans-serif typography, subtle shadows.
+```
+
+**Key Principle:** Inject high-level descriptors only. Let Stitch infer specific values.
+
+---
+
 ## Template Pattern
 
 ```

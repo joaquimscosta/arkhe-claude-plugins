@@ -1,10 +1,6 @@
 ---
 name: authoring-stitch-prompts
-description: >
-  Converts natural-language descriptions or UI spec files into optimized Google Stitch prompts.
-  Use when creating, refining, or validating design directives for Google Stitch.
-  The Skill follows Stitch best practices—short, directive prompts focused on screens, structure, and visual hierarchy with clear UI vocabulary, concise style cues, and one primary intent per prompt.
-  Trigger when the user wants to prepare or improve prompts for Stitch.
+description: Converts natural-language descriptions or UI spec files into optimized Google Stitch prompts. Use when creating, refining, or validating design directives for Google Stitch. Follows Stitch best practices with short, directive prompts focused on screens, structure, and visual hierarchy.
 allowed-tools: Read, Grep, Write
 ---
 
@@ -12,11 +8,16 @@ allowed-tools: Read, Grep, Write
 
 ## Quick Start
 1. **Collect context** – accept natural language, specs, or referenced files describing the screen/app.
+1.5. **Discover design context** (optional) – check for `design-intent/`:
+   - If exists: Extract Project Type, Design System from `design-intent/memory/constitution.md`
+   - If not found: Scan codebase for framework hints (package.json)
+   - Falls back gracefully to standalone mode
+   - See [WORKFLOW.md](WORKFLOW.md#05-design-context-discovery-optional-enhancement) for details.
 2. **Parse essentials** – identify app type, screen focus, layout elements, and visual cues.
 3. **Detect split points** – analyze if input contains multiple screens or distinct intents (>2). Apply smart defaults: split if >2 screens/intents, else combine. Users can request regeneration with different approach.
 4. **Filter aggressively** – strip ALL non-UI concerns (backend, auth, APIs, caching, error handling, performance metrics, code-level specs). Focus EXCLUSIVELY on visual layout, components, colors, typography, spacing, and interaction patterns.
 5. **Condense** – rewrite into one atomic Stitch directive using "Design/Create/Add…" phrasing.
-6. **Structure output** – follow the Stitch prompt template (directive sentence → bullet list → 3–6 style cues → constraints). Do NOT use multi-section headings.
+6. **Structure output** – follow the Stitch prompt template (directive sentence → bullet list → 3–6 style cues → constraints). If design context was discovered, inject project-appropriate style cues. Do NOT use multi-section headings.
 7. **Validate** – ensure UI nouns are present, word count <250, NO technical implementation terms, and format matches EXAMPLES.md structure before returning the prompt.
 
 Use this Skill whenever users need Stitch-ready wording, prompt refinements, or style-consistent rewrites.
@@ -217,6 +218,50 @@ Directory structure:
 - Revision directives ("move KPI cards above chart", "convert to French", "change button to green")
 - References to uploaded wireframes or images
 - Language conversion requests ("switch to Spanish", "German version")
+- Structured input from `/prompt` command (see below)
+
+---
+
+## Structured Input (from /prompt command)
+
+When invoked via the `/prompt` command with user preferences, the skill receives structured input:
+
+```
+Brief: dashboard for fitness app
+Components: activity-summary, workout-chart, goals-progress
+Style: Consumer
+Structure: Combined
+```
+
+**Field Handling:**
+
+| Field | Behavior |
+|-------|----------|
+| `Brief` | Original user input - process normally |
+| `Components` | Use specified list, skip auto-detection |
+| `Style` | Apply style mapping, override design context |
+| `Structure` | Respect choice: Combined/Split/Auto |
+
+**Style Mapping:**
+
+| Style Value | Applied Cues |
+|-------------|--------------|
+| Enterprise | enterprise-grade, professional, data-dense, clean sans-serif typography |
+| Consumer | friendly, approachable, vibrant accents, generous whitespace |
+| Minimal | clean, minimal, ample whitespace, subtle shadows, restrained palette |
+| Playful | playful, colorful, fun, animated feel, rounded corners, bold typography |
+| Custom: [text] | Extract cues from user's custom description |
+| Auto | Use design context discovery (Step 0.5) |
+
+**Structure Handling:**
+
+| Structure Value | Behavior |
+|-----------------|----------|
+| Combined | Skip split detection, generate single file with all components |
+| Split | Force separate prompts per component |
+| Auto | Use smart defaults (Step 1.5/1.6) |
+
+See [WORKFLOW.md](WORKFLOW.md#08-parse-structured-input-if-present) for detailed parsing logic.
 
 **Input Detail Levels**
 
@@ -245,7 +290,7 @@ Prompts must follow the Stitch-friendly template:
 - Visual style cues (palette, typography, density, tone).
 - Optional behavior/constraint reminders (responsiveness, export format).
 
-Reference [templates/authoring-stitch-prompts-template.md](templates/authoring-stitch-prompts-template.md) for wording patterns.
+Reference [templates/authoring-stitch-prompts-template.md](templates/authoring-stitch-prompts-template.md) for wording patterns and [templates/layout-prompt-template.md](templates/layout-prompt-template.md) for layout/foundation prompts.
 
 ---
 
@@ -261,6 +306,21 @@ Representative before/after samples (SaaS dashboard, banking app, iterative edit
 * Use concise, declarative language.
 * Avoid narrative, meta, or conversational phrasing in outputs.
 * Always output one atomic, Stitch-compatible prompt per request.
+
+---
+
+## Design Context Integration
+
+When `design-intent/` exists in the project, the skill enhances style cues with project context:
+
+- **Project Type** influences tone (e.g., "enterprise-grade" for Enterprise, "friendly, approachable" for Consumer)
+- **Design System** names appear in style cues (e.g., "Fluent UI styling", "Material Design patterns")
+
+The skill does NOT inject specific tokens (hex colors, spacing values)—only high-level descriptors that help Stitch generate contextually appropriate designs.
+
+**Fallback behavior**: If `design-intent/` is not found, the skill works standalone using default style cues.
+
+See [WORKFLOW.md](WORKFLOW.md#05-design-context-discovery-optional-enhancement) for discovery logic and [WORKFLOW.md](WORKFLOW.md#37-inject-design-context-into-style-cues) for injection rules.
 
 ---
 

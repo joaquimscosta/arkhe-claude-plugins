@@ -821,3 +821,330 @@ Result: Complete 8-screen admin panel (processed in 2 batches)
 - Part numbering makes processing order explicit (part1, part2)
 - Pre-created subdirectories for exports and wireframes
 - Total prompt count communicated clearly to user
+
+---
+
+## Example 17 — Design-Aware Prompt (Enterprise + Fluent UI)
+
+**Context Detected:**
+```
+Design Context Discovered:
+- Source: design-intent/memory/constitution.md
+- Project Type: Enterprise
+- Design System: Fluent UI
+
+Will inject: "enterprise-grade, professional, Fluent UI styling"
+```
+
+**Input:**
+> Create a dashboard showing customer metrics and recent activity
+
+**Optimized Stitch Prompt (Design-Aware):**
+> Design a responsive web dashboard for customer analytics overview.
+>
+> Include:
+> - Left sidebar with navigation (Overview, Customers, Analytics, Settings)
+> - Top header with search bar and user avatar
+> - Main section with KPI cards (Total Customers, Active Users, Churn Rate, NPS Score)
+> - Activity table below cards showing recent customer interactions
+>
+> Style: enterprise-grade, professional, Fluent UI styling, deep blue accents, clean sans-serif typography, data-dense layout, subtle borders, organized grid.
+>
+> Optimize for desktop-first, keyboard navigation, clear information hierarchy.
+
+**File Created:**
+`design-intent/google-stitch/dashboard/prompt-v1.md`
+
+**Note:** Style cues "enterprise-grade, professional, Fluent UI styling" were injected from design context. User-provided details and Stitch defaults handle specific values.
+
+---
+
+## Example 18 — Design-Aware Prompt (Consumer + Material UI)
+
+**Context Detected:**
+```
+Design Context Discovered:
+- Source: design-intent/memory/constitution.md
+- Project Type: Consumer
+- Design System: Material UI
+
+Will inject: "friendly, approachable, Material Design patterns"
+```
+
+**Input:**
+> Recipe app with cooking timer and ingredient checklist
+
+**Optimized Stitch Prompt (Design-Aware):**
+> Design a mobile recipe detail screen for a cooking app.
+>
+> Include:
+> - Hero image of dish at top with overlay title
+> - Recipe timing badges (prep time, cook time, servings)
+> - Ingredient checklist with checkboxes
+> - Step-by-step instructions with expandable sections
+> - Floating action button for starting timer
+>
+> Style: friendly, approachable, Material Design patterns, warm color palette, generous whitespace, rounded corners, playful iconography, smooth transitions.
+>
+> Optimize for mobile-first, touch-friendly 44px targets, single-column layout.
+
+**File Created:**
+`design-intent/google-stitch/recipe-detail/prompt-v1.md`
+
+**Note:** Style cues "friendly, approachable, Material Design patterns" were injected from design context.
+
+---
+
+## Example 19 — Standalone Mode (No Design Context)
+
+**Context Detected:**
+```
+Design Context: Not found (standalone mode)
+```
+
+**Input:**
+> Landing page for a new product launch
+
+**Optimized Stitch Prompt (Standalone):**
+> Design a responsive web landing page for product launch.
+>
+> Include:
+> - Hero section with headline, subheadline, and primary CTA button
+> - Feature grid with 3 icon-led cards
+> - Social proof section with testimonial carousel
+> - Footer with links and social icons
+>
+> Style: clean, modern, neutral background with accent color, sans-serif typography, subtle shadows, balanced whitespace.
+>
+> Optimize for mobile-first responsive design, clear visual hierarchy.
+
+**File Created:**
+`design-intent/google-stitch/landing/prompt-v1.md`
+
+**Note:** No design context found. Style cues use neutral defaults that work for any project.
+
+---
+
+## Example 20 — Partial Context (Design System Only from package.json)
+
+**Context Detected:**
+```
+Design Context Discovered:
+- Source: package.json (fallback detection)
+- Project Type: Unknown
+- Design System: Tailwind CSS
+
+Will inject: "modern Tailwind aesthetic"
+```
+
+**Input:**
+> Settings page with profile, notifications, and security tabs
+
+**Optimized Stitch Prompt (Partial Context):**
+> Design a settings page with tabbed navigation for web application.
+>
+> Include:
+> - Horizontal tab bar (Profile, Notifications, Security, Billing)
+> - Main content area showing active tab content
+> - Form fields for each section with labels
+> - Save and Cancel buttons at bottom
+>
+> Style: clean, modern Tailwind aesthetic, utility-first styling, neutral grays with accent highlights, compact form layout, clear section dividers.
+>
+> Optimize for responsive layout, keyboard navigation, accessible form fields.
+
+**File Created:**
+`design-intent/google-stitch/settings/prompt-v1.md`
+
+**Note:** Only design system detected from package.json. Project type defaults omitted, design system name injected.
+
+---
+
+## Example 21 — Interactive Flow via /prompt Command
+
+Demonstrates how the `/prompt` command gathers user preferences before invoking the skill.
+
+**User runs:**
+```
+/prompt "dashboard for fitness app"
+```
+
+**Step 1: Command detects components**
+```
+I detected these components from your brief:
+
+• Activity Summary: Daily progress cards (steps, calories, active minutes)
+• Workout Chart: Exercise history visualization
+• Goals Progress: Goal completion indicators
+
+Which components should I include in the Stitch prompt?
+
+→ All components (recommended)
+→ Select specific components
+→ Add more components
+→ Quick generation (skip all questions, use smart defaults)
+```
+
+**User selects:** All components (recommended)
+
+**Step 2: Command asks about style**
+```
+What visual style should these prompts target?
+
+→ Enterprise (professional, data-dense, formal)
+→ Consumer (friendly, approachable, vibrant)
+→ Minimal (clean, simple, lots of whitespace)
+→ Playful (colorful, fun, animated feel)
+→ Custom (describe your preference)
+```
+
+**User selects:** Consumer (friendly, approachable, vibrant)
+
+**Step 3: Command asks about structure**
+```
+How should I structure the output for 4 components?
+
+→ Combined (single file with layout + all components)
+→ Split (separate prompt per component)
+→ Auto-detect (let skill decide based on complexity)
+```
+
+**User selects:** Combined (single file with layout + all components)
+
+**Structured input passed to skill:**
+```
+Brief: dashboard for fitness app
+Components: activity-summary, workout-chart, goals-progress
+Style: Consumer
+Structure: Combined
+```
+
+**Skill generates (with user preferences applied):**
+
+```markdown
+<!-- Layout: Fitness Dashboard -->
+Design a responsive mobile dashboard for a fitness tracking app.
+
+Include:
+- Top section with daily activity summary (step count, calories, active minutes in card format)
+- Main content area with workout history chart (weekly view, bar/line hybrid)
+- Bottom section with goal progress indicators (circular progress rings)
+- Floating action button for logging new workout
+
+Interactions:
+- Activity cards update in real-time
+- Chart supports swipe gestures for date navigation
+- Goal rings animate on achievement
+
+Style: friendly, approachable, vibrant accents, generous whitespace, energetic color palette, smooth transitions
+
+Optimize for mobile-first, touch-friendly interactions, dark mode support
+
+---
+
+<!-- Component: Activity Summary -->
+Design activity summary cards for fitness dashboard.
+
+Include:
+- Three cards showing steps, calories burned, and active minutes
+- Each card with large number, icon, and daily goal percentage
+- Subtle animation on value changes
+- Tap to expand for weekly breakdown
+
+Style: friendly, approachable, vibrant gradients, rounded corners, playful icons
+
+Optimize for glanceable information, high contrast for outdoor visibility
+
+---
+
+<!-- Component: Workout Chart -->
+Design a workout history chart for fitness tracking.
+
+Include:
+- Weekly bar chart showing workout duration per day
+- Line overlay showing intensity trend
+- Date range selector at top
+- Tap on bar for workout details
+
+Style: friendly, approachable, clean chart lines, vibrant accent colors, smooth animations
+
+Optimize for touch interactions, accessible color coding
+
+---
+
+<!-- Component: Goals Progress -->
+Design goal progress indicators for fitness dashboard.
+
+Include:
+- Circular progress rings for each active goal
+- Goal name and current/target values below each ring
+- Celebration animation when goal achieved
+- Tap to view goal details and history
+
+Style: friendly, approachable, gradient-filled progress rings, motivational micro-copy
+
+Optimize for motivational feedback, accessibility for color-blind users
+```
+
+**File Created:**
+`design-intent/google-stitch/fitness-dashboard/prompt-v1.md`
+
+**Key Points:**
+- User selected "Consumer" style → "friendly, approachable, vibrant" applied throughout
+- User selected "Combined" → Single file with all components using `---` separators
+- All 4 components included as user selected "All components"
+- Questions were asked because this was a new generation (not a revision)
+
+---
+
+## Example 22 — Quick Generation (Skip Questions)
+
+**User runs:**
+```
+/prompt "e-commerce product page"
+```
+
+**Step 1: Command asks about components**
+
+**User selects:** Quick generation (skip all questions, use smart defaults)
+
+**Result:** Command skips remaining questions, uses smart defaults:
+- Components: All detected
+- Style: Auto (from design context or neutral defaults)
+- Structure: Auto (skill decides based on complexity)
+
+**Input passed to skill:**
+```
+e-commerce product page
+```
+
+**Skill generates:** Standard product page prompt using autonomous workflow (same as pre-interactive behavior)
+
+**Note:** "Quick generation" option allows users who prefer speed to bypass all questions.
+
+---
+
+## Example 23 — Revision Request (Questions Skipped)
+
+**User runs:**
+```
+/prompt "change the header to sticky and add a search bar"
+```
+
+**Detection:** Input starts with "change" — classified as revision request
+
+**Result:** All interactive questions skipped automatically
+
+**Skill generates:**
+```
+On the current screen, update the header component:
+- Make header position sticky (fixed to top on scroll)
+- Add search bar to header (right side, with magnifying glass icon)
+- Maintain all other header elements unchanged
+
+Style: Match existing header styling, subtle shadow on scroll
+
+Optimize for smooth scroll behavior, accessible search input
+```
+
+**Note:** Revision requests skip interactive flow because they're targeted edits to existing prompts, not new generations requiring preference gathering.

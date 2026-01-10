@@ -158,3 +158,58 @@ Optimize for mobile-first (320px minimum), full keyboard navigation, screen read
 - **Symptom:** User wants to change specific images but prompt is too vague or ambiguous.
 - **Fix:** Identify exact images using spatial references ("the hero image at top", "profile photo in header", "product thumbnails in grid") and specify the precise change (resize, reposition, restyle, add effects). Coordinate image styling with theme when relevant.
 - **Tip:** When multiple similar images exist, be explicit: "all profile thumbnails" vs "the profile photo in the user card". Include sizing, positioning, styling, and any effects (gradients, borders, opacity) in clear visual terms.
+
+---
+
+## Design Context Integration Issues
+
+### Context Not Detected When Expected
+
+**Symptom:** `design-intent/` directory exists but style cues don't reflect project type or design system.
+
+**Causes:**
+- AUTO-FILL markers not replaced in `constitution.md` (still contain `<!-- AUTO-FILL: ... -->`)
+- Files created but not customized after running `/setup`
+- Reading from wrong project root directory
+
+**Fix:**
+1. Check if `design-intent/memory/constitution.md` has actual values, not AUTO-FILL template markers
+2. Run `/setup` in the project to auto-detect and fill values
+3. Manually edit `constitution.md` to add Project Type and Design System values:
+   ```markdown
+   **Project Type:** Enterprise
+   **Design System:** Fluent UI
+   ```
+
+### Wrong Context Injected
+
+**Symptom:** Style cues mention wrong design system or project type (e.g., "Fluent UI" when using Material UI).
+
+**Causes:**
+- Outdated `constitution.md` after project changes
+- Multiple design systems in `package.json` (fallback detection picked wrong one)
+- Incorrect values entered in constitution.md
+
+**Fix:**
+1. Update `design-intent/memory/constitution.md` with correct values
+2. Re-run `/setup` to re-detect project configuration
+3. Manually specify style cues in input to override: "Use Material Design style, not Fluent"
+
+### Want to Override Detected Context
+
+**Symptom:** User wants different style than what design context suggests (e.g., playful style for an Enterprise project).
+
+**Fix:** Explicitly state desired style in the input. User-provided cues take precedence over injected context:
+- Input: "Create a playful, colorful dashboard" → overrides "enterprise-grade, professional"
+- Input: "Use Material Design patterns" → overrides detected Fluent UI
+
+### Design Context Not Available (Working Standalone)
+
+**Symptom:** No design context detected, prompts use default neutral style cues.
+
+**Expected Behavior:** This is normal. The skill works standalone when:
+- No `design-intent/` directory exists
+- `constitution.md` exists but has AUTO-FILL markers (not customized)
+- `package.json` doesn't contain recognizable design system dependencies
+
+**Note:** Standalone mode is valid. Default style cues ("clean, modern, neutral palette") work for any project. Users can always provide specific style cues in their input.

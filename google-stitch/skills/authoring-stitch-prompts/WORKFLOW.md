@@ -1,5 +1,168 @@
 # Authoring Stitch Prompts — Workflow
 
+## 0.5. Design Context Discovery (Optional Enhancement)
+
+Before parsing input, check for design-intent project setup to enhance prompt generation with project-appropriate style cues.
+
+### Discovery Priority Order
+
+1. **Check for design-intent directory**
+   ```
+   Resolve repo root: git rev-parse --show-toplevel
+   Check: {root}/design-intent/memory/
+   ```
+
+2. **If design-intent exists: Extract context**
+   ```
+   Read: design-intent/memory/constitution.md
+   Read: design-intent/memory/project-vision.md (if available)
+   ```
+
+3. **If design-intent not found: Scan codebase**
+   ```
+   Check package.json for design system dependencies:
+   - @fluentui/* → Fluent UI
+   - @mui/* → Material UI
+   - @chakra-ui/* → Chakra UI
+   - tailwindcss → Tailwind CSS
+   ```
+
+4. **If neither found: Work standalone**
+   - Use default behavior
+   - Style cues come purely from user input
+
+### Context Extraction from constitution.md
+
+Parse these AUTO-FILL sections (if values present, not template markers):
+```
+**Project Type:** [Enterprise/Consumer/Internal/Marketing]
+**Framework:** [React/Next.js/Vue/Angular]
+**Design System:** [Fluent UI/Material UI/Chakra/Tailwind]
+```
+
+If AUTO-FILL comment markers remain (e.g., `<!-- AUTO-FILL: ... -->`), treat as "not detected".
+
+### Derived Style Cue Mappings
+
+Based on **Project Type**, inject appropriate tone adjectives:
+
+| Project Type | Injected Style Cues |
+|--------------|---------------------|
+| Enterprise | "enterprise-grade, professional, data-dense" |
+| Consumer | "friendly, approachable, vibrant" |
+| Internal | "efficient, functional, productivity-focused" |
+| Marketing | "impactful, bold, conversion-focused" |
+
+Based on **Design System**, inject system name:
+
+| Design System | Injected Style Cues |
+|---------------|---------------------|
+| Fluent UI | "Fluent UI styling" |
+| Material UI | "Material Design patterns" |
+| Chakra UI | "Chakra UI components" |
+| Tailwind CSS | "modern Tailwind aesthetic" |
+
+### Context Report (Internal)
+
+Before proceeding to Step 1, note discovered context:
+
+```
+Design Context Discovered:
+- Source: design-intent/memory/constitution.md
+- Project Type: Enterprise
+- Design System: Fluent UI
+
+Will inject: "enterprise-grade, professional, Fluent UI styling"
+```
+
+If nothing discovered:
+```
+Design Context: Not found (standalone mode)
+```
+
+### Fallback Behavior
+
+This step is **enhancement only**. If:
+- `design-intent/` doesn't exist → continue without injection
+- Files exist but AUTO-FILL not completed → continue without injection
+- Read errors occur → log and continue without injection
+
+Never block prompt generation due to missing design context.
+
+---
+
+## 0.8. Parse Structured Input (If Present)
+
+When invoked via the `/prompt` command, the skill may receive pre-parsed user preferences. Check for structured input format before proceeding.
+
+### Structured Input Format
+
+```
+Brief: [original user input]
+Components: [comma-separated list]
+Style: [Enterprise/Consumer/Minimal/Playful/Custom/Auto]
+Structure: [Combined/Split/Auto]
+```
+
+### Detection
+
+Check if input starts with `Brief:` - this indicates structured input from the command.
+
+### Parsing Steps
+
+1. **Extract Brief**
+   - Text after `Brief:` until next field
+   - Store as primary input for Step 1
+
+2. **Extract Components** (if present)
+   - Parse comma-separated list after `Components:`
+   - Store for use in Step 2 (skip auto-detection)
+   - If "All" or missing, proceed with normal detection
+
+3. **Extract Style** (if present)
+   - Parse value after `Style:`
+   - Map to style cues:
+     | Value | Cues |
+     |-------|------|
+     | Enterprise | enterprise-grade, professional, data-dense |
+     | Consumer | friendly, approachable, vibrant |
+     | Minimal | clean, minimal, ample whitespace |
+     | Playful | playful, colorful, fun, animated |
+     | Custom: [text] | Extract from user description |
+     | Auto | Use Step 0.5 design context |
+   - Store for use in Step 3.7 (override design context if not Auto)
+
+4. **Extract Structure** (if present)
+   - Parse value after `Structure:`
+   - Store for use in Step 1.5/1.6:
+     | Value | Behavior |
+     |-------|----------|
+     | Combined | Skip split detection, force single file |
+     | Split | Force separate files per component |
+     | Auto | Use smart defaults |
+
+### Pass-Through for Non-Structured Input
+
+If input does NOT start with `Brief:`, treat entire input as raw brief and proceed normally with all detection steps.
+
+### Example
+
+**Structured Input:**
+```
+Brief: dashboard for fitness app
+Components: activity-summary, workout-chart, goals-progress
+Style: Consumer
+Structure: Combined
+```
+
+**Parsed Result:**
+- Brief: "dashboard for fitness app"
+- Components: ["activity-summary", "workout-chart", "goals-progress"]
+- Style: "friendly, approachable, vibrant"
+- Structure: "Combined" (skip split detection)
+
+---
+
 ## 1. Parse Input Context
 1. Detect source type (free text, spec file, revision request, image reference, image modification request).
 2. Extract:
@@ -438,6 +601,46 @@ Before validation, apply final cleanup to remove edge-case technical details:
    - "WCAG 2.1 AA compliance with NVDA/JAWS testing" → "screen reader support"
    - "Last 2 versions Chrome/Firefox/Safari/Edge" → "modern browsers"
    - "<15kb compressed bundle" → remove entirely
+
+## 3.7. Inject Design Context into Style Cues
+
+If Step 0.5 discovered design context, enhance the Style section of generated prompts.
+
+### Injection Rules
+
+1. **Project type cues first** - Set the overall tone
+2. **Design system name** - Identify visual language
+3. **User-provided cues** - Specific colors, typography from input
+
+### Injection Examples
+
+**With Enterprise + Fluent UI context:**
+```
+Style: enterprise-grade, professional, Fluent UI styling, deep blue accents, clean typography, subtle shadows, organized grid layout.
+```
+
+**With Consumer + Material UI context:**
+```
+Style: friendly, approachable, Material Design patterns, vibrant accent colors, generous whitespace, smooth transitions, card-based layout.
+```
+
+**Standalone (no context discovered):**
+```
+Style: clean, minimal, neutral palette, sans-serif typography, subtle shadows.
+```
+
+### What NOT to Inject
+
+- Specific spacing values (16px, 24px) - let Stitch decide
+- Exact hex colors from design tokens - use descriptive color names
+- Component implementation details - focus on visual outcomes
+- Framework-specific props or APIs
+
+### User Override
+
+User-provided style cues in the input take precedence over injected context. If user specifies "playful, colorful style" but context indicates Enterprise, use the user's explicit cues.
+
+---
 
 ## 4. Validate for Stitch Compatibility
 1. **Strict word count**: Target <250 words (absolute max 400). If over 250, condense further.
