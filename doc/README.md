@@ -16,6 +16,8 @@ Multi-purpose documentation toolkit for generating comprehensive technical docum
 
 - **mermaid**: Auto-invoked Mermaid diagram generator for flowcharts, sequence diagrams, ERDs, state machines, architecture diagrams, and more. Triggers when you mention diagram-related keywords or explicitly use the `/diagram` command. Provides comprehensive examples and troubleshooting for all diagram types.
 
+- **managing-adrs**: Auto-invoked ADR (Architecture Decision Record) management for creating and maintaining technical decision documentation. Triggers on keywords like "ADR", "architecture decision", or when editing files in `docs/adr/`. Features auto-numbering, template detection (minimal or MADR 4.0), README index updates, and supersession workflow. Includes Python scripts using `uv` for deterministic operations.
+
 ### Commands
 
 - **/doc-generate**: Automated documentation generation that extracts information from code, creates clear explanations, and maintains consistency across documentation types. Use for generating project documentation. Auto-invokes the mermaid skill when diagram generation is needed.
@@ -31,6 +33,7 @@ Multi-purpose documentation toolkit for generating comprehensive technical docum
 ✅ Creating architecture diagrams and system visualizations
 ✅ Explaining complex code sections
 ✅ API documentation and technical manuals
+✅ Architecture Decision Records (ADRs)
 
 ## Applies To
 
@@ -101,6 +104,23 @@ After installation, all agents, commands, and skills will be available:
 "I need a state diagram for the order lifecycle"
 "Can you visualize the API flow with a sequence diagram?"
 "Create a Gantt chart for the project timeline"
+```
+
+### ADR Management
+
+```bash
+# Auto-invoke by mentioning ADR keywords
+"Create an ADR for using PostgreSQL"
+"Document this architecture decision about authentication"
+"I need to record why we chose React Query over Redux"
+
+# Supersede an existing ADR
+"Supersede ADR-0005 with a new caching strategy"
+
+# Use scripts directly
+uv run doc/skills/adr/scripts/adr_create.py --title "Use Redis for caching"
+uv run doc/skills/adr/scripts/adr_create.py --title "..." --template madr
+uv run doc/skills/adr/scripts/adr_index.py --dir docs/adr
 ```
 
 ## Common Workflows
