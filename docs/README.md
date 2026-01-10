@@ -284,7 +284,7 @@ Choose your learning path based on your goals and experience level.
 
 1. **Understand architecture:** Read progressive disclosure section in [Agent Skills Overview](./AGENT_SKILLS_OVERVIEW.md)
 2. **Learn best practices:** Study [Skill Development Best Practices](./SKILL_DEVELOPMENT_BEST_PRACTICES.md)
-3. **Examine real implementation:** Explore `doc/skills/mermaid/` or `git/skills/` in detail
+3. **Examine real implementation:** Explore `doc/skills/diagramming/` or `git/skills/` in detail
 4. **Master token optimization:** Apply three-level loading strategy
 5. **Build your skill:** Create following progressive disclosure pattern
 6. **Test thoroughly:** Verify metadata, instructions, and resource loading
@@ -351,7 +351,7 @@ Skills use a three-level architecture to minimize token usage while maximizing c
   - Additional documentation, templates, scripts
   - Loaded as needed during skill execution
 
-This pattern is demonstrated in `doc/skills/mermaid/` and `git/skills/`.
+This pattern is demonstrated in `doc/skills/diagramming/` and `git/skills/`.
 
 ### Plugin Organization
 

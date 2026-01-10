@@ -69,7 +69,7 @@ AI engineering toolkit for production-ready LLM applications.
 ### Doc Plugin
 Multi-purpose documentation toolkit.
 - **Agents**: `docs-architect`
-- **Skills**: `mermaid` (auto-invoked diagram generation)
+- **Skills**: `diagramming`, `documentation-generation`, `code-explanation`, `adr`
 - **Commands**: `/doc-generate`, `/code-explain`, `/diagram`
 
 ### Review Plugin

@@ -14,15 +14,19 @@ Multi-purpose documentation toolkit for generating comprehensive technical docum
 
 ### Skills
 
-- **mermaid**: Auto-invoked Mermaid diagram generator for flowcharts, sequence diagrams, ERDs, state machines, architecture diagrams, and more. Triggers when you mention diagram-related keywords or explicitly use the `/diagram` command. Provides comprehensive examples and troubleshooting for all diagram types.
+- **diagramming**: Auto-invoked Mermaid diagram generator for flowcharts, sequence diagrams, ERDs, state machines, architecture diagrams, and more. Triggers when you mention diagram-related keywords or explicitly use the `/diagram` command. Provides comprehensive examples and troubleshooting for all diagram types.
+
+- **documentation-generation**: Auto-invoked documentation generation skill for READMEs, API docs, configuration references, and module documentation. Triggers on "generate docs", "create documentation", "write README". Routes to docs-architect agent for comprehensive 10+ page documentation.
+
+- **code-explanation**: Auto-invoked code explanation skill that provides clear narratives, visual diagrams, and step-by-step breakdowns for complex code. Triggers on "explain this code", "how does this work", or when using `/code-explain`. Supports algorithm visualization, design pattern explanation, and progressive complexity levels.
 
 - **managing-adrs**: Auto-invoked ADR (Architecture Decision Record) management for creating and maintaining technical decision documentation. Triggers on keywords like "ADR", "architecture decision", or when editing files in `docs/adr/`. Features auto-numbering, template detection (minimal or MADR 4.0), README index updates, and supersession workflow. Includes Python scripts using `uv` for deterministic operations.
 
 ### Commands
 
-- **/doc-generate**: Automated documentation generation that extracts information from code, creates clear explanations, and maintains consistency across documentation types. Use for generating project documentation. Auto-invokes the mermaid skill when diagram generation is needed.
+- **/doc-generate**: Quick documentation generation using the documentation-generation skill. For comprehensive documentation (10+ pages), routes to the docs-architect agent.
 
-- **/code-explain**: Explains code in detail, breaking down complex logic into understandable concepts with examples and use cases. Perfect for understanding complex codebases and technical implementations.
+- **/code-explain**: Explains code in detail using the code-explanation skill. Generates visual diagrams, step-by-step breakdowns, and identifies patterns and gotchas. Perfect for understanding complex codebases.
 
 - **/diagram**: Create or edit Mermaid diagrams with manual control. Supports all diagram types: flowcharts, sequence diagrams, ERDs, state diagrams, Gantt charts, pie charts, git graphs, user journeys, quadrant charts, and timelines.
 
