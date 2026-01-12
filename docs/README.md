@@ -166,7 +166,7 @@ Use these plugins as templates for your own development. Each demonstrates diffe
 - Simple command development
 - Agent configuration fundamentals
 
-[View Core Plugin Details →](../core/README.md)
+[View Core Plugin Details →](../plugins/core/README.md)
 
 ---
 
@@ -186,7 +186,7 @@ Use these plugins as templates for your own development. Each demonstrates diffe
 - Conditional execution based on file changes
 - Shell script integration with Claude Code
 
-[View Git Plugin Details →](../git/README.md)
+[View Git Plugin Details →](../plugins/git/README.md)
 
 ---
 
@@ -206,7 +206,7 @@ Use these plugins as templates for your own development. Each demonstrates diffe
 - Customizable output paths
 - Complex review workflows
 
-[View Review Plugin Details →](../review/README.md)
+[View Review Plugin Details →](../plugins/review/README.md)
 
 ---
 
@@ -227,7 +227,7 @@ Use these plugins as templates for your own development. Each demonstrates diffe
 - Agent-only plugin architecture
 - Cross-plugin integration (complements review plugin)
 
-[View UI Plugin Details →](../ui/README.md)
+[View UI Plugin Details →](../plugins/ui/README.md)
 
 ---
 
@@ -246,7 +246,7 @@ Use these plugins as templates for your own development. Each demonstrates diffe
 - Progressive disclosure skill instructions tied to commands
 - Combining templates, memory structures, and automation into one plugin
 
-[View Design Intent Plugin Details →](../design-intent/README.md)
+[View Design Intent Plugin Details →](../plugins/design-intent/README.md)
 
 ---
 
@@ -437,7 +437,7 @@ This workflow uses both `git` and `review` plugins together, demonstrating how m
 
 - [Main README](../README.md) - Plugin marketplace overview and quick start
 - [Installation Guide](../INSTALLATION.md) - Detailed installation instructions
-- Plugin READMEs: [core](../core/README.md), [doc](../doc/README.md), [git](../git/README.md), [review](../review/README.md), [ui](../ui/README.md)
+- Plugin READMEs: [core](../plugins/core/README.md), [doc](../plugins/doc/README.md), [git](../plugins/git/README.md), [review](../plugins/review/README.md), [ui](../plugins/ui/README.md)
 
 ---
 
