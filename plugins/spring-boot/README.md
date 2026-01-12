@@ -163,10 +163,10 @@ For comprehensive background and architectural context, see the research materia
 
 | Document | Description |
 |----------|-------------|
-| [DDD Fundamentals](../docs/research/domain-driven-design.md) | Strategic DDD, subdomains, bounded contexts, Event Storming |
-| [Spring Boot 4 Ecosystem](../docs/research/spring-boot/ecosystem-research.md) | Framework 7 architecture, Java 25 alignment, Jackson 3, build tools |
-| [DDD Implementation](../docs/research/spring-boot/ddd-implementation.md) | Aggregates, repositories, value objects with Spring Boot 4 |
-| [Security & Observability](../docs/research/spring-boot/security-observability-testing.md) | Security 7 Lambda DSL, OpenTelemetry, testing strategies |
+| [DDD Fundamentals](../../docs/research/domain-driven-design.md) | Strategic DDD, subdomains, bounded contexts, Event Storming |
+| [Spring Boot 4 Ecosystem](../../docs/research/spring-boot/ecosystem-research.md) | Framework 7 architecture, Java 25 alignment, Jackson 3, build tools |
+| [DDD Implementation](../../docs/research/spring-boot/ddd-implementation.md) | Aggregates, repositories, value objects with Spring Boot 4 |
+| [Security & Observability](../../docs/research/spring-boot/security-observability-testing.md) | Security 7 Lambda DSL, OpenTelemetry, testing strategies |
 
 ## Spring Boot 4 Breaking Changes
 

@@ -44,6 +44,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+#### Project Structure
+
+- **BREAKING**: Moved all 11 plugins from root to `plugins/` subdirectory
+  - Follows `claude-plugins-official` structure pattern
+  - Updated marketplace.json source paths from `./plugin-name` to `./plugins/plugin-name`
+  - Updated all documentation references (CLAUDE.md, README.md, CONTRIBUTING.md, docs/README.md)
+  - Git history preserved through renames
+
 #### Design Intent Plugin
 
 - Removed redundant `/design` command (skill auto-invokes on visual references)

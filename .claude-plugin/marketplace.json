@@ -9,57 +9,57 @@
   "plugins": [
     {
       "name": "core",
-      "source": "./core",
+      "source": "./plugins/core",
       "description": "Quality control and workflow orchestration utilities"
     },
     {
       "name": "ai",
-      "source": "./ai",
+      "source": "./plugins/ai",
       "description": "AI engineering toolkit for production-ready LLM applications"
     },
     {
       "name": "doc",
-      "source": "./doc",
+      "source": "./plugins/doc",
       "description": "Multi-purpose documentation toolkit"
     },
     {
       "name": "review",
-      "source": "./review",
+      "source": "./plugins/review",
       "description": "Code quality review tools for development teams"
     },
     {
       "name": "ui",
-      "source": "./ui",
+      "source": "./plugins/ui",
       "description": "UI/UX design and design system toolkit"
     },
     {
       "name": "google-stitch",
-      "source": "./google-stitch",
+      "source": "./plugins/google-stitch",
       "description": "Claude + Google Stitch prompting toolkit (prompt authoring + session management)"
     },
     {
       "name": "git",
-      "source": "./git",
+      "source": "./plugins/git",
       "description": "Git workflow automation (commit, PR, branching, changelog)"
     },
     {
       "name": "specprep",
-      "source": "./specprep",
+      "source": "./plugins/specprep",
       "description": "AI meta-prompt framework for Spec Kit workflow optimization"
     },
     {
       "name": "design-intent",
-      "source": "./design-intent",
+      "source": "./plugins/design-intent",
       "description": "Design Intent for Spec-Driven Development - Build React prototypes with AI while maintaining design consistency"
     },
     {
       "name": "lang",
-      "source": "./lang",
+      "source": "./plugins/lang",
       "description": "Language-specific programming skills (Bash, Python, Rust, TypeScript)"
     },
     {
       "name": "spring-boot",
-      "source": "./spring-boot",
+      "source": "./plugins/spring-boot",
       "description": "Domain-Driven Design with Spring Boot 4 (DDD patterns, Spring Data, REST APIs, Spring Modulith)"
     }
   ]

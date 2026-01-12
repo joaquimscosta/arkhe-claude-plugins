@@ -7,15 +7,15 @@ Guide for creating new plugins and contributing to Arkhe Claude Plugins.
 ### 1. Create Plugin Directory Structure
 
 ```bash
-mkdir -p new-plugin/.claude-plugin
-mkdir -p new-plugin/agents
-mkdir -p new-plugin/commands
-mkdir -p new-plugin/skills
+mkdir -p plugins/new-plugin/.claude-plugin
+mkdir -p plugins/new-plugin/agents
+mkdir -p plugins/new-plugin/commands
+mkdir -p plugins/new-plugin/skills
 ```
 
 ### 2. Create Plugin Manifest
 
-Create `new-plugin/.claude-plugin/plugin.json`:
+Create `plugins/new-plugin/.claude-plugin/plugin.json`:
 
 ```json
 {
@@ -35,14 +35,14 @@ Edit `.claude-plugin/marketplace.json` and add your plugin:
 ```json
 {
   "name": "new-plugin",
-  "source": "./new-plugin",
+  "source": "./plugins/new-plugin",
   "description": "Brief description of your plugin's purpose"
 }
 ```
 
 ### 4. Create README
 
-Create `new-plugin/README.md` with:
+Create `plugins/new-plugin/README.md` with:
 - Overview
 - Components (agents, commands, skills)
 - Installation instructions
@@ -307,9 +307,10 @@ plugin-name/
 arkhe-claude-plugins/
 ├── .claude-plugin/
 │   └── marketplace.json      # Plugin catalog
+├── plugins/                   # All plugins
+│   ├── plugin-1/
+│   └── plugin-2/
 ├── docs/                      # Developer documentation
-├── plugin-1/
-├── plugin-2/
 └── README.md
 ```
 

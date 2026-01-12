@@ -18,18 +18,22 @@ This repository uses a **marketplace-based plugin system** where each plugin is 
 ```
 arkhe-claude-plugins/
 ├── .claude-plugin/
-│   └── marketplace.json          # Marketplace catalog (10 plugins)
-├── core/                          # Quality control and workflow orchestration
-├── ai/                            # AI engineering and LLM development
-├── doc/                           # Documentation generation
-├── review/                        # Code review and quality
-├── ui/                            # UI/UX design and design systems
-├── google-stitch/                 # Google Stitch prompting toolkit
-├── git/                           # Git workflow automation
-├── design-intent/                 # Design Intent for SDD
-├── specprep/                      # Spec Kit workflow optimization
-├── lang/                          # Language-specific programming skills
-└── docs/                          # Developer documentation
+│   └── marketplace.json          # Marketplace catalog (11 plugins)
+├── plugins/                       # All 11 plugins
+│   ├── core/                      # Quality control and workflow orchestration
+│   ├── ai/                        # AI engineering and LLM development
+│   ├── doc/                       # Documentation generation
+│   ├── review/                    # Code review and quality
+│   ├── ui/                        # UI/UX design and design systems
+│   ├── google-stitch/             # Google Stitch prompting toolkit
+│   ├── git/                       # Git workflow automation
+│   ├── design-intent/             # Design Intent for SDD
+│   ├── specprep/                  # Spec Kit workflow optimization
+│   ├── lang/                      # Language-specific programming skills
+│   └── spring-boot/               # Domain-Driven Design with Spring Boot 4
+├── docs/                          # Developer documentation
+├── templates/                     # Plugin templates
+└── assets/                        # Project assets
 ```
 
 ### Plugin Structure Pattern
