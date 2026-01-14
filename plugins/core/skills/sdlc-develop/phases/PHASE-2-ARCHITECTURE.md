@@ -100,14 +100,40 @@ Use templates from [../templates/](../templates/):
 
 ## User Checkpoint (Architecture Decision)
 
-**Unless `--auto` mode:**
+**Gate: Tier 1** ⛔ (MANDATORY - cannot skip even with `--auto`)
+
+This is a critical decision point. Architecture choices affect the entire implementation.
 
 Present architecture options:
 1. Summary of each approach
 2. Trade-offs matrix
 3. Your recommendation
 
-Ask: "Which approach would you like to proceed with?"
+**Numbered Prompt:**
+```
+## Tier 1 Checkpoint: Architecture Decision ⛔
+
+{Architecture options summary with trade-offs}
+
+**Recommendation:** Option {X} because {reason}
+
+1. **Option A** - {name} (RECOMMENDED)
+2. **Option B** - {name}
+3. **Option C** - {name}
+4. **REQUEST CHANGES** - Modify requirements first
+
+Enter choice (1-4):
+```
+
+---
+
+## Plan Saved Checkpoint
+
+**Gate: Tier 3** ✅ (AUTOMATED - proceeds automatically, logs for review)
+
+After saving plan files, automatically proceed to next phase.
+
+Log: "Plan saved to `arkhe/specs/{NN}-{feature_slug}/`"
 
 ---
 

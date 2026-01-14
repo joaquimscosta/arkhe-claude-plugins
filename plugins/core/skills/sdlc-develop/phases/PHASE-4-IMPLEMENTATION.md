@@ -96,16 +96,61 @@ Exclude:
 
 ---
 
-## User Checkpoint
+## User Checkpoint (Quality Review)
 
-**Unless `--auto` mode:**
+**Gate: Conditional** - Tier 1 ⛔ if security/DB changes detected, otherwise Tier 2 ⚠️
+
+Check for Tier 1 triggers:
+- [ ] Database schema changes in implementation
+- [ ] Security-related code (auth, encryption, permissions)
+- [ ] Breaking API changes
+- [ ] New service/module creation
+
+**If Tier 1 triggers detected:** Cannot skip, even with `--auto`
 
 Present validation results:
 1. Quick validation status (PASS/ISSUES)
 2. Deep validation score (if `--validate`)
 3. Code review findings
 
-Ask: "Here are the review findings. Which issues should I address?"
+**Numbered Prompt:**
+```
+## Tier {1|2} Checkpoint: Quality Review
+
+{Validation results summary}
+
+1. **APPROVE** - Proceed to completion
+2. **REVIEW** - Show me the code diff
+3. **FIX ISSUES** - Address the findings first
+4. **CANCEL** - Stop here
+
+Enter choice (1-4):
+```
+
+---
+
+## Completion Gate
+
+**Gate: Tier 1** ⛔ (MANDATORY - RULE ZERO enforcement)
+
+Before proceeding to Phase 5, verify:
+
+```
+## Tier 1 Checkpoint: Implementation Complete ⛔
+
+**RULE ZERO Verification:**
+- [ ] Files modified (git diff confirms changes)
+- [ ] Tests passing (if applicable)
+- [ ] No stubs/TODOs in changed files
+- [ ] Subagent recommendations implemented
+
+1. **APPROVE** - Mark implementation complete
+2. **REVIEW** - Show me the git diff
+3. **FIX** - I need to address something
+4. **CANCEL** - Keep working
+
+Enter choice (1-4):
+```
 
 ---
 

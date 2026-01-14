@@ -55,15 +55,24 @@ Update `arkhe/specs/{NN}-{slug}/spec.md` status to "Complete".
 
 ---
 
-## Verification Checklist
+## Verification Checklist (RULE ZERO)
 
-Before marking complete, verify:
+Before marking complete, verify ALL items:
 
+**Required Checks:**
 - [ ] All FR-XXX requirements have corresponding implementation
 - [ ] Acceptance criteria are testable
 - [ ] Files actually modified (git diff check)
 - [ ] Tests pass (if applicable)
 - [ ] No placeholder code (`TODO`, `UnsupportedOperationException`)
+- [ ] Subagent recommendations were implemented (not just analyzed)
+
+**Evidence Required:**
+- `git diff` output showing actual changes
+- Test results (if tests were written)
+- File read-back confirming modifications persisted
+
+**If ANY check fails:** Do NOT mark as complete. Return to Phase 4.
 
 ---
 

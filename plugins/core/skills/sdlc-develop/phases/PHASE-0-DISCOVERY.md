@@ -80,14 +80,26 @@ Return:
 
 ## User Checkpoint
 
-**Unless `--auto` mode:**
+**Gate: Tier 2** ⚠️ (RECOMMENDED - skippable with `--auto`)
 
 Present findings to user:
 1. Summary of existing implementations found
 2. REUSE/ENHANCE/CREATE classifications
 3. Key files identified for further analysis
 
-Ask: "Do these findings look correct? Should I proceed to requirements gathering?"
+**Numbered Prompt:**
+```
+## Tier 2 Checkpoint: Existing System Analysis
+
+{Summary of findings}
+
+1. **APPROVE** - Proceed to requirements gathering
+2. **REVIEW** - Show me more details about findings
+3. **MODIFY** - I want to change classifications
+4. **CANCEL** - Stop here
+
+Enter choice (1-4):
+```
 
 ---
 

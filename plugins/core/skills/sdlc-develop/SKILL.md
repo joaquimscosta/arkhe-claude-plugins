@@ -155,6 +155,23 @@ User approval required at:
 - End of Phase 3 (task breakdown)
 - Phase 4d (quality review findings)
 
+## Gates (HITL Tiers)
+
+Three-tier Human-in-the-Loop framework based on risk level:
+
+| Tier | Checkpoints | Behavior |
+|------|-------------|----------|
+| ⛔ Tier 1 | Phase 2c (architecture), Phase 4→5 (completion) | MANDATORY - blocks until approved |
+| ⚠️ Tier 2 | Phase 0→1, 1→2, 3→4 | RECOMMENDED - skippable with `--auto` |
+| ✅ Tier 3 | Phase 2→3 (plan saved) | AUTOMATED - proceeds, logs for review |
+
+**Conditional Escalation**: Any phase auto-elevates to Tier 1 if:
+- Database schema changes detected
+- Security implementation involved
+- Breaking API changes proposed
+
+See [GATES.md](GATES.md) for decision criteria and prompt patterns.
+
 ## Examples
 
 See [EXAMPLES.md](EXAMPLES.md) for detailed usage scenarios.

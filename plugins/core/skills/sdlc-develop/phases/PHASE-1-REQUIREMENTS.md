@@ -53,14 +53,26 @@ Document:
 
 ## User Checkpoint
 
-**Unless `--auto` mode:**
+**Gate: Tier 2** ⚠️ (RECOMMENDED - skippable with `--auto`)
 
 Present requirements summary:
 1. List of FR-XXX requirements with acceptance criteria
 2. Identified constraints
 3. Any remaining questions or assumptions
 
-Ask: "Does this capture what you want to build? Any changes before architecture design?"
+**Numbered Prompt:**
+```
+## Tier 2 Checkpoint: Requirements Summary
+
+{FR-XXX list with acceptance criteria}
+
+1. **APPROVE** - Proceed to architecture design
+2. **REVIEW** - Show me more details
+3. **MODIFY** - I want to change requirements
+4. **CANCEL** - Stop here
+
+Enter choice (1-4):
+```
 
 ---
 

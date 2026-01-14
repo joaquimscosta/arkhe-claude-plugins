@@ -73,7 +73,7 @@ Implementation hints, patterns to follow, gotchas.
 
 ## User Checkpoint
 
-**Unless `--auto` mode:**
+**Gate: Tier 2** ⚠️ (RECOMMENDED - skippable with `--auto`)
 
 Present task breakdown:
 1. Total task count by wave
@@ -81,7 +81,19 @@ Present task breakdown:
 3. Dependency graph visualization
 4. Any questions about scope
 
-Ask: "Does this task breakdown look right? Ready to start implementation?"
+**Numbered Prompt:**
+```
+## Tier 2 Checkpoint: Task Breakdown
+
+{Task summary by wave with effort estimates}
+
+1. **APPROVE** - Start implementation
+2. **REVIEW** - Show me task details
+3. **MODIFY** - I want to change the breakdown
+4. **CANCEL** - Stop here
+
+Enter choice (1-4):
+```
 
 ---
 
