@@ -219,7 +219,7 @@ def promote(
         entry["metadata"].get("title", slug)
     )
 
-    action = "Updated" if (output_file.exists() and refresh) else "Promoted"
+    action = "Updated" if refresh else "Promoted"
     preserved = " (team notes preserved)" if team_notes else ""
 
     return True, f"{action} to {output_file}{preserved}"

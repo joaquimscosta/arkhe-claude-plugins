@@ -19,7 +19,7 @@ import json
 import os
 import re
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Optional
 
@@ -199,7 +199,7 @@ def put_entry(
     entry_dir = cache_dir / "entries" / slug
     entry_dir.mkdir(parents=True, exist_ok=True)
 
-    now = datetime.utcnow()
+    now = datetime.now(timezone.utc)
     ttl_days = get_ttl_days()
     expires_at = now + timedelta(days=ttl_days)
 
@@ -209,8 +209,8 @@ def put_entry(
         "aliases": aliases or [],
         "tags": tags or [],
         "sources": sources or [],
-        "researched_at": now.isoformat() + "Z",
-        "expires_at": expires_at.isoformat() + "Z"
+        "researched_at": now.isoformat(),
+        "expires_at": expires_at.isoformat()
     }
 
     # Write metadata
@@ -315,7 +315,15 @@ def cmd_put(args) -> int:
 
     # Read content from file or stdin
     if args.content_file:
-        content = Path(args.content_file).read_text()
+        content_path = Path(args.content_file)
+        try:
+            content = content_path.read_text()
+        except FileNotFoundError:
+            print(f"Error: File not found: {args.content_file}", file=sys.stderr)
+            return 1
+        except PermissionError:
+            print(f"Error: Permission denied: {args.content_file}", file=sys.stderr)
+            return 1
     else:
         content = sys.stdin.read()
 
