@@ -81,4 +81,4 @@ After installation, the agents and commands will be available:
 
 ## Version
 
-1.0.0
+2.0.0
