@@ -1,0 +1,83 @@
+# {Feature Name} Tasks
+
+**Spec:** {NN}-{feature_slug}
+**Total Tasks:** {count}
+**Estimated Effort:** {total hours}
+
+---
+
+## Wave 1 (Parallel - No Dependencies)
+
+### T-01: {Task Title}
+
+**Type**: feature | bug | task | refactor | test
+**Priority**: P0 (critical) | P1 (high) | P2 (medium) | P3 (low)
+**Effort**: S (1-2h) | M (2-4h) | L (4-8h) | XL (8h+)
+**Dependencies**: none
+**Wave**: 1
+**Files**: `{path/to/file}`
+
+#### Description
+{What needs to be done - clear, actionable description}
+
+#### Acceptance Criteria
+- [ ] {Criterion 1 - specific, testable}
+- [ ] {Criterion 2 - specific, testable}
+- [ ] {Criterion 3 - specific, testable}
+
+#### Technical Notes
+{Implementation hints, patterns to follow, gotchas}
+
+---
+
+### T-02: {Task Title}
+
+**Type**: feature
+**Priority**: P1
+**Effort**: M
+**Dependencies**: none
+**Wave**: 1
+**Files**: `{path/to/file}`
+
+#### Description
+{What needs to be done}
+
+#### Acceptance Criteria
+- [ ] {Criterion 1}
+- [ ] {Criterion 2}
+
+#### Technical Notes
+{Implementation hints}
+
+---
+
+## Wave 2 (Depends on Wave 1)
+
+### T-03: {Task Title}
+
+**Type**: feature
+**Priority**: P1
+**Effort**: L
+**Dependencies**: [T-01, T-02]
+**Wave**: 2
+**Files**: `{path/to/file}`
+
+#### Description
+{What needs to be done}
+
+#### Acceptance Criteria
+- [ ] {Criterion 1}
+- [ ] {Criterion 2}
+
+#### Technical Notes
+{Implementation hints}
+
+---
+
+## Summary
+
+| Wave | Tasks | Effort | Dependencies |
+|------|-------|--------|--------------|
+| 1 | T-01, T-02 | M, S | none |
+| 2 | T-03 | L | T-01, T-02 |
+| **Total** | 3 | ~X hours | |

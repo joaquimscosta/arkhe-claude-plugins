@@ -39,7 +39,7 @@
 
 | Plugin | Description | Key Components | Docs |
 | :--- | :--- | :--- | :---: |
-| 🧠 **Core** | Quality control & workflow orchestration. | `deep-think-partner`, `/discuss`, `/debug` | [View](./plugins/core/README.md) |
+| 🧠 **Core** | Quality control & workflow orchestration. | `deep-think-partner`, `deep-researcher`, `/research`, `/develop` | [View](./plugins/core/README.md) |
 | 🤖 **AI** | Engineering toolkit for production LLM apps. | `ai-engineer`, `prompt-engineer`, `/improve-agent` | [View](./plugins/ai/README.md) |
 | 📝 **Doc** | Multi-purpose documentation toolkit. | `docs-architect`, `/doc-generate`, `/diagram` | [View](./plugins/doc/README.md) |
 | 🔍 **Review** | Code quality & security review tools. | `pragmatic-code-review`, `/code`, `/security` | [View](./plugins/review/README.md) |

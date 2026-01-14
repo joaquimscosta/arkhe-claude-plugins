@@ -1,0 +1,74 @@
+# {Feature Name} Implementation Plan
+
+**Spec:** {NN}-{feature_slug}
+**Created:** {date}
+**Architecture:** {chosen approach name}
+
+---
+
+## Overview
+
+{Summary of chosen approach and why it was selected}
+
+---
+
+## Technical Architecture
+
+### Component Structure
+
+```
+{ASCII diagram or description of components}
+```
+
+### Data Flow
+
+{Description of how data moves through the system}
+
+### Key Files
+
+| File | Purpose |
+|------|---------|
+| `{path/to/file}` | {What this file does} |
+
+---
+
+## Implementation Phases
+
+### Phase 1: Foundation
+- {High-level task 1}
+- {High-level task 2}
+
+### Phase 2: Core Functionality
+- {High-level task 3}
+- {High-level task 4}
+
+### Phase 3: Polish
+- {High-level task 5}
+- {High-level task 6}
+
+---
+
+## Dependencies & Risks
+
+### Dependencies
+- {Dependency 1}
+- {Dependency 2}
+
+### Risks
+| Risk | Mitigation |
+|------|------------|
+| {Risk description} | {How to address} |
+
+---
+
+## Decision Rationale
+
+**Selected Approach:** {approach name}
+
+**Alternatives Considered:**
+1. {Alternative 1} - {Why not chosen}
+2. {Alternative 2} - {Why not chosen}
+
+**Key Factors:**
+- {Factor 1 that influenced decision}
+- {Factor 2 that influenced decision}

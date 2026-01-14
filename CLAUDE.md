@@ -62,8 +62,9 @@ plugin-name/
 
 ### Core Plugin
 Quality control and workflow orchestration utilities.
-- **Agents**: `deep-think-partner`, `code-explorer`, `code-architect`, `code-reviewer`
-- **Commands**: `/discuss`, `/double-check`, `/feature`, `/workflow`, `/debug`, `/think`
+- **Agents**: `deep-think-partner`, `deep-researcher`, `code-explorer`, `code-architect`, `code-reviewer`
+- **Commands**: `/discuss`, `/double-check`, `/develop`, `/debug`, `/think`, `/research`
+- **Skills**: `sdlc-develop` (command-invoke), `deep-research` (auto-invoke), `workflow-orchestration` (auto-invoke)
 
 ### AI Plugin
 AI engineering toolkit for production-ready LLM applications.
@@ -73,7 +74,7 @@ AI engineering toolkit for production-ready LLM applications.
 ### Doc Plugin
 Multi-purpose documentation toolkit.
 - **Agents**: `docs-architect`
-- **Skills**: `diagramming`, `documentation-generation`, `code-explanation`, `adr`
+- **Skills**: `diagramming`, `documentation-generation`, `code-explanation`, `managing-adrs`
 - **Commands**: `/doc-generate`, `/code-explain`, `/diagram`
 
 ### Review Plugin

@@ -122,9 +122,9 @@ After installation, all agents, commands, and skills will be available:
 "Supersede ADR-0005 with a new caching strategy"
 
 # Use scripts directly
-uv run doc/skills/adr/scripts/adr_create.py --title "Use Redis for caching"
-uv run doc/skills/adr/scripts/adr_create.py --title "..." --template madr
-uv run doc/skills/adr/scripts/adr_index.py --dir docs/adr
+uv run doc/skills/managing-adrs/scripts/adr_create.py --title "Use Redis for caching"
+uv run doc/skills/managing-adrs/scripts/adr_create.py --title "..." --template madr
+uv run doc/skills/managing-adrs/scripts/adr_index.py --dir docs/adr
 ```
 
 ## Common Workflows

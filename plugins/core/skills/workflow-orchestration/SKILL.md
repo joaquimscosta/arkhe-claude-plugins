@@ -17,9 +17,11 @@ Guide users through structured thinking and recommend appropriate tools for comp
 
 | Situation | Recommendation |
 |-----------|----------------|
-| Multi-step project with parallel tasks | `/workflow` command |
+| Multi-step project, full SDLC | `/develop` command |
+| Plan only, implement later | `/develop --plan-only` |
+| Resume existing plan | `/develop @path/to/plan.md` |
 | Single complex problem needing deep analysis | `/think` command |
-| Ultra-complex problem, multiple angles | `/ultrathink` command |
+| Security-sensitive or high-stakes work | `/develop --validate` |
 | Strategic decision with long-term impact | `deep-think-partner` agent |
 | Simple task, clear steps | Inline guidance (no command needed) |
 
@@ -53,28 +55,25 @@ When structured approach is needed:
 
 ## Command Reference
 
-### `/workflow <request> [flags]`
+### `/develop <request> [flags]`
 
-Multi-agent orchestration with parallel execution.
+Unified SDLC command with 6-phase pipeline and multi-agent orchestration.
 
 **Flags:**
-- `--deep` - Use opus model for deeper analysis
-- `--research` - Enable web search for external docs
-- `--validate` - Add validation phase with confidence scoring
+- `--plan-only` - Stop after Phase 2 (save plan, don't implement)
+- `--validate` - Enable deep validation with opus agent
+- `--phase=N` - Execute specific phase only
+- `--auto` - Autonomous mode (no checkpoints)
 
-**Best for:** Feature implementations, refactoring projects, coordinated changes.
+**Best for:** Feature implementations, refactoring projects, any multi-step development task.
+
+**Resume mode:** `/develop @path/to/plan.md` loads existing plan and continues.
 
 ### `/think [problem]`
 
 Invoke deep-think-partner for collaborative reasoning.
 
-**Best for:** Single complex problems, decision analysis, reasoning validation.
-
-### `/ultrathink [problem]`
-
-Ultra-deep extended thinking for highly complex problems.
-
-**Best for:** Multi-faceted analysis, thorough exploration of edge cases.
+**Best for:** Single complex problems, decision analysis, reasoning validation, architectural decisions.
 
 ## Inline Guidance
 

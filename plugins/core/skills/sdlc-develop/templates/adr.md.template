@@ -1,0 +1,53 @@
+# ADR-{NNN}: {Decision Title}
+
+**Date:** {YYYY-MM-DD}
+**Status:** Proposed | Accepted | Deprecated | Superseded by ADR-XXX
+**Deciders:** {names or roles}
+
+## Context
+
+{What is the issue that we're seeing that is motivating this decision?}
+{What forces are at play? Technical, business, social, project constraints?}
+
+## Decision
+
+{What is the change that we're proposing and/or doing?}
+{State the decision in full sentences, with active voice.}
+
+## Considered Options
+
+### Option 1: {Name}
+{Brief description}
+
+**Pros:**
+- {Advantage 1}
+- {Advantage 2}
+
+**Cons:**
+- {Disadvantage 1}
+- {Disadvantage 2}
+
+### Option 2: {Name}
+{Brief description}
+
+**Pros:**
+- {Advantage 1}
+
+**Cons:**
+- {Disadvantage 1}
+
+## Consequences
+
+### Positive
+- {Good outcome 1}
+- {Good outcome 2}
+
+### Negative
+- {Bad outcome or trade-off 1}
+
+### Neutral
+- {Side effect that is neither good nor bad}
+
+## References
+
+- {Link to related ADR, document, or external resource}
