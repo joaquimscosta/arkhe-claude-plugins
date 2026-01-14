@@ -41,7 +41,7 @@ After gathering sufficient context through discussion:
 2. **Recommend next steps:**
    - Direct implementation if scope is clear
    - `/think` for single-problem deep reasoning
-   - `/ultrathink` for complex multi-faceted tasks
+   - `/develop` for multi-step implementation projects
    - Further discussion if more clarity needed
 
 ## Guidelines

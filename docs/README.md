@@ -125,7 +125,7 @@ The Arkhe Claude Plugins marketplace demonstrates all plugin component types acr
 #### Component Distribution
 
 **Commands** (workflow automation via slash commands):
-- **core**: 4 commands - `/discuss`, `/double-check`, `/ultrathink`, `/workflow`
+- **core**: 5 commands - `/discuss`, `/double-check`, `/develop`, `/debug`, `/think`
 - **ai**: 2 commands - `/improve-agent`, `/multi-agent-optimize`
 - **doc**: 3 commands - `/doc-generate`, `/code-explain`, `/diagram`
 - **git**: 4 commands - `/commit`, `/create-pr`, `/create-branch`, `/changelog`
@@ -152,19 +152,20 @@ The Arkhe Claude Plugins marketplace demonstrates all plugin component types acr
 
 Use these plugins as templates for your own development. Each demonstrates different architectural patterns and complexity levels.
 
-#### **core** - Minimal Focused Plugin
+#### **core** - Workflow Orchestration Plugin
 
-**Structure**: 1 agent + 3 commands
-**Complexity**: Low
+**Structure**: 4 agents + 5 commands + 1 skill
+**Complexity**: Medium
 **Key Features**:
-- Clean structure for simple utilities
-- Essential documentation and quality tools
-- Good starting point for basic plugins
+- Unified SDLC with `/develop` command (6-phase pipeline)
+- Multi-agent orchestration (code-explorer, code-architect, code-reviewer, deep-think-partner)
+- Plan persistence and resume mode
+- Quality validation with `/double-check`
 
 **Best for learning**:
-- Plugin basics and structure
-- Simple command development
-- Agent configuration fundamentals
+- Multi-agent orchestration patterns
+- SDLC pipeline design
+- Plan persistence and composable workflows
 
 [View Core Plugin Details →](../plugins/core/README.md)
 
@@ -296,7 +297,7 @@ Choose your learning path based on your goals and experience level.
 1. **Multi-component integration:** Study `review` plugin architecture
 2. **MCP server integration:** Examine Playwright MCP usage in `/design` command
 3. **Hook automation:** Implement sophisticated automation with hooks
-4. **Workflow orchestration:** Understand `/workflow` command patterns
+4. **Workflow orchestration:** Understand `/develop` command patterns
 5. **Multi-plugin workflows:** Combine `git` + `review` for complete development workflow
 6. **Security patterns:** Study security review implementation and best practices
 7. **Performance optimization:** Apply progressive disclosure and tool scoping patterns

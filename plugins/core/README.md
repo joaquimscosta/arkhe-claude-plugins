@@ -6,7 +6,7 @@ Quality control and workflow orchestration utilities for Claude Code.
 
 ### Skills
 
-- **workflow-orchestration** (auto-invoke): Coordinates structured thinking and multi-agent parallel execution for complex tasks. Auto-triggered when tackling multi-step projects, planning parallel work, breaking down complex problems, or when user mentions "workflow", "orchestration", "multi-step", "coordinate", "parallel execution", "structured thinking". Recommends appropriate tools (`/workflow`, `/feature`, `/think`) based on context.
+- **workflow-orchestration** (auto-invoke): Coordinates structured thinking and multi-agent parallel execution for complex tasks. Auto-triggered when tackling multi-step projects, planning parallel work, breaking down complex problems, or when user mentions "workflow", "orchestration", "multi-step", "coordinate", "parallel execution", "structured thinking". Recommends appropriate tools (`/develop`, `/think`) based on context.
 
 ### Agents
 
@@ -24,9 +24,7 @@ Quality control and workflow orchestration utilities for Claude Code.
 
 - **/double-check**: Quality validation command that verifies your work from multiple angles. Ensures completeness and correctness before finalizing.
 
-- **/feature**: Guided feature development with codebase exploration, architecture design, and quality review. Uses code-explorer, code-architect, and code-reviewer agents through a 7-phase workflow with user checkpoints.
-
-- **/workflow**: Multi-agent orchestration with parallel execution and spec-kit awareness. Detects spec-kit artifacts, uses existing plans when available, and coordinates specialist agents. Supports `--validate` flag for constitution compliance verification.
+- **/develop**: Unified SDLC command with 6-phase pipeline (Discovery, Requirements, Architecture, Workstreams, Implementation, Summary). Supports plan persistence, resume mode (`@path/to/plan.md`), and configurable interaction (`--auto` for autonomous). Includes mandatory Phase 0 existing system analysis. Flags: `--plan-only`, `--validate`, `--phase=N`, `--auto`.
 
 - **/debug**: Systematic debugging assistant that walks through structured troubleshooting steps. Analyzes issues with a framework covering problem definition, environment assessment, error investigation, hypothesis formation, and testing strategy.
 
@@ -50,11 +48,13 @@ After installation, the agents and commands will be available:
 # Use quality control commands
 /discuss implementing a new authentication system
 /double-check
-/feature add user authentication
 
-# Use workflow orchestration
-/workflow implement OAuth2 authentication
-/workflow implement Phase 1 from @specs/auth/ --validate
+# Use the unified develop command
+/develop add user authentication              # Full 6-phase pipeline
+/develop add logout button --auto             # Autonomous mode
+/develop create plan for dashboard --plan-only # Plan only, don't implement
+/develop @arkhe/specs/01-auth/                # Resume existing spec
+/develop refactor payment service --validate  # With deep validation
 
 # Use debugging
 /debug why is my API returning 500 errors

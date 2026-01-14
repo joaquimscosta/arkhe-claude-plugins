@@ -15,10 +15,10 @@ Real-world scenarios demonstrating when and how to use orchestration tools.
 
 **Recommendation:**
 ```bash
-/workflow implement user authentication with JWT tokens --research --validate
+/develop implement user authentication with JWT tokens --validate
 ```
 
-**Why:** This is a multi-agent task with parallel opportunities. The `--research` flag helps find current JWT best practices, and `--validate` ensures security is properly reviewed.
+**Why:** This is a multi-agent task with parallel opportunities. The `--validate` flag ensures security is properly reviewed with deep opus-level validation.
 
 **Execution flow:**
 1. Gate: Clear request, proceed
@@ -74,10 +74,10 @@ Or for deeper analysis:
 
 Or for more thorough analysis:
 ```bash
-/ultrathink evaluate monolith vs microservices architecture for e-commerce, considering team size, scalability needs, and operational complexity
+/think evaluate monolith vs microservices architecture for e-commerce, considering team size, scalability needs, and operational complexity
 ```
 
-**Why:** This is a strategic thinking task, not an implementation task. The deep-think-partner or ultrathink will explore trade-offs, consider constraints, and provide reasoned recommendations.
+**Why:** This is a strategic thinking task, not an implementation task. The deep-think-partner or think (extended) will explore trade-offs, consider constraints, and provide reasoned recommendations.
 
 ---
 
@@ -93,7 +93,7 @@ Or for more thorough analysis:
 
 **Recommendation:**
 ```bash
-/workflow refactor payment service to use new API client pattern
+/develop refactor payment service to use new API client pattern
 ```
 
 **Why:** Multi-file coordination benefits from workflow orchestration. No flags needed for a straightforward refactoring task.
@@ -136,7 +136,7 @@ Inline guidance - no command needed.
 
 **Recommendation:**
 ```bash
-/workflow review authentication module --deep --validate
+/develop review authentication module --validate
 ```
 
 Or use the dedicated review commands:
@@ -144,7 +144,7 @@ Or use the dedicated review commands:
 /double-check the authentication module implementation
 ```
 
-**Why:** The `--deep --validate` combination ensures thorough analysis. Alternatively, `/double-check` is purpose-built for quality validation.
+**Why:** The `--validate` flag triggers opus-level deep validation. Alternatively, `/double-check` is purpose-built for quality validation.
 
 ---
 
@@ -177,10 +177,10 @@ Direct exploration and explanation - no orchestration command needed.
 
 **Recommendation:**
 ```bash
-/workflow implement Stripe payment integration --deep --research --validate
+/develop implement Stripe payment integration --validate
 ```
 
-**Why:** All three flags are appropriate for high-stakes, security-sensitive implementations. The `--deep` ensures thorough analysis, `--research` finds current Stripe best practices, and `--validate` adds security review.
+**Why:** The `--validate` flag is essential for high-stakes, security-sensitive implementations. It triggers opus-level deep validation to ensure security is properly reviewed.
 
 ---
 
@@ -188,30 +188,30 @@ Direct exploration and explanation - no orchestration command needed.
 
 | Scenario | Tool | Flags |
 |----------|------|-------|
-| Multi-component feature | `/workflow` | `--validate` if important |
+| Multi-component feature | `/develop` | `--validate` if important |
 | Single complex problem | `/think` | - |
-| Multi-faceted analysis | `/ultrathink` | - |
-| Strategic decision | `/think` or `/ultrathink` | - |
+| Multi-faceted analysis | `/think` | - |
+| Strategic decision | `/think` | - |
 | Debugging investigation | `/debug` | - |
 | Quick code change | Inline | - |
-| Security-sensitive work | `/workflow` | `--deep --validate` |
-| Research-needed task | `/workflow` | `--research` |
+| Security-sensitive work | `/develop` | `--validate` |
+| Plan first, implement later | `/develop` | `--plan-only` |
 | Quality review | `/double-check` | - |
 
 ## Common Patterns
 
 ### "How should I approach X?"
 
-Start with `/think` to reason through the approach, then `/workflow` if implementation is needed.
+Start with `/think` to reason through the approach, then `/develop` if implementation is needed.
 
 ### "I need to do A, B, and C"
 
-If independent: `/workflow` will parallelize them.
-If sequential: `/workflow` will sequence them appropriately.
+If independent: `/develop` will parallelize them.
+If sequential: `/develop` will sequence them appropriately.
 
 ### "This is really complex"
 
-Use `/ultrathink` for deep analysis, then `/workflow --deep` for implementation.
+Use `/think` for deep analysis, then `/develop --validate` for implementation.
 
 ### "Before I merge this..."
 

@@ -56,8 +56,8 @@ Quality control and workflow orchestration utilities.
 **Install**: `/plugin install core@arkhe-claude-plugins`
 
 **Components**:
-- 1 agent: `deep-think-partner`
-- 6 commands: `/discuss`, `/double-check`, `/ultrathink`, `/workflow`, `/debug`, `/think`
+- 4 agents: `deep-think-partner`, `code-explorer`, `code-architect`, `code-reviewer`
+- 5 commands: `/discuss`, `/double-check`, `/develop`, `/debug`, `/think`
 
 ---
 
@@ -253,7 +253,7 @@ You should see agents from installed plugins:
 ```
 
 You should see commands from installed plugins:
-- **core**: `/discuss`, `/double-check`, `/ultrathink`, `/workflow`, `/debug`, `/think`
+- **core**: `/discuss`, `/double-check`, `/develop`, `/debug`, `/think`
 - **ai**: `/improve-agent`, `/multi-agent-optimize`, `/lyra`
 - **doc**: `/doc-generate`, `/code-explain`, `/diagram`
 - **review**: `/code`, `/security`, `/design`, `/codebase`
@@ -284,11 +284,11 @@ Skills are automatically invoked when relevant context is detected:
 # Validate your work
 /double-check
 
-# Deep analysis with multi-step thinking
-/ultrathink optimization strategies for database queries
+# Deep analysis with collaborative thinking
+/think optimization strategies for database queries
 
-# Orchestrate complex workflows
-/workflow Create a new feature for user authentication
+# Orchestrate complex development workflows
+/develop Create a new feature for user authentication
 ```
 
 ### AI Plugin

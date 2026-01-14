@@ -51,7 +51,7 @@ Detailed patterns for coordinating complex tasks with structured thinking and mu
 - What specialist skills are needed?
 - What are the acceptance criteria?
 
-**Model:** Use sonnet for standard planning, opus for complex analysis (with `--deep` flag).
+**Model:** Use sonnet for standard planning, opus for complex analysis (with `--validate` flag).
 
 ### Step 4: Parallel Execution
 
@@ -126,7 +126,7 @@ Complete your task and report results.
 - Start with haiku for quick decisions
 - Use sonnet for the bulk of work
 - Reserve opus for genuinely complex analysis
-- `--deep` flag elevates analysis phases to opus
+- `--validate` flag enables opus-level deep validation
 
 ## Parallelism Patterns
 
@@ -201,11 +201,13 @@ Wave 3 (depends on Wave 2):
 
 | Flag | Effect |
 |------|--------|
-| `--deep` | Use opus for analysis phases |
-| `--research` | Enable web search for docs/patterns |
-| `--validate` | Add validation phase with scoring |
+| `--plan-only` | Stop after Phase 2, save plan without implementing |
+| `--validate` | Enable opus-level deep validation in Phase 4 |
+| `--phase=N` | Execute specific phase only (composable mode) |
+| `--auto` | Autonomous mode (no checkpoints, only stop on issues) |
 
-**Combinations:**
-- `--deep --validate` - Thorough analysis with quality gates
-- `--research --validate` - External research with verification
-- All three for maximum thoroughness (use sparingly)
+**Common Patterns:**
+- `--plan-only` - Create plan for review before implementing
+- `--validate` - For high-stakes or security-sensitive implementations
+- `--auto` - For well-defined tasks that don't need checkpoints
+- `@arkhe/specs/01-feature/` - Resume existing spec

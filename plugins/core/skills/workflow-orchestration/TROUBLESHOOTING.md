@@ -4,20 +4,20 @@ Common issues and solutions when using orchestration tools.
 
 ## Choosing the Wrong Tool
 
-### Problem: Used `/workflow` for a simple task
+### Problem: Used `/develop` for a simple task
 **Symptoms:** Excessive overhead, slow execution, unnecessary complexity.
 
 **Solution:** For single-function changes or simple tasks, skip orchestration and provide direct implementation. Orchestration is for multi-component coordination.
 
-### Problem: Used `/think` when `/workflow` was needed
+### Problem: Used `/think` when `/develop` was needed
 **Symptoms:** Got analysis but no implementation, reasoning without action.
 
-**Solution:** `/think` is for reasoning and decisions. Use `/workflow` when you need actual implementation across multiple files/components.
+**Solution:** `/think` is for reasoning and decisions. Use `/develop` when you need actual implementation across multiple files/components.
 
 ### Problem: Task is stuck in analysis
 **Symptoms:** Deep thinking but no progress, endless exploration.
 
-**Solution:** Set clear boundaries. If analysis is complete, transition to `/workflow` for execution. Ask: "Do we understand the problem enough to act?"
+**Solution:** Set clear boundaries. If analysis is complete, transition to `/develop` for execution. Ask: "Do we understand the problem enough to act?"
 
 ---
 
@@ -33,8 +33,8 @@ Common issues and solutions when using orchestration tools.
 
 **Example fix:**
 ```
-Bad:  /workflow make it better
-Good: /workflow refactor the UserService to use dependency injection
+Bad:  /develop make it better
+Good: /develop refactor the UserService to use dependency injection
 ```
 
 ### Problem: Context discovery misses relevant files
@@ -43,7 +43,7 @@ Good: /workflow refactor the UserService to use dependency injection
 **Solutions:**
 1. Mention specific files or patterns to consider
 2. Reference CLAUDE.md guidelines
-3. Add `--research` to find related patterns
+3. Provide explicit file paths or component names in your request
 
 ### Problem: Too much sequential execution
 **Symptoms:** Slow workflow, tasks running one at a time.
@@ -58,7 +58,7 @@ Good: /workflow refactor the UserService to use dependency injection
 
 **Solutions:**
 - Too strict: Focus on objective issues only
-- Too lenient: Add `--deep` for more thorough analysis
+- Too lenient: Add `--validate` for opus-level deep analysis
 - Consider what truly blocks vs. what's a nice-to-have
 
 ---
@@ -106,28 +106,20 @@ Good: /workflow refactor the UserService to use dependency injection
 
 **Solutions:**
 1. Mention edge cases explicitly in request
-2. Use `--deep` for more thorough analysis
-3. Add `--validate` to catch missing scenarios
+2. Use `--validate` for opus-level deep analysis
+3. Include acceptance criteria with edge case coverage
 
 ---
 
 ## Flag-Related Issues
 
-### Problem: `--research` returns irrelevant results
-**Symptoms:** Web search adds noise, not value.
-
-**Solutions:**
-1. Be specific about what to research
-2. Skip `--research` if internal patterns are sufficient
-3. Constrain research scope in the request
-
-### Problem: `--deep` is too slow
+### Problem: `--validate` is too slow
 **Symptoms:** Analysis takes much longer than expected.
 
 **Solutions:**
-1. Use `--deep` only for genuinely complex decisions
-2. Consider if sonnet-level analysis would suffice
-3. Reserve opus for validation, not all phases
+1. Use `--validate` only for high-stakes implementations
+2. Skip for simple refactoring or low-risk changes
+3. Reserve opus for security-sensitive or critical features
 
 ### Problem: `--validate` catches too much
 **Symptoms:** Validation flags subjective issues.
@@ -137,25 +129,33 @@ Good: /workflow refactor the UserService to use dependency injection
 2. Skip style and preference issues
 3. Trust linters and tests for mechanical checks
 
+### Problem: `--plan-only` doesn't save plan
+**Symptoms:** Plan not persisted to expected location.
+
+**Solutions:**
+1. Check `.arkhe.yaml` for custom specs_dir setting
+2. Default location is `arkhe/specs/NN-feature/`
+3. Ensure you have write permissions to the directory
+
 ---
 
 ## Integration Issues
 
-### Problem: Conflict between `/workflow` and `/think` outputs
+### Problem: Conflict between `/develop` and `/think` outputs
 **Symptoms:** Analysis and implementation don't align.
 
 **Solutions:**
 1. Run `/think` first for decisions
-2. Use conclusions to inform `/workflow` request
-3. Reference thinking output in workflow request
+2. Use conclusions to inform `/develop` request
+3. Reference thinking output in develop request
 
-### Problem: `deep-think-partner` and workflow don't coordinate
+### Problem: `deep-think-partner` and develop don't coordinate
 **Symptoms:** Duplicate analysis, conflicting recommendations.
 
 **Solutions:**
 1. Use one or the other for a given phase
 2. `deep-think-partner` for strategic decisions
-3. `/workflow` for execution after decisions are made
+3. `/develop` for execution after decisions are made
 
 ---
 
@@ -165,12 +165,12 @@ Good: /workflow refactor the UserService to use dependency injection
 |-------|-----------|
 | Unclear request | Add specific file paths and success criteria |
 | Missing context | Reference CLAUDE.md or key files |
-| Too slow | Remove unnecessary flags |
-| Too shallow | Add `--deep` flag |
+| Too slow | Skip `--validate` for low-risk changes |
 | No quality check | Add `--validate` flag |
 | Wrong tool | Check decision matrix in EXAMPLES.md |
-| Stuck in analysis | Transition to `/workflow` for execution |
+| Stuck in analysis | Transition to `/develop` for execution |
 | Over-engineered | Use inline guidance for simple tasks |
+| Resume existing plan | Use `/develop @arkhe/specs/NN-feature/` |
 
 ## Getting Help
 
