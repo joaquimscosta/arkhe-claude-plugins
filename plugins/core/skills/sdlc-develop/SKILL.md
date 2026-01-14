@@ -96,8 +96,8 @@ arkhe/specs/
 
 | Template | Phase | When Generated |
 |----------|-------|----------------|
-| [spec.md.template](templates/spec.md.template) | 1 | Always (requirements) |
 | [reuse-matrix.md.template](templates/reuse-matrix.md.template) | 0 | Always (existing analysis) |
+| [spec.md.template](templates/spec.md.template) | 2 | Always (requirements summary) |
 | [plan.md.template](templates/plan.md.template) | 2 | Always (architecture) |
 | [adr.md.template](templates/adr.md.template) | 2 | When significant decisions made |
 | [api-contract.md.template](templates/api-contract.md.template) | 2 | When API endpoints involved |
