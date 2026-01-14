@@ -10,9 +10,13 @@ Quality control and workflow orchestration utilities for Claude Code.
 
 - **workflow-orchestration** (auto-invoke): Coordinates structured thinking and multi-agent parallel execution for complex tasks. Auto-triggered when tackling multi-step projects, planning parallel work, breaking down complex problems, or when user mentions "workflow", "orchestration", "multi-step", "coordinate", "parallel execution", "structured thinking". Recommends appropriate tools (`/develop`, `/think`) based on context.
 
+- **deep-research** (auto-invoke + command-invoke): Deep technical research using EXA tools with intelligent two-tier caching. Auto-triggered when user asks to research a topic, investigate best practices, look up information, find patterns, or explore architectures. Also invoked via `/research` command. Features cross-project cache reuse and promotion to version-controlled project docs.
+
 ### Agents
 
 - **deep-think-partner**: Elite reasoning partner for complex logical problems, multi-step reasoning challenges, and strategic decisions. Use when you need collaborative deep thinking for architectural decisions, complex data transformations, or validating reasoning chains. Engages as a peer thinking partner rather than a subordinate.
+
+- **deep-researcher**: Deep research specialist using EXA tools for comprehensive topic investigation. Manages a two-tier cache system (user-level for cross-project reuse, project-level for version-controlled team knowledge). Conducts research on patterns, architectures, technologies, and best practices.
 
 - **code-explorer**: Specialized agent for exploring and understanding codebases. Traces through implementations, maps architecture, identifies patterns, and returns lists of key files to read.
 
@@ -31,6 +35,8 @@ Quality control and workflow orchestration utilities for Claude Code.
 - **/debug**: Systematic debugging assistant that walks through structured troubleshooting steps. Analyzes issues with a framework covering problem definition, environment assessment, error investigation, hypothesis formation, and testing strategy.
 
 - **/think**: Invokes the deep-think-partner agent for collaborative reasoning on complex problems. Can be called with a specific problem or to analyze the current conversation context.
+
+- **/research**: Deep technical research with intelligent caching. Supports: `/research <topic>` (research), `/research promote <slug>` (promote to project docs), `/research refresh <slug>` (force refresh), `/research list` (show inventory). Uses EXA tools for web search and code context retrieval.
 
 ## Installation
 
@@ -65,6 +71,12 @@ After installation, the agents and commands will be available:
 # Use deep thinking
 /think how should I structure the authentication module
 /think  # Analyzes current context
+
+# Use deep research
+/research domain-driven design            # Research a topic
+/research promote domain-driven-design    # Promote to project docs
+/research refresh domain-driven-design    # Force refresh
+/research list                            # Show all cached research
 ```
 
 ## Version
