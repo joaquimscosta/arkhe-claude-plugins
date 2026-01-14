@@ -120,7 +120,7 @@ ls -la arkhe-claude-plugins/
 3. Check skill description for trigger phrases
 
 **Skill Triggers:**
-- **mermaid**: "diagram", "flowchart", "sequence diagram", "ERD"
+- **diagramming**: "diagram", "flowchart", "sequence diagram", "ERD"
 - **generating-changelog**: Edit CHANGELOG.md, mention "changelog", "release notes"
 - **design-intent-specialist**: "implement from Figma", "screenshot", visual references
 - **scripting-bash**: "bash script", "shell script", "automation script"

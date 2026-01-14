@@ -125,7 +125,7 @@ The Arkhe Claude Plugins marketplace demonstrates all plugin component types acr
 #### Component Distribution
 
 **Commands** (workflow automation via slash commands):
-- **core**: 5 commands - `/discuss`, `/double-check`, `/develop`, `/debug`, `/think`
+- **core**: 6 commands - `/discuss`, `/double-check`, `/develop`, `/debug`, `/think`, `/research`
 - **ai**: 2 commands - `/improve-agent`, `/multi-agent-optimize`
 - **doc**: 3 commands - `/doc-generate`, `/code-explain`, `/diagram`
 - **git**: 4 commands - `/commit`, `/create-pr`, `/create-branch`, `/changelog`
@@ -140,8 +140,9 @@ The Arkhe Claude Plugins marketplace demonstrates all plugin component types acr
 - **ui**: 1 agent - `ui-ux-designer`
 
 **Skills** (model-invoked capabilities):
-- **doc**: 1 skill - `mermaid` (auto-activates on diagram/flowchart keywords)
-- **git**: 1 skill - `changelog` (auto-activates on CHANGELOG.md editing)
+- **core**: 3 skills - `sdlc-develop` (command-invoke), `deep-research` (auto-invoke), `workflow-orchestration` (auto-invoke)
+- **doc**: 4 skills - `diagramming` (auto-activates on diagram/flowchart keywords), `documentation-generation`, `code-explanation`, `managing-adrs`
+- **git**: 4 skills - `generating-changelog` (auto-invoke) + 3 command-invoke skills
 - **google-stitch**: 2 skills - `authoring-stitch-prompts`, `extracting-stitch-mockups`
 - **design-intent**: 1 skill - `design-intent-specialist` (auto-activates for visual implementation work)
 
@@ -154,13 +155,15 @@ Use these plugins as templates for your own development. Each demonstrates diffe
 
 #### **core** - Workflow Orchestration Plugin
 
-**Structure**: 4 agents + 5 commands + 1 skill
+**Structure**: 5 agents + 6 commands + 3 skills
 **Complexity**: Medium
 **Key Features**:
 - Unified SDLC with `/develop` command (6-phase pipeline)
-- Multi-agent orchestration (code-explorer, code-architect, code-reviewer, deep-think-partner)
+- Multi-agent orchestration (code-explorer, code-architect, code-reviewer, deep-think-partner, deep-researcher)
+- Deep research capability with `/research` command and auto-invoke skill
 - Plan persistence and resume mode
 - Quality validation with `/double-check`
+- Workflow orchestration for complex multi-step tasks
 
 **Best for learning**:
 - Multi-agent orchestration patterns
@@ -328,7 +331,7 @@ Claude Code plugins can include four types of components:
    - Model-invoked capabilities that activate automatically
    - Progressive disclosure architecture (metadata → instructions → resources)
    - Context-aware activation based on task detection
-   - Examples: `mermaid` skill for diagram generation, `changelog` skill for git workflows
+   - Examples: `diagramming` skill for diagram generation, `generating-changelog` skill for git workflows
 
 4. **Hooks** (`hooks/`)
    - Event-driven automation for Claude Code lifecycle events

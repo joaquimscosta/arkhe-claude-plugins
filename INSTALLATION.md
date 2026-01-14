@@ -40,6 +40,7 @@ git clone https://github.com/joaquimscosta/arkhe-claude-plugins.git
 /plugin install specprep@arkhe-claude-plugins
 /plugin install google-stitch@arkhe-claude-plugins
 /plugin install lang@arkhe-claude-plugins
+/plugin install spring-boot@arkhe-claude-plugins
 ```
 
 ### 3. Restart Claude Code
@@ -56,8 +57,9 @@ Quality control and workflow orchestration utilities.
 **Install**: `/plugin install core@arkhe-claude-plugins`
 
 **Components**:
-- 4 agents: `deep-think-partner`, `code-explorer`, `code-architect`, `code-reviewer`
-- 5 commands: `/discuss`, `/double-check`, `/develop`, `/debug`, `/think`
+- 5 agents: `deep-think-partner`, `deep-researcher`, `code-explorer`, `code-architect`, `code-reviewer`
+- 6 commands: `/discuss`, `/double-check`, `/develop`, `/debug`, `/think`, `/research`
+- 3 skills: `sdlc-develop` (command-invoke), `deep-research` (auto-invoke), `workflow-orchestration` (auto-invoke)
 
 ---
 
@@ -79,7 +81,7 @@ Multi-purpose documentation toolkit.
 
 **Components**:
 - 1 agent: `docs-architect`
-- 1 skill: `mermaid` (auto-invoked for diagrams)
+- 4 skills: `diagramming` (auto-invoked for diagrams), `documentation-generation`, `code-explanation`, `managing-adrs`
 - 3 commands: `/doc-generate`, `/code-explain`, `/diagram`
 
 ---
@@ -231,7 +233,7 @@ After installation, verify that everything works:
 /plugin
 ```
 
-You should see all 10 plugins listed.
+You should see all 11 plugins listed.
 
 ### Check Available Agents
 
@@ -240,7 +242,7 @@ You should see all 10 plugins listed.
 ```
 
 You should see agents from installed plugins:
-- **core**: `deep-think-partner`
+- **core**: `deep-think-partner`, `deep-researcher`, `code-explorer`, `code-architect`, `code-reviewer`
 - **ai**: `ai-engineer`, `prompt-engineer`, `context-manager`
 - **doc**: `docs-architect`
 - **review**: `pragmatic-code-review`, `design-review`
@@ -253,7 +255,7 @@ You should see agents from installed plugins:
 ```
 
 You should see commands from installed plugins:
-- **core**: `/discuss`, `/double-check`, `/develop`, `/debug`, `/think`
+- **core**: `/discuss`, `/double-check`, `/develop`, `/debug`, `/think`, `/research`
 - **ai**: `/improve-agent`, `/multi-agent-optimize`, `/lyra`
 - **doc**: `/doc-generate`, `/code-explain`, `/diagram`
 - **review**: `/code`, `/security`, `/design`, `/codebase`
@@ -265,8 +267,9 @@ You should see commands from installed plugins:
 ### Check Skills
 
 Skills are automatically invoked when relevant context is detected:
-- **doc**: `mermaid` skill activates when you mention diagrams, flowcharts, or visualization keywords
-- **git**: `changelog` skill activates when you edit CHANGELOG.md or request changelog generation
+- **core**: `workflow-orchestration` activates for complex multi-step tasks; `deep-research` activates for research queries
+- **doc**: `diagramming` skill activates when you mention diagrams, flowcharts, or visualization keywords
+- **git**: `generating-changelog` skill activates when you edit CHANGELOG.md or request changelog generation
 - **design-intent**: `design-intent-specialist` activates when you're implementing UI from visual references or running `/design` or `/implement`
 - **google-stitch**: `authoring-stitch-prompts`, `extracting-stitch-mockups` activate for Stitch prompt work
 - **lang**: `scripting-bash` skill activates for Bash scripting guidance
@@ -476,7 +479,7 @@ Skills are automatically invoked when relevant context is detected:
 Skills are model-invoked, so they activate automatically based on context. Make sure:
 1. The plugin is installed and enabled
 2. Your request clearly matches the skill's use case
-3. You're providing the necessary information (e.g., diagram type for mermaid skill)
+3. You're providing the necessary information (e.g., diagram type for diagramming skill)
 
 ### Playwright MCP Issues (for design-review)
 
