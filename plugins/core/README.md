@@ -14,7 +14,7 @@ Quality control and workflow orchestration utilities for Claude Code.
 
 ### Agents
 
-- **deep-think-partner**: Elite reasoning partner for complex logical problems, multi-step reasoning challenges, and strategic decisions. Use when you need collaborative deep thinking for architectural decisions, complex data transformations, or validating reasoning chains. Engages as a peer thinking partner rather than a subordinate.
+- **deep-think-partner**: Elite reasoning partner for complex logical problems, multi-step reasoning challenges, and strategic decisions. Triggers on "should I", "what are the tradeoffs", "help me decide", or "think through". Provides structured output with problem restatement, multi-perspective analysis, and ranked recommendations. Uses Opus model with sequential-thinking MCP for maximum reasoning depth.
 
 - **deep-researcher**: Deep research specialist using EXA tools for comprehensive topic investigation. Manages a two-tier cache system (user-level for cross-project reuse, project-level for version-controlled team knowledge). Conducts research on patterns, architectures, technologies, and best practices.
 
