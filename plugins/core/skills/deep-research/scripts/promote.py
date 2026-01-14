@@ -201,8 +201,6 @@ def promote(
     if output_file.exists() and refresh:
         existing_content = output_file.read_text()
         team_notes = extract_team_notes(existing_content)
-        if team_notes:
-            team_notes = team_notes  # Preserve existing notes
 
     # Build promoted content
     content = build_promoted_content(
