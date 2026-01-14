@@ -6,6 +6,8 @@ Quality control and workflow orchestration utilities for Claude Code.
 
 ### Skills
 
+- **sdlc-develop** (command-invoke): 6-phase SDLC pipeline for feature development with progressive disclosure. Orchestrates Discovery, Requirements, Architecture, Workstreams, Implementation, and Summary phases. Supports plan persistence to `arkhe/specs/`, resume mode, and autonomous execution. Invoked via `/develop` command.
+
 - **workflow-orchestration** (auto-invoke): Coordinates structured thinking and multi-agent parallel execution for complex tasks. Auto-triggered when tackling multi-step projects, planning parallel work, breaking down complex problems, or when user mentions "workflow", "orchestration", "multi-step", "coordinate", "parallel execution", "structured thinking". Recommends appropriate tools (`/develop`, `/think`) based on context.
 
 ### Agents

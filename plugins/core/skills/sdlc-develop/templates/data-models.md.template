@@ -1,0 +1,71 @@
+# {Feature Name} Data Models
+
+**Spec:** {NN}-{feature_slug}
+**Database:** {PostgreSQL/MySQL/etc.}
+
+---
+
+## Entity Relationship Diagram
+
+```
+┌─────────────────┐       ┌─────────────────┐
+│    {Entity1}    │       │    {Entity2}    │
+├─────────────────┤       ├─────────────────┤
+│ id (PK)         │──────<│ id (PK)         │
+│ field1          │       │ entity1_id (FK) │
+│ field2          │       │ field1          │
+│ created_at      │       │ created_at      │
+└─────────────────┘       └─────────────────┘
+```
+
+---
+
+## Entities
+
+### {EntityName}
+
+**Table:** `{table_name}`
+**Description:** {What this entity represents}
+
+| Column | Type | Nullable | Default | Description |
+|--------|------|----------|---------|-------------|
+| `id` | UUID | No | gen_random_uuid() | Primary key |
+| `{column}` | {type} | Yes/No | {default} | {Description} |
+| `created_at` | TIMESTAMP | No | NOW() | Creation timestamp |
+| `updated_at` | TIMESTAMP | No | NOW() | Last update timestamp |
+
+**Indexes:**
+- `idx_{table}_{column}` on `{column}` - {Purpose}
+
+**Constraints:**
+- `{constraint_name}`: {Description}
+
+**Relationships:**
+- Has many `{OtherEntity}` via `{foreign_key}`
+- Belongs to `{OtherEntity}` via `{foreign_key}`
+
+---
+
+## Migrations
+
+| Migration | Purpose |
+|-----------|---------|
+| `V{X}.{Y}__{name}.sql` | {What it does} |
+
+---
+
+## Queries
+
+### Common Query Patterns
+
+**Get {entity} by ID:**
+```sql
+SELECT * FROM {table} WHERE id = :id;
+```
+
+**List with pagination:**
+```sql
+SELECT * FROM {table}
+ORDER BY created_at DESC
+LIMIT :limit OFFSET :offset;
+```

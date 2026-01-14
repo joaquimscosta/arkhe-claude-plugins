@@ -1,0 +1,44 @@
+# {Feature Name} Specification
+
+**ID:** {NN}-{feature_slug}
+**Created:** {date}
+**Status:** Draft | Approved | In Progress | Complete
+
+---
+
+## Overview
+
+{One-sentence summary of what this feature does}
+
+---
+
+## Requirements
+
+### FR-001: {Requirement Title}
+**Description:** {What the system should do}
+**Acceptance Criteria:**
+- [ ] {Testable criterion 1}
+- [ ] {Testable criterion 2}
+- [ ] {Testable criterion 3}
+
+### FR-002: {Requirement Title}
+**Description:** {What the system should do}
+**Acceptance Criteria:**
+- [ ] {Testable criterion 1}
+- [ ] {Testable criterion 2}
+
+---
+
+## Constraints
+
+### Performance
+- {Quantified performance requirement, e.g., "<200ms response time"}
+
+### Security
+- {Security considerations}
+
+### Compatibility
+- {Backward compatibility requirements}
+
+### Dependencies
+- {External system dependencies}

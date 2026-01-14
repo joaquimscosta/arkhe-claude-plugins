@@ -1,0 +1,60 @@
+# {Feature Name} Component Reuse Matrix
+
+**Spec:** {NN}-{feature_slug}
+**Analysis Date:** {date}
+
+---
+
+## Summary
+
+| Decision | Count | Components |
+|----------|-------|------------|
+| REUSE | {n} | {list} |
+| ENHANCE | {n} | {list} |
+| CREATE | {n} | {list} |
+
+---
+
+## REUSE - Use Existing As-Is
+
+### {Component Name}
+
+**Location:** `{file:line}`
+**Current Purpose:** {What it does now}
+**Why Reuse:** {Justification for using as-is}
+
+---
+
+## ENHANCE - Extend Existing
+
+### {Component Name}
+
+**Location:** `{file:line}`
+**Current Purpose:** {What it does now}
+**Enhancement Needed:** {What changes are required}
+**Why Enhance:** {Why not create new}
+
+**Proposed Changes:**
+- {Change 1}
+- {Change 2}
+
+---
+
+## CREATE - Build New
+
+### {Component Name}
+
+**Why New:** {Justification for not reusing/enhancing}
+**Similar Components Considered:**
+- `{existing}` - {Why not suitable}
+
+**Proposed Design:**
+{Brief description of new component}
+
+---
+
+## Integration Points
+
+| Existing Component | Integration Type | Notes |
+|-------------------|------------------|-------|
+| `{component}` | Calls / Called by / Extends | {Notes} |

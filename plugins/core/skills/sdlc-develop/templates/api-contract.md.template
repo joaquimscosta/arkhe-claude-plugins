@@ -1,0 +1,90 @@
+# {Feature Name} API Contract
+
+**Spec:** {NN}-{feature_slug}
+**Version:** 1.0.0
+**Base Path:** /api/v1/{resource}
+
+---
+
+## Overview
+
+{Brief description of what this API does}
+
+---
+
+## Authentication
+
+{Auth method: Bearer token, API key, OAuth2, etc.}
+
+---
+
+## Endpoints
+
+### {HTTP_METHOD} {/path}
+
+**Description:** {What this endpoint does}
+
+**Request:**
+
+| Parameter | Location | Type | Required | Description |
+|-----------|----------|------|----------|-------------|
+| `{param}` | path/query/body | string | Yes/No | {Description} |
+
+**Request Body:**
+```json
+{
+  "field": "type - description"
+}
+```
+
+**Response:**
+
+| Status | Description |
+|--------|-------------|
+| 200 | Success |
+| 400 | Bad Request - {when} |
+| 401 | Unauthorized |
+| 404 | Not Found |
+| 500 | Internal Server Error |
+
+**Success Response (200):**
+```json
+{
+  "id": "string",
+  "field": "type"
+}
+```
+
+**Error Response:**
+```json
+{
+  "error": "string",
+  "message": "string",
+  "details": {}
+}
+```
+
+---
+
+## Data Types
+
+### {TypeName}
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `id` | string (UUID) | Yes | Unique identifier |
+| `{field}` | {type} | Yes/No | {Description} |
+
+---
+
+## Rate Limits
+
+{Rate limiting rules if applicable}
+
+---
+
+## Changelog
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 1.0.0 | {date} | Initial version |
