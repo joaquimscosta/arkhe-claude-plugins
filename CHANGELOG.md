@@ -42,6 +42,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Security checks (shebang, file permissions, no third-party packages)
   - Confidence-based filtering with severity levels
 
+### Removed
+
+#### Specprep Plugin
+
+- Removed `specprep` plugin entirely
+  - `/specprep:specify` command no longer available
+  - Plugin was designed for Spec Kit workflow optimization but added complexity without proportional value
+  - Use `/develop` command from core plugin for specification work as part of its integrated SDLC pipeline
+
 ### Changed
 
 #### Project Structure

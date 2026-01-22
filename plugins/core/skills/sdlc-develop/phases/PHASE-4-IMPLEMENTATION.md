@@ -127,13 +127,29 @@ Present validation results:
 Enter choice (1-4):
 ```
 
+**STOP: Unless `--auto` is set AND no Tier 1 triggers, WAIT for user response.**
+
+**Response Handling:**
+- **1**: Proceed to Step 4e (Completion Gate)
+- **2**: Show `git diff` output, then re-present this prompt
+- **3**: Address issues, re-run validation, then re-present this prompt
+- **4**: Stop pipeline, remain in Phase 4
+
 ---
 
-## Completion Gate
+## Step 4e: Completion Gate
 
-**Gate: Tier 1** ⛔ (MANDATORY - RULE ZERO enforcement)
+### ⛔ TIER 1 CHECKPOINT - MANDATORY STOP
 
-Before proceeding to Phase 5, verify:
+**This checkpoint CANNOT be skipped, even with `--auto`.**
+
+Before proceeding to Phase 5:
+1. Verify all RULE ZERO items
+2. Present the checkpoint prompt below
+3. **STOP AND WAIT** for user response
+4. Do NOT proceed until user responds with "1"
+
+**Numbered Prompt:**
 
 ```
 ## Tier 1 Checkpoint: Implementation Complete ⛔
@@ -144,13 +160,21 @@ Before proceeding to Phase 5, verify:
 - [ ] No stubs/TODOs in changed files
 - [ ] Subagent recommendations implemented
 
-1. **APPROVE** - Mark implementation complete
+1. **APPROVE** - Mark implementation complete, proceed to Phase 5
 2. **REVIEW** - Show me the git diff
-3. **FIX** - I need to address something
-4. **CANCEL** - Keep working
+3. **FIX** - I need to address something first
+4. **CANCEL** - Keep working, do not mark complete
 
 Enter choice (1-4):
 ```
+
+**CRITICAL: STOP HERE. DO NOT PROCEED TO PHASE 5 UNTIL USER RESPONDS.**
+
+**Response Handling:**
+- **1**: Proceed to Phase 5 (PHASE-5-SUMMARY.md)
+- **2**: Execute `git diff` and display output, then re-present this prompt
+- **3**: Return to implementation work, then re-present this prompt when ready
+- **4**: Remain in Phase 4 implementation mode, await instructions
 
 ---
 

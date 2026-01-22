@@ -28,12 +28,8 @@ Guided feature development through a 6-phase SDLC pipeline with plan persistence
 
 ## Implementation
 
-Load the SDLC skill and execute with provided arguments:
+Invoke the Skill tool with skill name "core:sdlc-develop" and arguments: `$ARGUMENTS`
 
-**Read:** `plugins/core/skills/sdlc-develop/SKILL.md`
+The skill handles all six phases: Discovery → Requirements → Architecture → Workstreams → Implementation → Summary.
 
-Follow the skill's execution flow, loading phase files progressively as each phase is entered.
-
-**Arguments:** `$ARGUMENTS`
-
-For detailed phase documentation, see [skill documentation](../skills/sdlc-develop/SKILL.md).
+For detailed phase documentation, see `core/skills/sdlc-develop/SKILL.md`.

@@ -95,6 +95,8 @@ Present task breakdown:
 Enter choice (1-4):
 ```
 
+**STOP: Unless `--auto` is set, WAIT for user response before proceeding to Phase 4.**
+
 ---
 
 ## Output

@@ -58,7 +58,7 @@ ls -la arkhe-claude-plugins/
 
 # Use namespaced version
 /git:commit
-/specprep:specify
+/design-intent:feature
 ```
 
 ### Command Conflicts
@@ -69,10 +69,10 @@ ls -la arkhe-claude-plugins/
 
 ```bash
 # Instead of
-/specify
+/commit
 
 # Use namespaced version
-/specprep:specify        # For Spec Kit preparation
+/git:commit              # For Git workflow commands
 /design-intent:feature   # For Design Intent features
 ```
 

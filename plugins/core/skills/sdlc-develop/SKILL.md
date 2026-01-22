@@ -1,5 +1,5 @@
 ---
-name: SDLC Develop
+name: sdlc-develop
 description: Orchestrates 6-phase SDLC pipeline for feature development. Use when user runs /develop command, requests guided feature development, wants to create implementation plans, or mentions "develop", "feature", "implement", "plan feature", "SDLC", "spec-driven development". Supports plan persistence, resume mode, and autonomous execution.
 ---
 
@@ -154,6 +154,32 @@ User approval required at:
 - Phase 2c (architecture decision)
 - End of Phase 3 (task breakdown)
 - Phase 4d (quality review findings)
+
+## Checkpoint Protocol (CRITICAL)
+
+**At every numbered prompt checkpoint:**
+
+1. **STOP** - Halt all execution immediately
+2. **PRESENT** - Display the numbered prompt exactly as shown
+3. **WAIT** - Do not take any further action until user responds
+4. **RESPOND** - Act based on user's numbered choice:
+   - **1 (APPROVE)** - Proceed to next phase/step
+   - **2 (REVIEW)** - Show requested details, then re-present prompt
+   - **3 (MODIFY/FIX)** - Make changes, then re-present prompt
+   - **4 (CANCEL)** - Stop the pipeline entirely
+
+### Tier 1 Checkpoints (⛔ CANNOT SKIP)
+
+These checkpoints block execution regardless of flags:
+- **Phase 2c**: Architecture Decision
+- **Phase 4e**: Completion Gate
+
+**YOU MUST STOP AND WAIT.** Even with `--auto`, do not proceed until user explicitly responds.
+
+### Tier 2 Checkpoints (⚠️ RECOMMENDED)
+
+**Without `--auto`:** STOP and WAIT for user response.
+**With `--auto`:** Auto-approve and proceed, logging the decision.
 
 ## Gates (HITL Tiers)
 

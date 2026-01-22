@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**Arkhe Claude Plugins** is a collection of Claude Code plugins providing specialized agents, commands, and skills for documentation, AI engineering, code review, UI/UX design, git workflows, Google Stitch prompting, Spec-Driven Development, and language-specific programming.
+**Arkhe Claude Plugins** is a collection of Claude Code plugins providing specialized agents, commands, and skills for documentation, AI engineering, code review, UI/UX design, git workflows, Google Stitch prompting, Design Intent, Domain-Driven Design, and language-specific programming.
 
 ## Plugin Architecture
 
@@ -18,8 +18,8 @@ This repository uses a **marketplace-based plugin system** where each plugin is 
 ```
 arkhe-claude-plugins/
 ├── .claude-plugin/
-│   └── marketplace.json          # Marketplace catalog (11 plugins)
-├── plugins/                       # All 11 plugins
+│   └── marketplace.json          # Marketplace catalog (10 plugins)
+├── plugins/                       # All 10 plugins
 │   ├── core/                      # Quality control and workflow orchestration
 │   ├── ai/                        # AI engineering and LLM development
 │   ├── doc/                       # Documentation generation
@@ -28,7 +28,6 @@ arkhe-claude-plugins/
 │   ├── google-stitch/             # Google Stitch prompting toolkit
 │   ├── git/                       # Git workflow automation
 │   ├── design-intent/             # Design Intent for SDD
-│   ├── specprep/                  # Spec Kit workflow optimization
 │   ├── lang/                      # Language-specific programming skills
 │   └── spring-boot/               # Domain-Driven Design with Spring Boot 4
 ├── docs/                          # Developer documentation
@@ -105,11 +104,6 @@ Design Intent for Spec-Driven Development that combines AI-assisted implementati
 - **Skills**: `design-intent-specialist` (auto-invoked for visual implementation work)
 - **Use**: Build React prototypes from Figma/screenshots, capture proven patterns, and maintain design-intent diaries
 
-### Specprep Plugin
-AI meta-prompt framework for Spec Kit workflow optimization.
-- **Commands**: `/specprep:specify`
-- **Use**: Optimize feature specifications for SDD compliance, automated workflow chaining with SpecKit
-
 ### Lang Plugin
 Language-specific programming skills for production-grade code.
 - **Skills**: `scripting-bash` (auto-invoked for Bash scripting)
@@ -136,7 +130,6 @@ Domain-Driven Design patterns with Spring Boot 4 implementation.
 /plugin install ui@arkhe-claude-plugins
 /plugin install design-intent@arkhe-claude-plugins
 /plugin install git@arkhe-claude-plugins
-/plugin install specprep@arkhe-claude-plugins
 /plugin install google-stitch@arkhe-claude-plugins
 /plugin install lang@arkhe-claude-plugins
 /plugin install spring-boot@arkhe-claude-plugins

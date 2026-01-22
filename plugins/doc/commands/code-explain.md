@@ -61,7 +61,7 @@ The explanation depth adapts to code complexity:
 
 ## Integration
 
-This command invokes the **code-explanation** skill with: `$ARGUMENTS`
+Invoke the Skill tool with skill name "doc:code-explanation" and arguments: `$ARGUMENTS`
 
 For comprehensive examples and detailed methodology, see:
 - [WORKFLOW.md](../skills/code-explanation/WORKFLOW.md)

@@ -37,7 +37,6 @@ git clone https://github.com/joaquimscosta/arkhe-claude-plugins.git
 /plugin install ui@arkhe-claude-plugins
 /plugin install design-intent@arkhe-claude-plugins
 /plugin install git@arkhe-claude-plugins
-/plugin install specprep@arkhe-claude-plugins
 /plugin install google-stitch@arkhe-claude-plugins
 /plugin install lang@arkhe-claude-plugins
 /plugin install spring-boot@arkhe-claude-plugins
@@ -134,18 +133,6 @@ Design Intent for Spec-Driven Development that combines AI-assisted implementati
 
 ---
 
-### Specprep Plugin
-AI meta-prompt framework for Spec Kit workflow optimization.
-
-**Install**: `/plugin install specprep@arkhe-claude-plugins`
-
-**Requirements**: Spec Kit plugin for full workflow integration
-
-**Components**:
-- 1 command: `/specprep:specify`
-
----
-
 ### Google Stitch Plugin
 Claude + Google Stitch prompting toolkit for prompt authoring.
 
@@ -206,11 +193,6 @@ Install only the plugins you need:
 /plugin install design-intent@arkhe-claude-plugins
 ```
 
-### For Spec Kit Workflow Optimization
-```bash
-/plugin install specprep@arkhe-claude-plugins
-```
-
 ### For Google Stitch Prompting
 ```bash
 /plugin install google-stitch@arkhe-claude-plugins
@@ -233,7 +215,7 @@ After installation, verify that everything works:
 /plugin
 ```
 
-You should see all 11 plugins listed.
+You should see all 10 plugins listed.
 
 ### Check Available Agents
 
@@ -261,7 +243,6 @@ You should see commands from installed plugins:
 - **review**: `/code`, `/security`, `/design`, `/codebase`
 - **git**: `/commit`, `/create-pr`, `/create-branch`, `/changelog`, `/pr-issue-resolve`
 - **design-intent**: `/setup`, `/feature`, `/plan`, `/design`, `/implement`, `/save-patterns`, `/diary`
-- **specprep**: `/specprep:specify`
 - **google-stitch**: `/prompt`
 
 ### Check Skills
@@ -389,16 +370,6 @@ Skills are automatically invoked when relevant context is detected:
 
 # Generate changelog from commits
 /changelog
-```
-
-### Specprep Plugin
-
-```bash
-# Create detailed specification (auto-chains to /speckit.specify)
-/specprep:specify @notes/feature-idea.txt
-
-# After spec is created, continue with SpecKit directly
-/speckit.plan @specs/002-feature/spec.md
 ```
 
 ### Google Stitch Plugin

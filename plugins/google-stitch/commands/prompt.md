@@ -128,7 +128,7 @@ Structure: [Combined/Split/Auto]
 
 ### Step 6: Invoke Skill
 
-Pass structured input to the **`authoring-stitch-prompts`** skill.
+Invoke the Skill tool with skill name "google-stitch:authoring-stitch-prompts" with the structured input above.
 
 The skill will:
 - Use specified components (skip auto-detection if provided)
