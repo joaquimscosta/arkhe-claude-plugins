@@ -16,6 +16,7 @@ Domain-Driven Design patterns with Spring Boot 4 implementation for complex busi
 
 | Skill | Purpose | Auto-Invoked When |
 |-------|---------|-------------------|
+| **spring-boot-scanner** | Smart code scanner for pattern detection and skill routing | Editing Java files in Spring Boot projects; detects annotations and routes to appropriate skills |
 | **domain-driven-design** | Strategic and tactical DDD guidance | "DDD", "bounded context", "aggregate", "domain model", "ubiquitous language" |
 | **spring-boot-data-ddd** | JPA/JDBC implementation patterns | JPA aggregates, Spring Data repositories, entity auditing, projections |
 | **spring-boot-web-api** | REST API patterns | REST controllers, validation, ProblemDetail (RFC 9457), WebFlux |
@@ -40,6 +41,16 @@ Domain-Driven Design patterns with Spring Boot 4 implementation for complex busi
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
+│                    spring-boot-scanner                          │
+│            (Smart Pattern Detection & Skill Router)             │
+│   Detects: Annotations → Routes to appropriate skill            │
+│   Progressive: Auto-invoke LOW risk, Confirm HIGH risk          │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                    Routes to appropriate skill
+                              │
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
 │                    domain-driven-design                         │
 │              (Concepts, Patterns, Architecture)                 │
 └─────────────────────────────────────────────────────────────────┘
@@ -50,6 +61,7 @@ Domain-Driven Design patterns with Spring Boot 4 implementation for complex busi
 │ spring-boot-  │   │  spring-boot-   │   │  spring-boot-   │
 │   data-ddd    │   │    web-api      │   │    modulith     │
 │  (Data Layer) │   │  (REST Layer)   │   │ (Module Events) │
+│   LOW RISK    │   │    LOW RISK     │   │    LOW RISK     │
 └───────────────┘   └─────────────────┘   └─────────────────┘
         │                     │                     │
         └─────────────────────┼─────────────────────┘
@@ -60,12 +72,14 @@ Domain-Driven Design patterns with Spring Boot 4 implementation for complex busi
 │ spring-boot-  │   │  spring-boot-   │   │  spring-boot-   │
 │   security    │   │  observability  │   │    testing      │
 │    (AuthN/Z)  │   │ (Metrics/Trace) │   │  (All Layers)   │
+│   HIGH RISK   │   │    LOW RISK     │   │   HIGH RISK     │
 └───────────────┘   └─────────────────┘   └─────────────────┘
                               │
                               ▼
               ┌───────────────────────────┐
               │     spring-boot-verify    │
               │  (Deps & Config Checker)  │
+              │         HIGH RISK         │
               └───────────────────────────┘
 ```
 
