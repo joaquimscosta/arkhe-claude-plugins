@@ -1,6 +1,6 @@
 # Design Intent Plugin
 
-Design Intent for Spec-Driven Development (SDD) - Build React prototypes with AI while maintaining design consistency through documented patterns.
+UI/UX Design Plugin - Visual fidelity from Figma/mockups, design system enforcement, and React UI prototyping with pattern memory. Focused exclusively on frontend visual implementation.
 
 ## Overview
 
@@ -10,6 +10,25 @@ This plugin provides a complete workflow for building frontend prototypes with A
 - **Specialized UI Agents** - Explorer, architect, and reviewer for thorough UI development
 - **Design Intent Documentation** - Capture your team's design dialect for consistency
 - **Parallel Agent Execution** - Multiple agents working simultaneously for efficiency
+
+## Scope Boundaries
+
+**IN SCOPE:**
+- React/frontend component implementation
+- Design token and pattern enforcement
+- Visual reference analysis (Figma, screenshots, descriptions)
+- Responsive behavior and breakpoints
+- Accessibility compliance (ARIA, keyboard navigation)
+- Design system integration (Fluent UI, Material UI, etc.)
+
+**OUT OF SCOPE:**
+- Backend API implementation
+- Database schemas or migrations
+- Server-side logic or business rules
+- Unit/integration testing frameworks
+- DevOps, CI/CD, or deployment
+
+For backend implementation, use the core plugin (`/develop`) or standard Claude Code.
 
 ## Background & Credits
 
@@ -95,9 +114,8 @@ Skips exploration and architecture phases.
 For specific tasks, use individual commands:
 
 ```bash
-/feature user authentication flow   # Create feature spec
-/plan                               # Generate implementation plan
-/implement                          # Execute implementation plan
+/feature user authentication flow   # Create UI feature spec
+/plan                               # Generate UI implementation plan
 /save-patterns                      # Capture successful patterns
 /diary                              # Create session diary
 ```
@@ -118,19 +136,18 @@ flowchart TD
     Q3 -->|"No, quick impl"| DESIGN_INTENT_QUICK["/design-intent --quick"]
 
     Q4 -->|No| FEATURE["/feature"]
-    Q4 -->|Yes| Q5{"Have implementation<br/>plan?"}
+    Q4 -->|Yes| PLAN["/plan"]
 
-    Q5 -->|No| PLAN["/plan"]
-    Q5 -->|Yes| IMPLEMENT["/implement"]
+    PLAN --> DESIGN_INTENT
+    FEATURE --> PLAN
 
-    IMPLEMENT --> Q6{"Done implementing?"}
-    Q6 -->|"Want to save patterns"| SAVE["/save-patterns"]
-    Q6 -->|"End of session"| DIARY["/diary"]
+    DESIGN_INTENT --> Q5{"Done implementing?"}
+    Q5 -->|"Want to save patterns"| SAVE["/save-patterns"]
+    Q5 -->|"End of session"| DIARY["/diary"]
 
     SETUP:::init
     FEATURE:::spec
     PLAN:::spec
-    IMPLEMENT:::build
     DESIGN_INTENT:::main
     DESIGN_INTENT_QUICK:::main
     SAVE:::capture
@@ -138,7 +155,6 @@ flowchart TD
 
     classDef init fill:#e1f5fe,stroke:#0288d1
     classDef spec fill:#fff3e0,stroke:#f57c00
-    classDef build fill:#e8f5e9,stroke:#388e3c
     classDef main fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
     classDef capture fill:#f3e5f5,stroke:#7b1fa2
 ```
@@ -198,7 +214,7 @@ flowchart TD
 flowchart TD
     A["/setup"] --> B["/feature"]
     B --> C["/plan"]
-    C --> D["/implement"]
+    C --> D["/design-intent"]
     D --> E["/save-patterns"]
     E --> F["/diary"]
 
@@ -222,10 +238,9 @@ flowchart TD
 | `/design-intent [ref]` | 7-phase structured UI workflow | Complex UI work needing exploration and architecture |
 | `/design-intent --quick [ref]` | Streamlined 5-phase workflow | Simple changes, known patterns |
 | `/setup` | Initialize design intent structure | Starting a new project |
-| `/feature [desc]` | Create feature specification | Defining new features for SDD workflow |
-| `/plan` | Generate implementation plan | After feature spec is approved |
-| `/implement [feature]` | Execute plan with quality review | Ready to build from a plan |
-| `/save-patterns` | Extract and document patterns | After successful implementation |
+| `/feature [desc]` | Create UI feature specification | Defining new UI features |
+| `/plan` | Generate UI implementation plan | After feature spec approved |
+| `/save-patterns` | Extract and document UI patterns | After successful implementation |
 | `/diary` | Create session handoff doc | End of work session |
 
 ## Agents
@@ -294,7 +309,6 @@ Auto-invoked skill for creating accurate frontend implementations from visual re
 - Figma URLs
 - Screenshots/design images
 - UI implementation requests
-- `/implement` command for UI components
 - Phase 5 of `/design-intent` workflow
 
 **Documentation:**
@@ -443,9 +457,9 @@ Phase 7: Patterns       → Document patterns
 
 ```text
 1. /setup              → Initialize project structure
-2. /feature            → Create feature specification
-3. /plan               → Generate implementation plan
-4. /implement          → Build the feature
+2. /feature            → Create UI feature specification
+3. /plan               → Generate UI implementation plan
+4. /design-intent      → Build the UI feature
 5. /save-patterns      → Capture successful patterns
 6. /diary              → Document session for handoff
 ```

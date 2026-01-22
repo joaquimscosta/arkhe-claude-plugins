@@ -77,7 +77,6 @@ Optional: `figma-dev-mode-mcp-server` (Figma extraction) and `fluent-pilot` (Flu
 
 Triggered by:
 
-- `/implement` command for UI components
 - **Phase 5 of `/design-intent` workflow** (automatic invocation)
 - User providing Figma URLs or screenshots
 - Requests to implement UI from visual references

@@ -57,7 +57,7 @@
 * **FR-002**: System MUST [specific requirement]
 * **FR-003**: System SHOULD [nice-to-have requirement]
 
-### Design Requirements
+### Visual & UX Requirements
 
 * **Consistency**: [How it fits with existing design]
 * **Responsiveness**: [Mobile/tablet behavior]
@@ -98,7 +98,7 @@
 * [ ] [Complexity to avoid]
 * [ ] [Integration not needed now]
 
-### Technical Constraints
+### Implementation Constraints
 
 * [ ] Must use existing framework components
 * [ ] No new dependencies without justification

@@ -44,10 +44,10 @@ Start with the fewest number of projects:
 
 ### Section 1.4: Pattern Justification
 
-Complex patterns (Repo, Unit of Work, CQRS) **PROHIBITED** unless:
+Complex UI patterns (deeply nested state, custom rendering engines) **PROHIBITED** unless:
 
-* Simpler options don't work
-* Pattern gives measurable benefits
+* Simpler component composition doesn't work
+* Pattern gives measurable visual/UX benefits
 
 ### Section 1.5: No-Change Without Cause
 
