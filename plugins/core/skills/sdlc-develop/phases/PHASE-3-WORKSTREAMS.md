@@ -30,6 +30,17 @@ Save to `arkhe/specs/{NN}-{feature_slug}/tasks.md`
 
 Use template: [tasks.md.template](../templates/tasks.md.template)
 
+### 5. Generate Dependency Diagram
+
+Create a Mermaid graph showing task dependencies:
+
+1. Create a `subgraph` for each wave (e.g., `subgraph Wave1[Wave 1 - No Dependencies]`)
+2. Add each task as a node: `T-XX[T-XX: Short title]`
+3. Add edges for each dependency: `T-01 --> T-03` (source task points to dependent task)
+4. Use `graph TD` (top-down) for <6 tasks, `graph LR` (left-right) for 6+ tasks
+
+Include the diagram in tasks.md before the Summary table.
+
 ---
 
 ## Full Ticket Format

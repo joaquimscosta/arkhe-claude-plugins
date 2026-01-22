@@ -74,6 +74,30 @@
 
 ---
 
+## Dependency Diagram
+
+```mermaid
+graph TD
+    subgraph Wave1[Wave 1 - No Dependencies]
+        T-01[T-01: Task title]
+        T-02[T-02: Task title]
+    end
+
+    subgraph Wave2[Wave 2]
+        T-03[T-03: Task title]
+    end
+
+    T-01 --> T-03
+    T-02 --> T-03
+```
+
+**Legend:**
+- Tasks in same subgraph can run in parallel
+- Arrows show blocking dependencies
+- Critical path: longest chain through the graph
+
+---
+
 ## Summary
 
 | Wave | Tasks | Effort | Dependencies |
