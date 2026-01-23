@@ -5,7 +5,7 @@
 
 
   <p>
-    <b>A collection of 10 Claude Code plugins</b> for documentation, AI engineering, code review, <br />
+    <b>A collection of 9 Claude Code plugins</b> for documentation, AI engineering, code review, <br />
     UI/UX design, git workflows, Google Stitch prompting, Design Intent, and Domain-Driven Design.
   </p>
 
@@ -43,7 +43,6 @@
 | 🤖 **AI** | Engineering toolkit for production LLM apps. | `ai-engineer`, `prompt-engineer`, `/improve-agent` | [View](./plugins/ai/README.md) |
 | 📝 **Doc** | Multi-purpose documentation toolkit. | `docs-architect`, `/doc-generate`, `/diagram` | [View](./plugins/doc/README.md) |
 | 🔍 **Review** | Code quality & security review tools. | `pragmatic-code-review`, `/code`, `/security` | [View](./plugins/review/README.md) |
-| 🎨 **UI** | UI/UX design & system toolkit. | `ui-ux-designer`, Accessibility & Handoff | [View](./plugins/ui/README.md) |
 | 🧵 **Stitch** | Google Stitch prompting & session tracking. | `/prompt`, `extracting-stitch-mockups` | [View](./plugins/google-stitch/README.md) |
 | 🔀 **Git** | Workflow automation (PRs, Commits, Changelogs). | `/commit`, `/create-pr`, Smart pre-commit | [View](./plugins/git/README.md) |
 | 📐 **Design Intent** | Spec-Driven Development (SDD) & Figma Dialect. | `/feature`, `/plan`, `design-intent-specialist` | [View](./plugins/design-intent/README.md) |
@@ -78,7 +77,6 @@ You can install all plugins at once:
 /plugin install ai@arkhe-claude-plugins
 /plugin install doc@arkhe-claude-plugins
 /plugin install review@arkhe-claude-plugins
-/plugin install ui@arkhe-claude-plugins
 /plugin install design-intent@arkhe-claude-plugins
 /plugin install git@arkhe-claude-plugins
 /plugin install google-stitch@arkhe-claude-plugins
@@ -105,7 +103,7 @@ After installation, restart Claude Code and use:
 - **Documentation:** `core` + `doc`
 - **AI/LLM Dev:** `ai`
 - **Code Quality:** `review`
-- **UI/Design:** `ui` + `design-intent`
+- **UI/Design:** `design-intent`
 - **DevOps/Git:** `git` + `lang`
 
 ### Namespacing
@@ -154,17 +152,16 @@ If multiple plugins provide commands with similar names, use namespaced invocati
 arkhe-claude-plugins/
 ├── .claude-plugin/
 │   └── marketplace.json              # Marketplace catalog
-├── plugins/                          # All 10 plugins
+├── plugins/                          # All 9 plugins
 │   ├── core/                         # 1. Quality control & orchestration
 │   ├── ai/                           # 2. AI engineering toolkit
 │   ├── doc/                          # 3. Documentation toolkit
 │   ├── review/                       # 4. Code review tools
-│   ├── ui/                           # 5. UI/UX design toolkit
-│   ├── google-stitch/                # 6. Google Stitch prompting
-│   ├── git/                          # 7. Git workflow automation
-│   ├── design-intent/                # 8. Design Intent for SDD
-│   ├── lang/                         # 9. Language-specific skills
-│   └── spring-boot/                  # 10. Domain-Driven Design with Spring Boot 4
+│   ├── google-stitch/                # 5. Google Stitch prompting
+│   ├── git/                          # 6. Git workflow automation
+│   ├── design-intent/                # 7. Design Intent for SDD
+│   ├── lang/                         # 8. Language-specific skills
+│   └── spring-boot/                  # 9. Domain-Driven Design with Spring Boot 4
 ├── docs/                             # Developer documentation
 ├── templates/                        # Plugin templates
 ├── assets/                           # Project assets

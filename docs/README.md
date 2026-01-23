@@ -137,7 +137,7 @@ The Arkhe Claude Plugins marketplace demonstrates all plugin component types acr
 - **ai**: 3 agents - `ai-engineer`, `prompt-engineer`, `context-manager`
 - **doc**: 1 agent - `docs-architect`
 - **review**: 2 agents - `pragmatic-code-review`, `design-review`
-- **ui**: 1 agent - `ui-ux-designer`
+- **design-intent**: 3 agents - `ui-explorer`, `ui-architect`, `design-reviewer`
 
 **Skills** (model-invoked capabilities):
 - **core**: 3 skills - `sdlc-develop` (command-invoke), `deep-research` (auto-invoke), `workflow-orchestration` (auto-invoke)
@@ -211,27 +211,6 @@ Use these plugins as templates for your own development. Each demonstrates diffe
 - Complex review workflows
 
 [View Review Plugin Details →](../plugins/review/README.md)
-
----
-
-#### **ui** - Specialized Agent Pattern
-
-**Structure**: 1 agent (no commands)
-**Complexity**: Low
-**Key Features**:
-- UI/UX design expertise and design systems
-- Accessibility-first design patterns (WCAG 2.1/2.2 AA)
-- User research and usability testing methodologies
-- Design token architecture and component libraries
-- Figma and modern design tool workflows
-
-**Best for learning**:
-- Creating focused, specialized agents without commands
-- Domain expertise packaging (design systems, accessibility)
-- Agent-only plugin architecture
-- Cross-plugin integration (complements review plugin)
-
-[View UI Plugin Details →](../plugins/ui/README.md)
 
 ---
 
@@ -441,7 +420,7 @@ This workflow uses both `git` and `review` plugins together, demonstrating how m
 
 - [Main README](../README.md) - Plugin marketplace overview and quick start
 - [Installation Guide](../INSTALLATION.md) - Detailed installation instructions
-- Plugin READMEs: [core](../plugins/core/README.md), [doc](../plugins/doc/README.md), [git](../plugins/git/README.md), [review](../plugins/review/README.md), [ui](../plugins/ui/README.md)
+- Plugin READMEs: [core](../plugins/core/README.md), [doc](../plugins/doc/README.md), [git](../plugins/git/README.md), [review](../plugins/review/README.md), [design-intent](../plugins/design-intent/README.md)
 
 ---
 

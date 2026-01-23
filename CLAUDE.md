@@ -18,13 +18,12 @@ This repository uses a **marketplace-based plugin system** where each plugin is 
 ```
 arkhe-claude-plugins/
 ├── .claude-plugin/
-│   └── marketplace.json          # Marketplace catalog (10 plugins)
-├── plugins/                       # All 10 plugins
+│   └── marketplace.json          # Marketplace catalog (9 plugins)
+├── plugins/                       # All 9 plugins
 │   ├── core/                      # Quality control and workflow orchestration
 │   ├── ai/                        # AI engineering and LLM development
 │   ├── doc/                       # Documentation generation
 │   ├── review/                    # Code review and quality
-│   ├── ui/                        # UI/UX design and design systems
 │   ├── google-stitch/             # Google Stitch prompting toolkit
 │   ├── git/                       # Git workflow automation
 │   ├── design-intent/             # Design Intent for SDD
@@ -81,11 +80,6 @@ Code quality review tools for development teams.
 - **Agents**: `pragmatic-code-review`, `design-review`
 - **Commands**: `/code`, `/security`, `/design`, `/codebase`
 
-### UI Plugin
-UI/UX design and design system toolkit.
-- **Agents**: `ui-ux-designer`
-- **Commands**: None (all capabilities via agent)
-
 ### Google Stitch Plugin
 Claude + Google Stitch prompting toolkit for prompt authoring.
 - **Commands**: `/prompt`
@@ -127,7 +121,6 @@ Domain-Driven Design patterns with Spring Boot 4 implementation.
 /plugin install ai@arkhe-claude-plugins
 /plugin install doc@arkhe-claude-plugins
 /plugin install review@arkhe-claude-plugins
-/plugin install ui@arkhe-claude-plugins
 /plugin install design-intent@arkhe-claude-plugins
 /plugin install git@arkhe-claude-plugins
 /plugin install google-stitch@arkhe-claude-plugins

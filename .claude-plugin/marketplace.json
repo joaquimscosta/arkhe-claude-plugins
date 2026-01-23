@@ -1,7 +1,7 @@
 {
   "name": "arkhe-claude-plugins",
   "metadata": {
-    "description": "Collection of 10 Claude Code plugins for documentation, AI engineering, code review, UI/UX design, git workflows, Google Stitch prompting, Design Intent, Domain-Driven Design, and language-specific programming"
+    "description": "Collection of 9 Claude Code plugins for documentation, AI engineering, code review, git workflows, Google Stitch prompting, Design Intent, Domain-Driven Design, and language-specific programming"
   },
   "owner": {
     "name": "Arkhe"
@@ -26,11 +26,6 @@
       "name": "review",
       "source": "./plugins/review",
       "description": "Code quality review tools for development teams"
-    },
-    {
-      "name": "ui",
-      "source": "./plugins/ui",
-      "description": "UI/UX design and design system toolkit"
     },
     {
       "name": "google-stitch",

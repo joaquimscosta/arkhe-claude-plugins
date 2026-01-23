@@ -34,7 +34,6 @@ git clone https://github.com/joaquimscosta/arkhe-claude-plugins.git
 /plugin install ai@arkhe-claude-plugins
 /plugin install doc@arkhe-claude-plugins
 /plugin install review@arkhe-claude-plugins
-/plugin install ui@arkhe-claude-plugins
 /plugin install design-intent@arkhe-claude-plugins
 /plugin install git@arkhe-claude-plugins
 /plugin install google-stitch@arkhe-claude-plugins
@@ -93,16 +92,6 @@ Code quality review tools for development teams.
 **Components**:
 - 2 agents: `pragmatic-code-review`, `design-review`
 - 4 commands: `/code`, `/security`, `/design`, `/codebase`
-
----
-
-### UI Plugin
-UI/UX design and design system toolkit.
-
-**Install**: `/plugin install ui@arkhe-claude-plugins`
-
-**Components**:
-- 1 agent: `ui-ux-designer`
 
 ---
 
@@ -178,17 +167,12 @@ Install only the plugins you need:
 /plugin install review@arkhe-claude-plugins
 ```
 
-### For UI/UX Design Work
-```bash
-/plugin install ui@arkhe-claude-plugins
-```
-
 ### For Git Workflow Automation
 ```bash
 /plugin install git@arkhe-claude-plugins
 ```
 
-### For AI-Assisted Frontend Implementation & Design Memory
+### For UI/UX Design & Frontend Implementation
 ```bash
 /plugin install design-intent@arkhe-claude-plugins
 ```
@@ -215,7 +199,7 @@ After installation, verify that everything works:
 /plugin
 ```
 
-You should see all 10 plugins listed.
+You should see all 9 plugins listed.
 
 ### Check Available Agents
 
@@ -228,7 +212,7 @@ You should see agents from installed plugins:
 - **ai**: `ai-engineer`, `prompt-engineer`, `context-manager`
 - **doc**: `docs-architect`
 - **review**: `pragmatic-code-review`, `design-review`
-- **ui**: `ui-ux-designer`
+- **design-intent**: `ui-explorer`, `ui-architect`, `design-reviewer`
 
 ### Check Available Commands
 
@@ -324,17 +308,6 @@ Skills are automatically invoked when relevant context is detected:
 # Use specialized review agents
 /agents
 # Select: pragmatic-code-review or design-review
-```
-
-### UI Plugin
-
-```bash
-# Access UI/UX design expert
-/agents
-# Select: ui-ux-designer
-"Help me create a design token system for our product"
-"Review our interface for WCAG 2.1 AA compliance"
-"Design accessible form validation patterns"
 ```
 
 ### Design Intent Plugin
