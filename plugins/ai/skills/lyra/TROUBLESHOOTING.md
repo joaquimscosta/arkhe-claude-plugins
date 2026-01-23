@@ -268,8 +268,8 @@ Focus optimization effort where it matters: complex, ambiguous, or high-stakes p
 
 If issues persist:
 
-1. **Check examples**: Review [EXAMPLES.md](EXAMPLES.md) for similar cases
-2. **Review methodology**: Ensure all 4 phases in [WORKFLOW.md](WORKFLOW.md) were applied
+1. **Check examples**: Review similar optimization cases in the examples documentation
+2. **Review methodology**: Ensure all 4 phases (Deconstruct, Diagnose, Develop, Deliver) were applied
 3. **Try different mode**: Switch between BASIC and DETAIL
 4. **Use --research flag**: Get current best practices via web search
 5. **Simplify**: Sometimes starting fresh works better than fixing
