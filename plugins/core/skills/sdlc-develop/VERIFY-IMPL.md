@@ -6,7 +6,7 @@ Verifies implementation meets `spec.md` requirements and `tasks.md` acceptance c
 
 Required artifacts in spec directory:
 - `spec.md` (REQUIRED) - Requirements with FR-XXX identifiers and acceptance criteria
-- `tasks.md` (REQUIRED) - Task breakdown with acceptance criteria
+- `tasks.md` (OPTIONAL) - Task breakdown with acceptance criteria
 
 ## Verification Checks
 
