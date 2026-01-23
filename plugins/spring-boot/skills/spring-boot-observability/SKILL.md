@@ -43,9 +43,9 @@ See [EXAMPLES.md](EXAMPLES.md) for complete working examples including:
 
 - **Examples**: See [EXAMPLES.md](EXAMPLES.md) for complete working code examples
 - **Troubleshooting**: See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for common issues and Boot 4 migration
-- **Actuator Endpoints**: See [references/actuator.md](references/actuator.md) for endpoint configuration, security, custom endpoints
-- **Micrometer Metrics**: See [references/metrics.md](references/metrics.md) for Timer, Counter, Gauge, DistributionSummary patterns
-- **Distributed Tracing**: See [references/tracing.md](references/tracing.md) for OpenTelemetry, span customization, context propagation
+- **Actuator Endpoints**: See [references/ACTUATOR.md](references/ACTUATOR.md) for endpoint configuration, security, custom endpoints
+- **Micrometer Metrics**: See [references/METRICS.md](references/METRICS.md) for Timer, Counter, Gauge, DistributionSummary patterns
+- **Distributed Tracing**: See [references/TRACING.md](references/TRACING.md) for OpenTelemetry, span customization, context propagation
 
 ## Anti-Pattern Checklist
 

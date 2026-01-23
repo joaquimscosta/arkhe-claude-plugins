@@ -159,7 +159,7 @@ The Python detection script handles heavy lifting, making results model-independ
 
 ## Escape Hatch
 
-If scanner guidance isn't helpful for your context:
+If scanner guidance isn't helpful for the current context:
 
 | Scenario | Action |
 |----------|--------|

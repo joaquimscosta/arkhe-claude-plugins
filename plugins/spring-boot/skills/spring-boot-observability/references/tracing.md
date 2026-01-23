@@ -2,6 +2,37 @@
 
 OpenTelemetry integration, span customization, and context propagation.
 
+## Table of Contents
+
+- [OpenTelemetry Configuration](#opentelemetry-configuration)
+  - [Dependencies](#dependencies)
+  - [Configuration](#configuration)
+  - [Production Configuration](#production-configuration)
+- [Custom Spans with Observation API](#custom-spans-with-observation-api)
+  - [Basic Span Creation](#basic-span-creation)
+  - [Kotlin Span Creation](#kotlin-span-creation)
+  - [Span with Error Handling](#span-with-error-handling)
+  - [Nested Spans](#nested-spans)
+- [@Observed Annotation](#observed-annotation)
+- [Baggage Propagation](#baggage-propagation)
+- [Logging Correlation](#logging-correlation)
+  - [Automatic MDC Integration](#automatic-mdc-integration)
+  - [Custom Context in Logs](#custom-context-in-logs)
+- [HTTP Client Tracing](#http-client-tracing)
+  - [RestClient (Spring Boot 4)](#restclient-spring-boot-4)
+  - [WebClient](#webclient)
+- [Database Tracing](#database-tracing)
+- [Async Tracing](#async-tracing)
+- [Span Events and Attributes](#span-events-and-attributes)
+- [Sampling Strategies](#sampling-strategies)
+  - [Probability Sampling](#probability-sampling)
+  - [Custom Sampler](#custom-sampler)
+- [Exporters](#exporters)
+  - [OTLP (OpenTelemetry Protocol)](#otlp-opentelemetry-protocol)
+  - [Zipkin](#zipkin)
+  - [Jaeger (via OTLP)](#jaeger-via-otlp)
+- [Testing with Traces](#testing-with-traces)
+
 ## OpenTelemetry Configuration
 
 ### Dependencies
@@ -67,16 +98,16 @@ management:
 ```java
 @Service
 public class PaymentService {
-    
+
     private final ObservationRegistry observationRegistry;
-    
+
     public PaymentResult processPayment(PaymentRequest request) {
         return Observation.createNotStarted("payment.process", observationRegistry)
             .lowCardinalityKeyValue("payment.method", request.method().name())
             .lowCardinalityKeyValue("currency", request.currency())
             .observe(() -> doProcessPayment(request));
     }
-    
+
     private PaymentResult doProcessPayment(PaymentRequest request) {
         // Business logic
     }
@@ -88,7 +119,7 @@ public class PaymentService {
 ```kotlin
 @Service
 class PaymentService(private val observationRegistry: ObservationRegistry) {
-    
+
     fun processPayment(request: PaymentRequest): PaymentResult =
         Observation.createNotStarted("payment.process", observationRegistry)
             .lowCardinalityKeyValue("payment.method", request.method.name)
@@ -103,7 +134,7 @@ class PaymentService(private val observationRegistry: ObservationRegistry) {
 public Order createOrder(CreateOrderRequest request) {
     Observation observation = Observation.createNotStarted("order.create", observationRegistry)
         .lowCardinalityKeyValue("channel", request.channel());
-    
+
     return observation.observe(() -> {
         try {
             Order order = orderRepository.save(mapToOrder(request));
@@ -151,7 +182,7 @@ public class ObservationConfig {
 
 @Service
 public class OrderService {
-    
+
     @Observed(name = "order.creation",
               contextualName = "creating-order",
               lowCardinalityKeyValues = {"operation", "create"})
@@ -168,15 +199,15 @@ Baggage propagates context across service boundaries:
 ```java
 @Component
 public class TenantContextPropagator {
-    
+
     private final Tracer tracer;
-    
+
     public void setTenantContext(String tenantId) {
         try (BaggageInScope baggage = tracer.createBaggageInScope("tenant.id", tenantId)) {
             // Tenant ID propagates to all downstream calls
         }
     }
-    
+
     public String getCurrentTenant() {
         Baggage baggage = tracer.getBaggage("tenant.id");
         return baggage != null ? baggage.get() : null;
@@ -221,19 +252,19 @@ Logs automatically include trace and span IDs:
 ```java
 @Component
 public class TracingFilter extends OncePerRequestFilter {
-    
+
     private final Tracer tracer;
-    
+
     @Override
-    protected void doFilterInternal(HttpServletRequest request, 
+    protected void doFilterInternal(HttpServletRequest request,
             HttpServletResponse response, FilterChain chain) {
-        
+
         Span currentSpan = tracer.currentSpan();
         if (currentSpan != null) {
             MDC.put("traceId", currentSpan.context().traceId());
             MDC.put("spanId", currentSpan.context().spanId());
         }
-        
+
         try {
             chain.doFilter(request, response);
         } finally {
@@ -251,7 +282,7 @@ public class TracingFilter extends OncePerRequestFilter {
 ```java
 @Configuration
 public class RestClientConfig {
-    
+
     @Bean
     public RestClient restClient(RestClient.Builder builder) {
         return builder
@@ -267,7 +298,7 @@ public class RestClientConfig {
 ```java
 @Configuration
 public class WebClientConfig {
-    
+
     @Bean
     public WebClient webClient(WebClient.Builder builder) {
         return builder
@@ -285,15 +316,15 @@ JPA/JDBC operations are automatically traced. Add span tags:
 ```java
 @Repository
 public class OrderRepositoryImpl {
-    
+
     private final ObservationRegistry observationRegistry;
     private final JdbcTemplate jdbcTemplate;
-    
+
     public List<Order> findLargeOrders(BigDecimal threshold) {
         return Observation.createNotStarted("db.query.large_orders", observationRegistry)
             .lowCardinalityKeyValue("db.operation", "SELECT")
             .lowCardinalityKeyValue("db.table", "orders")
-            .observe(() -> 
+            .observe(() ->
                 jdbcTemplate.query(
                     "SELECT * FROM orders WHERE total > ?",
                     orderRowMapper,
@@ -311,9 +342,9 @@ Context propagates to async operations:
 ```java
 @Service
 public class AsyncOrderProcessor {
-    
+
     private final ObservationRegistry observationRegistry;
-    
+
     @Async
     public CompletableFuture<ProcessingResult> processAsync(Order order) {
         // Observation context automatically propagated
@@ -328,13 +359,13 @@ For manual propagation:
 ```java
 @Service
 public class ManualAsyncService {
-    
+
     private final Tracer tracer;
     private final ExecutorService executor;
-    
+
     public void processInBackground(Runnable task) {
         Span currentSpan = tracer.currentSpan();
-        
+
         executor.submit(() -> {
             try (Tracer.SpanInScope ws = tracer.withSpan(currentSpan)) {
                 task.run();
@@ -349,16 +380,16 @@ public class ManualAsyncService {
 ```java
 public void processOrder(Order order) {
     Observation observation = Observation.start("order.process", observationRegistry);
-    
+
     try {
         observation.event(Observation.Event.of("validation.started"));
         validateOrder(order);
         observation.event(Observation.Event.of("validation.completed"));
-        
+
         observation.event(Observation.Event.of("payment.started"));
         processPayment(order);
         observation.event(Observation.Event.of("payment.completed"));
-        
+
         observation.lowCardinalityKeyValue("order.status", "completed");
     } catch (Exception e) {
         observation.error(e);
@@ -394,23 +425,23 @@ public Sampler customSampler() {
                 SpanKind spanKind,
                 Attributes attributes,
                 List<LinkData> parentLinks) {
-            
+
             // Always sample errors
             if (name.contains("error")) {
                 return SamplingResult.recordAndSample();
             }
-            
+
             // Always sample health checks
             if (name.contains("health")) {
                 return SamplingResult.drop();
             }
-            
+
             // 10% for everything else
-            return Math.random() < 0.1 
-                ? SamplingResult.recordAndSample() 
+            return Math.random() < 0.1
+                ? SamplingResult.recordAndSample()
                 : SamplingResult.drop();
         }
-        
+
         @Override
         public String getDescription() {
             return "CustomSampler";
@@ -457,17 +488,17 @@ management:
 ```java
 @SpringBootTest
 class TracingTest {
-    
+
     @Autowired
     private TestObservationRegistry observationRegistry;
-    
+
     @Autowired
     private OrderService orderService;
-    
+
     @Test
     void shouldCreateSpanForOrderProcessing() {
         orderService.processOrder(testOrder);
-        
+
         TestObservationRegistryAssert.assertThat(observationRegistry)
             .hasObservationWithNameEqualTo("order.process")
             .that()

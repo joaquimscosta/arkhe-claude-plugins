@@ -2,6 +2,21 @@
 
 Spring WebFlux for non-blocking reactive APIs.
 
+## Table of Contents
+
+- [When to Use WebFlux](#when-to-use-webflux)
+- [Annotated Controllers](#annotated-controllers)
+  - [Java](#java)
+  - [Kotlin with Coroutines](#kotlin-with-coroutines)
+- [Functional Router](#functional-router)
+  - [Java](#java-1)
+  - [Kotlin coRouter DSL](#kotlin-corouter-dsl)
+- [Reactive Operators Patterns](#reactive-operators-patterns)
+- [WebTestClient](#webtestclient)
+- [Server-Sent Events (SSE)](#server-sent-events-sse)
+- [WebSocket](#websocket)
+- [Critical WebFlux Rules](#critical-webflux-rules)
+
 ## When to Use WebFlux
 
 | Use WebFlux | Use MVC (with Virtual Threads) |

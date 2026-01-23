@@ -2,6 +2,35 @@
 
 Event publishing, handling, and testing patterns for Spring Modulith.
 
+## Table of Contents
+
+- [Event Design](#event-design)
+  - [Domain Event Structure](#domain-event-structure)
+  - [Event Naming Conventions](#event-naming-conventions)
+- [Event Publishing](#event-publishing)
+  - [From Service](#from-service)
+  - [From Aggregate (AbstractAggregateRoot)](#from-aggregate-abstractaggregateroot)
+- [Event Handling](#event-handling)
+  - [@ApplicationModuleListener](#applicationmodulelistener)
+  - [Multiple Handlers](#multiple-handlers)
+  - [Conditional Handling](#conditional-handling)
+- [Event Externalization](#event-externalization)
+  - [Mark Event for External Publication](#mark-event-for-external-publication)
+  - [Configuration](#configuration)
+  - [Custom Event Routing](#custom-event-routing)
+- [Event Publication Log](#event-publication-log)
+  - [Incomplete Publication Handling](#incomplete-publication-handling)
+- [Testing with Scenario API](#testing-with-scenario-api)
+  - [Basic Event Testing](#basic-event-testing)
+  - [State Change Verification](#state-change-verification)
+  - [Publishing Events Directly](#publishing-events-directly)
+  - [Timeout Configuration](#timeout-configuration)
+- [Error Handling](#error-handling)
+  - [Handler Failure](#handler-failure)
+  - [Dead Letter Handling](#dead-letter-handling)
+- [Event Versioning](#event-versioning)
+- [Best Practices](#best-practices)
+
 ## Event Design
 
 ### Domain Event Structure

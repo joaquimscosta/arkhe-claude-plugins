@@ -2,6 +2,22 @@
 
 Token validation, claims extraction, and OAuth2 configuration.
 
+## Table of Contents
+
+- [JWT Resource Server Configuration](#jwt-resource-server-configuration)
+  - [Basic Setup](#basic-setup)
+  - [Kotlin](#kotlin)
+- [Custom Claims Extraction](#custom-claims-extraction)
+  - [Custom JWT Authentication Converter](#custom-jwt-authentication-converter)
+  - [Access in Controller](#access-in-controller)
+- [Multiple JWT Issuers](#multiple-jwt-issuers)
+- [OAuth2 Client (for calling external APIs)](#oauth2-client-for-calling-external-apis)
+- [Opaque Token (Token Introspection)](#opaque-token-token-introspection)
+- [JWT with JWKS Endpoint](#jwt-with-jwks-endpoint)
+- [Configuration Properties](#configuration-properties)
+- [Error Handling for OAuth2](#error-handling-for-oauth2)
+- [Public Key Configuration (No JWKS endpoint)](#public-key-configuration-no-jwks-endpoint)
+
 ## JWT Resource Server Configuration
 
 ### Basic Setup
@@ -10,7 +26,7 @@ Token validation, claims extraction, and OAuth2 configuration.
 @Configuration
 @EnableWebSecurity
 public class JwtSecurityConfig {
-    
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -30,13 +46,13 @@ public class JwtSecurityConfig {
             .csrf(csrf -> csrf.disable());
         return http.build();
     }
-    
+
     @Bean
     public JwtDecoder jwtDecoder() {
         NimbusJwtDecoder decoder = NimbusJwtDecoder
             .withIssuerLocation("https://auth.example.com")
             .build();
-        
+
         OAuth2TokenValidator<Jwt> validator = new DelegatingOAuth2TokenValidator<>(
             new JwtTimestampValidator(Duration.ofSeconds(60)),
             new JwtIssuerValidator("https://auth.example.com"),
@@ -45,21 +61,21 @@ public class JwtSecurityConfig {
         decoder.setJwtValidator(validator);
         return decoder;
     }
-    
+
     private OAuth2TokenValidator<Jwt> audienceValidator() {
         return new JwtClaimValidator<List<String>>(
             "aud",
             aud -> aud != null && aud.contains("my-api")
         );
     }
-    
+
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
-        JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = 
+        JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter =
             new JwtGrantedAuthoritiesConverter();
         grantedAuthoritiesConverter.setAuthoritiesClaimName("permissions");
         grantedAuthoritiesConverter.setAuthorityPrefix("");  // No prefix
-        
+
         JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
         converter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
         converter.setPrincipalClaimName("sub");
@@ -74,7 +90,7 @@ public class JwtSecurityConfig {
 @Configuration
 @EnableWebSecurity
 class JwtSecurityConfig {
-    
+
     @Bean
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
         http {
@@ -93,13 +109,13 @@ class JwtSecurityConfig {
         }
         return http.build()
     }
-    
+
     @Bean
     fun jwtDecoder(): JwtDecoder {
         val decoder = NimbusJwtDecoder
             .withIssuerLocation("https://auth.example.com")
             .build()
-        
+
         val validator = DelegatingOAuth2TokenValidator(
             JwtTimestampValidator(Duration.ofSeconds(60)),
             JwtIssuerValidator("https://auth.example.com"),
@@ -108,7 +124,7 @@ class JwtSecurityConfig {
         decoder.setJwtValidator(validator)
         return decoder
     }
-    
+
     @Bean
     fun jwtAuthenticationConverter() = JwtAuthenticationConverter().apply {
         setJwtGrantedAuthoritiesConverter(
@@ -128,18 +144,18 @@ class JwtSecurityConfig {
 ```java
 @Component
 public class CustomJwtAuthenticationConverter implements Converter<Jwt, AbstractAuthenticationToken> {
-    
+
     @Override
     public AbstractAuthenticationToken convert(Jwt jwt) {
         Collection<GrantedAuthority> authorities = extractAuthorities(jwt);
         CustomPrincipal principal = extractPrincipal(jwt);
-        
+
         return new CustomJwtAuthenticationToken(jwt, principal, authorities);
     }
-    
+
     private Collection<GrantedAuthority> extractAuthorities(Jwt jwt) {
         Set<GrantedAuthority> authorities = new HashSet<>();
-        
+
         // Extract roles
         List<String> roles = jwt.getClaimAsStringList("roles");
         if (roles != null) {
@@ -147,7 +163,7 @@ public class CustomJwtAuthenticationConverter implements Converter<Jwt, Abstract
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()))
                 .forEach(authorities::add);
         }
-        
+
         // Extract permissions/scopes
         List<String> permissions = jwt.getClaimAsStringList("permissions");
         if (permissions != null) {
@@ -155,7 +171,7 @@ public class CustomJwtAuthenticationConverter implements Converter<Jwt, Abstract
                 .map(SimpleGrantedAuthority::new)
                 .forEach(authorities::add);
         }
-        
+
         // Extract scope claim (space-separated)
         String scope = jwt.getClaimAsString("scope");
         if (scope != null) {
@@ -163,10 +179,10 @@ public class CustomJwtAuthenticationConverter implements Converter<Jwt, Abstract
                 .map(s -> new SimpleGrantedAuthority("SCOPE_" + s))
                 .forEach(authorities::add);
         }
-        
+
         return authorities;
     }
-    
+
     private CustomPrincipal extractPrincipal(Jwt jwt) {
         return new CustomPrincipal(
             jwt.getSubject(),
@@ -185,24 +201,24 @@ public record CustomPrincipal(
 ) {}
 
 public class CustomJwtAuthenticationToken extends AbstractAuthenticationToken {
-    
+
     private final Jwt jwt;
     private final CustomPrincipal principal;
-    
-    public CustomJwtAuthenticationToken(Jwt jwt, CustomPrincipal principal, 
+
+    public CustomJwtAuthenticationToken(Jwt jwt, CustomPrincipal principal,
             Collection<? extends GrantedAuthority> authorities) {
         super(authorities);
         this.jwt = jwt;
         this.principal = principal;
         setAuthenticated(true);
     }
-    
+
     @Override
     public Object getPrincipal() { return principal; }
-    
+
     @Override
     public Object getCredentials() { return jwt; }
-    
+
     public Jwt getJwt() { return jwt; }
 }
 ```
@@ -213,18 +229,18 @@ public class CustomJwtAuthenticationToken extends AbstractAuthenticationToken {
 @RestController
 @RequestMapping("/api")
 public class SecuredController {
-    
+
     @GetMapping("/me")
     public UserInfo getCurrentUser(@AuthenticationPrincipal CustomPrincipal principal) {
         return new UserInfo(principal.userId(), principal.email(), principal.name());
     }
-    
+
     @GetMapping("/tenant-data")
     @PreAuthorize("#principal.tenantId == @tenantResolver.getCurrentTenant()")
     public TenantData getTenantData(@AuthenticationPrincipal CustomPrincipal principal) {
         return tenantService.getData(principal.tenantId());
     }
-    
+
     // Direct JWT access
     @GetMapping("/token-info")
     public Map<String, Object> getTokenInfo(@AuthenticationPrincipal Jwt jwt) {
@@ -244,14 +260,14 @@ public class SecuredController {
 ```java
 @Configuration
 public class MultiIssuerJwtConfig {
-    
+
     @Bean
     public JwtDecoder jwtDecoder() {
         Map<String, JwtDecoder> decoders = Map.of(
             "https://auth.example.com", createDecoder("https://auth.example.com"),
             "https://partner-auth.example.com", createDecoder("https://partner-auth.example.com")
         );
-        
+
         return token -> {
             String issuer = JWTParser.parse(token).getJWTClaimsSet().getIssuer();
             JwtDecoder decoder = decoders.get(issuer);
@@ -261,7 +277,7 @@ public class MultiIssuerJwtConfig {
             return decoder.decode(token);
         };
     }
-    
+
     private JwtDecoder createDecoder(String issuer) {
         return NimbusJwtDecoder.withIssuerLocation(issuer).build();
     }
@@ -289,30 +305,30 @@ spring:
 ```java
 @Configuration
 public class OAuth2ClientConfig {
-    
+
     @Bean
     public OAuth2AuthorizedClientManager authorizedClientManager(
             ClientRegistrationRepository clientRegistrationRepository,
             OAuth2AuthorizedClientService clientService) {
-        
+
         OAuth2AuthorizedClientProvider provider = OAuth2AuthorizedClientProviderBuilder.builder()
             .clientCredentials()
             .refreshToken()
             .build();
-        
+
         AuthorizedClientServiceOAuth2AuthorizedClientManager manager =
             new AuthorizedClientServiceOAuth2AuthorizedClientManager(
                 clientRegistrationRepository, clientService);
         manager.setAuthorizedClientProvider(provider);
         return manager;
     }
-    
+
     @Bean
     public RestClient externalApiClient(OAuth2AuthorizedClientManager clientManager) {
-        OAuth2ClientHttpRequestInterceptor interceptor = 
+        OAuth2ClientHttpRequestInterceptor interceptor =
             new OAuth2ClientHttpRequestInterceptor(clientManager);
         interceptor.setClientRegistrationId("external-api");
-        
+
         return RestClient.builder()
             .baseUrl("https://api.external.com")
             .requestInterceptor(interceptor)
@@ -397,29 +413,29 @@ public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
             .authenticationEntryPoint((request, response, exception) -> {
                 response.setStatus(HttpStatus.UNAUTHORIZED.value());
                 response.setContentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE);
-                
+
                 String error = "invalid_token";
                 String description = "The access token is invalid or expired";
-                
+
                 if (exception instanceof InvalidBearerTokenException) {
                     description = exception.getMessage();
                 }
-                
+
                 ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.UNAUTHORIZED);
                 problem.setTitle("Unauthorized");
                 problem.setDetail(description);
                 problem.setProperty("error", error);
-                
+
                 new ObjectMapper().writeValue(response.getOutputStream(), problem);
             })
             .accessDeniedHandler((request, response, exception) -> {
                 response.setStatus(HttpStatus.FORBIDDEN.value());
                 response.setContentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE);
-                
+
                 ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.FORBIDDEN);
                 problem.setTitle("Forbidden");
                 problem.setDetail("Insufficient permissions");
-                
+
                 new ObjectMapper().writeValue(response.getOutputStream(), problem);
             })
         );
@@ -440,17 +456,17 @@ Or from PEM file:
 
 ```java
 @Bean
-public JwtDecoder jwtDecoder(@Value("classpath:public-key.pem") Resource publicKeyResource) 
+public JwtDecoder jwtDecoder(@Value("classpath:public-key.pem") Resource publicKeyResource)
         throws Exception {
     String key = new String(publicKeyResource.getInputStream().readAllBytes());
     key = key.replace("-----BEGIN PUBLIC KEY-----", "")
              .replace("-----END PUBLIC KEY-----", "")
              .replaceAll("\\s", "");
-    
+
     byte[] decoded = Base64.getDecoder().decode(key);
     X509EncodedKeySpec spec = new X509EncodedKeySpec(decoded);
     RSAPublicKey publicKey = (RSAPublicKey) KeyFactory.getInstance("RSA").generatePublic(spec);
-    
+
     return NimbusJwtDecoder.withPublicKey(publicKey).build();
 }
 ```

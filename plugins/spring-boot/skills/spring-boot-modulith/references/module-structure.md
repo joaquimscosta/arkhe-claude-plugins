@@ -2,6 +2,32 @@
 
 Package conventions and dependency rules for Spring Modulith.
 
+## Table of Contents
+
+- [Package Layout](#package-layout)
+  - [Standard Structure](#standard-structure)
+  - [What Goes Where](#what-goes-where)
+- [Module Configuration](#module-configuration)
+  - [@ApplicationModule](#applicationmodule)
+  - [Module Types](#module-types)
+  - [Named Interfaces](#named-interfaces)
+- [Dependency Rules](#dependency-rules)
+  - [Allowed Patterns](#allowed-patterns)
+  - [Forbidden Patterns (fail verification)](#forbidden-patterns-fail-verification)
+- [Module Detection](#module-detection)
+  - [Explicit Module Definition](#explicit-module-definition)
+- [Module Verification](#module-verification)
+  - [Basic Verification](#basic-verification)
+  - [Verification Checks](#verification-checks)
+  - [Verification Output](#verification-output)
+- [Documentation Generation](#documentation-generation)
+- [Cross-Cutting Concerns](#cross-cutting-concerns)
+  - [Shared Configuration](#shared-configuration)
+  - [Module-Specific Configuration](#module-specific-configuration)
+- [Integration with DDD Layers](#integration-with-ddd-layers)
+- [Testing Module Boundaries](#testing-module-boundaries)
+  - [Bootstrap Modes](#bootstrap-modes)
+
 ## Package Layout
 
 ### Standard Structure

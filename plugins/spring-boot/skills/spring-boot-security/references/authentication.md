@@ -2,6 +2,22 @@
 
 UserDetailsService, password encoding, and authentication providers.
 
+## Table of Contents
+
+- [Custom UserDetailsService](#custom-userdetailsservice)
+  - [Java](#java)
+  - [Kotlin](#kotlin)
+- [Custom UserDetails Implementation](#custom-userdetails-implementation)
+- [Password Encoding](#password-encoding)
+  - [Argon2 (Recommended for Spring Security 7)](#argon2-recommended-for-spring-security-7)
+  - [BCrypt (Legacy compatible)](#bcrypt-legacy-compatible)
+  - [Delegating Encoder (Migration support)](#delegating-encoder-migration-support)
+- [Registration Flow](#registration-flow)
+- [Password Reset Flow](#password-reset-flow)
+- [Authentication Events](#authentication-events)
+- [Multi-Factor Authentication Setup](#multi-factor-authentication-setup)
+- [Role Hierarchy](#role-hierarchy)
+
 ## Custom UserDetailsService
 
 ### Java
@@ -9,16 +25,16 @@ UserDetailsService, password encoding, and authentication providers.
 ```java
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
-    
+
     private final UserRepository userRepository;
-    
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return userRepository.findByEmail(username)
             .map(this::toUserDetails)
             .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
     }
-    
+
     private UserDetails toUserDetails(User user) {
         return org.springframework.security.core.userdetails.User.builder()
             .username(user.getEmail())
@@ -30,12 +46,12 @@ public class CustomUserDetailsService implements UserDetailsService {
             .disabled(!user.isEnabled())
             .build();
     }
-    
+
     private Collection<GrantedAuthority> mapAuthorities(Set<Role> roles) {
         return roles.stream()
             .flatMap(role -> {
                 // Add role + its permissions
-                Stream<GrantedAuthority> roleAuthority = 
+                Stream<GrantedAuthority> roleAuthority =
                     Stream.of(new SimpleGrantedAuthority("ROLE_" + role.getName()));
                 Stream<GrantedAuthority> permissions = role.getPermissions().stream()
                     .map(p -> new SimpleGrantedAuthority(p.getName()));
@@ -51,13 +67,13 @@ public class CustomUserDetailsService implements UserDetailsService {
 ```kotlin
 @Service
 class CustomUserDetailsService(private val userRepository: UserRepository) : UserDetailsService {
-    
+
     override fun loadUserByUsername(username: String): UserDetails =
         userRepository.findByEmail(username)
             ?.toUserDetails()
             ?: throw UsernameNotFoundException("User not found: $username")
-    
-    private fun User.toUserDetails(): UserDetails = 
+
+    private fun User.toUserDetails(): UserDetails =
         org.springframework.security.core.userdetails.User.builder()
             .username(email)
             .password(password)
@@ -79,7 +95,7 @@ For richer principal with additional fields:
 
 ```java
 public class CustomUserDetails implements UserDetails {
-    
+
     private final Long id;
     private final String email;
     private final String password;
@@ -88,30 +104,30 @@ public class CustomUserDetails implements UserDetails {
     private final Collection<GrantedAuthority> authorities;
     private final boolean enabled;
     private final boolean accountNonLocked;
-    
+
     // Constructor, getters...
-    
+
     @Override
     public String getUsername() { return email; }
-    
+
     @Override
     public String getPassword() { return password; }
-    
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() { return authorities; }
-    
+
     @Override
     public boolean isAccountNonExpired() { return true; }
-    
+
     @Override
     public boolean isAccountNonLocked() { return accountNonLocked; }
-    
+
     @Override
     public boolean isCredentialsNonExpired() { return true; }
-    
+
     @Override
     public boolean isEnabled() { return enabled; }
-    
+
     // Custom accessors
     public Long getId() { return id; }
     public String getFullName() { return fullName; }
@@ -172,16 +188,16 @@ Stored passwords: `{argon2}$argon2id$v=19$m=16384...` or `{bcrypt}$2a$12$...`
 ```java
 @Service
 public class UserRegistrationService {
-    
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    
+
     @Transactional
     public User register(RegistrationRequest request) {
         if (userRepository.existsByEmail(request.email())) {
             throw new EmailAlreadyExistsException(request.email());
         }
-        
+
         User user = new User();
         user.setEmail(request.email());
         user.setPassword(passwordEncoder.encode(request.password()));
@@ -189,18 +205,18 @@ public class UserRegistrationService {
         user.setRoles(Set.of(roleRepository.findByName("USER").orElseThrow()));
         user.setEnabled(false);  // Require email verification
         user.setVerificationToken(UUID.randomUUID().toString());
-        
+
         User saved = userRepository.save(user);
         eventPublisher.publishEvent(new UserRegisteredEvent(saved));
-        
+
         return saved;
     }
-    
+
     @Transactional
     public void verifyEmail(String token) {
         User user = userRepository.findByVerificationToken(token)
             .orElseThrow(() -> new InvalidTokenException("Invalid verification token"));
-        
+
         user.setEnabled(true);
         user.setVerificationToken(null);
         userRepository.save(user);
@@ -213,39 +229,39 @@ public class UserRegistrationService {
 ```java
 @Service
 public class PasswordResetService {
-    
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final PasswordResetTokenRepository tokenRepository;
-    
+
     @Transactional
     public void initiateReset(String email) {
         userRepository.findByEmail(email).ifPresent(user -> {
             // Invalidate existing tokens
             tokenRepository.deleteByUser(user);
-            
+
             PasswordResetToken token = new PasswordResetToken();
             token.setUser(user);
             token.setToken(UUID.randomUUID().toString());
             token.setExpiryDate(Instant.now().plus(24, ChronoUnit.HOURS));
             tokenRepository.save(token);
-            
+
             eventPublisher.publishEvent(new PasswordResetRequestedEvent(user, token.getToken()));
         });
         // Always return success to prevent email enumeration
     }
-    
+
     @Transactional
     public void resetPassword(String token, String newPassword) {
         PasswordResetToken resetToken = tokenRepository.findByToken(token)
             .filter(t -> t.getExpiryDate().isAfter(Instant.now()))
             .orElseThrow(() -> new InvalidTokenException("Token expired or invalid"));
-        
+
         User user = resetToken.getUser();
         user.setPassword(passwordEncoder.encode(newPassword));
         user.setPasswordExpired(false);
         userRepository.save(user);
-        
+
         tokenRepository.delete(resetToken);
         // Invalidate all sessions for this user
         eventPublisher.publishEvent(new PasswordChangedEvent(user));
@@ -258,16 +274,16 @@ public class PasswordResetService {
 ```java
 @Component
 public class AuthenticationEventListener {
-    
+
     private final LoginAttemptService loginAttemptService;
-    
+
     @EventListener
     public void onSuccess(AuthenticationSuccessEvent event) {
         String username = event.getAuthentication().getName();
         loginAttemptService.loginSucceeded(username);
         log.info("Successful login: {}", username);
     }
-    
+
     @EventListener
     public void onFailure(AbstractAuthenticationFailureEvent event) {
         String username = (String) event.getAuthentication().getPrincipal();
@@ -278,14 +294,14 @@ public class AuthenticationEventListener {
 
 @Service
 public class LoginAttemptService {
-    
+
     private final Cache<String, Integer> attemptsCache;
     private static final int MAX_ATTEMPTS = 5;
-    
+
     public void loginFailed(String username) {
         int attempts = attemptsCache.get(username, k -> 0) + 1;
         attemptsCache.put(username, attempts);
-        
+
         if (attempts >= MAX_ATTEMPTS) {
             userRepository.findByEmail(username).ifPresent(user -> {
                 user.setLocked(true);
@@ -294,7 +310,7 @@ public class LoginAttemptService {
             });
         }
     }
-    
+
     public void loginSucceeded(String username) {
         attemptsCache.invalidate(username);
     }
@@ -306,9 +322,9 @@ public class LoginAttemptService {
 ```java
 @Service
 public class TotpService {
-    
+
     private final GoogleAuthenticator googleAuth = new GoogleAuthenticator();
-    
+
     public TotpSetup generateSecret(User user) {
         GoogleAuthenticatorKey key = googleAuth.createCredentials();
         String qrCodeUrl = GoogleAuthenticatorQRGenerator.getOtpAuthTotpURL(
@@ -318,7 +334,7 @@ public class TotpService {
         );
         return new TotpSetup(key.getKey(), qrCodeUrl);
     }
-    
+
     public boolean verifyCode(String secret, int code) {
         return googleAuth.authorize(secret, code);
     }
@@ -326,20 +342,20 @@ public class TotpService {
 
 // Custom authentication filter for 2FA
 public class TwoFactorAuthenticationFilter extends OncePerRequestFilter {
-    
+
     @Override
-    protected void doFilterInternal(HttpServletRequest request, 
+    protected void doFilterInternal(HttpServletRequest request,
             HttpServletResponse response, FilterChain chain) {
-        
+
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        
+
         if (auth != null && auth.isAuthenticated() && requiresTwoFactor(auth)) {
             if (!hasTwoFactorCompleted(auth)) {
                 response.sendRedirect("/2fa/verify");
                 return;
             }
         }
-        
+
         chain.doFilter(request, response);
     }
 }
@@ -360,7 +376,7 @@ public RoleHierarchy roleHierarchy() {
 @Bean
 public MethodSecurityExpressionHandler methodSecurityExpressionHandler(
         RoleHierarchy roleHierarchy) {
-    DefaultMethodSecurityExpressionHandler handler = 
+    DefaultMethodSecurityExpressionHandler handler =
         new DefaultMethodSecurityExpressionHandler();
     handler.setRoleHierarchy(roleHierarchy);
     return handler;

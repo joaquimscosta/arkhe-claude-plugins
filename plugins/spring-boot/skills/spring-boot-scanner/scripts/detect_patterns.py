@@ -55,6 +55,8 @@ SKILL_PATTERNS: Dict[str, List[str]] = {
         r"@EntityGraph",
         r"JpaRepository",
         r"CrudRepository",
+        r"ListCrudRepository",
+        r"ListPagingAndSortingRepository",
         r"PagingAndSortingRepository",
     ],
     "spring-boot-security": [
@@ -147,6 +149,21 @@ ESCALATION_PATTERNS: Dict[str, Dict] = {
         "reason": "Namespace changes in Jackson 3 (Spring Boot 4)",
         "replacement": "tools.jackson",
         "severity": "INFO",
+    },
+    "WebSecurityConfigurerAdapter": {
+        "reason": "Removed in Spring Security 5.7, completely gone in Spring Boot 4",
+        "replacement": "SecurityFilterChain @Bean method",
+        "severity": "ERROR",
+    },
+    r"javax\.(persistence|servlet|validation|inject|annotation)": {
+        "reason": "javax.* namespace removed in Spring Boot 3+",
+        "replacement": "jakarta.* namespace (jakarta.persistence, jakarta.servlet, etc.)",
+        "severity": "ERROR",
+    },
+    r"import\s+javax\.": {
+        "reason": "javax.* imports must migrate to jakarta.*",
+        "replacement": "Change import statements from javax.* to jakarta.*",
+        "severity": "ERROR",
     },
 }
 

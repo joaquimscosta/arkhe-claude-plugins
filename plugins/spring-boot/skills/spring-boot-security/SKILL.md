@@ -45,9 +45,9 @@ See [EXAMPLES.md](EXAMPLES.md) for complete working examples including:
 
 - **Examples**: See [EXAMPLES.md](EXAMPLES.md) for complete working code examples
 - **Troubleshooting**: See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for common issues and Boot 4 migration
-- **Security Configuration**: See [references/security-config.md](references/security-config.md) for complete SecurityFilterChain patterns
-- **Authentication**: See [references/authentication.md](references/authentication.md) for UserDetailsService, password encoding
-- **JWT/OAuth2**: See [references/jwt-oauth2.md](references/jwt-oauth2.md) for resource server, token validation
+- **Security Configuration**: See [references/SECURITY-CONFIG.md](references/SECURITY-CONFIG.md) for complete SecurityFilterChain patterns
+- **Authentication**: See [references/AUTHENTICATION.md](references/AUTHENTICATION.md) for UserDetailsService, password encoding
+- **JWT/OAuth2**: See [references/JWT-OAUTH2.md](references/JWT-OAUTH2.md) for resource server, token validation
 
 ## Anti-Pattern Checklist
 
@@ -67,4 +67,4 @@ See [EXAMPLES.md](EXAMPLES.md) for complete working examples including:
 2. **Order matters** — More specific `requestMatchers` before general ones
 3. **CSRF for sessions** — Only disable for stateless JWT APIs
 4. **Method security needs enabling** — Add `@EnableMethodSecurity`
-5. **Test your security** — Use `@WithMockUser` and JWT test support (see `spring-boot-testing`)
+5. **Test security configuration** — Use `@WithMockUser` and JWT test support (see `spring-boot-testing`)
