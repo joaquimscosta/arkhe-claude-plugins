@@ -1,7 +1,7 @@
 {
   "name": "design-intent",
-  "description": "Design Intent for Spec-Driven Development - Build React prototypes with AI while maintaining design consistency through documented patterns",
-  "version": "1.0.0",
+  "description": "UI/UX Design Plugin - Visual fidelity from Figma/mockups, design system enforcement, and React UI prototyping with pattern memory. Focused exclusively on frontend visual implementation.",
+  "version": "2.0.0",
   "author": {
     "name": "Arkhe"
   }

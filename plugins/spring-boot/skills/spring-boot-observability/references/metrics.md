@@ -2,6 +2,34 @@
 
 Timer, Counter, Gauge, and DistributionSummary patterns.
 
+## Table of Contents
+
+- [Meter Types](#meter-types)
+- [Counter Patterns](#counter-patterns)
+  - [Basic Counter](#basic-counter)
+  - [Counter with Tags](#counter-with-tags)
+  - [Kotlin Counter](#kotlin-counter)
+- [Timer Patterns](#timer-patterns)
+  - [Basic Timer](#basic-timer)
+  - [Timer with SLOs](#timer-with-slos)
+  - [Timer with Tags](#timer-with-tags)
+  - [@Timed Annotation](#timed-annotation)
+- [Gauge Patterns](#gauge-patterns)
+  - [Gauge from AtomicInteger](#gauge-from-atomicinteger)
+  - [Gauge from Collection](#gauge-from-collection)
+  - [Gauge from Method](#gauge-from-method)
+  - [Kotlin Gauge](#kotlin-gauge)
+- [DistributionSummary Patterns](#distributionsummary-patterns)
+  - [Request Size Tracking](#request-size-tracking)
+  - [Batch Size Tracking](#batch-size-tracking)
+- [MeterBinder Pattern](#meterbinder-pattern)
+- [Common Tags (Global)](#common-tags-global)
+- [Tag Best Practices](#tag-best-practices)
+- [Registry Types](#registry-types)
+  - [Prometheus](#prometheus)
+  - [Datadog](#datadog)
+  - [Multiple Registries](#multiple-registries)
+
 ## Meter Types
 
 | Type | Purpose | Example |
@@ -18,24 +46,24 @@ Timer, Counter, Gauge, and DistributionSummary patterns.
 ```java
 @Component
 public class OrderMetrics {
-    
+
     private final Counter ordersCreated;
     private final Counter ordersFailed;
-    
+
     public OrderMetrics(MeterRegistry registry) {
         this.ordersCreated = Counter.builder("orders.created")
             .description("Total orders created")
             .register(registry);
-        
+
         this.ordersFailed = Counter.builder("orders.failed")
             .description("Total failed order attempts")
             .register(registry);
     }
-    
+
     public void orderCreated() {
         ordersCreated.increment();
     }
-    
+
     public void orderFailed() {
         ordersFailed.increment();
     }
@@ -47,9 +75,9 @@ public class OrderMetrics {
 ```java
 @Component
 public class PaymentMetrics {
-    
+
     private final MeterRegistry registry;
-    
+
     public void recordPayment(String method, String status, double amount) {
         Counter.builder("payments.total")
             .description("Total payments processed")
@@ -57,7 +85,7 @@ public class PaymentMetrics {
             .tag("status", status)       // success, failed, pending
             .register(registry)
             .increment();
-        
+
         // Also track amount
         DistributionSummary.builder("payments.amount")
             .description("Payment amounts")
@@ -75,13 +103,13 @@ public class PaymentMetrics {
 ```kotlin
 @Component
 class OrderMetrics(registry: MeterRegistry) {
-    
+
     private val ordersCreated = Counter.builder("orders.created")
         .description("Total orders created")
         .register(registry)
-    
+
     private val ordersByChannel = mutableMapOf<String, Counter>()
-    
+
     fun orderCreated(channel: String) {
         ordersCreated.increment()
         ordersByChannel.getOrPut(channel) {
@@ -100,9 +128,9 @@ class OrderMetrics(registry: MeterRegistry) {
 ```java
 @Component
 public class ProcessingMetrics {
-    
+
     private final Timer processingTimer;
-    
+
     public ProcessingMetrics(MeterRegistry registry) {
         this.processingTimer = Timer.builder("processing.duration")
             .description("Processing duration")
@@ -110,11 +138,11 @@ public class ProcessingMetrics {
             .publishPercentileHistogram()
             .register(registry);
     }
-    
+
     public <T> T recordProcessing(Supplier<T> operation) {
         return processingTimer.record(operation);
     }
-    
+
     public void recordDuration(Duration duration) {
         processingTimer.record(duration);
     }
@@ -167,12 +195,12 @@ public class TimedConfig {
 
 @Service
 public class OrderService {
-    
+
     @Timed(value = "order.creation", percentiles = {0.5, 0.95, 0.99})
     public Order createOrder(CreateOrderRequest request) {
         // Method execution is automatically timed
     }
-    
+
     @Timed(value = "order.processing", histogram = true)
     public void processOrder(Long orderId) {
         // With histogram for percentile approximation
@@ -187,19 +215,19 @@ public class OrderService {
 ```java
 @Component
 public class ConnectionMetrics {
-    
+
     private final AtomicInteger activeConnections = new AtomicInteger(0);
-    
+
     public ConnectionMetrics(MeterRegistry registry) {
         Gauge.builder("connections.active", activeConnections, AtomicInteger::get)
             .description("Number of active connections")
             .register(registry);
     }
-    
+
     public void connectionOpened() {
         activeConnections.incrementAndGet();
     }
-    
+
     public void connectionClosed() {
         activeConnections.decrementAndGet();
     }
@@ -211,12 +239,12 @@ public class ConnectionMetrics {
 ```java
 @Component
 public class QueueMetrics {
-    
+
     public QueueMetrics(MeterRegistry registry, BlockingQueue<?> workQueue) {
         Gauge.builder("queue.size", workQueue, BlockingQueue::size)
             .description("Current queue size")
             .register(registry);
-        
+
         Gauge.builder("queue.remaining_capacity", workQueue, BlockingQueue::remainingCapacity)
             .description("Remaining queue capacity")
             .register(registry);
@@ -229,17 +257,17 @@ public class QueueMetrics {
 ```java
 @Component
 public class CacheMetrics {
-    
+
     private final CacheManager cacheManager;
-    
+
     public CacheMetrics(MeterRegistry registry, CacheManager cacheManager) {
         this.cacheManager = cacheManager;
-        
+
         Gauge.builder("cache.size", this, CacheMetrics::getTotalCacheSize)
             .description("Total items across all caches")
             .register(registry);
     }
-    
+
     private double getTotalCacheSize() {
         return cacheManager.getCacheNames().stream()
             .mapToLong(name -> getCacheSize(cacheManager.getCache(name)))
@@ -253,7 +281,7 @@ public class CacheMetrics {
 ```kotlin
 @Component
 class QueueMetrics(registry: MeterRegistry, private val workQueue: BlockingQueue<*>) {
-    
+
     init {
         Gauge.builder("queue.size", workQueue) { it.size.toDouble() }
             .description("Current queue size")
@@ -269,28 +297,28 @@ class QueueMetrics(registry: MeterRegistry, private val workQueue: BlockingQueue
 ```java
 @Component
 public class RequestMetrics {
-    
+
     private final DistributionSummary requestSize;
     private final DistributionSummary responseSize;
-    
+
     public RequestMetrics(MeterRegistry registry) {
         this.requestSize = DistributionSummary.builder("http.request.size")
             .description("Request body size")
             .baseUnit("bytes")
             .publishPercentiles(0.5, 0.95)
             .register(registry);
-        
+
         this.responseSize = DistributionSummary.builder("http.response.size")
             .description("Response body size")
             .baseUnit("bytes")
             .publishPercentiles(0.5, 0.95)
             .register(registry);
     }
-    
+
     public void recordRequest(long bytes) {
         requestSize.record(bytes);
     }
-    
+
     public void recordResponse(long bytes) {
         responseSize.record(bytes);
     }
@@ -317,23 +345,23 @@ Auto-register metrics on startup:
 ```java
 @Component
 public class DatabasePoolMetricsBinder implements MeterBinder {
-    
+
     private final HikariDataSource dataSource;
-    
+
     @Override
     public void bindTo(MeterRegistry registry) {
         Gauge.builder("db.pool.active", dataSource, ds -> ds.getHikariPoolMXBean().getActiveConnections())
             .description("Active database connections")
             .register(registry);
-        
+
         Gauge.builder("db.pool.idle", dataSource, ds -> ds.getHikariPoolMXBean().getIdleConnections())
             .description("Idle database connections")
             .register(registry);
-        
+
         Gauge.builder("db.pool.pending", dataSource, ds -> ds.getHikariPoolMXBean().getThreadsAwaitingConnection())
             .description("Threads waiting for connection")
             .register(registry);
-        
+
         Gauge.builder("db.pool.total", dataSource, ds -> ds.getHikariPoolMXBean().getTotalConnections())
             .description("Total connections in pool")
             .register(registry);
@@ -346,7 +374,7 @@ public class DatabasePoolMetricsBinder implements MeterBinder {
 ```java
 @Configuration
 public class MetricsConfig {
-    
+
     @Bean
     public MeterRegistryCustomizer<MeterRegistry> commonTags() {
         return registry -> registry.config()
@@ -398,7 +426,7 @@ management:
 ```java
 @Configuration
 public class MultiRegistryConfig {
-    
+
     @Bean
     public CompositeMeterRegistry compositeMeterRegistry(
             PrometheusMeterRegistry prometheus,

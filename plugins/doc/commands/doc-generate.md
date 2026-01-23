@@ -67,7 +67,7 @@ Use the docs-architect agent to document the entire payment processing system
 
 ## Integration
 
-This command invokes the **documentation-generation** skill with: `$ARGUMENTS`
+Invoke the Skill tool with skill name "doc:documentation-generation" and arguments: `$ARGUMENTS`
 
 For detailed workflows and templates, see:
 - [WORKFLOW.md](../skills/documentation-generation/WORKFLOW.md)

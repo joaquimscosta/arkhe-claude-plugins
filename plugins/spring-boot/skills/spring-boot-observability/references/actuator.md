@@ -2,6 +2,30 @@
 
 Endpoint configuration, security, and custom endpoints.
 
+## Table of Contents
+
+- [Endpoint Exposure Configuration](#endpoint-exposure-configuration)
+  - [Development Profile](#development-profile)
+  - [Production Profile](#production-profile)
+- [Health Indicators](#health-indicators)
+  - [Built-in Health Indicators](#built-in-health-indicators)
+  - [Custom Health Indicator](#custom-health-indicator)
+  - [Kotlin Health Indicator](#kotlin-health-indicator)
+  - [Reactive Health Indicator](#reactive-health-indicator)
+- [Health Groups (Kubernetes Probes)](#health-groups-kubernetes-probes)
+- [Info Endpoint](#info-endpoint)
+  - [Custom Info Contributor](#custom-info-contributor)
+- [Custom Actuator Endpoint](#custom-actuator-endpoint)
+- [Actuator Security](#actuator-security)
+  - [Separate Security Filter Chain](#separate-security-filter-chain)
+  - [Users for Actuator](#users-for-actuator)
+- [Prometheus Integration](#prometheus-integration)
+  - [Dependencies](#dependencies)
+  - [Configuration](#configuration)
+  - [Prometheus Scrape Config](#prometheus-scrape-config)
+- [Graceful Shutdown](#graceful-shutdown)
+- [Environment and Loggers Endpoints](#environment-and-loggers-endpoints)
+
 ## Endpoint Exposure Configuration
 
 ### Development Profile
@@ -66,10 +90,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class PaymentGatewayHealthIndicator implements HealthIndicator {
-    
+
     private final PaymentGatewayClient client;
     private final CircuitBreaker circuitBreaker;
-    
+
     @Override
     public Health health() {
         if (circuitBreaker.getState() == CircuitBreaker.State.OPEN) {
@@ -78,21 +102,21 @@ public class PaymentGatewayHealthIndicator implements HealthIndicator {
                 .withDetail("reason", "Too many failures")
                 .build();
         }
-        
+
         try {
             PaymentGatewayStatus status = client.getStatus();
-            
+
             if (!status.isOperational()) {
                 return Health.outOfService()
                     .withDetail("gateway_status", status.getMessage())
                     .build();
             }
-            
+
             return Health.up()
                 .withDetail("gateway_version", status.getVersion())
                 .withDetail("response_time_ms", status.getLatency())
                 .build();
-                
+
         } catch (Exception e) {
             return Health.down()
                 .withException(e)
@@ -110,14 +134,14 @@ class PaymentGatewayHealthIndicator(
     private val client: PaymentGatewayClient,
     private val circuitBreaker: CircuitBreaker
 ) : HealthIndicator {
-    
+
     override fun health(): Health {
         if (circuitBreaker.state == CircuitBreaker.State.OPEN) {
             return Health.down()
                 .withDetail("circuit_breaker", "OPEN")
                 .build()
         }
-        
+
         return runCatching { client.getStatus() }
             .fold(
                 onSuccess = { status ->
@@ -143,9 +167,9 @@ class PaymentGatewayHealthIndicator(
 ```java
 @Component
 public class ReactiveExternalServiceHealthIndicator implements ReactiveHealthIndicator {
-    
+
     private final WebClient webClient;
-    
+
     @Override
     public Mono<Health> health() {
         return webClient.get()
@@ -246,9 +270,9 @@ info:
 ```java
 @Component
 public class FeatureFlagsInfoContributor implements InfoContributor {
-    
+
     private final FeatureFlagService featureFlags;
-    
+
     @Override
     public void contribute(Info.Builder builder) {
         Map<String, Boolean> flags = featureFlags.getAllFlags();
@@ -263,9 +287,9 @@ public class FeatureFlagsInfoContributor implements InfoContributor {
 @Component
 @Endpoint(id = "cache")
 public class CacheEndpoint {
-    
+
     private final CacheManager cacheManager;
-    
+
     @ReadOperation
     public Map<String, CacheStats> caches() {
         return cacheManager.getCacheNames().stream()
@@ -274,7 +298,7 @@ public class CacheEndpoint {
                 name -> getCacheStats(cacheManager.getCache(name))
             ));
     }
-    
+
     @ReadOperation
     public CacheStats cache(@Selector String name) {
         Cache cache = cacheManager.getCache(name);
@@ -283,7 +307,7 @@ public class CacheEndpoint {
         }
         return getCacheStats(cache);
     }
-    
+
     @DeleteOperation
     public void clearCache(@Selector String name) {
         Cache cache = cacheManager.getCache(name);
@@ -291,14 +315,14 @@ public class CacheEndpoint {
             cache.clear();
         }
     }
-    
+
     @WriteOperation
     public void clearAllCaches() {
-        cacheManager.getCacheNames().forEach(name -> 
+        cacheManager.getCacheNames().forEach(name ->
             cacheManager.getCache(name).clear()
         );
     }
-    
+
     private CacheStats getCacheStats(Cache cache) {
         // Implementation depends on cache provider
     }
@@ -312,7 +336,7 @@ public class CacheEndpoint {
 ```java
 @Configuration
 public class ActuatorSecurityConfig {
-    
+
     @Bean
     @Order(1)
     public SecurityFilterChain actuatorSecurity(HttpSecurity http) throws Exception {

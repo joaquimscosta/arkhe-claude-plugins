@@ -2,6 +2,26 @@
 
 Spring Data repository patterns for aggregate persistence.
 
+## Table of Contents
+
+- [Repository Hierarchy](#repository-hierarchy)
+- [Complete Repository Example](#complete-repository-example)
+  - [Java](#java)
+  - [Kotlin](#kotlin)
+- [Projections](#projections)
+  - [Interface-Based Projection](#interface-based-projection)
+  - [Class-Based Projection (Record)](#class-based-projection-record)
+  - [Kotlin Data Class Projection](#kotlin-data-class-projection)
+- [Specifications (Dynamic Queries)](#specifications-dynamic-queries)
+  - [Java](#java-1)
+  - [Kotlin](#kotlin-1)
+- [EntityGraph Strategies](#entitygraph-strategies)
+  - [Annotation-Based](#annotation-based)
+  - [Programmatic EntityGraph](#programmatic-entitygraph)
+- [Batch Operations](#batch-operations)
+- [Pagination](#pagination)
+- [Custom Repository Implementation](#custom-repository-implementation)
+
 ## Repository Hierarchy
 
 | Interface | Use When |

@@ -2,6 +2,24 @@
 
 Transaction patterns for aggregate consistency in DDD.
 
+## Table of Contents
+
+- [Core Principle](#core-principle)
+- [@Transactional Basics](#transactional-basics)
+- [Propagation Levels](#propagation-levels)
+  - [Propagation Examples](#propagation-examples)
+- [Isolation Levels](#isolation-levels)
+- [Rollback Behavior](#rollback-behavior)
+- [Cross-Aggregate Consistency](#cross-aggregate-consistency)
+  - [Java](#java)
+  - [Kotlin](#kotlin)
+- [TransactionalEventListener Phases](#transactionaleventlistener-phases)
+- [Optimistic Locking](#optimistic-locking)
+- [Testing Transactions](#testing-transactions)
+- [Common Mistakes](#common-mistakes)
+  - [Self-Invocation Fix](#self-invocation-fix)
+- [Programmatic Transactions](#programmatic-transactions)
+
 ## Core Principle
 
 **One aggregate = one transaction.** Cross-aggregate consistency achieved via domain events.

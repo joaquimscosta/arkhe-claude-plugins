@@ -148,18 +148,22 @@ You are a Spring Boot upgrade verifier specializing in {verifier_area}.
    **spring-boot-verify checks:**
    - Jackson 2.x (com.fasterxml) → Jackson 3 (tools.jackson)
    - Undertow dependency → Must remove
-   - javax.* packages → jakarta.*
+   - `javax.*` imports → `jakarta.*` namespace (CRITICAL)
    - Java version < 17 → Must upgrade
+   - Gradle version < 8.14 → Must upgrade (for Kotlin 2.2/Boot 4)
+   - Missing Virtual Threads → Recommend `spring.threads.virtual.enabled=true`
 
    **spring-boot-security checks:**
-   - .and() chaining → Lambda DSL required
-   - antMatchers() → requestMatchers()
-   - authorizeRequests() → authorizeHttpRequests()
-   - WebSecurityConfigurerAdapter → SecurityFilterChain
+   - .and() chaining → Lambda DSL required (CRITICAL)
+   - antMatchers() → requestMatchers() (ERROR)
+   - authorizeRequests() → authorizeHttpRequests() (ERROR)
+   - WebSecurityConfigurerAdapter → SecurityFilterChain @Bean (CRITICAL - removed in Security 5.7)
+   - @EnableGlobalMethodSecurity → @EnableMethodSecurity (WARNING)
 
    **spring-boot-testing checks:**
-   - @MockBean → @MockitoBean
-   - @SpyBean → @MockitoSpyBean
+   - @MockBean → @MockitoBean (CRITICAL)
+   - @SpyBean → @MockitoSpyBean (CRITICAL)
+   - MockMvc → MockMvcTester (new fluent API available)
    - Testcontainers 1.x patterns → 2.x with @ServiceConnection
 
    **spring-boot-observability checks:**
@@ -271,21 +275,25 @@ Mark "Report" todo as in_progress, then:
 ## Migration Checklist
 
 ### Dependencies (spring-boot-verify)
+- [ ] Migrate `javax.*` → `jakarta.*` imports (CRITICAL)
 - [ ] Update Jackson namespace: `com.fasterxml` → `tools.jackson`
 - [ ] Remove Undertow dependency (use default Tomcat)
-- [ ] Migrate `javax.*` → `jakarta.*` packages
 - [ ] Upgrade to Java 17+
+- [ ] Upgrade Gradle to 8.14+ (for Kotlin 2.2 support)
+- [ ] Consider Virtual Threads: `spring.threads.virtual.enabled=true`
 
 ### Security (spring-boot-security)
+- [ ] Remove `WebSecurityConfigurerAdapter` extends → `SecurityFilterChain` @Bean
 - [ ] Convert to Lambda DSL (remove `.and()` chains)
 - [ ] Replace `antMatchers` with `requestMatchers`
 - [ ] Replace `authorizeRequests` with `authorizeHttpRequests`
-- [ ] Remove `WebSecurityConfigurerAdapter` extends
+- [ ] Replace `@EnableGlobalMethodSecurity` with `@EnableMethodSecurity`
 
 ### Testing (spring-boot-testing)
 - [ ] Replace `@MockBean` with `@MockitoBean`
 - [ ] Replace `@SpyBean` with `@MockitoSpyBean`
 - [ ] Update Testcontainers to use `@ServiceConnection`
+- [ ] Consider `MockMvcTester` for fluent AssertJ-style assertions
 
 ### Observability (spring-boot-observability)
 - [ ] Limit actuator endpoint exposure

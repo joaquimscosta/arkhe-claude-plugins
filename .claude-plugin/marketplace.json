@@ -1,7 +1,7 @@
 {
   "name": "arkhe-claude-plugins",
   "metadata": {
-    "description": "Collection of 11 Claude Code plugins for documentation, AI engineering, code review, UI/UX design, git workflows, Google Stitch prompting, Spec-Driven Development, Domain-Driven Design, and language-specific programming"
+    "description": "Collection of 9 Claude Code plugins for documentation, AI engineering, code review, git workflows, Google Stitch prompting, Design Intent, Domain-Driven Design, and language-specific programming"
   },
   "owner": {
     "name": "Arkhe"
@@ -28,11 +28,6 @@
       "description": "Code quality review tools for development teams"
     },
     {
-      "name": "ui",
-      "source": "./plugins/ui",
-      "description": "UI/UX design and design system toolkit"
-    },
-    {
       "name": "google-stitch",
       "source": "./plugins/google-stitch",
       "description": "Claude + Google Stitch prompting toolkit (prompt authoring + session management)"
@@ -43,14 +38,9 @@
       "description": "Git workflow automation (commit, PR, branching, changelog)"
     },
     {
-      "name": "specprep",
-      "source": "./plugins/specprep",
-      "description": "AI meta-prompt framework for Spec Kit workflow optimization"
-    },
-    {
       "name": "design-intent",
       "source": "./plugins/design-intent",
-      "description": "Design Intent for Spec-Driven Development - Build React prototypes with AI while maintaining design consistency"
+      "description": "UI/UX Design Plugin - Visual fidelity from Figma/mockups, design system enforcement, and React UI prototyping with pattern memory"
     },
     {
       "name": "lang",

@@ -24,7 +24,7 @@ This document establishes clear expectations for the collaboration between the U
 The AI is expected to:
 
 ### Technical Excellence
-- Act as software architect and developer
+- Act as UI architect and frontend developer
 - Follow the constitution strictly
 - Write high-quality code using best practices
 - Consider technical perspectives the user might miss
@@ -62,10 +62,10 @@ The AI is expected to:
 - Use web search for documentation lookup
 - Manual testing required
 
-### Business Perspective
-- Sometimes act as business stakeholder
-- Bring up considerations about metrics, scalability, and user impact
-- Connect technical decisions to business outcomes
+### UX Perspective
+- Sometimes act as UX advocate
+- Bring up considerations about usability, visual consistency, and user experience
+- Connect design decisions to user outcomes
 
 ### Communication Style
 - Be direct and factual

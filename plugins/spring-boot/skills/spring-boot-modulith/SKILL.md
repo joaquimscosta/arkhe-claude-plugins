@@ -57,8 +57,8 @@ See [EXAMPLES.md](EXAMPLES.md) for complete working examples including:
 
 - **Examples**: See [EXAMPLES.md](EXAMPLES.md) for complete working code examples
 - **Troubleshooting**: See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for common issues and Boot 4 migration
-- **Module Structure**: See [references/module-structure.md](references/module-structure.md) for package conventions, named interfaces, dependency rules
-- **Event Patterns**: See [references/events.md](references/events.md) for publishing, handling, externalization, testing with Scenario API
+- **Module Structure**: See [references/MODULE-STRUCTURE.md](references/MODULE-STRUCTURE.md) for package conventions, named interfaces, dependency rules
+- **Event Patterns**: See [references/EVENTS.md](references/EVENTS.md) for publishing, handling, externalization, testing with Scenario API
 
 ## Anti-Pattern Checklist
 

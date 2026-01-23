@@ -2,6 +2,20 @@
 
 RFC 9457 (formerly RFC 7807) compliant error responses in Spring Boot 4.
 
+## Table of Contents
+
+- [ProblemDetail Structure](#problemdetail-structure)
+- [Global Exception Handler](#global-exception-handler)
+  - [Java](#java)
+  - [Kotlin](#kotlin)
+- [Exception Hierarchy](#exception-hierarchy)
+- [Error Type Registry](#error-type-registry)
+- [Custom ProblemDetail Subclass](#custom-problemdetail-subclass)
+- [Per-Controller Exception Handling](#per-controller-exception-handling)
+- [Testing Error Responses](#testing-error-responses)
+- [Configuration](#configuration)
+- [Best Practices](#best-practices)
+
 ## ProblemDetail Structure
 
 ```json

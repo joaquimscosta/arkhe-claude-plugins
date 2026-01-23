@@ -2,6 +2,29 @@
 
 Complete dependency compatibility matrix and verification rules for Spring Boot 4.x projects.
 
+## Table of Contents
+
+- [Core Dependency Matrix](#core-dependency-matrix)
+  - [Spring Boot 4.x Required Versions](#spring-boot-4x-required-versions)
+  - [Jakarta EE 11 Requirements](#jakarta-ee-11-requirements)
+- [Deprecated Dependencies](#deprecated-dependencies)
+  - [CRITICAL - Must Replace Immediately](#critical---must-replace-immediately)
+  - [ERROR - Will Cause Failures](#error---will-cause-failures)
+  - [WARNING - Should Update](#warning---should-update)
+- [Required Dependencies](#required-dependencies)
+  - [Minimum Maven pom.xml](#minimum-maven-pomxml)
+  - [Minimum Gradle (Kotlin DSL)](#minimum-gradle-kotlin-dsl)
+- [Starter Migration Map](#starter-migration-map)
+  - [Web Starters](#web-starters)
+  - [Security Starters](#security-starters)
+  - [Testing Starters](#testing-starters)
+  - [Compatibility Starters (Migration Aid)](#compatibility-starters-migration-aid)
+- [Version Compatibility Rules](#version-compatibility-rules)
+  - [Rule 1: Spring Boot and Spring Framework Must Match](#rule-1-spring-boot-and-spring-framework-must-match)
+  - [Rule 2: Hibernate Must Match JPA Version](#rule-2-hibernate-must-match-jpa-version)
+  - [Rule 3: Testing Dependencies Must Be Aligned](#rule-3-testing-dependencies-must-be-aligned)
+- [Grep Patterns for Detection](#grep-patterns-for-detection)
+
 ## Core Dependency Matrix
 
 ### Spring Boot 4.x Required Versions

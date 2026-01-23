@@ -34,10 +34,8 @@ git clone https://github.com/joaquimscosta/arkhe-claude-plugins.git
 /plugin install ai@arkhe-claude-plugins
 /plugin install doc@arkhe-claude-plugins
 /plugin install review@arkhe-claude-plugins
-/plugin install ui@arkhe-claude-plugins
 /plugin install design-intent@arkhe-claude-plugins
 /plugin install git@arkhe-claude-plugins
-/plugin install specprep@arkhe-claude-plugins
 /plugin install google-stitch@arkhe-claude-plugins
 /plugin install lang@arkhe-claude-plugins
 /plugin install spring-boot@arkhe-claude-plugins
@@ -70,7 +68,8 @@ AI engineering toolkit for production-ready LLM applications.
 
 **Components**:
 - 3 agents: `ai-engineer`, `prompt-engineer`, `context-manager`
-- 3 commands: `/improve-agent`, `/multi-agent-optimize`, `/lyra`
+- 2 commands: `/improve-agent`, `/multi-agent-optimize`
+- 1 skill: `lyra` (auto-invoked for AI prompt engineering)
 
 ---
 
@@ -97,16 +96,6 @@ Code quality review tools for development teams.
 
 ---
 
-### UI Plugin
-UI/UX design and design system toolkit.
-
-**Install**: `/plugin install ui@arkhe-claude-plugins`
-
-**Components**:
-- 1 agent: `ui-ux-designer`
-
----
-
 ### Git Plugin
 Git workflow automation for commits, pull requests, branching, and changelog generation.
 
@@ -127,22 +116,10 @@ Design Intent for Spec-Driven Development that combines AI-assisted implementati
 **Install**: `/plugin install design-intent@arkhe-claude-plugins`
 
 **Components**:
-- 7 commands: `/setup`, `/feature`, `/plan`, `/design`, `/implement`, `/save-patterns`, `/diary`
+- 6 commands: `/setup`, `/feature`, `/plan`, `/design-intent`, `/save-patterns`, `/diary`
 - 1 skill: `design-intent-specialist` (auto-invoked when implementing from visual references)
 
 **Use for:** Capturing team-specific design intent, translating Figma/screenshots into React implementations, and keeping pattern memory plus diaries synchronized.
-
----
-
-### Specprep Plugin
-AI meta-prompt framework for Spec Kit workflow optimization.
-
-**Install**: `/plugin install specprep@arkhe-claude-plugins`
-
-**Requirements**: Spec Kit plugin for full workflow integration
-
-**Components**:
-- 1 command: `/specprep:specify`
 
 ---
 
@@ -191,24 +168,14 @@ Install only the plugins you need:
 /plugin install review@arkhe-claude-plugins
 ```
 
-### For UI/UX Design Work
-```bash
-/plugin install ui@arkhe-claude-plugins
-```
-
 ### For Git Workflow Automation
 ```bash
 /plugin install git@arkhe-claude-plugins
 ```
 
-### For AI-Assisted Frontend Implementation & Design Memory
+### For UI/UX Design & Frontend Implementation
 ```bash
 /plugin install design-intent@arkhe-claude-plugins
-```
-
-### For Spec Kit Workflow Optimization
-```bash
-/plugin install specprep@arkhe-claude-plugins
 ```
 
 ### For Google Stitch Prompting
@@ -233,7 +200,7 @@ After installation, verify that everything works:
 /plugin
 ```
 
-You should see all 11 plugins listed.
+You should see all 9 plugins listed.
 
 ### Check Available Agents
 
@@ -246,7 +213,7 @@ You should see agents from installed plugins:
 - **ai**: `ai-engineer`, `prompt-engineer`, `context-manager`
 - **doc**: `docs-architect`
 - **review**: `pragmatic-code-review`, `design-review`
-- **ui**: `ui-ux-designer`
+- **design-intent**: `ui-explorer`, `ui-architect`, `design-reviewer`
 
 ### Check Available Commands
 
@@ -256,12 +223,11 @@ You should see agents from installed plugins:
 
 You should see commands from installed plugins:
 - **core**: `/discuss`, `/double-check`, `/develop`, `/debug`, `/think`, `/research`
-- **ai**: `/improve-agent`, `/multi-agent-optimize`, `/lyra`
+- **ai**: `/improve-agent`, `/multi-agent-optimize`
 - **doc**: `/doc-generate`, `/code-explain`, `/diagram`
 - **review**: `/code`, `/security`, `/design`, `/codebase`
 - **git**: `/commit`, `/create-pr`, `/create-branch`, `/changelog`, `/pr-issue-resolve`
-- **design-intent**: `/setup`, `/feature`, `/plan`, `/design`, `/implement`, `/save-patterns`, `/diary`
-- **specprep**: `/specprep:specify`
+- **design-intent**: `/setup`, `/feature`, `/plan`, `/design-intent`, `/save-patterns`, `/diary`
 - **google-stitch**: `/prompt`
 
 ### Check Skills
@@ -270,7 +236,7 @@ Skills are automatically invoked when relevant context is detected:
 - **core**: `workflow-orchestration` activates for complex multi-step tasks; `deep-research` activates for research queries
 - **doc**: `diagramming` skill activates when you mention diagrams, flowcharts, or visualization keywords
 - **git**: `generating-changelog` skill activates when you edit CHANGELOG.md or request changelog generation
-- **design-intent**: `design-intent-specialist` activates when you're implementing UI from visual references or running `/design` or `/implement`
+- **design-intent**: `design-intent-specialist` activates when you're implementing UI from visual references or running `/design-intent`
 - **google-stitch**: `authoring-stitch-prompts`, `extracting-stitch-mockups` activate for Stitch prompt work
 - **lang**: `scripting-bash` skill activates for Bash scripting guidance
 
@@ -345,17 +311,6 @@ Skills are automatically invoked when relevant context is detected:
 # Select: pragmatic-code-review or design-review
 ```
 
-### UI Plugin
-
-```bash
-# Access UI/UX design expert
-/agents
-# Select: ui-ux-designer
-"Help me create a design token system for our product"
-"Review our interface for WCAG 2.1 AA compliance"
-"Design accessible form validation patterns"
-```
-
 ### Design Intent Plugin
 
 ```bash
@@ -389,16 +344,6 @@ Skills are automatically invoked when relevant context is detected:
 
 # Generate changelog from commits
 /changelog
-```
-
-### Specprep Plugin
-
-```bash
-# Create detailed specification (auto-chains to /speckit.specify)
-/specprep:specify @notes/feature-idea.txt
-
-# After spec is created, continue with SpecKit directly
-/speckit.plan @specs/002-feature/spec.md
 ```
 
 ### Google Stitch Plugin

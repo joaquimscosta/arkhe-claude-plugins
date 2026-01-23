@@ -40,14 +40,50 @@ See [EXAMPLES.md](EXAMPLES.md) for complete working examples including:
 - **ProblemDetail** enabled by default: `spring.mvc.problemdetails.enabled=true`
 - **API Versioning** via `version` attribute in mapping annotations
 - **@MockitoBean** replaces `@MockBean` in tests
+- **@HttpExchange** declarative HTTP clients (replaces RestTemplate patterns)
+- **RestTestClient** new fluent API for testing REST endpoints
+
+## @HttpExchange Declarative Client (Spring 7)
+
+New declarative HTTP client interface (alternative to RestTemplate/WebClient):
+
+```java
+@HttpExchange(url = "/users", accept = "application/json")
+public interface UserClient {
+
+    @GetExchange("/{id}")
+    User getUser(@PathVariable Long id);
+
+    @PostExchange
+    User createUser(@RequestBody CreateUserRequest request);
+
+    @DeleteExchange("/{id}")
+    void deleteUser(@PathVariable Long id);
+}
+
+// Configuration
+@Configuration
+class ClientConfig {
+    @Bean
+    UserClient userClient(RestClient.Builder builder) {
+        RestClient restClient = builder.baseUrl("https://api.example.com").build();
+        return HttpServiceProxyFactory
+            .builderFor(RestClientAdapter.create(restClient))
+            .build()
+            .createClient(UserClient.class);
+    }
+}
+```
+
+**Benefits**: Type-safe, annotation-driven, works with both RestClient and WebClient.
 
 ## Detailed References
 
 - **Examples**: See [EXAMPLES.md](EXAMPLES.md) for complete working code examples
 - **Troubleshooting**: See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for common issues and Boot 4 migration
-- **Controllers & Validation**: See [references/controllers.md](references/controllers.md) for validation groups, custom validators, content negotiation
-- **Error Handling**: See [references/error-handling.md](references/error-handling.md) for ProblemDetail patterns, exception hierarchy
-- **WebFlux Patterns**: See [references/webflux.md](references/webflux.md) for reactive endpoints, functional routers, WebTestClient
+- **Controllers & Validation**: See [references/CONTROLLERS.md](references/CONTROLLERS.md) for validation groups, custom validators, content negotiation
+- **Error Handling**: See [references/ERROR-HANDLING.md](references/ERROR-HANDLING.md) for ProblemDetail patterns, exception hierarchy
+- **WebFlux Patterns**: See [references/WEBFLUX.md](references/WEBFLUX.md) for reactive endpoints, functional routers, WebTestClient
 
 ## Anti-Pattern Checklist
 

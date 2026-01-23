@@ -2,6 +2,31 @@
 
 @ServiceConnection, container patterns, and lifecycle management.
 
+## Table of Contents
+
+- [@ServiceConnection (Spring Boot 4)](#serviceconnection-spring-boot-4)
+  - [Basic Usage](#basic-usage)
+  - [Kotlin](#kotlin)
+- [Supported Containers](#supported-containers)
+- [Multiple Containers](#multiple-containers)
+- [Container Reuse (Faster Tests)](#container-reuse-faster-tests)
+  - [Singleton Pattern](#singleton-pattern)
+  - [Enable Reuse Globally](#enable-reuse-globally)
+- [Database Initialization](#database-initialization)
+  - [With Init Script](#with-init-script)
+  - [With Flyway (Auto-detected)](#with-flyway-auto-detected)
+- [Custom Connection Details](#custom-connection-details)
+- [Docker Compose Support](#docker-compose-support)
+- [Waiting Strategies](#waiting-strategies)
+- [Test Data Management](#test-data-management)
+  - [Per-Test Cleanup](#per-test-cleanup)
+  - [Transaction Rollback](#transaction-rollback)
+- [Network Configuration](#network-configuration)
+- [Resource Cleanup](#resource-cleanup)
+- [CI/CD Configuration](#cicd-configuration)
+  - [GitHub Actions](#github-actions)
+  - [GitLab CI](#gitlab-ci)
+
 ## @ServiceConnection (Spring Boot 4)
 
 Automatically configures Spring Boot connection properties from containers.
@@ -12,14 +37,14 @@ Automatically configures Spring Boot connection properties from containers.
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @Testcontainers
 class OrderIntegrationTest {
-    
+
     @Container
     @ServiceConnection
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine");
-    
+
     @Autowired
     private WebTestClient webClient;
-    
+
     @Test
     void shouldCreateOrder() {
         webClient.post()
@@ -42,14 +67,14 @@ No need for `@DynamicPropertySource` — `@ServiceConnection` handles:
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @Testcontainers
 class OrderIntegrationTest(@Autowired val webClient: WebTestClient) {
-    
+
     companion object {
         @Container
         @ServiceConnection
         @JvmStatic
         val postgres = PostgreSQLContainer("postgres:16-alpine")
     }
-    
+
     @Test
     fun `should create order`() {
         webClient.post()
@@ -80,32 +105,32 @@ class OrderIntegrationTest(@Autowired val webClient: WebTestClient) {
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @Testcontainers
 class FullStackIntegrationTest {
-    
+
     @Container
     @ServiceConnection
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine")
         .withDatabaseName("testdb")
         .withUsername("test")
         .withPassword("test");
-    
+
     @Container
     @ServiceConnection
     static RedisContainer redis = new RedisContainer("redis:7-alpine");
-    
+
     @Container
     @ServiceConnection
     static KafkaContainer kafka = new KafkaContainer(
         DockerImageName.parse("confluentinc/cp-kafka:7.5.0"));
-    
+
     @Autowired
     private WebTestClient webClient;
-    
+
     @Autowired
     private OrderRepository orderRepository;
-    
+
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
-    
+
     @Test
     void shouldProcessOrderEndToEnd() {
         // Test with all services
@@ -119,20 +144,20 @@ class FullStackIntegrationTest {
 
 ```java
 public abstract class AbstractIntegrationTest {
-    
+
     static final PostgreSQLContainer<?> postgres;
     static final RedisContainer redis;
-    
+
     static {
         postgres = new PostgreSQLContainer<>("postgres:16-alpine")
             .withReuse(true);  // Reuse between test runs
         postgres.start();
-        
+
         redis = new RedisContainer("redis:7-alpine")
             .withReuse(true);
         redis.start();
     }
-    
+
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.datasource.url", postgres::getJdbcUrl);
@@ -178,13 +203,13 @@ static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-
 @SpringBootTest
 @Testcontainers
 class MigrationTest {
-    
+
     @Container
     @ServiceConnection
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine");
-    
+
     // Flyway migrations run automatically if spring-boot-starter-flyway is present
-    
+
     @Test
     void shouldApplyMigrations(@Autowired Flyway flyway) {
         assertThat(flyway.info().applied().length).isGreaterThan(0);
@@ -203,7 +228,7 @@ static GenericContainer<?> customService = new GenericContainer<>("custom:latest
 
 @DynamicPropertySource
 static void configureProperties(DynamicPropertyRegistry registry) {
-    registry.add("custom.service.url", () -> 
+    registry.add("custom.service.url", () ->
         "http://" + customService.getHost() + ":" + customService.getMappedPort(8080));
 }
 ```
@@ -214,18 +239,18 @@ static void configureProperties(DynamicPropertyRegistry registry) {
 @SpringBootTest
 @Testcontainers
 class DockerComposeTest {
-    
+
     @Container
-    static DockerComposeContainer<?> environment = 
+    static DockerComposeContainer<?> environment =
         new DockerComposeContainer<>(new File("src/test/resources/docker-compose-test.yml"))
             .withExposedService("postgres", 5432)
             .withExposedService("redis", 6379)
             .waitingFor("postgres", Wait.forHealthcheck());
-    
+
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", () -> 
-            "jdbc:postgresql://" + 
+        registry.add("spring.datasource.url", () ->
+            "jdbc:postgresql://" +
             environment.getServiceHost("postgres", 5432) + ":" +
             environment.getServicePort("postgres", 5432) + "/testdb");
     }
@@ -265,25 +290,25 @@ static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-
 @SpringBootTest
 @Testcontainers
 class OrderIntegrationTest {
-    
+
     @Container
     @ServiceConnection
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine");
-    
+
     @Autowired
     private JdbcTemplate jdbcTemplate;
-    
+
     @BeforeEach
     void cleanDatabase() {
         jdbcTemplate.execute("TRUNCATE TABLE orders CASCADE");
         jdbcTemplate.execute("TRUNCATE TABLE customers CASCADE");
     }
-    
+
     @Test
     void test1() {
         // Fresh database
     }
-    
+
     @Test
     void test2() {
         // Fresh database
@@ -297,10 +322,10 @@ class OrderIntegrationTest {
 @SpringBootTest
 @Transactional  // Rollback after each test
 class OrderServiceTest {
-    
+
     @Autowired
     private OrderService orderService;
-    
+
     @Test
     void shouldCreateOrder() {
         Order order = orderService.create(request);
@@ -334,11 +359,11 @@ static GenericContainer<?> app = new GenericContainer<>("myapp:latest")
 @SpringBootTest
 @Testcontainers
 class CleanupTest {
-    
+
     @Container
     @ServiceConnection
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine");
-    
+
     @AfterAll
     static void cleanup() {
         // Containers stop automatically with @Container

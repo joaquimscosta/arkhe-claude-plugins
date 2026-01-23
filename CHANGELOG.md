@@ -9,6 +9,44 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+#### Core Plugin
+
+- **`deep-research` skill** with two-tier intelligent caching
+  - `deep-researcher` agent: MCP-enabled research specialist using EXA tools
+  - `/research` command with operations: research, promote, refresh, list
+  - Tier 1 cache (`~/.claude/plugins/research/`): user-level, cross-project
+  - Tier 2 docs (`docs/research/`): version-controlled, team-shared
+  - 30-day TTL with manual refresh option
+  - Slug-based cache keys with alias support
+  - Python scripts: `cache_manager.py`, `promote.py`, `index_generator.py`
+- **HITL (Human-in-the-Loop) gate framework** in `sdlc-develop` skill
+  - Tier 1 ⛔ MANDATORY: Architecture decisions (Phase 2c), completion (Phase 4→5)
+  - Tier 2 ⚠️ RECOMMENDED: Discovery, requirements, workstreams (skippable with `--auto`)
+  - Tier 3 ✅ AUTOMATED: Plan saved checkpoint
+  - `GATES.md` central reference for tier definitions and prompt patterns
+- **UI verification** in `sdlc-develop` skill (Phase 4)
+  - Playwright-based browser testing when user provides URL
+  - Screenshot capture for visual review
+  - Responsive breakpoint testing (mobile, tablet, desktop)
+  - Console error detection
+- **Dependency diagrams** in `sdlc-develop` skill (Phase 3)
+  - Mermaid diagram generation for task breakdowns
+  - Visualizes task dependencies and parallel execution waves
+
+#### Spring Boot Plugin
+
+- **`spring-boot-scanner` skill** for intelligent pattern detection
+  - Detects Spring annotations and routes to appropriate skills
+  - Progressive disclosure with LOW/HIGH risk classification
+  - Python script for pattern detection in Java files
+  - Routes `@Entity` → data-ddd, `@RestController` → web-api, `@SpringBootTest` → testing
+- **Enhanced reference documentation**
+  - Jakarta namespace migration guide with import mappings
+  - JSpecify null-safety annotations documentation
+  - Virtual Threads configuration for Spring Boot 4
+  - `ListCrudRepository` interface documentation (Spring Data 3.1+)
+  - Gradle 8.14 minimum requirement for Kotlin 2.2/Boot 4
+
 #### Doc Plugin
 
 - `managing-adrs` skill for Architecture Decision Records
@@ -32,6 +70,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Structured input parsing for skill invocation
 - 7 new examples (17-23) demonstrating design-aware and interactive flows
 
+#### Design Intent Plugin
+
+- **Playwright integration** in `design-reviewer` agent
+  - Live verification with browser-based testing
+  - Auto-detect common dev servers (localhost:3000, 5173, etc.)
+  - Screenshot capture for visual evidence
+  - Responsive breakpoint testing
+  - Console error checking
+- **Wireframe fidelity review** (new review category)
+  - Find wireframes in `design-intent/specs/{feature}/`
+  - Compare implementation against Visual Reference Mapping
+  - Claude vision capability for wireframe image analysis
+  - Report layout, hierarchy, and spacing deviations
+
 #### Plugin Dev Plugin
 
 - `skill-validator` skill for validating skills against best practices
@@ -42,18 +94,72 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Security checks (shebang, file permissions, no third-party packages)
   - Confidence-based filtering with severity levels
 
+#### CI/CD
+
+- **GitHub Actions release workflow** (`release.yml`)
+  - Manual `workflow_dispatch` trigger with version input
+  - Validates semantic version format
+  - Verifies CHANGELOG.md entry exists
+  - Extracts release notes from CHANGELOG
+  - Creates git tag and GitHub Release
+  - Supporting scripts and `RELEASING.md` documentation
+
 ### Changed
+
+#### Core Plugin
+
+- **BREAKING**: Unified `/feature` and `/workflow` into `/develop` command
+  - 6-phase SDLC pipeline replacing two separate commands
+  - Phase 0: Discovery with mandatory existing system analysis
+  - Phase 1: Requirements gathering with clarifying questions
+  - Phase 2: Architecture design with parallel `code-architect` agents
+  - Phase 3: Workstreams with full ticket tracking (`tasks.md`)
+  - Phase 4: Implementation with configurable validation depth
+  - Phase 5: Summary with verification steps
+- **Plan persistence** to `arkhe/specs/{NN}-{slug}/` directories
+- **Resume mode** with `@path/to/plan.md` syntax
+- **Autonomous mode** (`--auto`) skips all checkpoints
+- **Deep validation** (`--validate`) uses opus-level review
+- **Phase-specific execution** (`--phase=N`)
+- First-run configuration via `.arkhe.yaml`
+- Extracted `/develop` command into `sdlc-develop` skill with progressive disclosure
+  - Thin 40-line command wrapper delegating to skill
+  - Token efficiency: ~4k always → ~1k-2.5k progressive
+  - 7 architecture templates (ADR, API contract, data models, reuse matrix)
+- `deep-think-partner` agent now uses `deep-research` skill for caching benefits
+- **Plugin version**: 1.0.0 → 2.0.0
+
+#### Doc Plugin
+
+- Renamed `adr` skill to `managing-adrs` for clarity
+- **Plugin version**: 1.0.0 → 1.1.0
+
+#### AI Plugin
+
+- Converted `/lyra` command to `lyra` auto-invoke skill
+  - Progressive disclosure architecture (SKILL.md, WORKFLOW.md, EXAMPLES.md, TROUBLESHOOTING.md)
+  - Auto-invokes on AI prompt engineering, optimization, and refinement tasks
+
+#### Spring Boot Plugin
+
+- Standardized all reference filenames to UPPERCASE.md for consistency
+- Updated internal links across all SKILL.md files
+
+#### Design Intent Plugin
+
+- **BREAKING**: Focused plugin on frontend UI implementation only (v2.0.0)
+  - Removed `/implement` command (use direct implementation instead)
+  - Updated description to emphasize UI/UX focus
+  - Added explicit scope boundaries (in/out of scope sections)
+  - Updated templates to use frontend-specific patterns
 
 #### Project Structure
 
-- **BREAKING**: Moved all 11 plugins from root to `plugins/` subdirectory
+- **BREAKING**: Moved all plugins from root to `plugins/` subdirectory
   - Follows `claude-plugins-official` structure pattern
   - Updated marketplace.json source paths from `./plugin-name` to `./plugins/plugin-name`
   - Updated all documentation references (CLAUDE.md, README.md, CONTRIBUTING.md, docs/README.md)
   - Git history preserved through renames
-
-#### Design Intent Plugin
-
 - Removed redundant `/design` command (skill auto-invokes on visual references)
 - Enhanced `/implement` command with:
   - `argument-hint: [feature-name]` for better discoverability
@@ -62,6 +168,89 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Updated README with decision tree diagram for command selection
 - Added "When to Use" column to commands table
 - Fixed markdown lint warnings throughout documentation
+
+### Removed
+
+#### UI Plugin
+
+- **Removed `ui` plugin entirely** (consolidated into design-intent)
+  - `ui-ux-designer` agent no longer available as standalone
+  - Design-intent plugin now serves all UI/UX design needs
+  - 7-phase workflow, specialized agents (`ui-explorer`, `ui-architect`, `design-reviewer`)
+  - `design-intent-specialist` skill for comprehensive UI implementation
+
+#### Specprep Plugin
+
+- **Removed `specprep` plugin entirely**
+  - `/specprep:specify` command no longer available
+  - Plugin was designed for Spec Kit workflow optimization but added complexity without proportional value
+  - Use `/develop` command from core plugin for specification work as part of its integrated SDLC pipeline
+
+### Fixed
+
+#### Core Plugin
+
+- Improved deep-research scripts robustness
+  - Replaced deprecated `datetime.utcnow()` with `datetime.now(timezone.utc)` for Python 3.12+ compatibility
+  - Simplified action detection logic in `promote.py`
+  - Added user-friendly error handling for file read operations
+- Removed no-op self-assignment in `promote.py`
+- Added missing `TROUBLESHOOTING.md` for `sdlc-develop` skill
+- Corrected template phase numbers in SKILL.md
+
+#### Documentation
+
+- Corrected plugin counts (10 → 9 after ui plugin removal)
+- Fixed command references (lyra is now a skill, not command)
+- Fixed design-intent command count (6, not 7)
+- Replaced deprecated `datetime.utcnow()` in `promote.py`
+
+### Breaking Changes
+
+#### Core Plugin - /develop Command (2026-01-XX)
+
+The `/feature` and `/workflow` commands have been unified into `/develop`.
+
+**Migration**:
+```bash
+# Old commands (no longer available)
+/feature <description>
+/workflow <description>
+
+# New unified command
+/develop <description>
+/develop --auto           # Skip checkpoints
+/develop --validate       # Deep opus validation
+/develop --phase=2        # Run specific phase
+/develop @path/to/plan.md # Resume existing plan
+```
+
+#### UI Plugin Removal (2026-01-XX)
+
+The standalone `ui` plugin has been removed. Use design-intent plugin instead.
+
+**Migration**:
+```bash
+# Old (no longer available)
+# Using ui-ux-designer agent directly
+
+# New approach
+/design-intent            # Full 7-phase UI workflow
+# Or use design-intent-specialist skill (auto-invokes on visual references)
+```
+
+#### Specprep Plugin Removal (2026-01-XX)
+
+The `specprep` plugin has been removed entirely.
+
+**Migration**:
+```bash
+# Old workflow (no longer supported)
+/specprep:specify <feature>
+
+# New workflow
+/develop <feature>        # Unified SDLC pipeline with spec capabilities
+```
 
 ## [1.3.0] - 2026-01-08
 
@@ -394,8 +583,7 @@ The `/specprep:tasks` command has been removed in favor of automatic command cha
 - **Documentation**: See README.md and docs/ directory
 - **Installation**: See INSTALLATION.md
 
-[Unreleased]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.3.0...HEAD
-[1.3.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.2.0...v1.3.0
+[Unreleased]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.2.0...HEAD
 [1.2.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/releases/tag/v1.0.0

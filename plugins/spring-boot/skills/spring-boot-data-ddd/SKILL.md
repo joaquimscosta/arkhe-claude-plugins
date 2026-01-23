@@ -39,14 +39,40 @@ See [EXAMPLES.md](EXAMPLES.md) for complete working examples including:
 - **JSpecify null-safety**: `@NullMarked` and `@Nullable` annotations
 - **AOT Repository Compilation**: Enabled by default for faster startup
 - **Jakarta EE 11**: All imports use `jakarta.*` namespace
+- **ListCrudRepository**: New interface returning `List<T>` instead of `Iterable<T>`
+
+## ListCrudRepository (Spring Data 3.1+)
+
+New repository interface returning `List<T>` for better API ergonomics:
+
+```java
+// OLD: CrudRepository returns Iterable<T>
+public interface UserRepository extends CrudRepository<User, Long> {
+    Iterable<User> findAll();  // Requires conversion to List
+}
+
+// NEW: ListCrudRepository returns List<T>
+public interface UserRepository extends ListCrudRepository<User, Long> {
+    List<User> findAll();  // Direct List return
+    List<User> findAllById(Iterable<Long> ids);  // Also List
+}
+
+// Can also extend both for full functionality
+public interface UserRepository extends
+    ListCrudRepository<User, Long>,
+    ListPagingAndSortingRepository<User, Long> {
+}
+```
+
+**Benefits**: No more `StreamSupport.stream(iterable.spliterator(), false).toList()` conversions.
 
 ## Detailed References
 
 - **Examples**: See [EXAMPLES.md](EXAMPLES.md) for complete working code examples
 - **Troubleshooting**: See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for common issues and Boot 4 migration
-- **Aggregates & Entities**: See [references/aggregates.md](references/aggregates.md) for complete patterns with value objects, typed IDs, auditing
-- **Repositories & Queries**: See [references/repositories.md](references/repositories.md) for custom queries, projections, specifications
-- **Transactions**: See [references/transactions.md](references/transactions.md) for propagation, isolation, cross-aggregate consistency
+- **Aggregates & Entities**: See [references/AGGREGATES.md](references/AGGREGATES.md) for complete patterns with value objects, typed IDs, auditing
+- **Repositories & Queries**: See [references/REPOSITORIES.md](references/REPOSITORIES.md) for custom queries, projections, specifications
+- **Transactions**: See [references/TRANSACTIONS.md](references/TRANSACTIONS.md) for propagation, isolation, cross-aggregate consistency
 
 ## Anti-Pattern Checklist
 

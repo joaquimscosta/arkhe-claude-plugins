@@ -2,6 +2,24 @@
 
 @WithMockUser, JWT testing, and secured endpoint verification.
 
+## Table of Contents
+
+- [@WithMockUser](#withmockuser)
+  - [Basic Usage](#basic-usage)
+  - [Kotlin](#kotlin)
+  - [With Authorities (not roles)](#with-authorities-not-roles)
+- [@WithUserDetails](#withuserdetails)
+- [Custom Authentication Annotation](#custom-authentication-annotation)
+- [JWT Testing](#jwt-testing)
+  - [Using jwt() Request Post-Processor](#using-jwt-request-post-processor)
+  - [With MockMvcTester (Boot 4)](#with-mockmvctester-boot-4)
+  - [Custom JWT Authorities Converter in Test](#custom-jwt-authorities-converter-in-test)
+- [OAuth2 Login Testing](#oauth2-login-testing)
+- [Method Security Testing](#method-security-testing)
+- [CSRF Testing](#csrf-testing)
+- [Integration Test with Full Security](#integration-test-with-full-security)
+- [Disable Security for Specific Tests](#disable-security-for-specific-tests)
+
 ## @WithMockUser
 
 Simplest way to test authenticated endpoints.
@@ -11,35 +29,35 @@ Simplest way to test authenticated endpoints.
 ```java
 @WebMvcTest(OrderController.class)
 class OrderControllerSecurityTest {
-    
+
     @Autowired
     private MockMvcTester mvc;
-    
+
     @MockitoBean
     private OrderService orderService;
-    
+
     @Test
     void shouldRejectUnauthenticatedRequest() {
         assertThat(mvc.get().uri("/api/orders"))
             .hasStatus(HttpStatus.UNAUTHORIZED);
     }
-    
+
     @Test
     @WithMockUser
     void shouldAllowAuthenticatedUser() {
         given(orderService.findAll()).willReturn(List.of());
-        
+
         assertThat(mvc.get().uri("/api/orders"))
             .hasStatusOk();
     }
-    
+
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void shouldAllowAdmin() {
         assertThat(mvc.get().uri("/api/admin/orders"))
             .hasStatusOk();
     }
-    
+
     @Test
     @WithMockUser(roles = {"USER"})
     void shouldDenyNonAdminFromAdminEndpoint() {
@@ -54,16 +72,16 @@ class OrderControllerSecurityTest {
 ```kotlin
 @WebMvcTest(OrderController::class)
 class OrderControllerSecurityTest(@Autowired val mvc: MockMvcTester) {
-    
+
     @MockitoBean
     lateinit var orderService: OrderService
-    
+
     @Test
     fun `should reject unauthenticated`() {
         assertThat(mvc.get().uri("/api/orders"))
             .hasStatus(HttpStatus.UNAUTHORIZED)
     }
-    
+
     @Test
     @WithMockUser(roles = ["ADMIN"])
     fun `should allow admin`() {
@@ -92,10 +110,10 @@ Uses actual UserDetailsService to load user.
 @WebMvcTest(OrderController.class)
 @Import(TestSecurityConfig.class)
 class OrderControllerWithUserDetailsTest {
-    
+
     @Autowired
     private MockMvcTester mvc;
-    
+
     @Test
     @WithUserDetails("admin@example.com")
     void shouldLoadUserFromService() {
@@ -106,7 +124,7 @@ class OrderControllerWithUserDetailsTest {
 
 @TestConfiguration
 class TestSecurityConfig {
-    
+
     @Bean
     public UserDetailsService userDetailsService() {
         UserDetails admin = User.builder()
@@ -114,13 +132,13 @@ class TestSecurityConfig {
             .password("{noop}password")
             .roles("ADMIN")
             .build();
-        
+
         UserDetails user = User.builder()
             .username("user@example.com")
             .password("{noop}password")
             .roles("USER")
             .build();
-        
+
         return new InMemoryUserDetailsManager(admin, user);
     }
 }
@@ -139,24 +157,24 @@ public @interface WithAdminUser {
     String tenantId() default "default-tenant";
 }
 
-public class WithAdminUserSecurityContextFactory 
+public class WithAdminUserSecurityContextFactory
         implements WithSecurityContextFactory<WithAdminUser> {
-    
+
     @Override
     public SecurityContext createSecurityContext(WithAdminUser annotation) {
         SecurityContext context = SecurityContextHolder.createEmptyContext();
-        
+
         CustomPrincipal principal = new CustomPrincipal(
             annotation.username(),
             annotation.tenantId()
         );
-        
+
         Authentication auth = new UsernamePasswordAuthenticationToken(
             principal,
             null,
             List.of(new SimpleGrantedAuthority("ROLE_ADMIN"))
         );
-        
+
         context.setAuthentication(auth);
         return context;
     }
@@ -178,10 +196,10 @@ void shouldAccessTenantData() {
 ```java
 @WebMvcTest(ApiController.class)
 class JwtSecuredControllerTest {
-    
+
     @Autowired
     private MockMvc mockMvc;
-    
+
     @Test
     void shouldAcceptValidJwt() throws Exception {
         mockMvc.perform(get("/api/resource")
@@ -193,7 +211,7 @@ class JwtSecuredControllerTest {
                         .claim("tenant_id", "tenant-123"))))
             .andExpect(status().isOk());
     }
-    
+
     @Test
     void shouldRejectMissingScope() throws Exception {
         mockMvc.perform(get("/api/admin")
@@ -201,7 +219,7 @@ class JwtSecuredControllerTest {
                     .authorities(new SimpleGrantedAuthority("SCOPE_read"))))
             .andExpect(status().isForbidden());
     }
-    
+
     @Test
     void shouldRejectExpiredJwt() throws Exception {
         mockMvc.perform(get("/api/resource")
@@ -218,10 +236,10 @@ class JwtSecuredControllerTest {
 ```java
 @WebMvcTest(ApiController.class)
 class JwtSecuredControllerTest {
-    
+
     @Autowired
     private MockMvcTester mvc;
-    
+
     @Test
     void shouldAcceptValidJwt() {
         assertThat(mvc.get().uri("/api/resource")
@@ -238,10 +256,10 @@ class JwtSecuredControllerTest {
 @WebMvcTest(ApiController.class)
 @Import(JwtTestConfig.class)
 class JwtWithCustomClaimsTest {
-    
+
     @Autowired
     private MockMvc mockMvc;
-    
+
     @Test
     void shouldExtractCustomClaims() throws Exception {
         mockMvc.perform(get("/api/resource")
@@ -255,13 +273,13 @@ class JwtWithCustomClaimsTest {
 
 @TestConfiguration
 class JwtTestConfig {
-    
+
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter converter = new JwtGrantedAuthoritiesConverter();
         converter.setAuthoritiesClaimName("permissions");
         converter.setAuthorityPrefix("");
-        
+
         JwtAuthenticationConverter jwtConverter = new JwtAuthenticationConverter();
         jwtConverter.setJwtGrantedAuthoritiesConverter(converter);
         return jwtConverter;
@@ -274,10 +292,10 @@ class JwtTestConfig {
 ```java
 @WebMvcTest(ProfileController.class)
 class OAuth2LoginTest {
-    
+
     @Autowired
     private MockMvc mockMvc;
-    
+
     @Test
     void shouldAccessWithOAuth2Login() throws Exception {
         mockMvc.perform(get("/profile")
@@ -286,7 +304,7 @@ class OAuth2LoginTest {
                     .authorities(new SimpleGrantedAuthority("ROLE_USER"))))
             .andExpect(status().isOk());
     }
-    
+
     @Test
     void shouldAccessWithOidcLogin() throws Exception {
         mockMvc.perform(get("/profile")
@@ -304,24 +322,24 @@ class OAuth2LoginTest {
 ```java
 @SpringBootTest
 class MethodSecurityTest {
-    
+
     @Autowired
     private OrderService orderService;
-    
+
     @Test
     @WithMockUser(username = "customer-123")
     void ownerCanAccessOwnOrder() {
         Order order = orderService.findByIdAndCustomer(1L, "customer-123");
         assertThat(order).isNotNull();
     }
-    
+
     @Test
     @WithMockUser(username = "other-customer")
     void nonOwnerCannotAccessOrder() {
         assertThatThrownBy(() -> orderService.findByIdAndCustomer(1L, "customer-123"))
             .isInstanceOf(AccessDeniedException.class);
     }
-    
+
     @Test
     @WithMockUser(roles = "ADMIN")
     void adminCanAccessAnyOrder() {
@@ -336,10 +354,10 @@ class MethodSecurityTest {
 ```java
 @WebMvcTest(OrderController.class)
 class CsrfTest {
-    
+
     @Autowired
     private MockMvc mockMvc;
-    
+
     @Test
     @WithMockUser
     void shouldRequireCsrfForPost() throws Exception {
@@ -348,7 +366,7 @@ class CsrfTest {
                 .content("{}"))
             .andExpect(status().isForbidden());  // Missing CSRF token
     }
-    
+
     @Test
     @WithMockUser
     void shouldAcceptWithCsrf() throws Exception {
@@ -358,7 +376,7 @@ class CsrfTest {
                 .content("{}"))
             .andExpect(status().isCreated());
     }
-    
+
     @Test
     @WithMockUser
     void shouldAcceptWithCsrfAsHeader() throws Exception {
@@ -376,10 +394,10 @@ class CsrfTest {
 ```java
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class SecurityIntegrationTest {
-    
+
     @Autowired
     private WebTestClient webClient;
-    
+
     @Test
     void shouldRejectUnauthenticatedRequest() {
         webClient.get()
@@ -387,18 +405,18 @@ class SecurityIntegrationTest {
             .exchange()
             .expectStatus().isUnauthorized();
     }
-    
+
     @Test
     void shouldAcceptBearerToken() {
         String token = generateTestJwt();
-        
+
         webClient.get()
             .uri("/api/orders")
             .headers(headers -> headers.setBearerAuth(token))
             .exchange()
             .expectStatus().isOk();
     }
-    
+
     @Test
     void shouldRejectInvalidToken() {
         webClient.get()
@@ -407,7 +425,7 @@ class SecurityIntegrationTest {
             .exchange()
             .expectStatus().isUnauthorized();
     }
-    
+
     private String generateTestJwt() {
         // Generate valid JWT for testing
         return Jwts.builder()
@@ -427,10 +445,10 @@ class SecurityIntegrationTest {
 @WebMvcTest(PublicController.class)
 @AutoConfigureMockMvc(addFilters = false)  // Disable security filters
 class PublicControllerTest {
-    
+
     @Autowired
     private MockMvcTester mvc;
-    
+
     @Test
     void shouldAccessWithoutAuth() {
         assertThat(mvc.get().uri("/public/health"))
@@ -444,7 +462,7 @@ Or import a test security config:
 ```java
 @TestConfiguration
 public class NoSecurityTestConfig {
-    
+
     @Bean
     @Order(Ordered.HIGHEST_PRECEDENCE)
     public SecurityFilterChain testSecurityFilterChain(HttpSecurity http) throws Exception {

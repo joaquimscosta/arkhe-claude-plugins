@@ -72,10 +72,11 @@ Consider microservices when:
 
 ## Detailed References
 
-- **Strategic Patterns**: See [references/strategic-patterns.md](references/strategic-patterns.md) for subdomains, bounded contexts, context mapping, event storming
-- **Tactical Patterns**: See [references/tactical-patterns.md](references/tactical-patterns.md) for entities, value objects, aggregates, services, repositories
-- **Architecture Alignment**: See [references/architecture-alignment.md](references/architecture-alignment.md) for clean/hexagonal architecture, modular monolith, microservices
-- **Anti-Patterns**: See [references/anti-patterns.md](references/anti-patterns.md) for common pitfalls and how to avoid them
+- **Strategic Patterns**: See [references/STRATEGIC-PATTERNS.md](references/STRATEGIC-PATTERNS.md) for subdomains, bounded contexts, context mapping, event storming
+- **Tactical Patterns**: See [references/TACTICAL-PATTERNS.md](references/TACTICAL-PATTERNS.md) for entities, value objects, aggregates, services, repositories
+- **Architecture Alignment**: See [references/ARCHITECTURE-ALIGNMENT.md](references/ARCHITECTURE-ALIGNMENT.md) for clean/hexagonal architecture, modular monolith, microservices
+- **Anti-Patterns**: See [references/ANTI-PATTERNS.md](references/ANTI-PATTERNS.md) for common pitfalls and how to avoid them
+- **Troubleshooting**: See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for common issues and solutions
 
 ## Critical Reminders
 

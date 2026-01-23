@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**Arkhe Claude Plugins** is a collection of Claude Code plugins providing specialized agents, commands, and skills for documentation, AI engineering, code review, UI/UX design, git workflows, Google Stitch prompting, Spec-Driven Development, and language-specific programming.
+**Arkhe Claude Plugins** is a collection of Claude Code plugins providing specialized agents, commands, and skills for documentation, AI engineering, code review, UI/UX design, git workflows, Google Stitch prompting, Design Intent, Domain-Driven Design, and language-specific programming.
 
 ## Plugin Architecture
 
@@ -18,17 +18,15 @@ This repository uses a **marketplace-based plugin system** where each plugin is 
 ```
 arkhe-claude-plugins/
 ├── .claude-plugin/
-│   └── marketplace.json          # Marketplace catalog (11 plugins)
-├── plugins/                       # All 11 plugins
+│   └── marketplace.json          # Marketplace catalog (9 plugins)
+├── plugins/                       # All 9 plugins
 │   ├── core/                      # Quality control and workflow orchestration
 │   ├── ai/                        # AI engineering and LLM development
 │   ├── doc/                       # Documentation generation
 │   ├── review/                    # Code review and quality
-│   ├── ui/                        # UI/UX design and design systems
 │   ├── google-stitch/             # Google Stitch prompting toolkit
 │   ├── git/                       # Git workflow automation
 │   ├── design-intent/             # Design Intent for SDD
-│   ├── specprep/                  # Spec Kit workflow optimization
 │   ├── lang/                      # Language-specific programming skills
 │   └── spring-boot/               # Domain-Driven Design with Spring Boot 4
 ├── docs/                          # Developer documentation
@@ -69,7 +67,8 @@ Quality control and workflow orchestration utilities.
 ### AI Plugin
 AI engineering toolkit for production-ready LLM applications.
 - **Agents**: `ai-engineer`, `prompt-engineer`, `context-manager`
-- **Commands**: `/improve-agent`, `/multi-agent-optimize`, `/lyra`
+- **Commands**: `/improve-agent`, `/multi-agent-optimize`
+- **Skills**: `lyra` (auto-invoked for AI prompt engineering)
 
 ### Doc Plugin
 Multi-purpose documentation toolkit.
@@ -81,11 +80,6 @@ Multi-purpose documentation toolkit.
 Code quality review tools for development teams.
 - **Agents**: `pragmatic-code-review`, `design-review`
 - **Commands**: `/code`, `/security`, `/design`, `/codebase`
-
-### UI Plugin
-UI/UX design and design system toolkit.
-- **Agents**: `ui-ux-designer`
-- **Commands**: None (all capabilities via agent)
 
 ### Google Stitch Plugin
 Claude + Google Stitch prompting toolkit for prompt authoring.
@@ -101,14 +95,9 @@ Git workflow automation for commits, pull requests, branching, and changelog gen
 
 ### Design Intent Plugin
 Design Intent for Spec-Driven Development that combines AI-assisted implementation with persistent pattern memory.
-- **Commands**: `/setup`, `/feature`, `/plan`, `/design`, `/implement`, `/save-patterns`, `/diary`
+- **Commands**: `/setup`, `/feature`, `/plan`, `/design-intent`, `/save-patterns`, `/diary`
 - **Skills**: `design-intent-specialist` (auto-invoked for visual implementation work)
 - **Use**: Build React prototypes from Figma/screenshots, capture proven patterns, and maintain design-intent diaries
-
-### Specprep Plugin
-AI meta-prompt framework for Spec Kit workflow optimization.
-- **Commands**: `/specprep:specify`
-- **Use**: Optimize feature specifications for SDD compliance, automated workflow chaining with SpecKit
 
 ### Lang Plugin
 Language-specific programming skills for production-grade code.
@@ -133,10 +122,8 @@ Domain-Driven Design patterns with Spring Boot 4 implementation.
 /plugin install ai@arkhe-claude-plugins
 /plugin install doc@arkhe-claude-plugins
 /plugin install review@arkhe-claude-plugins
-/plugin install ui@arkhe-claude-plugins
 /plugin install design-intent@arkhe-claude-plugins
 /plugin install git@arkhe-claude-plugins
-/plugin install specprep@arkhe-claude-plugins
 /plugin install google-stitch@arkhe-claude-plugins
 /plugin install lang@arkhe-claude-plugins
 /plugin install spring-boot@arkhe-claude-plugins

@@ -93,24 +93,24 @@ interface [ComponentName]Props {
 
 ---
 
-## Testing Approach
+## Visual Testing Approach
 
-- [ ] Manual testing across breakpoints
-- [ ] Verify all user stories
-- [ ] Check constitution compliance
-- [ ] Test with mock data variations
-
----
-
-## Rollback Plan
-
-If issues arise:
-1. [Rollback step 1]
-2. [Rollback step 2]
+- [ ] Test across all breakpoints (mobile, tablet, desktop)
+- [ ] Verify design token compliance
+- [ ] Check design intent pattern consistency
+- [ ] Test with various content lengths/states
 
 ---
 
-## Dependencies & Risks
+## Fallback Patterns
+
+If implementation diverges from reference:
+1. Revert to established design intent patterns
+2. Document exception with reasoning
+
+---
+
+## Visual Dependencies & Risks
 
 ### Dependencies
 - [External component/library]

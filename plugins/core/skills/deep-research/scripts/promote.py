@@ -16,7 +16,7 @@ import json
 import os
 import re
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional, Tuple
 
@@ -93,7 +93,7 @@ def build_promoted_content(
     team_notes: Optional[str] = None
 ) -> str:
     """Build the full promoted file content."""
-    now = datetime.utcnow().isoformat() + "Z"
+    now = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 
     # Build frontmatter
     frontmatter = f"""---
@@ -127,7 +127,7 @@ sources: {json.dumps(metadata.get('sources', []))}
 def update_readme_index(docs_dir: Path, slug: str, title: str) -> None:
     """Update the README.md index in the docs directory."""
     readme_path = docs_dir / "README.md"
-    now = datetime.utcnow().strftime("%Y-%m-%d")
+    now = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
     # Read existing README or create new
     if readme_path.exists():

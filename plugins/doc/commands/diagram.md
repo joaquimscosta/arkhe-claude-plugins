@@ -88,7 +88,7 @@ The command will provide:
 
 ## Integration
 
-This command invokes the **diagramming** skill with arguments: `$ARGUMENTS`
+Invoke the Skill tool with skill name "doc:diagramming" and arguments: `$ARGUMENTS`
 
 ## Related Resources
 

@@ -2,6 +2,24 @@
 
 Complete implementation patterns for DDD building blocks in Spring Data.
 
+## Table of Contents
+
+- [Strongly-Typed IDs](#strongly-typed-ids)
+  - [Java](#java)
+  - [Kotlin](#kotlin)
+- [Value Objects](#value-objects)
+  - [Java - Money Value Object](#java---money-value-object)
+  - [Kotlin - Money Value Object](#kotlin---money-value-object)
+- [Complex Value Object with Converter](#complex-value-object-with-converter)
+  - [Java](#java-1)
+- [Complete Aggregate Root](#complete-aggregate-root)
+  - [Java](#java-2)
+  - [Kotlin](#kotlin-1)
+- [Child Entity (within aggregate)](#child-entity-within-aggregate)
+- [Domain Events](#domain-events)
+- [Enable Auditing](#enable-auditing)
+- [Spring Data JDBC Alternative](#spring-data-jdbc-alternative)
+
 ## Strongly-Typed IDs
 
 Wrap primitive IDs to prevent parameter mixups and add domain meaning.

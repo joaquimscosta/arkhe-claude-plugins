@@ -2,6 +2,29 @@
 
 Complete configuration validation rules for Spring Boot 4.x projects.
 
+## Table of Contents
+
+- [Security Configuration Rules](#security-configuration-rules)
+  - [CRITICAL - Must Fix Immediately](#critical---must-fix-immediately)
+  - [ERROR - Will Cause Failures](#error---will-cause-failures)
+- [Actuator Configuration Rules](#actuator-configuration-rules)
+  - [WARNING - Security Risk](#warning---security-risk)
+  - [WARNING - Performance](#warning---performance)
+  - [Boot 4 Specific - New Access Control Model](#boot-4-specific---new-access-control-model)
+- [Application Properties Rules](#application-properties-rules)
+  - [Virtual Threads Configuration](#virtual-threads-configuration)
+  - [Graceful Shutdown (Required for Kubernetes)](#graceful-shutdown-required-for-kubernetes)
+  - [Health Probes for Kubernetes](#health-probes-for-kubernetes)
+  - [Jackson 3 Configuration](#jackson-3-configuration)
+- [Testing Configuration Rules](#testing-configuration-rules)
+  - [Rule: @AutoConfigureMockMvc Required](#rule-autoconfiguremockmvc-required)
+  - [Rule: @MockitoBean Required (Not @MockBean)](#rule-mockitobean-required-not-mockbean)
+- [Profile Configuration Rules](#profile-configuration-rules)
+  - [Rule: Check All Profile Files](#rule-check-all-profile-files)
+  - [WARNING: Secrets in Default Profile](#warning-secrets-in-default-profile)
+  - [WARNING: Debug Settings in Production](#warning-debug-settings-in-production)
+- [Grep Patterns for Configuration Detection](#grep-patterns-for-configuration-detection)
+
 ## Security Configuration Rules
 
 ### CRITICAL - Must Fix Immediately

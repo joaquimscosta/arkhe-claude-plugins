@@ -3,10 +3,32 @@
 Strategic DDD focuses on the problem space—understanding the domain before writing code.
 
 ## Table of Contents
-1. [Subdomains](#subdomains)
-2. [Bounded Contexts](#bounded-contexts)
-3. [Context Mapping Patterns](#context-mapping-patterns)
-4. [Event Storming](#event-storming)
+
+- [Subdomains](#subdomains)
+  - [Core Domain](#core-domain)
+  - [Supporting Domain](#supporting-domain)
+  - [Generic Domain](#generic-domain)
+  - [Subdomain Identification Questions](#subdomain-identification-questions)
+- [Bounded Contexts](#bounded-contexts)
+  - [Key Principles](#key-principles)
+  - [Problem Space vs Solution Space](#problem-space-vs-solution-space)
+  - [Identifying Bounded Context Boundaries](#identifying-bounded-context-boundaries)
+  - [Bounded Context Design Checklist](#bounded-context-design-checklist)
+- [Context Mapping Patterns](#context-mapping-patterns)
+  - [Partnership](#partnership)
+  - [Shared Kernel](#shared-kernel)
+  - [Customer-Supplier](#customer-supplier)
+  - [Conformist](#conformist)
+  - [Anticorruption Layer (ACL)](#anticorruption-layer-acl)
+  - [Open Host Service](#open-host-service)
+  - [Published Language](#published-language)
+  - [Separate Ways](#separate-ways)
+  - [Context Map Decision Framework](#context-map-decision-framework)
+- [Event Storming](#event-storming)
+  - [Color Coding](#color-coding)
+  - [Three Zoom Levels](#three-zoom-levels)
+  - [Facilitation Tips](#facilitation-tips)
+  - [Event Storming Outcomes](#event-storming-outcomes)
 
 ---
 

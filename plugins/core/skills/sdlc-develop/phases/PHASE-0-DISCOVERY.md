@@ -101,6 +101,8 @@ Present findings to user:
 Enter choice (1-4):
 ```
 
+**STOP: Unless `--auto` is set, WAIT for user response before proceeding to Phase 1.**
+
 ---
 
 ## Output

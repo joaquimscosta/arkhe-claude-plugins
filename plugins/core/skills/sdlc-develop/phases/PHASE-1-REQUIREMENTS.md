@@ -74,6 +74,8 @@ Present requirements summary:
 Enter choice (1-4):
 ```
 
+**STOP: Unless `--auto` is set, WAIT for user response before proceeding to Phase 2.**
+
 ---
 
 ## Output

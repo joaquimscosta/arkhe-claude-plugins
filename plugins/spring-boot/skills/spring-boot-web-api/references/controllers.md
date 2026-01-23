@@ -2,6 +2,24 @@
 
 Detailed patterns for REST controllers and Bean Validation 3.1.
 
+## Table of Contents
+
+- [Controller Structure](#controller-structure)
+  - [Complete CRUD Controller (Java)](#complete-crud-controller-java)
+  - [Kotlin Controller](#kotlin-controller)
+- [Bean Validation](#bean-validation)
+  - [Request DTOs with Validation](#request-dtos-with-validation)
+  - [Kotlin Request DTOs](#kotlin-request-dtos)
+  - [Validation Groups](#validation-groups)
+  - [Custom Validator](#custom-validator)
+  - [Cross-Field Validation](#cross-field-validation)
+- [Content Negotiation](#content-negotiation)
+- [Response Patterns](#response-patterns)
+  - [ResponseEntity Usage](#responseentity-usage)
+- [Path Variables & Query Parameters](#path-variables--query-parameters)
+- [File Upload](#file-upload)
+- [Async Controller Methods](#async-controller-methods)
+
 ## Controller Structure
 
 ### Complete CRUD Controller (Java)

@@ -2,6 +2,18 @@
 
 Complete SecurityFilterChain configurations for common scenarios.
 
+## Table of Contents
+
+- [Full REST API Configuration](#full-rest-api-configuration)
+  - [Java](#java)
+  - [Kotlin](#kotlin)
+- [Multiple Security Filter Chains](#multiple-security-filter-chains)
+- [Request Matchers Patterns](#request-matchers-patterns)
+- [Exception Handling](#exception-handling)
+- [Session Management](#session-management)
+- [Headers Security](#headers-security)
+- [Remember-Me](#remember-me)
+
 ## Full REST API Configuration
 
 ### Java
@@ -11,7 +23,7 @@ Complete SecurityFilterChain configurations for common scenarios.
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
-    
+
     @Bean
     @Order(1)
     public SecurityFilterChain apiFilterChain(HttpSecurity http) throws Exception {
@@ -53,7 +65,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable());
         return http.build();
     }
-    
+
     @Bean
     @Order(2)
     public SecurityFilterChain webFilterChain(HttpSecurity http) throws Exception {
@@ -74,19 +86,19 @@ public class SecurityConfig {
             );
         return http.build();
     }
-    
+
     @Bean
     public JwtAuthenticationConverter jwtAuthenticationConverter() {
-        JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = 
+        JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter =
             new JwtGrantedAuthoritiesConverter();
         grantedAuthoritiesConverter.setAuthoritiesClaimName("permissions");
         grantedAuthoritiesConverter.setAuthorityPrefix("");
-        
+
         JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
         converter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
         return converter;
     }
-    
+
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
@@ -99,7 +111,7 @@ public class SecurityConfig {
         config.setExposedHeaders(List.of("Location", "X-Total-Count"));
         config.setAllowCredentials(true);
         config.setMaxAge(3600L);
-        
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/api/**", config);
         return source;
@@ -116,7 +128,7 @@ import org.springframework.security.config.annotation.web.invoke
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
 class SecurityConfig {
-    
+
     @Bean
     @Order(1)
     fun apiFilterChain(http: HttpSecurity): SecurityFilterChain {
@@ -137,7 +149,7 @@ class SecurityConfig {
         }
         return http.build()
     }
-    
+
     @Bean
     @Order(2)
     fun webFilterChain(http: HttpSecurity): SecurityFilterChain {
@@ -157,7 +169,7 @@ class SecurityConfig {
         }
         return http.build()
     }
-    
+
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
         val config = CorsConfiguration().apply {
@@ -182,7 +194,7 @@ Use `@Order` and `securityMatcher()` for different authentication per path:
 @Configuration
 @EnableWebSecurity
 public class MultiSecurityConfig {
-    
+
     // API endpoints - JWT authentication
     @Bean
     @Order(1)
@@ -195,7 +207,7 @@ public class MultiSecurityConfig {
             .csrf(csrf -> csrf.disable());
         return http.build();
     }
-    
+
     // Actuator endpoints - Basic authentication
     @Bean
     @Order(2)
@@ -209,7 +221,7 @@ public class MultiSecurityConfig {
             .httpBasic(Customizer.withDefaults());
         return http.build();
     }
-    
+
     // Web pages - Form authentication
     @Bean
     @Order(3)
@@ -231,30 +243,30 @@ public class MultiSecurityConfig {
 .authorizeHttpRequests(auth -> auth
     // Exact path
     .requestMatchers("/api/orders").hasRole("USER")
-    
+
     // Path pattern with wildcard
     .requestMatchers("/api/orders/**").hasRole("USER")
-    
+
     // HTTP method specific
     .requestMatchers(HttpMethod.POST, "/api/orders").hasRole("ADMIN")
     .requestMatchers(HttpMethod.DELETE, "/api/**").hasRole("ADMIN")
-    
+
     // Multiple patterns
     .requestMatchers("/public/**", "/assets/**", "/error").permitAll()
-    
+
     // MVC pattern (recommended for MVC apps)
     .requestMatchers(new MvcRequestMatcher(introspector, "/users/{id}")).authenticated()
-    
+
     // Regex pattern
     .requestMatchers(new RegexRequestMatcher("/api/v[0-9]+/.*", null)).authenticated()
-    
+
     // IP-based (internal only)
     .requestMatchers(new IpAddressMatcher("192.168.1.0/24")).permitAll()
-    
+
     // Actuator endpoints
     .requestMatchers(EndpointRequest.to("health", "info")).permitAll()
     .requestMatchers(EndpointRequest.toAnyEndpoint()).hasRole("ACTUATOR")
-    
+
     // Default deny
     .anyRequest().authenticated()
 )
@@ -268,7 +280,7 @@ public class MultiSecurityConfig {
     .accessDeniedHandler((request, response, denied) -> {
         response.setStatus(HttpStatus.FORBIDDEN.value());
         response.setContentType(MediaType.APPLICATION_PROBLEM_JSON_VALUE);
-        
+
         ProblemDetail problem = ProblemDetail.forStatusAndDetail(
             HttpStatus.FORBIDDEN,
             "Access denied: " + denied.getMessage()
@@ -284,13 +296,13 @@ public class MultiSecurityConfig {
 .sessionManagement(session -> session
     // Stateless for APIs
     .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-    
+
     // Or for web apps with concurrent session control
     .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
     .maximumSessions(1)
     .maxSessionsPreventsLogin(false)  // Kicks out previous session
     .expiredUrl("/login?expired")
-    
+
     // Session fixation protection
     .sessionFixation().migrateSession()
 )
@@ -318,7 +330,7 @@ public class MultiSecurityConfig {
 
 ```java
 @Bean
-public SecurityFilterChain filterChain(HttpSecurity http, 
+public SecurityFilterChain filterChain(HttpSecurity http,
         PersistentTokenRepository tokenRepository) throws Exception {
     http
         .rememberMe(remember -> remember

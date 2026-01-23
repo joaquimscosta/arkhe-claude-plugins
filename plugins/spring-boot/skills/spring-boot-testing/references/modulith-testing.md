@@ -2,6 +2,29 @@
 
 @ApplicationModuleTest, Scenario API, and event verification.
 
+## Table of Contents
+
+- [@ApplicationModuleTest](#applicationmoduletest)
+  - [Basic Usage](#basic-usage)
+  - [Kotlin](#kotlin)
+- [Bootstrap Modes](#bootstrap-modes)
+- [Scenario API](#scenario-api)
+  - [Verify Event Publication](#verify-event-publication)
+  - [Kotlin Scenario](#kotlin-scenario)
+  - [Verify State Changes](#verify-state-changes)
+  - [Multiple Events](#multiple-events)
+  - [Event Matching](#event-matching)
+  - [Timeout Configuration](#timeout-configuration)
+- [Testing Event Handlers](#testing-event-handlers)
+  - [Publish Event Directly](#publish-event-directly)
+  - [Verify Handler Called](#verify-handler-called)
+- [Module Structure Verification](#module-structure-verification)
+- [Testing with Testcontainers](#testing-with-testcontainers)
+- [Testing Event Externalization](#testing-event-externalization)
+- [Custom Test Scenario Configuration](#custom-test-scenario-configuration)
+- [Testing Sagas / Process Managers](#testing-sagas--process-managers)
+- [Best Practices](#best-practices)
+
 ## @ApplicationModuleTest
 
 Tests a single module in isolation with controlled dependencies.
@@ -16,14 +39,14 @@ import org.springframework.modulith.test.Scenario;
 
 @ApplicationModuleTest
 class OrderModuleTest {
-    
+
     @Autowired
     private OrderService orderService;
-    
+
     @Test
     void shouldCreateOrder() {
         Order order = orderService.create(new CreateOrderRequest("customer-123"));
-        
+
         assertThat(order.getId()).isNotNull();
         assertThat(order.getStatus()).isEqualTo(OrderStatus.DRAFT);
     }
@@ -40,11 +63,11 @@ import org.springframework.modulith.test.Scenario
 
 @ApplicationModuleTest
 class OrderModuleTest(@Autowired val orderService: OrderService) {
-    
+
     @Test
     fun `should create order`() {
         val order = orderService.create(CreateOrderRequest("customer-123"))
-        
+
         assertThat(order.id).isNotNull()
         assertThat(order.status).isEqualTo(OrderStatus.DRAFT)
     }
@@ -62,13 +85,13 @@ class OrderModuleTest(@Autowired val orderService: OrderService) {
 ```java
 @ApplicationModuleTest(mode = BootstrapMode.DIRECT_DEPENDENCIES)
 class OrderModuleWithDependenciesTest {
-    
+
     @Autowired
     private OrderService orderService;
-    
+
     @Autowired
     private InventoryService inventoryService;  // Direct dependency available
-    
+
     // ShippingService NOT available if not direct dependency
 }
 ```
@@ -82,14 +105,14 @@ Fluent API for testing asynchronous event-driven behavior.
 ```java
 @ApplicationModuleTest
 class OrderEventTest {
-    
+
     @Autowired
     private OrderService orderService;
-    
+
     @Test
     void shouldPublishOrderCreatedEvent(Scenario scenario) {
         CreateOrderRequest request = new CreateOrderRequest("customer-123", "Widget", 5);
-        
+
         scenario.stimulate(() -> orderService.create(request))
             .andWaitForEventOfType(OrderCreated.class)
             .toArriveAndVerify(event -> {
@@ -106,11 +129,11 @@ class OrderEventTest {
 ```kotlin
 @ApplicationModuleTest
 class OrderEventTest(@Autowired val orderService: OrderService) {
-    
+
     @Test
     fun `should publish order created event`(scenario: Scenario) {
         val request = CreateOrderRequest("customer-123", "Widget", 5)
-        
+
         scenario.stimulate { orderService.create(request) }
             .andWaitForEventOfType(OrderCreated::class.java)
             .toArriveAndVerify { event ->
@@ -126,21 +149,21 @@ class OrderEventTest(@Autowired val orderService: OrderService) {
 ```java
 @ApplicationModuleTest
 class InventoryEventHandlerTest {
-    
+
     @Autowired
     private StockRepository stockRepository;
-    
+
     @Autowired
     private ApplicationEventPublisher eventPublisher;
-    
+
     @Test
     void shouldDecrementStockOnOrderCreated(Scenario scenario) {
         // Setup initial stock
         stockRepository.save(new Stock("product-123", 100));
-        
+
         // Publish event
         OrderCreated event = new OrderCreated(1L, "customer-1", "product-123", 5);
-        
+
         scenario.publish(event)
             .andWaitForStateChange(() -> stockRepository.findByProductId("product-123"))
             .andVerify(stock -> {
@@ -200,20 +223,20 @@ void shouldCompleteWithinTimeout(Scenario scenario) {
 ```java
 @ApplicationModuleTest
 class NotificationEventHandlerTest {
-    
+
     @Autowired
     private NotificationRepository notificationRepository;
-    
+
     @Test
     void shouldCreateNotificationOnOrderShipped(Scenario scenario) {
         OrderShipped event = new OrderShipped(
-            1L, 
-            "customer-123", 
+            1L,
+            "customer-123",
             "TRACK-12345"
         );
-        
+
         scenario.publish(event)
-            .andWaitForStateChange(() -> 
+            .andWaitForStateChange(() ->
                 notificationRepository.findByCustomerId("customer-123"))
             .andVerify(notifications -> {
                 assertThat(notifications).hasSize(1);
@@ -229,18 +252,18 @@ class NotificationEventHandlerTest {
 ```java
 @ApplicationModuleTest
 class AnalyticsEventHandlerTest {
-    
+
     @MockitoBean
     private AnalyticsClient analyticsClient;
-    
+
     @Test
     void shouldTrackOrderEvent(Scenario scenario) {
         OrderCreated event = new OrderCreated(1L, "customer-123", "Widget", 5);
-        
+
         scenario.publish(event)
             .andWaitForEventOfType(OrderCreated.class)
             .toArrive();
-        
+
         verify(analyticsClient, timeout(5000)).track(
             eq("order_created"),
             argThat(props -> props.get("orderId").equals(1L))
@@ -253,22 +276,22 @@ class AnalyticsEventHandlerTest {
 
 ```java
 class ModularityTests {
-    
-    private static final ApplicationModules modules = 
+
+    private static final ApplicationModules modules =
         ApplicationModules.of(Application.class);
-    
+
     @Test
     void shouldHaveNoCircularDependencies() {
         modules.verify();
     }
-    
+
     @Test
     void shouldDocumentModules() {
         new Documenter(modules)
             .writeModulesAsPlantUml()
             .writeIndividualModulesAsPlantUml();
     }
-    
+
     @Test
     void shouldDetectAllModules() {
         assertThat(modules.stream())
@@ -289,19 +312,19 @@ class ModularityTests {
 @ApplicationModuleTest
 @Testcontainers
 class OrderModuleIntegrationTest {
-    
+
     @Container
     @ServiceConnection
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16");
-    
+
     @Container
     @ServiceConnection
     static KafkaContainer kafka = new KafkaContainer(
         DockerImageName.parse("confluentinc/cp-kafka:7.5.0"));
-    
+
     @Autowired
     private OrderService orderService;
-    
+
     @Test
     void shouldPersistAndPublish(Scenario scenario) {
         scenario.stimulate(() -> orderService.create(request))
@@ -320,27 +343,27 @@ class OrderModuleIntegrationTest {
 @ApplicationModuleTest
 @EmbeddedKafka
 class EventExternalizationTest {
-    
+
     @Autowired
     private OrderService orderService;
-    
+
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
-    
+
     @Autowired
     private EmbeddedKafkaBroker embeddedKafka;
-    
+
     @Test
     void shouldExternalizeEventToKafka(Scenario scenario) {
         Consumer<String, String> consumer = createConsumer("orders-topic");
-        
+
         scenario.stimulate(() -> orderService.create(request))
             .andWaitForEventOfType(OrderCreated.class)
             .toArrive();
-        
-        ConsumerRecords<String, String> records = 
+
+        ConsumerRecords<String, String> records =
             KafkaTestUtils.getRecords(consumer, Duration.ofSeconds(10));
-        
+
         assertThat(records.count()).isEqualTo(1);
         assertThat(records.iterator().next().value())
             .contains("\"type\":\"OrderCreated\"");
@@ -354,7 +377,7 @@ class EventExternalizationTest {
 @ApplicationModuleTest
 @Import(TestScenarioConfig.class)
 class CustomScenarioTest {
-    
+
     @Test
     void shouldUseCustomTimeout(Scenario scenario) {
         scenario.stimulate(() -> slowService.process())
@@ -367,7 +390,7 @@ class CustomScenarioTest {
 
 @TestConfiguration
 class TestScenarioConfig {
-    
+
     @Bean
     public ScenarioCustomizer scenarioCustomizer() {
         return ScenarioCustomizer.builder()
@@ -382,10 +405,10 @@ class TestScenarioConfig {
 ```java
 @ApplicationModuleTest
 class OrderFulfillmentSagaTest {
-    
+
     @Autowired
     private OrderService orderService;
-    
+
     @Test
     void shouldCompleteFulfillmentSaga(Scenario scenario) {
         // Start saga
@@ -401,17 +424,17 @@ class OrderFulfillmentSagaTest {
             .toArriveAndVerify(event -> {
                 assertThat(event.trackingNumber()).isNotNull();
             });
-        
+
         // Verify final state
         Order order = orderService.findById(orderId);
         assertThat(order.getStatus()).isEqualTo(OrderStatus.SHIPPED);
     }
-    
+
     @Test
     void shouldCompensateOnFailure(Scenario scenario) {
         // Setup payment to fail
         paymentService.setForceFail(true);
-        
+
         scenario.stimulate(() -> orderService.submit(orderId))
             .andWaitForEventOfType(OrderSubmitted.class)
             .toArrive()
@@ -421,7 +444,7 @@ class OrderFulfillmentSagaTest {
             .toArriveAndVerify(event -> {
                 assertThat(event.reason()).contains("Payment failed");
             });
-        
+
         // Verify compensating actions
         Order order = orderService.findById(orderId);
         assertThat(order.getStatus()).isEqualTo(OrderStatus.CANCELLED);
