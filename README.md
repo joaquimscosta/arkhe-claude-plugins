@@ -13,7 +13,7 @@
     <a href="LICENSE">
       <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License" />
     </a>
-    <img src="https://img.shields.io/badge/Plugins-10-blue" alt="Plugins Count" />
+    <img src="https://img.shields.io/badge/Plugins-9-blue" alt="Plugins Count" />
     <img src="https://img.shields.io/badge/Version-1.0.0-orange" alt="Version" />
     <a href="https://github.com/joaquimscosta/arkhe-claude-plugins/stargazers">
       <img src="https://img.shields.io/github/stars/joaquimscosta/arkhe-claude-plugins" alt="Stars" />

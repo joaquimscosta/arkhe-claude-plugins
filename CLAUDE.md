@@ -67,7 +67,8 @@ Quality control and workflow orchestration utilities.
 ### AI Plugin
 AI engineering toolkit for production-ready LLM applications.
 - **Agents**: `ai-engineer`, `prompt-engineer`, `context-manager`
-- **Commands**: `/improve-agent`, `/multi-agent-optimize`, `/lyra`
+- **Commands**: `/improve-agent`, `/multi-agent-optimize`
+- **Skills**: `lyra` (auto-invoked for AI prompt engineering)
 
 ### Doc Plugin
 Multi-purpose documentation toolkit.
@@ -94,7 +95,7 @@ Git workflow automation for commits, pull requests, branching, and changelog gen
 
 ### Design Intent Plugin
 Design Intent for Spec-Driven Development that combines AI-assisted implementation with persistent pattern memory.
-- **Commands**: `/setup`, `/feature`, `/plan`, `/design`, `/implement`, `/save-patterns`, `/diary`
+- **Commands**: `/setup`, `/feature`, `/plan`, `/design-intent`, `/save-patterns`, `/diary`
 - **Skills**: `design-intent-specialist` (auto-invoked for visual implementation work)
 - **Use**: Build React prototypes from Figma/screenshots, capture proven patterns, and maintain design-intent diaries
 

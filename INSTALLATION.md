@@ -68,7 +68,8 @@ AI engineering toolkit for production-ready LLM applications.
 
 **Components**:
 - 3 agents: `ai-engineer`, `prompt-engineer`, `context-manager`
-- 3 commands: `/improve-agent`, `/multi-agent-optimize`, `/lyra`
+- 2 commands: `/improve-agent`, `/multi-agent-optimize`
+- 1 skill: `lyra` (auto-invoked for AI prompt engineering)
 
 ---
 
@@ -115,7 +116,7 @@ Design Intent for Spec-Driven Development that combines AI-assisted implementati
 **Install**: `/plugin install design-intent@arkhe-claude-plugins`
 
 **Components**:
-- 7 commands: `/setup`, `/feature`, `/plan`, `/design`, `/implement`, `/save-patterns`, `/diary`
+- 6 commands: `/setup`, `/feature`, `/plan`, `/design-intent`, `/save-patterns`, `/diary`
 - 1 skill: `design-intent-specialist` (auto-invoked when implementing from visual references)
 
 **Use for:** Capturing team-specific design intent, translating Figma/screenshots into React implementations, and keeping pattern memory plus diaries synchronized.
@@ -222,11 +223,11 @@ You should see agents from installed plugins:
 
 You should see commands from installed plugins:
 - **core**: `/discuss`, `/double-check`, `/develop`, `/debug`, `/think`, `/research`
-- **ai**: `/improve-agent`, `/multi-agent-optimize`, `/lyra`
+- **ai**: `/improve-agent`, `/multi-agent-optimize`
 - **doc**: `/doc-generate`, `/code-explain`, `/diagram`
 - **review**: `/code`, `/security`, `/design`, `/codebase`
 - **git**: `/commit`, `/create-pr`, `/create-branch`, `/changelog`, `/pr-issue-resolve`
-- **design-intent**: `/setup`, `/feature`, `/plan`, `/design`, `/implement`, `/save-patterns`, `/diary`
+- **design-intent**: `/setup`, `/feature`, `/plan`, `/design-intent`, `/save-patterns`, `/diary`
 - **google-stitch**: `/prompt`
 
 ### Check Skills
@@ -235,7 +236,7 @@ Skills are automatically invoked when relevant context is detected:
 - **core**: `workflow-orchestration` activates for complex multi-step tasks; `deep-research` activates for research queries
 - **doc**: `diagramming` skill activates when you mention diagrams, flowcharts, or visualization keywords
 - **git**: `generating-changelog` skill activates when you edit CHANGELOG.md or request changelog generation
-- **design-intent**: `design-intent-specialist` activates when you're implementing UI from visual references or running `/design` or `/implement`
+- **design-intent**: `design-intent-specialist` activates when you're implementing UI from visual references or running `/design-intent`
 - **google-stitch**: `authoring-stitch-prompts`, `extracting-stitch-mockups` activate for Stitch prompt work
 - **lang**: `scripting-bash` skill activates for Bash scripting guidance
 
