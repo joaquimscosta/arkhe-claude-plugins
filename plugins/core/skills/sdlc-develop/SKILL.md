@@ -34,11 +34,23 @@ Parse from `$ARGUMENTS`:
 | `--validate` | Enable deep validation with opus agent in Phase 4 |
 | `--phase=N` | Execute specific phase only |
 | `--auto` | Autonomous mode (no checkpoints) |
-| `@path/to/plan.md` | Resume existing plan from path |
+| `@path/to/spec` | Resume existing plan or run verification from path |
+| `--verify-arch` | Verify implementation matches plan.md architecture |
+| `--verify-impl` | Verify implementation meets spec.md requirements |
 
 ## Mode Detection
 
-**RESUME_MODE** - If `@path` reference found AND plan.md exists:
+**VERIFY_MODE** - If `--verify-arch` or `--verify-impl` flags present:
+- Require `@path` reference to existing spec directory
+- Load spec artifacts (spec.md, plan.md, tasks.md, api-contract.md if exists)
+- Run verification workflow(s) based on flags:
+  - `--verify-arch` → Read [VERIFY-ARCH.md](VERIFY-ARCH.md)
+  - `--verify-impl` → Read [VERIFY-IMPL.md](VERIFY-IMPL.md)
+  - Both flags → Run both verifications
+- Output verification report using [verification-report.md.template](templates/verification-report.md.template)
+- Does NOT execute SDLC phases
+
+**RESUME_MODE** - If `@path` reference found AND plan.md exists (no verify flags):
 - Read existing plan from path
 - Ask user which phase to continue from
 - Skip to that phase, load only that phase file
@@ -103,6 +115,7 @@ arkhe/specs/
 | [api-contract.md.template](templates/api-contract.md.template) | 2 | When API endpoints involved |
 | [data-models.md.template](templates/data-models.md.template) | 2 | When database changes involved |
 | [tasks.md.template](templates/tasks.md.template) | 3 | Always (task breakdown) |
+| [verification-report.md.template](templates/verification-report.md.template) | verify | When `--verify-arch` or `--verify-impl` used |
 
 ## Configuration
 

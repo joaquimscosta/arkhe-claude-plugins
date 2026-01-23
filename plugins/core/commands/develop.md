@@ -1,6 +1,6 @@
 ---
 description: Unified 6-phase SDLC with plan persistence, resume mode, and autonomous execution
-argument-hint: <feature description> [--plan-only] [--validate] [--auto] [@path/to/plan]
+argument-hint: <feature description> [--plan-only] [--validate] [--auto] [--verify-arch] [--verify-impl] [@path/to/plan]
 ---
 
 # Develop
@@ -14,6 +14,9 @@ Guided feature development through a 6-phase SDLC pipeline with plan persistence
 /develop add logout button --auto        # Autonomous mode
 /develop create plan for X --plan-only   # Plan only
 /develop @arkhe/specs/01-auth/           # Resume existing
+/develop @arkhe/specs/01-auth/ --verify-arch   # Verify architecture alignment
+/develop @arkhe/specs/01-auth/ --verify-impl   # Verify implementation completeness
+/develop @arkhe/specs/01-auth/ --verify-arch --verify-impl  # Full audit
 ```
 
 ## Flags
@@ -25,6 +28,8 @@ Guided feature development through a 6-phase SDLC pipeline with plan persistence
 | `--phase=N` | Execute specific phase only |
 | `--auto` | Autonomous mode (no checkpoints) |
 | `@path` | Resume from existing plan |
+| `--verify-arch` | Verify implementation matches plan.md architecture |
+| `--verify-impl` | Verify implementation meets spec.md requirements |
 
 ## Implementation
 
