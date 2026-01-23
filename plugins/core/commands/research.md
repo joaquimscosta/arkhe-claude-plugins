@@ -38,11 +38,13 @@ If arguments don't start with `promote`, `refresh`, or `list`:
 ### Operation: Promote
 If arguments start with `promote <slug>`:
 
-1. Read the cached research from `~/.claude/plugins/research/entries/{slug}/`
-2. Add human/auto section markers to the content
-3. Write to `docs/research/{slug}.md` (or configured location)
-4. Update `docs/research/README.md` with the new entry
-5. Confirm promotion with file path
+1. Run the promote script to handle the promotion:
+   ```bash
+   python plugins/core/skills/deep-research/scripts/promote.py {slug}
+   ```
+2. Parse the JSON output from the script
+3. If success is true, report: "Promoted {slug} to {path}"
+4. If success is false, report the error message
 
 ### Operation: Refresh
 If arguments start with `refresh <slug>`:
