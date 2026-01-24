@@ -20,175 +20,262 @@
 
 set -euo pipefail
 
-# Colors for output
+# --- Output Helpers ---
+
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
-NC='\033[0m' # No Color
+NC='\033[0m'
 
-VERSION="${1:-}"
+function print_error() {
+    echo -e "${RED}Error: $1${NC}" >&2
+}
 
-# --- Validation ---
+function print_success() {
+    echo -e "${GREEN}✓ $1${NC}"
+}
 
-if [[ -z "$VERSION" ]]; then
-    echo -e "${RED}Error: Version required${NC}"
-    echo "Usage: release.sh <version>"
-    echo "Example: release.sh 1.6.0"
-    exit 1
-fi
+function print_warning() {
+    echo -e "${YELLOW}$1${NC}"
+}
 
-# Strip 'v' prefix if present
-VERSION="${VERSION#v}"
+function print_banner() {
+    local color="$1"
+    local message="$2"
+    echo -e "${color}=======================================${NC}"
+    echo -e "${color}  $message${NC}"
+    echo -e "${color}=======================================${NC}"
+}
 
-# Validate semver format
-if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-    echo -e "${RED}Error: Invalid version format '$VERSION'${NC}"
-    echo "Expected semantic version (e.g., 1.6.0)"
-    exit 1
-fi
+# --- Validation Functions ---
 
-TAG="v$VERSION"
-CHANGELOG_FILE="CHANGELOG.md"
-REPO_URL=$(gh repo view --json url -q '.url')
+function validate_version_arg() {
+    if [[ -z "${1:-}" ]]; then
+        print_error "Version required"
+        echo "Usage: release.sh <version>"
+        echo "Example: release.sh 1.6.0"
+        exit 1
+    fi
+}
 
-echo "Preparing release $TAG..."
-echo ""
+function validate_semver_format() {
+    local version="$1"
+    if ! [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+        print_error "Invalid version format '$version'"
+        echo "Expected semantic version (e.g., 1.6.0)"
+        exit 1
+    fi
+}
 
-# --- Check CHANGELOG entry exists ---
+function check_changelog_entry() {
+    local version="$1"
+    local changelog="$2"
 
-echo "Checking CHANGELOG.md for version $VERSION..."
-if ! grep -qE "^## \[$VERSION\]" "$CHANGELOG_FILE"; then
-    echo -e "${RED}Error: No CHANGELOG entry found for version $VERSION${NC}"
-    echo ""
-    echo "Please add an entry to CHANGELOG.md with the header:"
-    echo "  ## [$VERSION] - $(date +%Y-%m-%d)"
-    echo ""
-    echo "Tip: Use '/changelog' in Claude Code to generate the entry."
-    exit 1
-fi
-echo -e "${GREEN}✓ CHANGELOG entry found${NC}"
+    echo "Checking CHANGELOG.md for version $version..."
+    if ! grep -qE "^## \[$version\]" "$changelog"; then
+        print_error "No CHANGELOG entry found for version $version"
+        echo ""
+        echo "Please add an entry to CHANGELOG.md with the header:"
+        echo "  ## [$version] - $(date +%Y-%m-%d)"
+        echo ""
+        echo "Tip: Use '/changelog' in Claude Code to generate the entry."
+        exit 1
+    fi
+    print_success "CHANGELOG entry found"
+}
 
-# --- Check if release already exists ---
+function check_release_not_exists() {
+    local tag="$1"
 
-echo "Checking if release $TAG already exists..."
-if gh release view "$TAG" &>/dev/null; then
-    echo -e "${RED}Error: Release $TAG already exists${NC}"
-    echo "Delete it first with: gh release delete $TAG --yes"
-    exit 1
-fi
-echo -e "${GREEN}✓ Release does not exist${NC}"
+    echo "Checking if release $tag already exists..."
+    if gh release view "$tag" &>/dev/null; then
+        print_error "Release $tag already exists"
+        echo "Delete it first with: gh release delete $tag --yes"
+        exit 1
+    fi
+    print_success "Release does not exist"
+}
 
-# --- Add comparison link if missing ---
+# --- Changelog Link Management ---
 
-echo "Checking comparison links..."
+function get_previous_version() {
+    local version="$1"
+    local changelog="$2"
 
-# Find the previous version (the one after the current version header in CHANGELOG)
-PREV_VERSION=$(grep -E "^## \[[0-9]+\.[0-9]+\.[0-9]+\]" "$CHANGELOG_FILE" | head -2 | tail -1 | sed 's/.*\[\([0-9.]*\)\].*/\1/')
+    # Find the second version header (first is current version)
+    local prev
+    prev=$(grep -E "^## \[[0-9]+\.[0-9]+\.[0-9]+\]" "$changelog" \
+        | head -2 \
+        | tail -1 \
+        | sed 's/.*\[\([0-9.]*\)\].*/\1/')
 
-if [[ -z "$PREV_VERSION" ]] || [[ "$PREV_VERSION" == "$VERSION" ]]; then
-    # This is the first version or we couldn't find previous
-    PREV_VERSION=""
-fi
-
-# Check if comparison link already exists for this version
-if grep -qE "^\[$VERSION\]:" "$CHANGELOG_FILE"; then
-    echo -e "${GREEN}✓ Comparison link already exists${NC}"
-else
-    echo -e "${YELLOW}Adding comparison link for $VERSION...${NC}"
-
-    # Build the comparison link
-    if [[ -n "$PREV_VERSION" ]]; then
-        COMPARE_LINK="[$VERSION]: $REPO_URL/compare/v$PREV_VERSION...v$VERSION"
+    # Return empty if this is the first version
+    if [[ "$prev" == "$version" ]]; then
+        echo ""
     else
-        COMPARE_LINK="[$VERSION]: $REPO_URL/releases/tag/v$VERSION"
+        echo "$prev"
+    fi
+}
+
+function add_comparison_link() {
+    local version="$1"
+    local changelog="$2"
+    local repo_url="$3"
+
+    echo "Checking comparison links..."
+
+    # Skip if link already exists
+    if grep -qE "^\[$version\]:" "$changelog"; then
+        print_success "Comparison link already exists"
+        return 0
     fi
 
-    # Find the line with [Unreleased] link and update it, then add new version link
-    if grep -qE "^\[Unreleased\]:" "$CHANGELOG_FILE"; then
-        # Update [Unreleased] to point to new version
-        sed -i.bak "s|\[Unreleased\]:.*|[Unreleased]: $REPO_URL/compare/v$VERSION...HEAD|" "$CHANGELOG_FILE"
+    print_warning "Adding comparison link for $version..."
 
-        # Add new version link after [Unreleased]
-        sed -i.bak "/^\[Unreleased\]:/a\\
-$COMPARE_LINK" "$CHANGELOG_FILE"
+    local prev_version
+    prev_version=$(get_previous_version "$version" "$changelog")
 
-        rm -f "$CHANGELOG_FILE.bak"
-        echo -e "${GREEN}✓ Added comparison link${NC}"
+    # Build comparison link based on whether previous version exists
+    local compare_link
+    if [[ -n "$prev_version" ]]; then
+        compare_link="[$version]: $repo_url/compare/v$prev_version...v$version"
     else
-        echo -e "${YELLOW}Warning: Could not find [Unreleased] link to update${NC}"
-        echo "Please manually add: $COMPARE_LINK"
+        compare_link="[$version]: $repo_url/releases/tag/v$version"
     fi
-fi
 
-# --- Check for uncommitted changes ---
+    # Update [Unreleased] link and add new version link
+    if ! grep -qE "^\[Unreleased\]:" "$changelog"; then
+        print_warning "Warning: Could not find [Unreleased] link to update"
+        echo "Please manually add: $compare_link"
+        return 0
+    fi
 
-if ! git diff --quiet "$CHANGELOG_FILE" 2>/dev/null; then
+    # Update Unreleased to point to new version, then add version link
+    sed -i.bak "s|\[Unreleased\]:.*|[Unreleased]: $repo_url/compare/v$version...HEAD|" "$changelog"
+    sed -i.bak "/^\[Unreleased\]:/a\\
+$compare_link" "$changelog"
+    rm -f "$changelog.bak"
+
+    print_success "Added comparison link"
+}
+
+# --- Git Operations ---
+
+function commit_changelog_changes() {
+    local version="$1"
+    local changelog="$2"
+
+    # Skip if no changes
+    if git diff --quiet "$changelog" 2>/dev/null; then
+        return 0
+    fi
+
     echo ""
     echo "CHANGELOG.md has uncommitted changes."
     read -p "Commit and push? [y/N] " -n 1 -r
     echo ""
 
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
-        git add "$CHANGELOG_FILE"
-        git commit -m "docs: prepare release $VERSION"
-        git push origin main
-        echo -e "${GREEN}✓ Changes committed and pushed${NC}"
-    else
-        echo -e "${YELLOW}Skipping commit. Run manually before triggering workflow.${NC}"
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        print_warning "Skipping commit. Run manually before triggering workflow."
         exit 0
     fi
-fi
 
-# --- Trigger workflow ---
+    git add "$changelog"
+    git commit -m "docs: prepare release $version"
+    git push origin main
+    print_success "Changes committed and pushed"
+}
 
-echo ""
-echo "Triggering release workflow for $TAG..."
-gh workflow run release.yml -f version="$VERSION"
-echo -e "${GREEN}✓ Workflow triggered${NC}"
+# --- Workflow Management ---
 
-# --- Wait for workflow ---
+function trigger_workflow() {
+    local version="$1"
+    local tag="v$version"
 
-echo ""
-echo "Waiting for workflow to start..."
-sleep 5
+    echo ""
+    echo "Triggering release workflow for $tag..."
+    gh workflow run release.yml -f version="$version"
+    print_success "Workflow triggered"
+}
 
-RUN_ID=$(gh run list --workflow=release.yml --limit=1 --json databaseId -q '.[0].databaseId')
+function wait_for_workflow() {
+    local version="$1"
+    local repo_url="$2"
 
-if [[ -z "$RUN_ID" ]]; then
-    echo -e "${RED}Error: Could not find workflow run${NC}"
-    exit 1
-fi
+    echo ""
+    echo "Waiting for workflow to start..."
+    sleep 5
 
-echo "Monitoring workflow run $RUN_ID..."
-echo "View at: $REPO_URL/actions/runs/$RUN_ID"
-echo ""
+    local run_id
+    run_id=$(gh run list --workflow=release.yml --limit=1 --json databaseId -q '.[0].databaseId')
 
-# Poll for completion
-while true; do
-    STATUS=$(gh run view "$RUN_ID" --json status,conclusion -q '.status')
-
-    if [[ "$STATUS" == "completed" ]]; then
-        CONCLUSION=$(gh run view "$RUN_ID" --json conclusion -q '.conclusion')
-        break
+    if [[ -z "$run_id" ]]; then
+        print_error "Could not find workflow run"
+        exit 1
     fi
 
-    echo "  Status: $STATUS..."
-    sleep 5
-done
-
-echo ""
-
-if [[ "$CONCLUSION" == "success" ]]; then
-    echo -e "${GREEN}═══════════════════════════════════════${NC}"
-    echo -e "${GREEN}  Release $TAG created successfully!${NC}"
-    echo -e "${GREEN}═══════════════════════════════════════${NC}"
+    echo "Monitoring workflow run $run_id..."
+    echo "View at: $repo_url/actions/runs/$run_id"
     echo ""
-    echo "View release: $REPO_URL/releases/tag/$TAG"
-else
-    echo -e "${RED}═══════════════════════════════════════${NC}"
-    echo -e "${RED}  Workflow failed with: $CONCLUSION${NC}"
-    echo -e "${RED}═══════════════════════════════════════${NC}"
+
+    # Poll for completion
+    local status conclusion
+    while true; do
+        status=$(gh run view "$run_id" --json status,conclusion -q '.status')
+
+        if [[ "$status" == "completed" ]]; then
+            conclusion=$(gh run view "$run_id" --json conclusion -q '.conclusion')
+            break
+        fi
+
+        echo "  Status: $status..."
+        sleep 5
+    done
+
+    # Report result
     echo ""
-    echo "View logs: $REPO_URL/actions/runs/$RUN_ID"
-    exit 1
-fi
+    if [[ "$conclusion" == "success" ]]; then
+        print_banner "$GREEN" "Release v$version created successfully!"
+        echo ""
+        echo "View release: $repo_url/releases/tag/v$version"
+    else
+        print_banner "$RED" "Workflow failed with: $conclusion"
+        echo ""
+        echo "View logs: $repo_url/actions/runs/$run_id"
+        exit 1
+    fi
+}
+
+# --- Main ---
+
+function main() {
+    local version="${1:-}"
+
+    # Validate inputs
+    validate_version_arg "$version"
+    version="${version#v}"  # Strip 'v' prefix if present
+    validate_semver_format "$version"
+
+    local changelog="CHANGELOG.md"
+    local repo_url
+    repo_url=$(gh repo view --json url -q '.url')
+
+    echo "Preparing release v$version..."
+    echo ""
+
+    # Pre-flight checks
+    check_changelog_entry "$version" "$changelog"
+    check_release_not_exists "v$version"
+
+    # Update changelog links
+    add_comparison_link "$version" "$changelog" "$repo_url"
+
+    # Commit if needed
+    commit_changelog_changes "$version" "$changelog"
+
+    # Trigger and monitor workflow
+    trigger_workflow "$version"
+    wait_for_workflow "$version" "$repo_url"
+}
+
+main "$@"
