@@ -69,12 +69,15 @@ Return:
 
 ## Step 2d: Save Plan
 
-### Directory Structure
+### Load Configuration
 
-1. Check for `.arkhe.yaml` config at project root
-2. If no config, use default: `arkhe/specs/`
-3. Detect highest NN prefix in specs directory, increment for new spec
-4. Create directory: `arkhe/specs/NN-{feature_slug}/`
+**MANDATORY: Read `.arkhe.yaml` from project root first.**
+
+1. If `.arkhe.yaml` exists, read `develop.specs_dir` value
+2. If no config, use default: `arkhe/specs`
+3. Store this value as `{specs_dir}` for all subsequent path operations
+4. Detect highest NN prefix in `{specs_dir}/`, increment for new spec
+5. Create directory: `{specs_dir}/NN-{feature_slug}/`
 
 ### Files to Generate
 
@@ -139,7 +142,7 @@ Enter choice (1-4):
 
 After saving plan files, automatically proceed to next phase.
 
-Log: "Plan saved to `arkhe/specs/{NN}-{feature_slug}/`"
+Log: "Plan saved to `{specs_dir}/{NN}-{feature_slug}/`"
 
 ---
 
@@ -149,13 +152,13 @@ Log: "Plan saved to `arkhe/specs/{NN}-{feature_slug}/`"
 
 Stop here with message:
 ```
-Spec saved to `arkhe/specs/{NN}-{feature_slug}/`
+Spec saved to `{specs_dir}/{NN}-{feature_slug}/`
 
 Files created:
 - spec.md (requirements)
 - plan.md (architecture)
 
-Run `/develop @arkhe/specs/{NN}-{feature_slug}/` when ready to implement.
+Run `/develop @{specs_dir}/{NN}-{feature_slug}/` when ready to implement.
 ```
 
 ---

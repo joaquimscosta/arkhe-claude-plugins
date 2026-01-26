@@ -114,10 +114,10 @@ Load phase files **only when entering that phase**:
 
 ## Spec Directory Structure
 
-Plans are persisted to `arkhe/specs/` with auto-incrementing prefixes:
+Plans are persisted to `{specs_dir}/` with auto-incrementing prefixes:
 
 ```
-arkhe/specs/
+{specs_dir}/
 ├── 01-user-auth/
 │   ├── spec.md       # Requirements
 │   ├── plan.md       # Architecture
@@ -125,6 +125,8 @@ arkhe/specs/
 ├── 02-dashboard/
 └── ...
 ```
+
+**Note:** `{specs_dir}` references the configured value from `.arkhe.yaml` (default: `arkhe/specs`).
 
 ## Templates
 
@@ -141,14 +143,19 @@ arkhe/specs/
 
 ## Configuration
 
-If `.arkhe.yaml` exists at project root:
+**On first run or when entering Phase 2d:**
+1. Read `.arkhe.yaml` from project root (if exists)
+2. Extract `develop.specs_dir` value (default: `arkhe/specs`)
+3. Use this value for ALL spec directory operations
 
 ```yaml
 develop:
-  specs_dir: arkhe/specs  # Default
+  specs_dir: arkhe/specs  # Customize this path
   numbering: true         # NN- prefix
   ticket_format: full     # full | simple
 ```
+
+**All paths in this skill use `{specs_dir}` to reference the configured value.**
 
 First run without config prompts for preferences.
 

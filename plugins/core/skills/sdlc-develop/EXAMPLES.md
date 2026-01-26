@@ -1,5 +1,7 @@
 # SDLC Develop Examples
 
+> **Note:** All examples use the default path `arkhe/specs/`. If you configure a custom `specs_dir` in `.arkhe.yaml`, paths will use your configured value instead (e.g., `plan/arkhe/specs/`).
+
 ## Full Pipeline (Interactive)
 
 ```bash

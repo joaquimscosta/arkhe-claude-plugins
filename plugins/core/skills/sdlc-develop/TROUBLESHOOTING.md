@@ -16,7 +16,7 @@ Common issues and solutions when using the `/develop` command.
 
 **Symptom:** Error when saving spec files
 
-**Solution:** The skill auto-creates `arkhe/specs/` on first use. If you have a custom `specs_dir` in `.arkhe.yaml`, ensure the parent directory exists.
+**Solution:** The skill auto-creates the configured spec directory on first use. If you have a custom `specs_dir` in `.arkhe.yaml`, ensure the parent directory exists.
 
 ---
 
@@ -94,7 +94,7 @@ Common issues and solutions when using the `/develop` command.
 
 **Symptom:** Spec directory has unexpected number prefix
 
-**Solution:** The skill auto-increments based on highest existing prefix in `arkhe/specs/`. Check for gaps in numbering or manual directories.
+**Solution:** The skill auto-increments based on highest existing prefix in the configured spec directory. Check for gaps in numbering or manual directories.
 
 ---
 

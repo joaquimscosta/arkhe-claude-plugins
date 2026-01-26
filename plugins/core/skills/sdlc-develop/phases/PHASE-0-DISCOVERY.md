@@ -120,6 +120,6 @@ Use [reuse-matrix.md.template](../templates/reuse-matrix.md.template) to documen
 - Integration points identified
 - Similar components considered
 
-Save as `arkhe/specs/{NN}-{feature_slug}/reuse-matrix.md`
+Save as `{specs_dir}/{NN}-{feature_slug}/reuse-matrix.md`
 
 **Next:** Proceed to [PHASE-1-REQUIREMENTS.md](PHASE-1-REQUIREMENTS.md)

@@ -26,7 +26,7 @@ Group tasks based on dependencies:
 
 ### 4. Generate tasks.md
 
-Save to `arkhe/specs/{NN}-{feature_slug}/tasks.md`
+Save to `{specs_dir}/{NN}-{feature_slug}/tasks.md`
 
 Use template: [tasks.md.template](../templates/tasks.md.template)
 

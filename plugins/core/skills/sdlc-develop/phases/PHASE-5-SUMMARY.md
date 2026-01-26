@@ -51,7 +51,7 @@ Generate summary in this format:
 
 ### 3. Update Spec Status
 
-Update `arkhe/specs/{NN}-{slug}/spec.md` status to "Complete".
+Update `{specs_dir}/{NN}-{slug}/spec.md` status to "Complete".
 
 ---
 
