@@ -112,27 +112,34 @@ Present architecture options:
 2. Trade-offs matrix
 3. Your recommendation
 
-**Numbered Prompt:**
-```
-## Tier 1 Checkpoint: Architecture Decision ⛔
+**Ask using AskUserQuestion:**
 
-{Architecture options summary with trade-offs}
+Present architecture comparison, then use `AskUserQuestion` tool:
+- **header**: "Architecture"
+- **question**: "[Trade-offs summary]. Which approach do you prefer?"
+- **options**: Dynamically generate 2-4 options based on approaches found:
+  - For each approach: { label: "Option {A/B/C}: {name}", description: "{brief rationale}" }
+  - Mark recommended option with "(Recommended)" in label
+  - Always include: { label: "REQUEST CHANGES", description: "Modify requirements first" }
 
-**Recommendation:** Option {X} because {reason}
-
-1. **Option A** - {name} (RECOMMENDED)
-2. **Option B** - {name}
-3. **Option C** - {name}
-4. **REQUEST CHANGES** - Modify requirements first
-
-Enter choice (1-4):
+**Example with 2 approaches:**
+```json
+{
+  "header": "Architecture",
+  "question": "Option A optimizes for performance, Option B for simplicity. Which approach?",
+  "options": [
+    { "label": "Option A: Event-Driven (Recommended)", "description": "Best for scalability" },
+    { "label": "Option B: Synchronous", "description": "Simpler implementation" },
+    { "label": "REQUEST CHANGES", "description": "Modify requirements first" }
+  ]
+}
 ```
 
 **CRITICAL: STOP AND WAIT for user response. This is a Tier 1 checkpoint - it CANNOT be skipped even with `--auto`.**
 
 **Response Handling:**
-- **1-3**: Proceed with selected architecture option to Step 2d
-- **4**: Return to requirements phase for modifications
+- **Option A/B/C**: Proceed with selected architecture to Step 2d
+- **REQUEST CHANGES**: Return to requirements phase for modifications
 
 ---
 

@@ -199,16 +199,16 @@ User approval required at:
 
 ## Checkpoint Protocol (CRITICAL)
 
-**At every numbered prompt checkpoint:**
+**At every AskUserQuestion checkpoint:**
 
 1. **STOP** - Halt all execution immediately
-2. **PRESENT** - Display the numbered prompt exactly as shown
+2. **PRESENT** - Use `AskUserQuestion` tool with the options specified
 3. **WAIT** - Do not take any further action until user responds
-4. **RESPOND** - Act based on user's numbered choice:
-   - **1 (APPROVE)** - Proceed to next phase/step
-   - **2 (REVIEW)** - Show requested details, then re-present prompt
-   - **3 (MODIFY/FIX)** - Make changes, then re-present prompt
-   - **4 (CANCEL)** - Stop the pipeline entirely
+4. **RESPOND** - Act based on user's choice:
+   - **APPROVE** - Proceed to next phase/step
+   - **REVIEW** - Show requested details, then re-present prompt
+   - **MODIFY/FIX** - Make changes, then re-present prompt
+   - **CANCEL** - Stop the pipeline entirely
 
 ### Tier 1 Checkpoints (⛔ CANNOT SKIP)
 

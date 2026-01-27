@@ -87,19 +87,22 @@ Present findings to user:
 2. REUSE/ENHANCE/CREATE classifications
 3. Key files identified for further analysis
 
-**Numbered Prompt:**
-```
-## Tier 2 Checkpoint: Existing System Analysis
+**Ask using AskUserQuestion:**
 
-{Summary of findings}
+Present findings summary, then use `AskUserQuestion` tool:
+- **header**: "Phase 0"
+- **question**: "[Summary of REUSE/ENHANCE/CREATE findings]. How would you like to proceed?"
+- **options**:
+  - { label: "APPROVE", description: "Proceed to requirements gathering" }
+  - { label: "REVIEW", description: "Show me more details about findings" }
+  - { label: "MODIFY", description: "I want to change classifications" }
+  - { label: "CANCEL", description: "Stop here" }
 
-1. **APPROVE** - Proceed to requirements gathering
-2. **REVIEW** - Show me more details about findings
-3. **MODIFY** - I want to change classifications
-4. **CANCEL** - Stop here
-
-Enter choice (1-4):
-```
+**Response Handling:**
+- **APPROVE**: Proceed to Phase 1
+- **REVIEW**: Show detailed findings, then re-present this checkpoint
+- **MODIFY**: Allow user to change classifications, then re-present
+- **CANCEL**: Stop pipeline
 
 **STOP: Unless `--auto` is set, WAIT for user response before proceeding to Phase 1.**
 

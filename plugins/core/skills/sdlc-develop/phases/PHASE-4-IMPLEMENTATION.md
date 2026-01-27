@@ -166,30 +166,24 @@ Present validation results:
 3. Code review findings
 4. UI verification status (from Step 4d-ui)
 
-**Numbered Prompt:**
-```
-## Tier {1|2} Checkpoint: Quality Review
+**Ask using AskUserQuestion:**
 
-{Validation results summary}
-{UI Verification: PASSED | SKIPPED | ISSUES:[list] | FAILED:[details]}
-
-1. **APPROVE** - Proceed to completion
-2. **REVIEW** - Show me the code diff
-3. **FIX ISSUES** - Address the findings first
-4. **UI VERIFY** - Run UI verification (again)
-5. **CANCEL** - Stop here
-
-Enter choice (1-5):
-```
+Present validation results, then use `AskUserQuestion` tool:
+- **header**: "Quality Review"
+- **question**: "[Validation results + UI status]. How would you like to proceed?"
+- **options**:
+  - { label: "APPROVE", description: "Proceed to completion" }
+  - { label: "REVIEW", description: "Show me the code diff" }
+  - { label: "FIX ISSUES", description: "Address the findings first" }
+  - { label: "CANCEL", description: "Stop here" }
 
 **STOP: Unless `--auto` is set AND no Tier 1 triggers, WAIT for user response.**
 
 **Response Handling:**
-- **1**: Proceed to Step 4e (Completion Gate)
-- **2**: Show `git diff` output, then re-present this prompt
-- **3**: Address issues, re-run validation, then re-present this prompt
-- **4**: Return to Step 4d-ui for UI verification, then re-present this prompt
-- **5**: Stop pipeline, remain in Phase 4
+- **APPROVE**: Proceed to Step 4e (Completion Gate)
+- **REVIEW**: Show `git diff` output, then ask "Would you also like to verify UI changes?" before re-presenting this checkpoint
+- **FIX ISSUES**: Address issues, re-run validation, then re-present this checkpoint
+- **CANCEL**: Stop pipeline, remain in Phase 4
 
 ---
 
@@ -203,34 +197,26 @@ Before proceeding to Phase 5:
 1. Verify all RULE ZERO items
 2. Present the checkpoint prompt below
 3. **STOP AND WAIT** for user response
-4. Do NOT proceed until user responds with "1"
+4. Do NOT proceed until user selects APPROVE
 
-**Numbered Prompt:**
+**Ask using AskUserQuestion:**
 
-```
-## Tier 1 Checkpoint: Implementation Complete ⛔
-
-**RULE ZERO Verification:**
-- [ ] Files modified (git diff confirms changes)
-- [ ] Tests passing (if applicable)
-- [ ] No stubs/TODOs in changed files
-- [ ] Subagent recommendations implemented
-
-1. **APPROVE** - Mark implementation complete, proceed to Phase 5
-2. **REVIEW** - Show me the git diff
-3. **FIX** - I need to address something first
-4. **CANCEL** - Keep working, do not mark complete
-
-Enter choice (1-4):
-```
+Present RULE ZERO verification status, then use `AskUserQuestion` tool:
+- **header**: "Completion"
+- **question**: "[RULE ZERO checklist status summary]. Mark implementation complete?"
+- **options**:
+  - { label: "APPROVE", description: "Mark complete, proceed to Phase 5" }
+  - { label: "REVIEW", description: "Show me the git diff" }
+  - { label: "FIX", description: "I need to address something first" }
+  - { label: "CANCEL", description: "Keep working, do not mark complete" }
 
 **CRITICAL: STOP HERE. DO NOT PROCEED TO PHASE 5 UNTIL USER RESPONDS.**
 
 **Response Handling:**
-- **1**: Proceed to Phase 5 (PHASE-5-SUMMARY.md)
-- **2**: Execute `git diff` and display output, then re-present this prompt
-- **3**: Return to implementation work, then re-present this prompt when ready
-- **4**: Remain in Phase 4 implementation mode, await instructions
+- **APPROVE**: Proceed to Phase 5 (PHASE-5-SUMMARY.md)
+- **REVIEW**: Execute `git diff` and display output, then re-present this checkpoint
+- **FIX**: Return to implementation work, then re-present this checkpoint when ready
+- **CANCEL**: Remain in Phase 4 implementation mode, await instructions
 
 ---
 

@@ -92,19 +92,22 @@ Present task breakdown:
 3. Dependency graph visualization
 4. Any questions about scope
 
-**Numbered Prompt:**
-```
-## Tier 2 Checkpoint: Task Breakdown
+**Ask using AskUserQuestion:**
 
-{Task summary by wave with effort estimates}
+Present task breakdown summary, then use `AskUserQuestion` tool:
+- **header**: "Tasks"
+- **question**: "[Task count by wave with total effort estimate]. How would you like to proceed?"
+- **options**:
+  - { label: "APPROVE", description: "Start implementation" }
+  - { label: "REVIEW", description: "Show me task details" }
+  - { label: "MODIFY", description: "I want to change the breakdown" }
+  - { label: "CANCEL", description: "Stop here" }
 
-1. **APPROVE** - Start implementation
-2. **REVIEW** - Show me task details
-3. **MODIFY** - I want to change the breakdown
-4. **CANCEL** - Stop here
-
-Enter choice (1-4):
-```
+**Response Handling:**
+- **APPROVE**: Proceed to Phase 4
+- **REVIEW**: Show full task details with dependency graph, then re-present this checkpoint
+- **MODIFY**: Allow user to modify task breakdown, then re-present
+- **CANCEL**: Stop pipeline
 
 **STOP: Unless `--auto` is set, WAIT for user response before proceeding to Phase 4.**
 

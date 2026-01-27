@@ -6,7 +6,7 @@ Human-in-the-Loop gates ensure appropriate oversight at critical decision points
 
 | Tier | Symbol | Behavior | Use Case |
 |------|--------|----------|----------|
-| **Tier 1** | ⛔ | MANDATORY approval via numbered prompt | Constitutional/security risk |
+| **Tier 1** | ⛔ | MANDATORY approval via AskUserQuestion | Constitutional/security risk |
 | **Tier 2** | ⚠️ | RECOMMENDED review, skippable with `--auto` | High risk but recoverable |
 | **Tier 3** | ✅ | AUTOMATED, logs for post-review | Low risk, reversible |
 
@@ -74,71 +74,75 @@ Proceed automatically, log for post-review:
 
 ---
 
-## Numbered Prompt Pattern
+## AskUserQuestion Pattern
 
-For Tier 1 and Tier 2 gates, use this format:
+For Tier 1 and Tier 2 gates, use the `AskUserQuestion` tool:
 
+```json
+{
+  "header": "{Short checkpoint name}",
+  "question": "{Summary of what was done/proposed}. How would you like to proceed?",
+  "options": [
+    { "label": "APPROVE", "description": "Proceed to next phase" },
+    { "label": "REVIEW", "description": "Show me more details" },
+    { "label": "MODIFY", "description": "I want to change something" },
+    { "label": "CANCEL", "description": "Stop here" }
+  ]
+}
 ```
-## Tier {N} Checkpoint: {Gate Name}
 
-{Summary of what was done/proposed}
-
-**Options:**
-1. **APPROVE** - Proceed to next phase
-2. **REVIEW** - Show me more details
-3. **MODIFY** - I want to change something
-4. **CANCEL** - Stop here
-
-Enter your choice (1-4):
-```
+**Tool Constraints:**
+- 2-4 options per question (tool limit)
+- "Other" option is automatically provided by the tool
+- For dynamic options (architecture), generate at runtime
 
 ### Example: Architecture Decision (Tier 1)
 
-```
-## Tier 1 Checkpoint: Architecture Decision ⛔
+Present the trade-offs summary, then use `AskUserQuestion`:
 
-I've analyzed three approaches for implementing user authentication:
-
-| Approach | Pros | Cons |
-|----------|------|------|
-| A. JWT + Redis | Scalable, stateless | Redis dependency |
-| B. Session-based | Simple, proven | Server state |
-| C. OAuth2 only | Standards-based | External dependency |
-
-**Recommendation:** Option A (JWT + Redis)
-
-**Options:**
-1. **Option A** - JWT + Redis (RECOMMENDED)
-2. **Option B** - Session-based
-3. **Option C** - OAuth2 only
-4. **REQUEST CHANGES** - Modify requirements first
-
-Enter your choice (1-4):
+```json
+{
+  "header": "Architecture",
+  "question": "JWT+Redis is scalable but adds Redis dependency. Session-based is simpler but stateful. OAuth2 is standards-based but external. Which approach?",
+  "options": [
+    { "label": "Option A: JWT + Redis (Recommended)", "description": "Scalable, stateless design" },
+    { "label": "Option B: Session-based", "description": "Simple, proven pattern" },
+    { "label": "Option C: OAuth2 only", "description": "Standards-based, external auth" },
+    { "label": "REQUEST CHANGES", "description": "Modify requirements first" }
+  ]
+}
 ```
 
 ### Example: Completion Verification (Tier 1)
 
+Present RULE ZERO status, then use `AskUserQuestion`:
+
+```json
+{
+  "header": "Completion",
+  "question": "5 files changed, 12/12 tests passing, no TODOs found. Mark implementation complete?",
+  "options": [
+    { "label": "APPROVE", "description": "Mark complete, proceed to Phase 5" },
+    { "label": "REVIEW", "description": "Show me the git diff" },
+    { "label": "FIX", "description": "I need to address something first" },
+    { "label": "CANCEL", "description": "Keep working" }
+  ]
+}
 ```
-## Tier 1 Checkpoint: Implementation Complete ⛔
 
-**RULE ZERO Verification:**
-- [x] Files modified: 5 files changed
-- [x] Tests passing: 12/12 tests green
-- [x] No stubs/TODOs in changed files
-- [x] git diff confirms changes persisted
+### Example: Requirements (Tier 2)
 
-**Summary:**
-- Added UserAuthService with JWT handling
-- Created 3 API endpoints
-- Added integration tests
-
-**Options:**
-1. **APPROVE** - Mark implementation complete
-2. **REVIEW** - Show me the git diff
-3. **MODIFY** - I want to make changes
-4. **CANCEL** - Keep working
-
-Enter your choice (1-4):
+```json
+{
+  "header": "Requirements",
+  "question": "3 functional requirements defined with 8 acceptance criteria. How would you like to proceed?",
+  "options": [
+    { "label": "APPROVE", "description": "Proceed to architecture design" },
+    { "label": "REVIEW", "description": "Show me full requirements" },
+    { "label": "MODIFY", "description": "I want to change requirements" },
+    { "label": "CANCEL", "description": "Stop here" }
+  ]
+}
 ```
 
 ---

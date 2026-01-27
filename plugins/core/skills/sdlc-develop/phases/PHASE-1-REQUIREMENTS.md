@@ -60,19 +60,22 @@ Present requirements summary:
 2. Identified constraints
 3. Any remaining questions or assumptions
 
-**Numbered Prompt:**
-```
-## Tier 2 Checkpoint: Requirements Summary
+**Ask using AskUserQuestion:**
 
-{FR-XXX list with acceptance criteria}
+Present requirements summary, then use `AskUserQuestion` tool:
+- **header**: "Requirements"
+- **question**: "[FR-XXX list summary with key acceptance criteria]. How would you like to proceed?"
+- **options**:
+  - { label: "APPROVE", description: "Proceed to architecture design" }
+  - { label: "REVIEW", description: "Show me more details" }
+  - { label: "MODIFY", description: "I want to change requirements" }
+  - { label: "CANCEL", description: "Stop here" }
 
-1. **APPROVE** - Proceed to architecture design
-2. **REVIEW** - Show me more details
-3. **MODIFY** - I want to change requirements
-4. **CANCEL** - Stop here
-
-Enter choice (1-4):
-```
+**Response Handling:**
+- **APPROVE**: Proceed to Phase 2
+- **REVIEW**: Show full requirements details, then re-present this checkpoint
+- **MODIFY**: Allow user to modify requirements, then re-present
+- **CANCEL**: Stop pipeline
 
 **STOP: Unless `--auto` is set, WAIT for user response before proceeding to Phase 2.**
 
