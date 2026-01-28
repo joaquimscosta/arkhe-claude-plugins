@@ -207,9 +207,8 @@ cd services/api
 
 ## See Also
 
-- `/doc-generate` - Generate comprehensive documentation
+- `doc-coauthoring` skill - Collaborative documentation workflow
 - `/code-explain` - Explain complex code sections
-- `docs-architect` agent - Create technical documentation from code
 - `diagramming` skill or `/diagram` command - Generate diagrams (e.g., release flow diagrams)
 
 ## Version

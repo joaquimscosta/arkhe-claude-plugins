@@ -127,7 +127,7 @@ The Arkhe Claude Plugins marketplace demonstrates all plugin component types acr
 **Commands** (workflow automation via slash commands):
 - **core**: 6 commands - `/discuss`, `/double-check`, `/develop`, `/debug`, `/think`, `/research`
 - **ai**: 2 commands - `/improve-agent`, `/multi-agent-optimize`
-- **doc**: 3 commands - `/doc-generate`, `/code-explain`, `/diagram`
+- **doc**: 2 commands - `/code-explain`, `/diagram`
 - **git**: 4 commands - `/commit`, `/create-pr`, `/create-branch`, `/changelog`
 - **review**: 4 commands - `/code`, `/security`, `/design`, `/codebase`
 - **google-stitch**: 1 command - `/prompt`
@@ -135,13 +135,12 @@ The Arkhe Claude Plugins marketplace demonstrates all plugin component types acr
 
 **Agents** (specialized AI assistants):
 - **ai**: 3 agents - `ai-engineer`, `prompt-engineer`, `context-manager`
-- **doc**: 1 agent - `docs-architect`
 - **review**: 2 agents - `pragmatic-code-review`, `design-review`
 - **design-intent**: 3 agents - `ui-explorer`, `ui-architect`, `design-reviewer`
 
 **Skills** (model-invoked capabilities):
 - **core**: 3 skills - `sdlc-develop` (command-invoke), `deep-research` (auto-invoke), `workflow-orchestration` (auto-invoke)
-- **doc**: 4 skills - `diagramming` (auto-activates on diagram/flowchart keywords), `documentation-generation`, `code-explanation`, `managing-adrs`
+- **doc**: 4 skills - `doc-coauthoring` (auto-activates on documentation keywords), `diagramming` (auto-activates on diagram/flowchart keywords), `code-explanation`, `managing-adrs`
 - **git**: 4 skills - `generating-changelog` (auto-invoke) + 3 command-invoke skills
 - **google-stitch**: 2 skills - `authoring-stitch-prompts`, `extracting-stitch-mockups`
 - **design-intent**: 1 skill - `design-intent-specialist` (auto-activates for visual implementation work)
@@ -298,7 +297,7 @@ Claude Code plugins can include four types of components:
    - Slash commands invoked explicitly by users
    - Markdown files with frontmatter configuration
    - Can execute scripts or provide instructions to Claude
-   - Examples: `/commit`, `/code`, `/doc-generate`
+   - Examples: `/commit`, `/code`, `/diagram`
 
 2. **Agents** (`agents/`)
    - Specialized AI assistants with custom system prompts

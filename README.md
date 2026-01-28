@@ -41,7 +41,7 @@
 | :--- | :--- | :--- | :---: |
 | 🧠 **Core** | Quality control & workflow orchestration. | `deep-think-partner`, `deep-researcher`, `/research`, `/develop` | [View](./plugins/core/README.md) |
 | 🤖 **AI** | Engineering toolkit for production LLM apps. | `ai-engineer`, `prompt-engineer`, `/improve-agent` | [View](./plugins/ai/README.md) |
-| 📝 **Doc** | Multi-purpose documentation toolkit. | `docs-architect`, `/doc-generate`, `/diagram` | [View](./plugins/doc/README.md) |
+| 📝 **Doc** | Multi-purpose documentation toolkit. | `doc-coauthoring`, `/diagram`, `/code-explain` | [View](./plugins/doc/README.md) |
 | 🔍 **Review** | Code quality & security review tools. | `pragmatic-code-review`, `/code`, `/security` | [View](./plugins/review/README.md) |
 | 🧵 **Stitch** | Google Stitch prompting & session tracking. | `/prompt`, `extracting-stitch-mockups` | [View](./plugins/google-stitch/README.md) |
 | 🔀 **Git** | Workflow automation (PRs, Commits, Changelogs). | `/commit`, `/create-pr`, Smart pre-commit | [View](./plugins/git/README.md) |

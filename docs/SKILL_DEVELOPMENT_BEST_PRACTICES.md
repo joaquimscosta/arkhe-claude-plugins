@@ -1,12 +1,12 @@
 # Agent Skill Development: Best Practices
 
 **Primary Source**: [SKILLS.md](./SKILLS.md) (Claude Code-specific)
-**Architecture Reference**: [AGENT_SKILLS_OVERVIEW.md](./AGENT_SKILLS_OVERVIEW.md) (cross-platform concepts)
+**Architecture Reference**: [BEST_PRACTICES.md](./BEST_PRACTICES.md) (Claude Code best practices)
 **Official Best Practices**: [Anthropic Docs](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/best-practices)
-**Date**: 2026-01-08
-**Version**: 2.0
+**Date**: 2026-01-28
+**Version**: 3.0
 
-> **Scope**: This document focuses on **Claude Code plugin development**. For Skills across other Claude platforms (API, SDK, claude.ai), see AGENT_SKILLS_OVERVIEW.md.
+> **Scope**: This document focuses on **Claude Code plugin development**. For general Claude Code best practices, see [BEST_PRACTICES.md](./BEST_PRACTICES.md).
 
 ---
 
@@ -33,16 +33,54 @@ Agent Skills are modular capabilities that extend Claude's functionality in Clau
 
 This version adds documentation for:
 
-- **5 new YAML frontmatter fields**: `model`, `context`, `agent`, `hooks`, `user-invocable`
-- **Forked context execution**: Run Skills in isolated sub-agent contexts
-- **Skill-scoped hooks**: Lifecycle event handlers for Skills
-- **Skill-subagent integration**: Bidirectional patterns for Skills and agents
+- **2 new YAML frontmatter fields**: `disable-model-invocation`, `argument-hint`
+- **String substitutions**: Dynamic variable replacement in skill content
+- **Dynamic context injection**: Preprocessing shell commands with `!`command`` syntax
+- **Extended thinking support**: Enable extended thinking with "ultrathink" keyword
+- **Skill content types**: Reference content vs task content guidance
+- **Control who invokes a skill**: Comprehensive invocation control table
 
 ### How Skills Work
 
 1. **Discovery**: At startup, Claude loads only `name` and `description` from each Skill (~100 tokens per Skill)
 2. **Activation**: When your request matches a Skill's description, Claude asks to use it
 3. **Execution**: Claude follows the Skill's instructions, loading referenced files or running scripts as needed
+
+### Types of Skill Content
+
+Skill files can contain any instructions, but thinking about how you want to invoke them helps guide what to include:
+
+**Reference content** adds knowledge Claude applies to your current work. Conventions, patterns, style guides, domain knowledge. This content runs inline so Claude can use it alongside your conversation context.
+
+```yaml
+---
+name: api-conventions
+description: API design patterns for this codebase
+---
+
+When writing API endpoints:
+- Use RESTful naming conventions
+- Return consistent error formats
+- Include request validation
+```
+
+**Task content** gives Claude step-by-step instructions for a specific action, like deployments, commits, or code generation. These are often actions you want to invoke directly with `/skill-name` rather than letting Claude decide when to run them. Add `disable-model-invocation: true` to prevent Claude from triggering it automatically.
+
+```yaml
+---
+name: deploy
+description: Deploy the application to production
+context: fork
+disable-model-invocation: true
+---
+
+Deploy the application:
+1. Run the test suite
+2. Build the application
+3. Push to the deployment target
+```
+
+Your `SKILL.md` can contain anything, but thinking through how you want the skill invoked (by you, by Claude, or both) and where you want it to run (inline or in a subagent) helps guide what to include.
 
 ### When to Use Skills vs Other Options
 
@@ -132,6 +170,8 @@ Every Skill requires a `SKILL.md` file with YAML frontmatter between `---` marke
 | `agent` | Agent type when `context: fork` is set | `Explore`, `Plan`, `general-purpose`, or custom agent name |
 | `hooks` | Skill-scoped lifecycle hooks | See [Advanced Patterns](#skill-scoped-hooks) |
 | `user-invocable` | Set to `false` to hide from slash command menu | `false` |
+| `disable-model-invocation` | Set to `true` to prevent Claude from automatically loading this skill. Use for workflows with side effects. Default: `false`. | `true` |
+| `argument-hint` | Hint shown during autocomplete to indicate expected arguments | `[issue-number]` or `[filename] [format]` |
 
 ### Complete Field Reference
 
@@ -264,6 +304,42 @@ user-invocable: false
 
 Set to `false` for Skills that should only be triggered automatically by Claude, not manually invoked by users.
 
+#### disable-model-invocation
+
+Prevent Claude from automatically loading this skill.
+
+```yaml
+disable-model-invocation: true
+```
+
+Use for workflows with side effects that you want to trigger manually with `/name`. When set to `true`, the skill description is not loaded into context, so Claude won't know it exists.
+
+#### argument-hint
+
+Display a hint during autocomplete to indicate expected arguments.
+
+```yaml
+argument-hint: [issue-number]
+```
+
+The hint appears in the autocomplete menu to help users understand what arguments the skill expects. Examples: `[issue-number]`, `[filename] [format]`, `[component-name]`.
+
+### Control Who Invokes a Skill
+
+By default, both you and Claude can invoke any skill. Two frontmatter fields let you restrict this:
+
+* **`disable-model-invocation: true`**: Only you can invoke the skill. Use this for workflows with side effects or that you want to control timing, like `/commit`, `/deploy`, or `/send-slack-message`.
+
+* **`user-invocable: false`**: Only Claude can invoke the skill. Use this for background knowledge that isn't actionable as a command.
+
+Here's how the two fields affect invocation and context loading:
+
+| Frontmatter | You can invoke | Claude can invoke | When loaded into context |
+|-------------|---------------|-------------------|--------------------------|
+| (default) | Yes | Yes | Description always in context, full skill loads when invoked |
+| `disable-model-invocation: true` | Yes | No | Description not in context, full skill loads when you invoke |
+| `user-invocable: false` | No | Yes | Description always in context, full skill loads when invoked |
+
 ### Example: Complete Frontmatter
 
 ```yaml
@@ -283,6 +359,51 @@ hooks:
 user-invocable: true
 ---
 ```
+
+### String Substitutions
+
+Skills support string substitution for dynamic values in the skill content:
+
+| Variable | Description |
+|----------|-------------|
+| `$ARGUMENTS` | All arguments passed when invoking the skill. If `$ARGUMENTS` is not present in the content, arguments are appended as `ARGUMENTS: <value>`. |
+| `$ARGUMENTS[N]` | Access a specific argument by 0-based index, such as `$ARGUMENTS[0]` for the first argument. |
+| `$N` | Shorthand for `$ARGUMENTS[N]`, such as `$0` for the first argument or `$1` for the second. |
+| `${CLAUDE_SESSION_ID}` | The current session ID. Useful for logging, creating session-specific files, or correlating skill output with sessions. |
+
+**Example using substitutions:**
+
+```yaml
+---
+name: fix-issue
+description: Fix a GitHub issue
+disable-model-invocation: true
+---
+
+Fix GitHub issue $ARGUMENTS following our coding standards.
+
+1. Read the issue description
+2. Understand the requirements
+3. Implement the fix
+4. Write tests
+5. Create a commit
+```
+
+When you run `/fix-issue 123`, Claude receives "Fix GitHub issue 123 following our coding standards..."
+
+**Accessing individual arguments:**
+
+```yaml
+---
+name: migrate-component
+description: Migrate a component from one framework to another
+---
+
+Migrate the $0 component from $1 to $2.
+Preserve all existing behavior and tests.
+```
+
+Running `/migrate-component SearchBar React Vue` replaces `$0` with `SearchBar`, `$1` with `React`, and `$2` with `Vue`.
 
 ---
 
@@ -543,6 +664,39 @@ agent: Explore
 | `Plan` | Research and analysis, uses Sonnet | Planning, context gathering |
 | `general-purpose` | Full capabilities, uses Sonnet | Complex tasks requiring modification |
 | Custom agent | Your `.claude/agents/` agent | Specialized workflows |
+
+### Dynamic Context Injection
+
+The `` !`command` `` syntax runs shell commands before the skill content is sent to Claude. The command output replaces the placeholder, so Claude receives actual data, not the command itself.
+
+This skill summarizes a pull request by fetching live PR data with the GitHub CLI:
+
+```yaml
+---
+name: pr-summary
+description: Summarize changes in a pull request
+context: fork
+agent: Explore
+allowed-tools: Bash(gh *)
+---
+
+## Pull request context
+- PR diff: !`gh pr diff`
+- PR comments: !`gh pr view --comments`
+- Changed files: !`gh pr diff --name-only`
+
+## Your task
+Summarize this pull request...
+```
+
+**How it works**:
+1. Each `` !`command` `` executes immediately (before Claude sees anything)
+2. The output replaces the placeholder in the skill content
+3. Claude receives the fully-rendered prompt with actual data
+
+This is preprocessing, not something Claude executes. Claude only sees the final result.
+
+> **Tip**: To enable [extended thinking](https://docs.claude.com/en/common-workflows#use-extended-thinking-thinking-mode) in a skill, include the word "ultrathink" anywhere in your skill content.
 
 ### Skill-Scoped Hooks
 
@@ -970,10 +1124,11 @@ Error output
 
 **Local Documentation**:
 - [SKILLS.md](./SKILLS.md) - Claude Code-specific guide
+- [BEST_PRACTICES.md](./BEST_PRACTICES.md) - Claude Code best practices
 - [SUBAGENTS.md](./SUBAGENTS.md) - Subagent configuration
 - [HOOKS.md](./HOOKS.md) - Hook configuration
 
 ---
 
-**Document Version**: 2.0
-**Last Updated**: 2026-01-08
+**Document Version**: 3.0
+**Last Updated**: 2026-01-28
