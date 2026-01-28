@@ -15,6 +15,7 @@ For each wave:
 3. Follow codebase conventions strictly
 4. Write clean, well-documented code
 5. Update todos as you progress
+6. Mark task complete in tasks.md - change `- [ ]` to `- [x]` for each acceptance criterion met
 
 ### Implementation Guidelines
 
@@ -22,6 +23,21 @@ For each wave:
 - **TDD when applicable** - Write tests before implementation
 - **Commit frequently** - Small, atomic commits after each task
 - **Preserve existing code** - Enhance, don't replace working logic
+
+### Task Completion Protocol
+
+After completing each T-XX task:
+1. Verify all acceptance criteria are met
+2. Edit `{specs_dir}/{NN}-{slug}/tasks.md`
+3. Change `- [ ]` to `- [x]` for each criterion completed
+4. Move to next task
+
+Example:
+```markdown
+### Acceptance Criteria
+- [x] File deleted successfully  ← Changed from [ ] to [x]
+- [x] No broken references remain
+```
 
 ---
 

@@ -8,9 +8,20 @@
 
 ## Actions
 
-### 1. Mark All Todos Complete
+### 1. Mark All Tasks Complete
 
-Ensure all TodoWrite items are marked as completed.
+**tasks.md verification:**
+1. Read `{specs_dir}/{NN}-{slug}/tasks.md`
+2. Verify ALL acceptance criteria checkboxes are `[x]` (not `[ ]`)
+3. If any remain unchecked, either:
+   - Mark them complete if the work was done
+   - Return to Phase 4 to complete the work
+
+**spec.md verification:**
+1. Read `{specs_dir}/{NN}-{slug}/spec.md`
+2. Verify all acceptance criteria are marked complete
+
+If using TodoWrite/TaskUpdate tools, ensure those are also marked complete.
 
 ### 2. Provide Completion Summary
 
