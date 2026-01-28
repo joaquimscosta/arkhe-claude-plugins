@@ -2,22 +2,59 @@
 
 This document provides a detailed step-by-step methodology for creating effective Mermaid diagrams.
 
-For quick start instructions, see [SKILL.md](SKILL.md).
-
 ## Overview
 
-The diagram creation process follows 6 main phases:
+The diagram creation process follows 7 main phases:
 
-1. **Understanding Requirements** - Define what to communicate and to whom
-2. **Choosing Diagram Type** - Select the right visualization for your use case
-3. **Creating Basic Structure** - Build the foundational elements
-4. **Adding Detail & Styling** - Enhance with meaningful visuals
-5. **Testing & Validation** - Verify rendering and readability
-6. **Refinement & Documentation** - Polish and prepare for distribution
+1. **Selecting Output Format** - Mermaid or ASCII based on user request
+2. **Understanding Requirements** - Define what to communicate and to whom
+3. **Choosing Diagram Type** - Select the right visualization for your use case
+4. **Creating Basic Structure** - Build the foundational elements
+5. **Adding Detail & Styling** - Enhance with meaningful visuals
+6. **Testing & Validation** - Verify rendering and readability
+7. **Refinement & Documentation** - Polish and prepare for distribution
 
 ---
 
-## Phase 1: Understanding Requirements
+## Phase 1: Selecting Output Format
+
+### Decision Tree: Mermaid vs ASCII
+
+```
+User request contains "ASCII", "text diagram", "terminal", "plain text"?
+    |
+    +-- YES --> Use ASCII format
+    |
+    +-- NO --> Use Mermaid format (default)
+```
+
+### When to Use Each Format
+
+| Format | Use When | Advantages |
+|--------|----------|------------|
+| **Mermaid** | GitHub/GitLab docs, web rendering, rich documentation | Interactive, styled, widely supported |
+| **ASCII** | Terminal output, email, plain text files, no-render environments | Universal compatibility, no tooling needed |
+
+### ASCII Format Guidelines
+
+**Box Characters:**
+- Use `+`, `-`, `|` for boxes: `+----+`
+- Use consistent widths for alignment
+- Center text within boxes
+
+**Arrow Conventions:**
+- Horizontal: `-->`, `--->`, `---->`
+- Vertical: `|` with `v` or `^` for direction
+- Diagonal: Avoid when possible (hard to read)
+
+**Layout Tips:**
+- Maintain consistent spacing (2-4 spaces between elements)
+- Align vertically when showing parallel processes
+- Use clear labels above or beside arrows
+
+---
+
+## Phase 2: Understanding Requirements
 
 ### Questions to Answer
 
@@ -50,7 +87,7 @@ The diagram creation process follows 6 main phases:
 
 ---
 
-## Phase 2: Choosing Diagram Type
+## Phase 3: Choosing Diagram Type
 
 ### Decision Matrix
 
@@ -61,6 +98,11 @@ The diagram creation process follows 6 main phases:
 | **Database schema** | ERD | Class Diagram |
 | **Authentication/Navigation** | State Diagram | Flowchart |
 | **Class/Object structure** | Class Diagram | - |
+| **System architecture (high-level)** | C4Context | Flowchart |
+| **System architecture (containers)** | C4Container | Block Diagram |
+| **Component design** | C4Component | Class Diagram |
+| **Brainstorming/ideas** | Mindmap | - |
+| **System blocks/layers** | Block Diagram (block-beta) | Flowchart |
 | **Project scheduling** | Gantt Chart | Timeline |
 | **Git branching strategy** | Git Graph | Flowchart |
 | **User experience flow** | Journey Map | Flowchart |
@@ -110,9 +152,36 @@ The diagram creation process follows 6 main phases:
 
 **Best for**: OOP design, system architecture
 
+#### C4 Diagrams (C4Context, C4Container, C4Component)
+**Use when**:
+- Documenting software architecture at different abstraction levels
+- Showing system context with external dependencies
+- Mapping containers (applications, databases) within a system
+- Detailing component structure within containers
+
+**Best for**: Architecture documentation, system design, stakeholder communication
+
+#### Mindmap
+**Use when**:
+- Brainstorming features or ideas
+- Organizing hierarchical information
+- Planning project scope or roadmap
+- Documenting knowledge structures
+
+**Best for**: Ideation, planning, knowledge organization
+
+#### Block Diagram (block-beta)
+**Use when**:
+- Showing system layers or tiers
+- Visualizing infrastructure components
+- Creating simple architecture overviews
+- Documenting deployment topology
+
+**Best for**: Infrastructure diagrams, system overviews, deployment architecture
+
 ---
 
-## Phase 3: Creating Basic Structure
+## Phase 4: Creating Basic Structure
 
 ### Step 1: Define Core Elements
 
@@ -171,7 +240,7 @@ graph TD
 
 ---
 
-## Phase 4: Adding Detail & Styling
+## Phase 5: Adding Detail & Styling
 
 ### Step 1: Expand with Complete Logic
 
@@ -274,7 +343,7 @@ graph TD
 
 ---
 
-## Phase 5: Testing & Validation
+## Phase 6: Testing & Validation
 
 ### Step 1: Test in Mermaid Live Editor
 
@@ -336,7 +405,7 @@ graph TD
 
 ---
 
-## Phase 6: Refinement & Documentation
+## Phase 7: Refinement & Documentation
 
 ### Step 1: Add Inline Documentation
 
@@ -430,6 +499,121 @@ graph TD
 
 ---
 
+## ASCII Diagram Creation
+
+When user explicitly requests ASCII format, follow this workflow:
+
+### Step 1: Plan the Layout
+
+Sketch the structure on paper or mentally:
+- Identify all nodes/boxes
+- Determine connections and flow direction
+- Estimate box sizes based on longest text
+
+### Step 2: Create Boxes
+
+```
++-------------------+
+|   Box Label       |
++-------------------+
+```
+
+**Sizing rules:**
+- Minimum width: label length + 4 characters
+- Standard height: 3 lines (top border, text, bottom border)
+- Multi-line: Add rows as needed
+
+### Step 3: Add Connections
+
+**Horizontal connections:**
+```
++-------+       +-------+
+| Box A |------>| Box B |
++-------+       +-------+
+```
+
+**Vertical connections:**
+```
++-------+
+| Box A |
++---+---+
+    |
+    v
++---+---+
+| Box B |
++-------+
+```
+
+**Branching:**
+```
+        +-------+
+        | Start |
+        +---+---+
+            |
+    +-------+-------+
+    |               |
+    v               v
++---+---+       +---+---+
+| Yes   |       |  No   |
++-------+       +-------+
+```
+
+### Step 4: Add Labels and Annotations
+
+```
+        [authenticate]
++-------+     |      +-------+
+| User  |-----+----->| Auth  |
++-------+            +-------+
+```
+
+### Step 5: Verify Alignment
+
+- Check that all boxes align properly
+- Ensure connections meet box edges correctly
+- Verify consistent spacing throughout
+
+### ASCII Templates
+
+**Simple flowchart:**
+```
++-------+     +-------+     +-------+
+| Start |---->|Process|---->|  End  |
++-------+     +-------+     +-------+
+```
+
+**Decision diamond (approximation):**
+```
+       +----------+
+       | Condition|
+       +----+-----+
+            |
+      +-----+-----+
+      |           |
+     YES          NO
+      |           |
+      v           v
+```
+
+**Vertical stack:**
+```
++------------------+
+|    Layer 1       |
++------------------+
+         |
+         v
++------------------+
+|    Layer 2       |
++------------------+
+         |
+         v
++------------------+
+|    Layer 3       |
++------------------+
+```
+
+---
+
 ## Common Workflows
 
 ### Quick Diagram (5-10 minutes)
@@ -465,30 +649,6 @@ graph TD
 7. Review and refine (15 min)
 
 **Best for**: System architecture, comprehensive documentation
-
----
-
-## Integration with Other Documents
-
-**When to consult other resources**:
-
-### SKILL.md
-- Quick syntax reference
-- Diagram type list
-- Basic examples
-- Output format information
-
-### EXAMPLES.md
-- Real-world diagram samples
-- Styling inspiration
-- Complex syntax patterns
-- Platform-specific examples
-
-### TROUBLESHOOTING.md
-- Syntax error solutions
-- Rendering issues
-- Platform-specific problems
-- Performance optimization tips
 
 ---
 
@@ -551,9 +711,6 @@ After completing your diagram:
 3. **Review**: Get feedback from team/stakeholders
 4. **Iterate**: Refine based on feedback
 5. **Publish**: Include in final documentation
-
-For troubleshooting, see [TROUBLESHOOTING.md](TROUBLESHOOTING.md).
-For examples, see [EXAMPLES.md](EXAMPLES.md).
 
 ---
 

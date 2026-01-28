@@ -583,6 +583,320 @@ classDiagram
     note for PaymentProcessor "Strategy pattern for\nmultiple payment methods"
 ```
 
+## C4 Architecture Diagrams
+
+### C4 Context Diagram
+
+```mermaid
+C4Context
+    title System Context Diagram for E-Commerce Platform
+
+    Person(customer, "Customer", "A user who purchases products")
+    Person(admin, "Admin", "Internal staff managing products")
+
+    System(ecommerce, "E-Commerce Platform", "Allows customers to browse and purchase products")
+
+    System_Ext(payment, "Payment Gateway", "Handles payment processing")
+    System_Ext(shipping, "Shipping Provider", "Manages delivery logistics")
+    System_Ext(email, "Email Service", "Sends notifications")
+
+    Rel(customer, ecommerce, "Browses, purchases")
+    Rel(admin, ecommerce, "Manages products, orders")
+    Rel(ecommerce, payment, "Processes payments")
+    Rel(ecommerce, shipping, "Creates shipments")
+    Rel(ecommerce, email, "Sends emails")
+```
+
+### C4 Container Diagram
+
+```mermaid
+C4Container
+    title Container Diagram for E-Commerce Platform
+
+    Person(customer, "Customer", "A user who purchases products")
+
+    System_Boundary(ecommerce, "E-Commerce Platform") {
+        Container(web, "Web Application", "React", "Provides UI for customers")
+        Container(api, "API Gateway", "Node.js", "Handles all API requests")
+        Container(catalog, "Catalog Service", "Python", "Manages products")
+        Container(orders, "Order Service", "Java", "Processes orders")
+        ContainerDb(db, "Database", "PostgreSQL", "Stores product and order data")
+        ContainerQueue(queue, "Message Queue", "RabbitMQ", "Async communication")
+    }
+
+    System_Ext(payment, "Payment Gateway", "External payment processing")
+
+    Rel(customer, web, "Uses", "HTTPS")
+    Rel(web, api, "Calls", "JSON/HTTPS")
+    Rel(api, catalog, "Reads", "gRPC")
+    Rel(api, orders, "Writes", "gRPC")
+    Rel(catalog, db, "Reads/Writes")
+    Rel(orders, db, "Reads/Writes")
+    Rel(orders, queue, "Publishes events")
+    Rel(orders, payment, "Processes payment")
+```
+
+## Mindmap Diagrams
+
+### Feature Brainstorm
+
+```mermaid
+mindmap
+    root((Product Features))
+        User Management
+            Authentication
+                OAuth
+                SSO
+                MFA
+            Profiles
+                Settings
+                Preferences
+        Content
+            Articles
+                Rich Editor
+                Media Upload
+            Comments
+                Threading
+                Moderation
+        Analytics
+            Dashboards
+            Reports
+                PDF Export
+                Scheduling
+```
+
+### Project Planning Mindmap
+
+```mermaid
+mindmap
+    root((Q1 Roadmap))
+        Infrastructure
+            Cloud Migration
+            CI/CD Pipeline
+            Monitoring
+        Features
+            User Dashboard
+            API v2
+            Mobile App
+        Tech Debt
+            Code Refactoring
+            Test Coverage
+            Documentation
+        Team
+            Hiring
+            Training
+```
+
+## Block Diagrams
+
+### System Architecture Block Diagram
+
+```mermaid
+block-beta
+    columns 3
+
+    Frontend["Frontend\n(React)"]
+    space
+    Mobile["Mobile\n(React Native)"]
+
+    space:3
+
+    block:backend:3
+        API["API Gateway"]
+        Auth["Auth Service"]
+        Core["Core Services"]
+    end
+
+    space:3
+
+    block:data:3
+        DB[("PostgreSQL")]
+        Cache[("Redis")]
+        Queue[("RabbitMQ")]
+    end
+
+    Frontend --> API
+    Mobile --> API
+    API --> Auth
+    API --> Core
+    Core --> DB
+    Core --> Cache
+    Core --> Queue
+```
+
+### Microservices Block Diagram
+
+```mermaid
+block-beta
+    columns 4
+
+    Client["Client Apps"]:4
+
+    space:4
+
+    Gateway["API Gateway"]:4
+
+    space:4
+
+    UserSvc["User\nService"]
+    OrderSvc["Order\nService"]
+    PaymentSvc["Payment\nService"]
+    NotifySvc["Notification\nService"]
+
+    space:4
+
+    UserDB[("Users DB")]
+    OrderDB[("Orders DB")]
+    PaymentDB[("Payments DB")]
+    MessageQ[("Message Queue")]
+
+    Client --> Gateway
+    Gateway --> UserSvc
+    Gateway --> OrderSvc
+    Gateway --> PaymentSvc
+    Gateway --> NotifySvc
+    UserSvc --> UserDB
+    OrderSvc --> OrderDB
+    PaymentSvc --> PaymentDB
+    NotifySvc --> MessageQ
+```
+
+## ASCII Diagrams
+
+Use ASCII diagrams when users explicitly request them for terminals, plain text docs, or email-friendly formats.
+
+### ASCII Flowchart
+
+```
+                    +--------+
+                    | Start  |
+                    +---+----+
+                        |
+                        v
+                 +------+-------+
+                 | Validate     |
+                 | Input        |
+                 +------+-------+
+                        |
+                        v
+                   +----+----+
+                  /  Valid?   \
+                 +------+------+
+                   |         |
+               Yes |         | No
+                   v         v
+            +------+---+ +---+------+
+            | Process  | | Show     |
+            | Request  | | Error    |
+            +------+---+ +---+------+
+                   |         |
+                   v         v
+                 +-+---------+-+
+                 |   Return    |
+                 |   Result    |
+                 +------+------+
+                        |
+                        v
+                    +---+---+
+                    |  End  |
+                    +-------+
+```
+
+### ASCII Sequence Diagram
+
+```
+ Client          API Gateway       Auth Service       Database
+    |                 |                 |                 |
+    | POST /login     |                 |                 |
+    |---------------->|                 |                 |
+    |                 | Validate token  |                 |
+    |                 |---------------->|                 |
+    |                 |                 | Query user      |
+    |                 |                 |---------------->|
+    |                 |                 |    User data    |
+    |                 |                 |<----------------|
+    |                 |   JWT token     |                 |
+    |                 |<----------------|                 |
+    |  200 OK + token |                 |                 |
+    |<----------------|                 |                 |
+    |                 |                 |                 |
+```
+
+### ASCII Architecture Diagram
+
+```
++------------------------------------------------------------------+
+|                         LOAD BALANCER                             |
++------------------+------------------+------------------+----------+
+                   |                  |                  |
+                   v                  v                  v
+          +--------+------+  +-------+-------+  +-------+-------+
+          |  Web Server   |  |  Web Server   |  |  Web Server   |
+          |   (Node.js)   |  |   (Node.js)   |  |   (Node.js)   |
+          +-------+-------+  +-------+-------+  +-------+-------+
+                  |                  |                  |
+                  +--------+---------+---------+--------+
+                           |                   |
+                           v                   v
+                  +--------+--------+  +-------+--------+
+                  |   Redis Cache   |  |   PostgreSQL   |
+                  |   (Sessions)    |  |   (Primary)    |
+                  +-----------------+  +-------+--------+
+                                               |
+                                               v
+                                       +-------+--------+
+                                       |   PostgreSQL   |
+                                       |   (Replica)    |
+                                       +----------------+
+```
+
+### ASCII Box Diagram (Simple System)
+
+```
++-------------------+       +-------------------+
+|                   |       |                   |
+|    Frontend       |------>|    Backend API    |
+|    (React)        |       |    (FastAPI)      |
+|                   |       |                   |
++-------------------+       +---------+---------+
+                                      |
+                                      |
+              +-----------------------+------------------------+
+              |                       |                        |
+              v                       v                        v
+    +---------+---------+   +---------+---------+   +----------+---------+
+    |                   |   |                   |   |                    |
+    |    PostgreSQL     |   |      Redis        |   |    S3 Storage      |
+    |    (Data)         |   |    (Cache)        |   |    (Files)         |
+    |                   |   |                   |   |                    |
+    +-------------------+   +-------------------+   +--------------------+
+```
+
+### ASCII Decision Tree
+
+```
+                         Is it urgent?
+                              |
+              +---------------+---------------+
+              |                               |
+             YES                              NO
+              |                               |
+              v                               v
+      Can you do it              Is it important?
+      in 2 minutes?                     |
+              |               +---------+---------+
+       +------+------+        |                   |
+       |             |       YES                  NO
+      YES            NO       |                   |
+       |             |        v                   v
+       v             v    Schedule it         Delegate or
+    Do it now    Delegate      |               Delete
+                    |          v                  |
+                    v     Add to calendar         v
+               Ask someone                   Remove from
+               else to do it                   to-do list
+```
+
 ## Tips for Creating Effective Diagrams
 
 1. **Choose the Right Type**: Match diagram type to your use case
