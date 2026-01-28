@@ -112,7 +112,8 @@ def parse_frontmatter(content: str) -> Tuple[Optional[Dict], str, str]:
 
 ALLOWED_FRONTMATTER_KEYS = {
     'name', 'description', 'license', 'allowed-tools', 'metadata',
-    'model', 'context', 'agent', 'hooks', 'user-invocable'
+    'model', 'context', 'agent', 'hooks', 'user-invocable',
+    'disable-model-invocation', 'argument-hint'
 }
 
 RESERVED_WORDS = {'anthropic', 'claude'}
@@ -311,6 +312,48 @@ def validate_frontmatter(skill_path: Path, frontmatter: Dict, body: str) -> List
                 current_value=name,
                 fix_suggestion=f"Example: 'processing-pdfs' instead of 'pdf-processor'"
             ))
+
+    # FM013: argument-hint format validation
+    argument_hint = frontmatter.get('argument-hint', '')
+    if argument_hint:
+        if isinstance(argument_hint, str):
+            # Valid formats: [name], [name] [name], or free text
+            # Warn if it looks like it should have brackets but doesn't
+            if not re.search(r'\[.+?\]', argument_hint):
+                issues.append(Issue(
+                    rule_id="FM013",
+                    severity=Severity.SUGGESTION,
+                    message="argument-hint should use bracket notation",
+                    location="SKILL.md frontmatter",
+                    current_value=argument_hint,
+                    fix_suggestion="Use format like '[issue-number]' or '[filename] [format]'"
+                ))
+        else:
+            issues.append(Issue(
+                rule_id="FM013",
+                severity=Severity.ERROR,
+                message=f"argument-hint must be a string, got {type(argument_hint).__name__}",
+                location="SKILL.md frontmatter",
+                fix_suggestion="Ensure argument-hint is a plain string value"
+            ))
+
+    # FM014: $ARGUMENTS usage validation
+    # Only check in actual instruction text, not documentation/examples
+    disable_model = frontmatter.get('disable-model-invocation', False)
+    # Remove code blocks and table rows before checking
+    body_for_args = re.sub(r'```.*?```', '', body, flags=re.DOTALL)
+    body_for_args = re.sub(r'^\|.*\|$', '', body_for_args, flags=re.MULTILINE)
+    body_for_args = re.sub(r'`[^`]+`', '', body_for_args)  # Remove inline code
+    has_arguments_var = bool(re.search(r'\$ARGUMENTS|\$\d+|\$\{CLAUDE_SESSION_ID\}', body_for_args))
+    if has_arguments_var and not disable_model:
+        # Skills using $ARGUMENTS are typically meant for manual invocation
+        issues.append(Issue(
+            rule_id="FM014",
+            severity=Severity.SUGGESTION,
+            message="Skill uses $ARGUMENTS but allows model invocation",
+            location="SKILL.md",
+            fix_suggestion="Consider adding 'disable-model-invocation: true' for skills that require arguments"
+        ))
 
     return issues
 

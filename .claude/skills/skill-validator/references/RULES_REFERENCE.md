@@ -48,7 +48,7 @@
 
 ### FM009: Unknown Keys [WARNING]
 **Check**: All frontmatter keys are recognized.
-**Allowed**: `name`, `description`, `license`, `allowed-tools`, `metadata`, `model`, `context`, `agent`, `hooks`, `user-invocable`
+**Allowed**: `name`, `description`, `license`, `allowed-tools`, `metadata`, `model`, `context`, `agent`, `hooks`, `user-invocable`, `disable-model-invocation`, `argument-hint`
 **Fix**: Remove unrecognized keys.
 
 ### FM010: Trigger Keywords [WARNING]
@@ -65,6 +65,17 @@
 **Check**: Description uses third person.
 **Avoid**: "I can...", "You should...", "You can..."
 **Fix**: Use "This skill...", "Extracts data from..."
+
+### FM013: Argument Hint Format [SUGGESTION]
+**Check**: `argument-hint` field uses bracket notation.
+**Pattern**: `[name]` or `[name] [name]`
+**Examples**: `[issue-number]`, `[filename] [format]`
+**Fix**: Use format like `[skill-path]` for clarity.
+
+### FM014: $ARGUMENTS Without Disable Model [SUGGESTION]
+**Check**: Skills using `$ARGUMENTS`, `$0`, `$1`, or `${CLAUDE_SESSION_ID}` should typically disable model invocation.
+**Reason**: Skills requiring arguments are usually meant for manual invocation via `/skill-name arg`.
+**Fix**: Add `disable-model-invocation: true` to prevent Claude from auto-invoking.
 
 ---
 
