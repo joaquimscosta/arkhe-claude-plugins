@@ -1,8 +1,336 @@
-# Documentation Examples
+# Doc Co-Authoring Examples
 
-Complete templates and examples for common documentation types.
+Complete templates and examples for different documentation types.
 
-## Example 1: Complete README
+## Table of Contents
+
+1. [Human Documentation Examples](#human-documentation-examples)
+   - [Technical Proposal](#example-1-technical-proposal)
+   - [Decision Document](#example-2-decision-document)
+   - [Technical Spec](#example-3-technical-spec)
+2. [Code Documentation Examples](#code-documentation-examples)
+   - [Complete README](#example-4-complete-readme)
+   - [OpenAPI Specification](#example-5-openapi-specification)
+   - [Module Documentation](#example-6-module-documentation)
+   - [Configuration Reference](#example-7-configuration-reference)
+   - [Function Documentation](#example-8-function-documentation)
+
+---
+
+## Human Documentation Examples
+
+### Example 1: Technical Proposal
+
+```markdown
+# Proposal: Migrate Authentication to OAuth2
+
+**Author**: Jane Smith
+**Date**: 2025-01-15
+**Status**: Draft
+
+## Executive Summary
+
+We propose migrating from our custom JWT-based authentication to OAuth2 with
+support for external identity providers (Google, GitHub). This enables SSO
+for enterprise customers while reducing our authentication maintenance burden.
+
+## Problem Statement
+
+Our current authentication system has several limitations:
+- No SSO support - enterprise customers must create separate credentials
+- Custom JWT implementation requires ongoing security maintenance
+- Password reset flows create support burden (~50 tickets/month)
+- No support for MFA without building it ourselves
+
+## Proposed Solution
+
+Implement OAuth2 authorization server with:
+- External IdP support (Google, GitHub, SAML)
+- Backward compatibility with existing sessions for 6-month transition
+- Self-service MFA enrollment
+
+### Technical Approach
+
+```mermaid
+graph LR
+    User --> Gateway[API Gateway]
+    Gateway --> Auth[Auth Service]
+    Auth --> IdP[External IdP]
+    Auth --> DB[(User DB)]
+```
+
+## Alternatives Considered
+
+| Option | Pros | Cons | Verdict |
+|--------|------|------|---------|
+| Auth0 | Managed, fast | Cost at scale (~$50k/yr) | Too expensive |
+| Keycloak | Self-hosted, free | Operational burden | Considered |
+| Custom OAuth2 | Full control | Implementation time | **Selected** |
+
+## Implementation Plan
+
+1. **Phase 1 (4 weeks)**: OAuth2 core implementation
+2. **Phase 2 (2 weeks)**: Google/GitHub integration
+3. **Phase 3 (3 weeks)**: Migration tooling and dual-auth period
+4. **Phase 4 (ongoing)**: User migration with deprecation of old system
+
+## Risks and Mitigations
+
+| Risk | Impact | Mitigation |
+|------|--------|------------|
+| User confusion during migration | Medium | In-app guidance, support documentation |
+| Token compatibility issues | High | 6-month dual-auth period |
+| External IdP outages | Medium | Fallback to email/password |
+
+## Success Metrics
+
+- 80% of enterprise users on SSO within 6 months
+- 50% reduction in auth-related support tickets
+- Zero security incidents during migration
+
+## Appendix
+
+- [A. Current Auth Architecture](link)
+- [B. OAuth2 RFC Reference](link)
+```
+
+---
+
+### Example 2: Decision Document
+
+```markdown
+# Decision: Use PostgreSQL for Analytics Data Store
+
+**Decision Date**: 2025-01-10
+**Decision Makers**: Data Team, Platform Team
+**Status**: Approved
+
+## Context
+
+Our analytics pipeline needs a data store for aggregated metrics. Current
+options under consideration: PostgreSQL, ClickHouse, and TimescaleDB.
+
+## Decision
+
+We will use **PostgreSQL with TimescaleDB extension** for analytics data.
+
+## Rationale
+
+### Requirements
+
+1. Store 6 months of aggregated metrics (~500GB)
+2. Support time-series queries with <100ms p95 latency
+3. Integrate with existing PostgreSQL tooling
+4. Handle 10K writes/second during peak
+
+### Evaluation
+
+| Requirement | PostgreSQL | ClickHouse | TimescaleDB |
+|-------------|------------|------------|-------------|
+| Storage capacity | Yes | Yes | Yes |
+| Query latency | Marginal | Yes | Yes |
+| Existing tooling | Yes | No | Yes |
+| Write throughput | No | Yes | Yes |
+
+### Why TimescaleDB
+
+- Maintains PostgreSQL compatibility (migrations, tooling, team expertise)
+- Handles time-series workloads efficiently with hypertables
+- Compression reduces storage costs by ~80%
+- Single system to maintain vs. separate OLAP cluster
+
+### Why Not ClickHouse
+
+Despite superior raw performance:
+- Requires new operational expertise
+- Separate system to maintain
+- Team would need training
+- Our scale doesn't justify the complexity
+
+## Consequences
+
+**Positive:**
+- Team can use existing PostgreSQL knowledge
+- Single database technology to maintain
+- Straightforward backup and recovery
+
+**Negative:**
+- May need to revisit if we 10x our data volume
+- Some ClickHouse-specific features unavailable
+
+## Implementation Notes
+
+- Enable TimescaleDB extension on analytics database
+- Create hypertables for time-series data
+- Set up compression policy for data >7 days old
+- Configure retention policy for 6-month window
+```
+
+---
+
+### Example 3: Technical Spec
+
+```markdown
+# Technical Spec: Real-Time Notification System
+
+**Author**: Alex Chen
+**Reviewers**: Platform Team
+**Status**: In Review
+
+## Overview
+
+Design a real-time notification system supporting push notifications,
+email, and in-app messages with guaranteed delivery and user preferences.
+
+## Goals
+
+- Deliver notifications within 5 seconds (p95) for real-time channels
+- Support 100K concurrent WebSocket connections
+- Respect user notification preferences
+- Ensure at-least-once delivery for critical notifications
+
+## Non-Goals
+
+- SMS notifications (future phase)
+- Notification analytics dashboard (separate project)
+- Message scheduling beyond 24 hours
+
+## System Design
+
+### Architecture
+
+```mermaid
+graph TB
+    subgraph Producers
+        API[API Services]
+        Workers[Background Workers]
+    end
+
+    subgraph Core
+        Queue[Message Queue]
+        Router[Notification Router]
+        Prefs[Preference Service]
+    end
+
+    subgraph Delivery
+        Push[Push Gateway]
+        Email[Email Service]
+        WS[WebSocket Server]
+    end
+
+    API --> Queue
+    Workers --> Queue
+    Queue --> Router
+    Router --> Prefs
+    Router --> Push
+    Router --> Email
+    Router --> WS
+```
+
+### Components
+
+#### Message Queue (Redis Streams)
+- Durable message storage
+- Consumer groups for scaling
+- Dead letter queue for failures
+
+#### Notification Router
+- Reads from queue
+- Checks user preferences
+- Routes to appropriate channel(s)
+- Handles retry logic
+
+#### WebSocket Server
+- Maintains persistent connections
+- Horizontal scaling with Redis pub/sub
+- Heartbeat for connection health
+
+### Data Model
+
+```sql
+-- Notifications
+CREATE TABLE notifications (
+    id UUID PRIMARY KEY,
+    user_id UUID NOT NULL,
+    type VARCHAR(50) NOT NULL,
+    payload JSONB NOT NULL,
+    channel VARCHAR(20)[] NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    delivered_at TIMESTAMP,
+    read_at TIMESTAMP
+);
+
+-- User Preferences
+CREATE TABLE notification_preferences (
+    user_id UUID PRIMARY KEY,
+    email_enabled BOOLEAN DEFAULT true,
+    push_enabled BOOLEAN DEFAULT true,
+    quiet_hours_start TIME,
+    quiet_hours_end TIME,
+    preferences JSONB DEFAULT '{}'
+);
+```
+
+### API Endpoints
+
+```
+POST /notifications
+  - Send notification to user(s)
+  - Body: { user_ids, type, payload, priority }
+
+GET /notifications
+  - List notifications for current user
+  - Query: ?unread=true&limit=50
+
+PATCH /notifications/:id/read
+  - Mark notification as read
+
+GET /notifications/preferences
+PUT /notifications/preferences
+  - Get/update user preferences
+```
+
+## Failure Handling
+
+| Failure Mode | Detection | Response |
+|--------------|-----------|----------|
+| WebSocket disconnect | Heartbeat timeout | Queue messages, retry on reconnect |
+| Push delivery failure | Provider callback | Retry 3x, then fallback to email |
+| Email bounce | Webhook | Mark channel failed, alert user |
+| Queue unavailable | Health check | Circuit breaker, buffer in memory |
+
+## Security Considerations
+
+- WebSocket connections authenticated via JWT
+- Notification payload sanitized before display
+- User can only access their own notifications
+- Rate limiting: 100 notifications/user/hour
+
+## Testing Plan
+
+1. Unit tests for router logic and preference matching
+2. Integration tests for each delivery channel
+3. Load test: 10K concurrent connections, 1K messages/second
+4. Chaos testing: Network partitions, service failures
+
+## Rollout Plan
+
+1. **Week 1**: Deploy to staging, internal testing
+2. **Week 2**: 5% of users (opt-in beta)
+3. **Week 3**: 25% rollout with monitoring
+4. **Week 4**: 100% rollout
+
+## Open Questions
+
+- [ ] Should we support notification batching for high-volume users?
+- [ ] What's the retention period for notification history?
+```
+
+---
+
+## Code Documentation Examples
+
+### Example 4: Complete README
 
 ```markdown
 # DataProcessor
@@ -93,7 +421,7 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 ---
 
-## Example 2: OpenAPI Specification
+### Example 5: OpenAPI Specification
 
 ```yaml
 openapi: 3.0.3
@@ -286,7 +614,7 @@ components:
 
 ---
 
-## Example 3: Module Documentation
+### Example 6: Module Documentation
 
 ```markdown
 # Authentication Module
@@ -398,7 +726,7 @@ Redis-backed session management.
 
 ---
 
-## Example 4: Configuration Documentation
+### Example 7: Configuration Reference
 
 ```markdown
 # Configuration Reference
@@ -487,9 +815,9 @@ const configSchema = z.object({
 
 ---
 
-## Example 5: Function/Method Documentation
+### Example 8: Function Documentation
 
-### Python (Google Style)
+#### Python (Google Style)
 
 ```python
 def process_transactions(
@@ -535,7 +863,7 @@ def process_transactions(
     """
 ```
 
-### TypeScript (TSDoc)
+#### TypeScript (TSDoc)
 
 ```typescript
 /**
@@ -569,3 +897,47 @@ async function processTransactions(
   options?: { dryRun?: boolean; batchSize?: number }
 ): Promise<ProcessingResult>
 ```
+
+---
+
+## Conversation Examples
+
+### Workflow Offer Example
+
+**User**: I need to write a design doc for a new caching layer.
+
+**Claude**: I can help you write that design doc. I use a structured workflow that helps ensure the doc works well when others read it:
+
+1. **Context Gathering**: You share all the relevant context while I ask clarifying questions
+2. **Refinement & Structure**: We build each section through brainstorming and iterative editing
+3. **Reader Testing**: We test the doc with a fresh Claude (no context) to catch blind spots
+
+Would you like to try this workflow, or prefer to work freeform?
+
+### Context Gathering Example
+
+**Claude**: Let's start with some quick questions:
+
+1. Who's the primary audience for this design doc?
+2. What's the desired impact - what should readers take away?
+3. Do you have a template or specific format to follow?
+4. Any constraints I should know about (timeline, tech stack, etc.)?
+
+Feel free to answer in shorthand.
+
+### Brainstorming Example
+
+**Claude**: For the "Technical Approach" section, here are some points we might include:
+
+1. Cache invalidation strategy (TTL vs. event-based)
+2. Data structures for cache keys
+3. Memory limits and eviction policy
+4. Cache warming on startup
+5. Metrics and monitoring hooks
+6. Fallback behavior when cache is unavailable
+7. Serialization format (JSON, Protocol Buffers)
+8. Distributed cache vs. local cache trade-offs
+9. Cache penetration protection
+10. Hot key handling
+
+Which of these should we keep? Any to remove or combine? Anything important I missed?
