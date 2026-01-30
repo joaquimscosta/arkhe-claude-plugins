@@ -8,7 +8,7 @@ The Git plugin provides intelligent Git workflow automation with context-aware r
 
 ## Components
 
-### Commands (5)
+### Commands (7)
 
 #### 1. /commit
 Context-aware Git commit assistant with smart pre-commit checks and submodule support.
@@ -173,7 +173,67 @@ Analyze and systematically resolve GitHub PR review suggestions.
 
 ---
 
-### Skills (4)
+#### 6. /stale-branches
+List stale git branches that are candidates for cleanup (merged or inactive).
+
+**Features**:
+- Detect branches merged into base but not deleted
+- Find inactive unmerged branches with configurable threshold
+- Show last commit date for merged branches
+- Show ahead/behind divergence counts for unmerged branches
+- Optional remote branch analysis with `git fetch --prune`
+- Cross-platform date calculation (macOS and Linux)
+- Read-only — never deletes branches, only suggests commands
+
+**Usage**:
+```bash
+/stale-branches                          # Default: 3 months, main, local only
+/stale-branches --threshold 1            # Stricter: 1 month inactivity
+/stale-branches --remote                 # Include remote branches
+/stale-branches --base develop           # Use develop as base branch
+/stale-branches --threshold 1 --remote   # Combine flags
+```
+
+**Flags**:
+- `--threshold <months>`: Inactivity threshold in months (default: 3)
+- `--base <branch>`: Base branch for merge check (default: main)
+- `--remote`: Include remote branch analysis
+
+**Skill**: `git/skills/listing-stale-branches/` (listing-stale-branches)
+
+---
+
+#### 7. /cleanup-branches
+Delete merged branches and flag stale unmerged branches for cleanup.
+
+**Features**:
+- Delete local branches merged into base with explicit confirmation
+- Optionally delete remote merged branches from origin
+- Flag stale unmerged branches for manual review (never auto-deletes)
+- Dry-run mode to preview actions without deleting
+- Cross-platform date handling (macOS and Linux)
+- Safety: always asks before each destructive step
+
+**Usage**:
+```bash
+/cleanup-branches                                # Delete local merged, flag stale
+/cleanup-branches --remote                       # Include remote branch deletion
+/cleanup-branches --base develop --threshold 1   # Custom base and threshold
+/cleanup-branches --dry-run                      # Preview only, no deletions
+/cleanup-branches --remote --dry-run             # Preview including remote
+```
+
+**Flags**:
+- `--base <branch>`: Base branch for merge check (default: main)
+- `--threshold <months>`: Inactivity threshold for stale detection (default: 3)
+- `--remote`: Also delete merged remote branches from origin
+- `--dry-run`: Preview what would be deleted without acting
+
+**Skill**: `git/skills/cleaning-up-branches/` (cleaning-up-branches)
+
+---
+
+### Skills (6)
 
 All commands are implemented as **Skills** - slash commands delegate to skills that contain inline Bash workflows executed by Claude.
 
@@ -221,6 +281,44 @@ Automatically generates changelogs when editing changelog files or mentioning re
 
 **Documentation**: See `skills/generating-changelog/` directory for WORKFLOW, EXAMPLES, and TROUBLESHOOTING guides.
 
+#### 5. listing-stale-branches (Auto-Invoke)
+
+Identifies local and remote branches that are candidates for cleanup — merged-but-not-deleted and inactive branches.
+
+**Location**: `skills/listing-stale-branches/`
+**Invoked by**: `/stale-branches` command and auto-triggers
+
+**Auto-Invoke Triggers**:
+- Keywords: "stale branches", "old branches", "branch cleanup", "prune branches", "dead branches", "unused branches", "inactive branches", "branch hygiene"
+- Actions: "list branches to delete", "find stale branches", "clean up branches"
+
+**Delivers**:
+1. **Merged Branch Report** — Branches merged into base with last commit dates
+2. **Inactive Branch Report** — Unmerged branches past threshold with ahead/behind counts
+3. **Remote Analysis** — Optional remote branch detection (with `--remote` flag)
+4. **Cleanup Suggestions** — Deletion commands shown as suggestions, never executed
+
+**Documentation**: See `skills/listing-stale-branches/` directory for WORKFLOW, EXAMPLES, and TROUBLESHOOTING guides.
+
+#### 6. cleaning-up-branches
+
+Deletes merged branches (local and remote) with explicit confirmation, and flags stale unmerged branches for manual review.
+
+**Location**: `skills/cleaning-up-branches/`
+**Invoked by**: `/cleanup-branches` command and auto-triggers
+
+**Auto-Invoke Triggers**:
+- Keywords: "cleanup branches", "delete merged branches", "prune old branches", "remove stale branches", "branch cleanup", "remove dead branches"
+
+**Delivers**:
+1. **Branch Status Summary** — Overview of local and remote branch counts
+2. **Local Merged Cleanup** — Delete merged branches with user confirmation
+3. **Remote Merged Cleanup** — Optional remote deletion with user confirmation
+4. **Stale Branch Report** — Inactive unmerged branches flagged for manual review
+5. **Cleanup Summary** — Audit trail of all actions taken
+
+**Documentation**: See `skills/cleaning-up-branches/` directory for WORKFLOW, EXAMPLES, and TROUBLESHOOTING guides.
+
 ---
 
 ## Installation
@@ -250,6 +348,8 @@ When no command conflicts exist:
 /create-pr
 /create-branch add authentication
 /changelog
+/stale-branches
+/cleanup-branches
 ```
 
 ### Namespaced Invocation
@@ -261,6 +361,8 @@ When command name conflicts exist with other plugins:
 /git:create-pr
 /git:create-branch add authentication
 /git:changelog
+/git:stale-branches
+/git:cleanup-branches
 ```
 
 ## Configuration
@@ -329,6 +431,14 @@ Each skill contains workflow documentation and inline Bash:
 
 **skills/generating-changelog/**
 - `SKILL.md` - Complete inline Bash workflow for changelogs
+- `WORKFLOW.md`, `EXAMPLES.md`, `TROUBLESHOOTING.md`
+
+**skills/listing-stale-branches/**
+- `SKILL.md` - Complete inline Bash workflow for stale branch detection
+- `WORKFLOW.md`, `EXAMPLES.md`, `TROUBLESHOOTING.md`
+
+**skills/cleaning-up-branches/**
+- `SKILL.md` - Complete inline Bash workflow for branch cleanup
 - `WORKFLOW.md`, `EXAMPLES.md`, `TROUBLESHOOTING.md`
 
 ### Key Features

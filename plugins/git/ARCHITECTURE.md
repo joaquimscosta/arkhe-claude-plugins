@@ -52,7 +52,9 @@ git/
 │   ├── commit.md          # /commit command
 │   ├── create-pr.md       # /create-pr command
 │   ├── create-branch.md   # /create-branch command
-│   └── changelog.md       # /changelog command
+│   ├── changelog.md       # /changelog command
+│   ├── stale-branches.md      # /stale-branches command
+│   └── cleanup-branches.md   # /cleanup-branches command
 ├── skills/                # Skills with inline Bash workflows
 │   ├── creating-commit/
 │   │   ├── SKILL.md           # Inline Bash workflow (414 lines)
@@ -69,8 +71,18 @@ git/
 │   │   ├── WORKFLOW.md
 │   │   ├── EXAMPLES.md
 │   │   └── TROUBLESHOOTING.md
-│   └── generating-changelog/
-│       ├── SKILL.md           # Inline Bash workflow (217 lines)
+│   ├── generating-changelog/
+│   │   ├── SKILL.md           # Inline Bash workflow (217 lines)
+│   │   ├── WORKFLOW.md
+│   │   ├── EXAMPLES.md
+│   │   └── TROUBLESHOOTING.md
+│   ├── listing-stale-branches/
+│   │   ├── SKILL.md           # Inline Bash workflow for stale branch detection
+│   │   ├── WORKFLOW.md
+│   │   ├── EXAMPLES.md
+│   │   └── TROUBLESHOOTING.md
+│   └── cleaning-up-branches/
+│       ├── SKILL.md           # Inline Bash workflow for branch cleanup
 │       ├── WORKFLOW.md
 │       ├── EXAMPLES.md
 │       └── TROUBLESHOOTING.md
