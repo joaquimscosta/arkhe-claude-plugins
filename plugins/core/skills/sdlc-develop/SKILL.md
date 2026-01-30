@@ -182,20 +182,23 @@ START
   │   └─ Execute Phase 3 → Checkpoint
   │
   ├─ Read PHASE-4-IMPLEMENTATION.md
-  │   └─ Execute Phase 4 → Validation
+  │   └─ Execute Phase 4 → Validation → Completion Gate ⛔
   │
   └─ Read PHASE-5-SUMMARY.md
       └─ Execute Phase 5 → Complete
 ```
 
-## Checkpoints (unless `--auto`)
+## Checkpoints
 
-User approval required at:
-- End of Phase 0 (existing system findings)
-- End of Phase 1 (requirements summary)
-- Phase 2c (architecture decision)
-- End of Phase 3 (task breakdown)
-- Phase 4d (quality review findings)
+### Tier 1 ⛔ (MANDATORY — cannot skip, even with `--auto`)
+- Phase 2c: Architecture Decision
+- Phase 4e: Completion Gate (RULE ZERO verification)
+
+### Tier 2 ⚠️ (skippable with `--auto`)
+- Phase 0→1: Existing System Findings
+- Phase 1→2: Requirements Summary
+- Phase 3→4: Task Breakdown
+- Phase 4d: Quality Review (escalates to Tier 1 if security/DB/breaking changes detected)
 
 ## Checkpoint Protocol (CRITICAL)
 

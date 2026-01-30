@@ -8,18 +8,18 @@
 
 ## Actions
 
-### 1. Mark All Tasks Complete
+### 1. Final Tasks Verification
 
-**tasks.md verification:**
+**tasks.md confirmation:**
 1. Read `{specs_dir}/{NN}-{slug}/tasks.md`
-2. Verify ALL acceptance criteria checkboxes are `[x]` (not `[ ]`)
-3. If any remain unchecked, either:
-   - Mark them complete if the work was done
-   - Return to Phase 4 to complete the work
+2. Confirm ALL acceptance criteria checkboxes are `[x]`
+3. If any remain unchecked (should not occur after Phase 4e gate):
+   - Mark them `[x]` if the work was verified during Phase 4
+   - Log a warning: criteria were completed but not checked off during implementation
 
-**spec.md verification:**
+**spec.md confirmation:**
 1. Read `{specs_dir}/{NN}-{slug}/spec.md`
-2. Verify all acceptance criteria are marked complete
+2. Confirm all acceptance criteria are marked complete
 
 If using TodoWrite/TaskUpdate tools, ensure those are also marked complete.
 
@@ -71,6 +71,7 @@ Update `{specs_dir}/{NN}-{slug}/spec.md` status to "Complete".
 Before marking complete, verify ALL items:
 
 **Required Checks:**
+- [ ] All tasks.md acceptance criteria checkboxes are `[x]`
 - [ ] All FR-XXX requirements have corresponding implementation
 - [ ] Acceptance criteria are testable
 - [ ] Files actually modified (git diff check)
