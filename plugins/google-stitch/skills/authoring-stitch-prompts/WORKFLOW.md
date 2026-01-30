@@ -679,4 +679,33 @@ User-provided style cues in the input take precedence over injected context. If 
 ## 5. Finalize & Return
 1. Present the final prompt in Markdown with short paragraphs or bullet lists for readability.
 2. If major assumptions were made (e.g., inferred color palette), call them out succinctly.
-3. Suggest next steps if the brief indicates additional screens (“Create separate prompt for Settings screen to maintain atomicity”).
+3. Suggest next steps if the brief indicates additional screens ("Create separate prompt for Settings screen to maintain atomicity").
+
+## 6. MCP Generation (Optional)
+
+After finalizing and saving the prompt file, check if MCP-based generation is available.
+
+### Detection
+
+Check for the `generate_screen_from_text` MCP tool. This indicates the Stitch MCP server is configured.
+
+### If MCP Available
+
+Offer generation:
+```
+Stitch MCP is available. Generate screens now?
+  → Yes (generate screens from this prompt)
+  → No (just save the prompt file)
+```
+
+If user accepts: Delegate to the `generating-stitch-screens` skill with the authored prompt file path.
+
+### If MCP Not Available
+
+No action needed. Present standard prompt output with copy-paste instructions. Do not show any error or warning about MCP — the skill works fully in standalone mode.
+
+### When to Skip This Step
+
+- Revision requests (changes to existing prompts are not auto-generated)
+- User explicitly requested "just save" or "prompt only"
+- Previous generation attempt for same feature already completed

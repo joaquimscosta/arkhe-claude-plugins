@@ -81,10 +81,10 @@ Code quality review tools for development teams.
 - **Commands**: `/code`, `/security`, `/design`, `/codebase`
 
 ### Google Stitch Plugin
-Claude + Google Stitch prompting toolkit for prompt authoring.
-- **Commands**: `/prompt`
-- **Skills**: `authoring-stitch-prompts`, `extracting-stitch-mockups`
-- **Use**: Generate Stitch-ready prompts, extract mockups
+Claude + Google Stitch workflow toolkit with MCP integration.
+- **Commands**: `/prompt`, `/stitch-generate`, `/stitch-setup`
+- **Skills**: `authoring-stitch-prompts`, `generating-stitch-screens`
+- **Use**: Generate Stitch-ready prompts, automate screen generation via MCP
 
 ### Git Plugin
 Git workflow automation for commits, pull requests, branching, and changelog generation.

@@ -123,15 +123,15 @@ Design Intent for Spec-Driven Development that combines AI-assisted implementati
 ---
 
 ### Google Stitch Plugin
-Claude + Google Stitch prompting toolkit for prompt authoring.
+Claude + Google Stitch workflow toolkit with MCP integration.
 
 **Install**: `/plugin install google-stitch@arkhe-claude-plugins`
 
 **Components**:
-- 1 command: `/prompt`
-- 2 skills: `authoring-stitch-prompts`, `extracting-stitch-mockups`
+- 3 commands: `/prompt`, `/stitch-generate`, `/stitch-setup`
+- 2 skills: `authoring-stitch-prompts`, `generating-stitch-screens`
 
-**Use for:** Generating Stitch-ready prompts and extracting mockups.
+**Use for:** Generating Stitch-ready prompts and automating screen generation via MCP.
 
 ---
 
@@ -235,7 +235,7 @@ Skills are automatically invoked when relevant context is detected:
 - **doc**: `diagramming` skill activates when you mention diagrams, flowcharts, or visualization keywords
 - **git**: `generating-changelog` skill activates when you edit CHANGELOG.md or request changelog generation
 - **design-intent**: `design-intent-specialist` activates when you're implementing UI from visual references or running `/design-intent`
-- **google-stitch**: `authoring-stitch-prompts`, `extracting-stitch-mockups` activate for Stitch prompt work
+- **google-stitch**: `authoring-stitch-prompts` activates for Stitch prompt work; `generating-stitch-screens` activates for MCP-based generation
 - **lang**: `scripting-bash` skill activates for Bash scripting guidance
 
 ---

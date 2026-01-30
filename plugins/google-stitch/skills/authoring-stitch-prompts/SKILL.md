@@ -324,11 +324,24 @@ See [WORKFLOW.md](WORKFLOW.md#05-design-context-discovery-optional-enhancement) 
 
 ---
 
+## MCP Integration (Optional)
+
+When `@_davideast/stitch-mcp` is configured, prompts can be sent directly to Stitch for generation after authoring.
+
+**With MCP:** Author prompt -> Generate screens -> Fetch images/code
+**Without MCP:** Author prompt -> Copy to Stitch manually
+
+After authoring, offer: "Stitch MCP is available. Generate screens now? [Yes / No / Just save prompts]"
+
+If accepted, invoke the `generating-stitch-screens` skill with the authored prompt file.
+
+---
+
 ## Common Issues
 
 - **Prompts too verbose** – Re-run formatting with the template and trim narration. See [TROUBLESHOOTING.md](TROUBLESHOOTING.md)#L1 for guidance.
 - **Missing style cues** – Derive palette/typography keywords from user input or prior session context before finalizing. See [TROUBLESHOOTING.md](TROUBLESHOOTING.md)#L25.
-- **Multi-goal briefs** – Split into multiple prompts; re-emphasize Stitch’s atomic focus. See [TROUBLESHOOTING.md](TROUBLESHOOTING.md)#L43.
+- **Multi-goal briefs** – Split into multiple prompts; re-emphasize Stitch's atomic focus. See [TROUBLESHOOTING.md](TROUBLESHOOTING.md)#L43.
 
 ---
 

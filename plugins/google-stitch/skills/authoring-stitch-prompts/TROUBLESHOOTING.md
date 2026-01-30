@@ -213,3 +213,45 @@ Optimize for mobile-first (320px minimum), full keyboard navigation, screen read
 - `package.json` doesn't contain recognizable design system dependencies
 
 **Note:** Standalone mode is valid. Default style cues ("clean, modern, neutral palette") work for any project. Users can always provide specific style cues in their input.
+
+---
+
+## MCP Integration Issues
+
+### MCP Tools Not Detected After Authoring
+
+**Symptom:** After authoring a prompt, the skill doesn't offer MCP generation even though you set up the Stitch MCP server.
+
+**Causes:**
+- MCP server not running or not properly configured
+- Plugin reinstall needed to pick up `.mcp.json`
+- Claude Code session needs restart
+
+**Fix:**
+1. Run `/stitch-setup` to verify MCP configuration
+2. Reinstall plugin: `/plugin uninstall google-stitch@arkhe-claude-plugins` then `/plugin install google-stitch@arkhe-claude-plugins`
+3. Restart Claude Code to reload MCP servers
+
+### Generation Failed After Authoring
+
+**Symptom:** MCP generation was offered and accepted, but screens failed to generate.
+
+**Causes:**
+- Authentication expired
+- Project ID not set or invalid
+- Stitch service issue
+
+**Fix:**
+1. Refresh credentials: `gcloud auth application-default login`
+2. Verify project ID: Check `STITCH_PROJECT_ID` environment variable
+3. Try again: `/stitch-generate @{prompt-file-path}`
+4. Check Stitch service at [stitch.withgoogle.com](https://stitch.withgoogle.com)
+
+### Want MCP But Not Set Up
+
+**Symptom:** User wants automated generation but MCP is not configured.
+
+**Fix:**
+1. Run `/stitch-setup` for guided setup
+2. Or manually: `npx @_davideast/stitch-mcp init`
+3. After setup, authored prompts will automatically offer generation
