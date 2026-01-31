@@ -5,6 +5,67 @@ All notable changes to the Arkhe Claude Plugins project will be documented in th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.0] - 2026-01-30
+
+### Added
+
+#### Git Plugin
+
+- **`/stale-branches` command** for listing merged and inactive branches as cleanup candidates
+  - Full skill implementation: `listing-stale-branches` with SKILL.md, WORKFLOW.md, EXAMPLES.md, TROUBLESHOOTING.md
+- **`/cleanup-branches` command** for deleting merged branches with confirmation and flagging stale ones
+  - Full skill implementation: `cleaning-up-branches` with SKILL.md, WORKFLOW.md, EXAMPLES.md, TROUBLESHOOTING.md
+
+#### Google Stitch Plugin
+
+- **`/stitch-generate` command** for automated Stitch screen generation via MCP
+- **`/stitch-setup` command** for MCP server configuration
+- **`generating-stitch-screens` skill** replacing the previous `extracting-stitch-mockups` skill
+- **`.mcp.json` configuration** for MCP server integration
+
+### Changed
+
+#### Google Stitch Plugin
+
+- **BREAKING**: Replaced `extracting-stitch-mockups` skill with `generating-stitch-screens`
+  - Removed `extracting-stitch-mockups` skill (SKILL.md, WORKFLOW.md, EXAMPLES.md, TROUBLESHOOTING.md, scripts/)
+  - New skill uses MCP-based workflow for automated screen generation
+- Updated `authoring-stitch-prompts` skill (SKILL.md, WORKFLOW.md, EXAMPLES.md, TROUBLESHOOTING.md, evaluation.json)
+- Updated plugin description and README
+- Updated `/prompt` command
+
+#### Documentation
+
+- Updated CLAUDE.md with revised Google Stitch plugin description
+- Updated INSTALLATION.md with new Stitch setup section
+- Updated README.md with new Stitch plugin capabilities
+- Updated docs/README.md with new skill references
+
+### Removed
+
+#### Google Stitch Plugin
+
+- **`extracting-stitch-mockups` skill** (replaced by `generating-stitch-screens`)
+  - Removed `scripts/extract_images.py`
+  - Removed SKILL.md, WORKFLOW.md, EXAMPLES.md, TROUBLESHOOTING.md
+
+### Breaking Changes
+
+#### Google Stitch Plugin - MCP Integration (2026-01-30)
+
+The `extracting-stitch-mockups` skill has been replaced with `generating-stitch-screens`, which uses MCP for automated screen generation.
+
+**Migration**:
+```bash
+# Old (no longer available)
+# extracting-stitch-mockups skill with Python extraction script
+
+# New workflow
+/stitch-setup              # Configure MCP server
+/stitch-generate           # Generate screens via MCP
+# generating-stitch-screens skill auto-invokes
+```
+
 ## [1.6.0] - 2026-01-28
 
 ### Added
@@ -655,7 +716,8 @@ The `/specprep:tasks` command has been removed in favor of automatic command cha
 - **Documentation**: See README.md and docs/ directory
 - **Installation**: See INSTALLATION.md
 
-[Unreleased]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.6.0...HEAD
+[Unreleased]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.7.0...HEAD
+[1.7.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.3.0...v1.5.0
 [1.3.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.2.0...v1.3.0
