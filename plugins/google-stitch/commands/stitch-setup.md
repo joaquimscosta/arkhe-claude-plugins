@@ -20,7 +20,24 @@ Check if Stitch MCP tools are available by looking for the `generate_screen_from
 If MCP tools are detected:
 
 1. Call `list_projects` to verify the connection works
-2. Report status:
+2. **Handle errors:**
+   - **If 403 Forbidden**: The Stitch API requires preview/allowlist access from Google. Report:
+     ```
+     Stitch MCP: Connection Failed (403 Forbidden)
+
+     The Google Stitch API requires preview access. This API is not yet
+     generally available and requires allowlist approval from Google.
+
+     To stop the failing MCP server from retrying:
+       claude mcp remove stitch
+
+     To check MCP status:
+       claude mcp list
+
+     Once you have Stitch API access, run /stitch-setup again.
+     ```
+   - **If other error**: Report the error and suggest checking ADC credentials
+3. **On success**, report status:
    ```
    Stitch MCP: Connected
    Projects found: {count}
@@ -30,28 +47,42 @@ If MCP tools are detected:
      /prompt       - Author Stitch prompts (with auto-generate offer)
      /stitch-generate - Full pipeline: author -> generate -> fetch
    ```
-3. If `STITCH_PROJECT_ID` is not set, suggest setting it for default project targeting
+4. If `STITCH_PROJECT_ID` is not set, suggest setting it for default project targeting
 
 ### Step 3: Setup Guidance
 
-If MCP tools are NOT detected, present setup options:
+If MCP tools are NOT detected, present setup instructions:
 
 ```
-Stitch MCP is not configured. Choose a setup method:
+Stitch MCP is not configured.
 
-Option A: Interactive Setup (Recommended)
-  Run: npx @_davideast/stitch-mcp init
-  This walks through authentication and project configuration.
+IMPORTANT: The Stitch API requires preview/allowlist access from Google.
+Setup will fail with 403 errors until you have API access approved.
 
-Option B: Manual gcloud Setup (for existing gcloud users)
-  1. gcloud auth application-default login
-  2. Set STITCH_PROJECT_ID environment variable
-  3. The plugin's .mcp.json auto-configures the MCP server
+Step 1: Authenticate with Google Cloud
+  gcloud auth application-default login
 
-Option C: Alternative MCP Servers
-  - @anthropic/stitch-mcp - Anthropic's variant
-  - @anthropic/stitch-mcp-auto - Auto-configuration variant
-  Check npm for latest available packages.
+Step 2: Add MCP configuration to your project's .mcp.json:
+
+  {
+    "stitch": {
+      "command": "npx",
+      "args": ["-y", "@_davideast/stitch-mcp", "proxy"],
+      "env": {
+        "STITCH_PROJECT_ID": "your-project-id"
+      }
+    }
+  }
+
+  Replace "your-project-id" with your Google Cloud project ID.
+
+Step 3: Restart Claude Code to load the MCP configuration.
+
+Step 4: Run /stitch-setup again to verify the connection.
+
+Alternative: Interactive Setup
+  npx @_davideast/stitch-mcp init
+  This walks through authentication and configuration interactively.
 ```
 
 ### Step 4: Verify Environment
@@ -72,4 +103,55 @@ Setup complete. Try these next:
 
   /stitch-generate "landing page for SaaS product"
     → Full pipeline: author prompt, generate screens, fetch images
+```
+
+### Step 6: Troubleshooting
+
+Common issues and solutions:
+
+#### 403 Forbidden Error
+
+Cause: Stitch API requires preview/allowlist access from Google.
+
+Solution:
+1. Request access from Google for the Stitch API preview
+2. Remove the failing MCP server (see commands below)
+3. Wait for API access approval, then run `/stitch-setup` again
+
+#### MCP Server Stuck "connecting..."
+
+Cause: MCP server continuously retrying failed connection.
+
+Solution:
+1. Check status: `claude mcp list`
+2. Remove failing server: `claude mcp remove stitch` (or your server name)
+3. Fix the underlying issue (usually 403 or credentials)
+4. Run `/stitch-setup` to reconfigure
+
+#### ADC (Application Default Credentials) Issues
+
+Cause: Google Cloud credentials not configured or expired.
+
+Solution:
+1. Run: `gcloud auth application-default login`
+2. Ensure correct project: `gcloud config set project YOUR_PROJECT_ID`
+3. Verify: `gcloud auth application-default print-access-token`
+
+#### STITCH_PROJECT_ID Not Set
+
+Cause: Environment variable missing from MCP configuration.
+
+Solution: Update your `.mcp.json` with the correct project ID in the `env` section.
+
+#### MCP Status Commands
+
+```bash
+# List all MCP servers and their status
+claude mcp list
+
+# Remove a specific MCP server
+claude mcp remove stitch
+
+# View MCP configuration
+claude mcp list --json
 ```

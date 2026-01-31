@@ -22,9 +22,9 @@ Stitch MCP is not configured.
 
 To set up:
   1. Run /stitch-setup for guided setup
-  2. Or manually: npx @_davideast/stitch-mcp init
+  2. Or manually configure MCP (see plugin README)
 
-The plugin's .mcp.json auto-configures the server once authenticated.
+Note: Stitch API requires preview/allowlist access from Google.
 ```
 
 Do not proceed with generation. Do not attempt workarounds.

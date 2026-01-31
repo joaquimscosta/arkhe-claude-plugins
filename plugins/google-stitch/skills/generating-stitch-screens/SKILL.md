@@ -4,7 +4,7 @@ description: >
   Generates Stitch screens from authored prompts using MCP tools.
   Use when user wants to generate screens in Stitch, mentions "generate in stitch",
   "create stitch screens", "run prompts in stitch", or has prompt files ready.
-  Requires Stitch MCP server configured via .mcp.json.
+  Requires Stitch MCP server (see /stitch-setup for configuration).
 ---
 
 # Generating Stitch Screens

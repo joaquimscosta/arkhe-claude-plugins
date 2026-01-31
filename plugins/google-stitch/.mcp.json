@@ -1,9 +1,0 @@
-{
-  "stitch": {
-    "command": "npx",
-    "args": ["-y", "@_davideast/stitch-mcp", "proxy"],
-    "env": {
-      "STITCH_PROJECT_ID": "${STITCH_PROJECT_ID}"
-    }
-  }
-}

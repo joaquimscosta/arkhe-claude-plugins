@@ -223,14 +223,17 @@ Optimize for mobile-first (320px minimum), full keyboard navigation, screen read
 **Symptom:** After authoring a prompt, the skill doesn't offer MCP generation even though you set up the Stitch MCP server.
 
 **Causes:**
-- MCP server not running or not properly configured
-- Plugin reinstall needed to pick up `.mcp.json`
+- MCP server not configured in `.mcp.json`
+- Stitch API access not approved (403 errors)
 - Claude Code session needs restart
 
 **Fix:**
 1. Run `/stitch-setup` to verify MCP configuration
-2. Reinstall plugin: `/plugin uninstall google-stitch@arkhe-claude-plugins` then `/plugin install google-stitch@arkhe-claude-plugins`
-3. Restart Claude Code to reload MCP servers
+2. Check MCP status: `claude mcp list`
+3. If not configured, add to your project's `.mcp.json` (see plugin README)
+4. Restart Claude Code to reload MCP servers
+
+**Note:** Stitch API requires preview/allowlist access from Google.
 
 ### Generation Failed After Authoring
 

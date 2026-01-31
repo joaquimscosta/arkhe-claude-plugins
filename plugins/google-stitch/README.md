@@ -144,28 +144,45 @@ Checks MCP availability, verifies connection, or guides through setup options.
 
 ## MCP Setup
 
-The plugin includes a `.mcp.json` that auto-configures the Stitch MCP server on install. Three setup paths:
+> **Note:** The Stitch API requires preview/allowlist access from Google. MCP setup will fail with 403 errors until you have API access approved.
 
-### Option A: Interactive Setup (Recommended)
+MCP is **not auto-configured** — you must manually add the server after confirming you have Stitch API access.
+
+### Step 1: Authenticate with Google Cloud
+
+```bash
+gcloud auth application-default login
+```
+
+### Step 2: Add MCP Configuration
+
+Add to your project's `.mcp.json` or user-level MCP config:
+
+```json
+{
+  "stitch": {
+    "command": "npx",
+    "args": ["-y", "@_davideast/stitch-mcp", "proxy"],
+    "env": {
+      "STITCH_PROJECT_ID": "your-project-id"
+    }
+  }
+}
+```
+
+Replace `your-project-id` with your Google Cloud project ID.
+
+### Step 3: Restart Claude Code
+
+Restart Claude Code to load the MCP configuration, then verify with `/stitch-setup`.
+
+### Alternative: Interactive Setup
 
 ```bash
 npx @_davideast/stitch-mcp init
 ```
 
-Walks through authentication and project configuration interactively.
-
-### Option B: Manual gcloud Setup
-
-```bash
-gcloud auth application-default login
-export STITCH_PROJECT_ID="your-project-id"
-```
-
-For users with existing gcloud configurations. The plugin's `.mcp.json` auto-configures the MCP server.
-
-### Option C: Alternative MCP Servers
-
-Other npm packages may provide Stitch MCP access. Check npm for latest options.
+Walks through authentication and configuration interactively.
 
 ---
 
@@ -175,7 +192,6 @@ Other npm packages may provide Stitch MCP access. Check npm for latest options.
 google-stitch/
 ├── .claude-plugin/
 │   └── plugin.json
-├── .mcp.json                              <- MCP server configuration
 ├── commands/
 │   ├── prompt.md
 │   ├── stitch-setup.md
@@ -252,8 +268,8 @@ The harness checks prompt structure, UI noun usage, style cue count, atomicity, 
    ```bash
    /plugin install google-stitch@arkhe-claude-plugins
    ```
-3. **Restart Claude Code** to load skills and MCP configuration.
-4. **Optional:** Run `/stitch-setup` to configure MCP for automated generation.
+3. **Restart Claude Code** to load skills.
+4. **Optional:** Run `/stitch-setup` to configure MCP for automated generation (requires Stitch API access).
 
 ---
 

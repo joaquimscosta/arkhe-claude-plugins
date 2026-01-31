@@ -5,20 +5,18 @@
 **Symptom:** Skill reports "Stitch MCP is not configured" even though you believe it should be set up.
 
 **Causes:**
-- MCP server not installed or not running
-- Plugin `.mcp.json` not picked up after install
+- MCP server not configured in `.mcp.json`
+- Stitch API access not approved (403 errors)
 - Node.js/npx not available in PATH
 
 **Fix:**
 1. Run `/stitch-setup` for guided verification
 2. Check that Node.js is installed: `node --version`
-3. Verify the MCP server package: `npx @_davideast/stitch-mcp --version`
-4. Reinstall the plugin to re-trigger `.mcp.json` configuration:
-   ```
-   /plugin uninstall google-stitch@arkhe-claude-plugins
-   /plugin install google-stitch@arkhe-claude-plugins
-   ```
+3. Verify MCP is configured: `claude mcp list`
+4. If not configured, add to your project's `.mcp.json` (see plugin README)
 5. Restart Claude Code to reload MCP servers
+
+**Note:** Stitch API requires preview/allowlist access from Google. If you get 403 errors, you need to request access before MCP will work.
 
 ---
 
