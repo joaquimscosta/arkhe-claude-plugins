@@ -20,9 +20,11 @@ Check if Stitch MCP tools are available by looking for the `generate_screen_from
 If MCP tools are detected:
 
 1. Call `list_projects` to verify the connection works
+
 2. **Handle errors:**
    - **If 403 Forbidden**: The Stitch API requires preview/allowlist access from Google. Report:
-     ```
+
+     ```text
      Stitch MCP: Connection Failed (403 Forbidden)
 
      The Google Stitch API requires preview access. This API is not yet
@@ -36,9 +38,20 @@ If MCP tools are detected:
 
      Once you have Stitch API access, run /stitch-setup again.
      ```
+
    - **If other error**: Report the error and suggest checking ADC credentials
-3. **On success**, report status:
+
+3. **On success**, run the doctor command to validate the full setup:
+
+   ```bash
+   npx @_davideast/stitch-mcp doctor
    ```
+
+   This validates: CLI installation, user login, credentials, project config, API reachability.
+
+4. **Report status**:
+
+   ```text
    Stitch MCP: Connected
    Projects found: {count}
    Project ID: {STITCH_PROJECT_ID or "not set"}
@@ -47,23 +60,41 @@ If MCP tools are detected:
      /prompt       - Author Stitch prompts (with auto-generate offer)
      /stitch-generate - Full pipeline: author -> generate -> fetch
    ```
-4. If `STITCH_PROJECT_ID` is not set, suggest setting it for default project targeting
+
+5. If `STITCH_PROJECT_ID` is not set, suggest setting it for default project targeting
 
 ### Step 3: Setup Guidance
 
 If MCP tools are NOT detected, present setup instructions:
 
-```
+```text
 Stitch MCP is not configured.
 
 IMPORTANT: The Stitch API requires preview/allowlist access from Google.
 Setup will fail with 403 errors until you have API access approved.
 
 Step 1: Authenticate with Google Cloud
-  gcloud auth application-default login
 
-Step 2: Add MCP configuration to your project's .mcp.json:
+  Choose ONE authentication method:
 
+  Option A: New users / Isolated config (Recommended)
+    Creates a separate Stitch-specific credential store:
+    CLOUDSDK_CONFIG="~/.stitch-mcp/config" gcloud auth login
+    CLOUDSDK_CONFIG="~/.stitch-mcp/config" gcloud auth application-default login
+
+  Option B: Existing gcloud users
+    If you already have gcloud configured and want to reuse those credentials:
+    gcloud auth application-default login
+    Then add STITCH_USE_SYSTEM_GCLOUD=1 to your MCP env config (see Step 3).
+
+Step 2: Enable the Stitch API (if needed)
+  If you have GCP access but the API isn't enabled:
+  gcloud components install beta
+  gcloud beta services mcp enable stitch.googleapis.com --project=YOUR_PROJECT_ID
+
+Step 3: Add MCP configuration to your project's .mcp.json:
+
+  Standard config (for Option A authentication):
   {
     "stitch": {
       "command": "npx",
@@ -74,28 +105,50 @@ Step 2: Add MCP configuration to your project's .mcp.json:
     }
   }
 
+  For existing gcloud users (Option B):
+  {
+    "stitch": {
+      "command": "npx",
+      "args": ["-y", "@_davideast/stitch-mcp", "proxy"],
+      "env": {
+        "STITCH_USE_SYSTEM_GCLOUD": "1"
+      }
+    }
+  }
+
   Replace "your-project-id" with your Google Cloud project ID.
 
-Step 3: Restart Claude Code to load the MCP configuration.
+Step 4: Restart Claude Code to load the MCP configuration.
 
-Step 4: Run /stitch-setup again to verify the connection.
+Step 5: Run /stitch-setup again to verify the connection.
 
 Alternative: Interactive Setup
-  npx @_davideast/stitch-mcp init
-  This walks through authentication and configuration interactively.
+  npx @_davideast/stitch-mcp init -c claude-code
+  This walks through authentication and configuration interactively,
+  specifically targeting Claude Code configuration.
 ```
 
 ### Step 4: Verify Environment
 
 After setup, check:
-1. `STITCH_PROJECT_ID` environment variable is set
+
+1. `STITCH_PROJECT_ID` environment variable is set (or `STITCH_USE_SYSTEM_GCLOUD` for existing gcloud users)
+
 2. Google Cloud Application Default Credentials (ADC) are configured
-3. Test connection by calling `list_projects`
+
+3. Run the doctor command to validate the full setup:
+
+   ```bash
+   npx @_davideast/stitch-mcp doctor
+   ```
+
+4. Test connection by calling `list_projects`
 
 ### Step 5: Post-Setup Suggestions
 
 On successful verification:
-```
+
+```text
 Setup complete. Try these next:
 
   /prompt "dashboard for analytics app"
@@ -114,6 +167,7 @@ Common issues and solutions:
 Cause: Stitch API requires preview/allowlist access from Google.
 
 Solution:
+
 1. Request access from Google for the Stitch API preview
 2. Remove the failing MCP server (see commands below)
 3. Wait for API access approval, then run `/stitch-setup` again
@@ -123,6 +177,7 @@ Solution:
 Cause: MCP server continuously retrying failed connection.
 
 Solution:
+
 1. Check status: `claude mcp list`
 2. Remove failing server: `claude mcp remove stitch` (or your server name)
 3. Fix the underlying issue (usually 403 or credentials)
@@ -133,9 +188,28 @@ Solution:
 Cause: Google Cloud credentials not configured or expired.
 
 Solution:
+
 1. Run: `gcloud auth application-default login`
 2. Ensure correct project: `gcloud config set project YOUR_PROJECT_ID`
 3. Verify: `gcloud auth application-default print-access-token`
+4. Enable debug logging to see detailed errors:
+
+   ```bash
+   npx @_davideast/stitch-mcp proxy --debug
+   # Check logs at /tmp/stitch-proxy-debug.log
+   ```
+
+#### Authentication Reset
+
+Use when: authentication is stuck, using wrong account, or need a fresh start.
+
+Solution:
+
+```bash
+npx @_davideast/stitch-mcp logout --force --clear-config
+```
+
+Then re-run Step 1 authentication from Setup Guidance.
 
 #### STITCH_PROJECT_ID Not Set
 
@@ -154,4 +228,10 @@ claude mcp remove stitch
 
 # View MCP configuration
 claude mcp list --json
+
+# Validate full Stitch setup
+npx @_davideast/stitch-mcp doctor
+
+# Debug mode for verbose logging
+npx @_davideast/stitch-mcp proxy --debug
 ```
