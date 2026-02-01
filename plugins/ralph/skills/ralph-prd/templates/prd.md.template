@@ -1,0 +1,85 @@
+# {{project_name}} - Product Requirements Document
+
+**Created:** {{timestamp}}
+**Status:** Ready for Ralph
+
+---
+
+## Problem Statement
+
+{{problem_statement}}
+
+---
+
+## Target Audience
+
+{{target_audience}}
+
+---
+
+## Core Features
+
+{{#features}}
+### {{feature_number}}. {{feature_name}}
+
+{{feature_description}}
+
+{{/features}}
+
+---
+
+## Tech Stack
+
+| Component | Choice |
+|-----------|--------|
+| Framework | {{framework}} |
+| Language | {{language}} |
+| Build Tool | {{build_tool}} |
+| Styling | {{styling}} |
+| Database | {{database}} |
+
+---
+
+## Architecture
+
+{{architecture_description}}
+
+---
+
+## UI/UX Requirements
+
+{{ui_requirements}}
+
+---
+
+## Authentication
+
+{{auth_requirements}}
+
+---
+
+## Integrations
+
+{{integrations}}
+
+---
+
+## Success Criteria
+
+{{#success_criteria}}
+- [ ] {{criterion}}
+{{/success_criteria}}
+
+---
+
+## Out of Scope (v1)
+
+{{out_of_scope}}
+
+---
+
+## Notes
+
+- This PRD was generated for use with Ralph autonomous development loop
+- Tasks are in `.ralph/current-taskset/tasks.json`
+- Run `./ralph.sh` to start autonomous development

@@ -1,0 +1,30 @@
+{
+  "project": "{{project_name}}",
+  "taskset": "{{taskset_name}}",
+  "created": "{{timestamp}}",
+  "tasks": [
+    {
+      "id": "setup-001",
+      "category": "setup",
+      "description": "{{setup_description}}",
+      "steps": [
+        "{{setup_step_1}}",
+        "{{setup_step_2}}",
+        "{{setup_step_3}}"
+      ],
+      "passes": false,
+      "iteration_completed": null
+    },
+    {
+      "id": "feat-001",
+      "category": "feature",
+      "description": "{{feature_1_description}}",
+      "steps": [
+        "{{feature_1_step_1}}",
+        "{{feature_1_step_2}}"
+      ],
+      "passes": false,
+      "iteration_completed": null
+    }
+  ]
+}

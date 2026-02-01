@@ -1,0 +1,4 @@
+develop:
+  specs_dir: arkhe/specs
+  numbering: true
+  ticket_format: full
