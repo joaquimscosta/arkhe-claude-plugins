@@ -39,6 +39,8 @@ If MCP tools are detected:
      Once you have Stitch API access, run /stitch-setup again.
      ```
 
+   - **If MCP tools unavailable but stitch is configured**: The MCP server may be failing to connect. Proceed to Step 2a (Proxy Diagnostic).
+
    - **If other error**: Report the error and suggest checking ADC credentials
 
 3. **On success**, run the doctor command to validate the full setup:
@@ -63,6 +65,64 @@ If MCP tools are detected:
 
 5. If `STITCH_PROJECT_ID` is not set, suggest setting it for default project targeting
 
+### Step 2a: Proxy Diagnostic (when MCP fails but doctor passes)
+
+When `claude mcp list` shows stitch as "Failed to connect" but `npx @_davideast/stitch-mcp doctor` passes all checks, the actual error is hidden. Use this diagnostic step:
+
+1. **Ask user for permission** to run the proxy diagnostic:
+
+   ```text
+   The doctor shows all checks passing, but the MCP server is failing to connect.
+   This often indicates expired credentials or a runtime issue not caught by doctor.
+
+   Would you like me to run a diagnostic? This will attempt to start the proxy
+   and capture the actual error message.
+   ```
+
+2. **If user confirms**, run the proxy with timeout to capture the error:
+
+   ```bash
+   timeout 10 npx @_davideast/stitch-mcp proxy 2>&1
+   ```
+
+3. **Parse output for known error patterns:**
+
+   - **Expired isolated credentials** - Look for: `Token fetch failed` or `Failed to retrieve initial access token`
+     → Proceed to Step 2b (Credential Refresh)
+
+   - **Other errors** - Report the error and suggest checking the Troubleshooting section
+
+### Step 2b: Credential Refresh (expired isolated credentials)
+
+When the proxy diagnostic shows expired credentials in `~/.stitch-mcp/config`:
+
+1. **Report the issue and offer to fix:**
+
+   ```text
+   Issue Detected: Expired Isolated Credentials
+
+   Your Stitch credentials in ~/.stitch-mcp/config have expired.
+
+   Would you like me to refresh them now? This will open a browser for Google authentication.
+
+   [Yes, refresh credentials] [No, I'll do it manually]
+   ```
+
+2. **If user confirms**, run the credential refresh:
+
+   ```bash
+   CLOUDSDK_CONFIG="$HOME/.stitch-mcp/config" gcloud auth application-default login
+   ```
+
+3. **After successful refresh**, instruct user:
+
+   ```text
+   Credentials refreshed successfully.
+
+   Restart Claude Code (or run /mcp) to reconnect the Stitch MCP server,
+   then run /stitch-setup again to verify the connection.
+   ```
+
 ### Step 3: Setup Guidance
 
 If MCP tools are NOT detected, present setup instructions:
@@ -73,26 +133,54 @@ Stitch MCP is not configured.
 IMPORTANT: The Stitch API requires preview/allowlist access from Google.
 Setup will fail with 403 errors until you have API access approved.
 
+## Recommended: Interactive Setup
+
+Run the setup wizard targeting Claude Code:
+
+  npx @_davideast/stitch-mcp init -c claude-code
+
+This automates:
+  - Google Cloud CLI installation (isolated to ~/.stitch-mcp/)
+  - User authentication (gcloud auth login)
+  - Application credentials (gcloud auth application-default login)
+  - Project selection and IAM configuration
+  - Stitch API enablement
+  - MCP configuration generation
+
+Options:
+  --local          Install gcloud locally to project directory
+  -y, --yes        Auto-approve verification prompts
+  -c, --client     Pre-select client (claude-code)
+  -t, --transport  Choose transport (http or stdio)
+
+## Alternative: Manual Setup
+
+For existing gcloud users who prefer manual configuration:
+
 Step 1: Authenticate with Google Cloud
 
-  Choose ONE authentication method:
-
-  Option A: New users / Isolated config (Recommended)
-    Creates a separate Stitch-specific credential store:
+  Option A: New users / Isolated config
     CLOUDSDK_CONFIG="~/.stitch-mcp/config" gcloud auth login
     CLOUDSDK_CONFIG="~/.stitch-mcp/config" gcloud auth application-default login
 
   Option B: Existing gcloud users
-    If you already have gcloud configured and want to reuse those credentials:
     gcloud auth application-default login
-    Then add STITCH_USE_SYSTEM_GCLOUD=1 to your MCP env config (see Step 3).
+    Then add STITCH_USE_SYSTEM_GCLOUD=1 to your MCP env config.
 
-Step 2: Enable the Stitch API (if needed)
-  If you have GCP access but the API isn't enabled:
+Step 2: Set up IAM permissions
+
+  gcloud projects add-iam-policy-binding YOUR_PROJECT_ID \
+    --member="user:your-email@gmail.com" \
+    --role="roles/serviceusage.serviceUsageConsumer"
+
+Step 3: Enable the Stitch API
+
   gcloud components install beta
   gcloud beta services mcp enable stitch.googleapis.com --project=YOUR_PROJECT_ID
 
-Step 3: Add MCP configuration to your project's .mcp.json:
+  Or via Console: https://console.cloud.google.com/apis/library/stitch.googleapis.com
+
+Step 4: Add MCP configuration to .mcp.json:
 
   Standard config (for Option A authentication):
   {
@@ -116,16 +204,9 @@ Step 3: Add MCP configuration to your project's .mcp.json:
     }
   }
 
-  Replace "your-project-id" with your Google Cloud project ID.
+Step 5: Restart Claude Code to load the MCP configuration.
 
-Step 4: Restart Claude Code to load the MCP configuration.
-
-Step 5: Run /stitch-setup again to verify the connection.
-
-Alternative: Interactive Setup
-  npx @_davideast/stitch-mcp init -c claude-code
-  This walks through authentication and configuration interactively,
-  specifically targeting Claude Code configuration.
+Step 6: Run /stitch-setup again to verify the connection.
 ```
 
 ### Step 4: Verify Environment
@@ -172,6 +253,23 @@ Solution:
 2. Remove the failing MCP server (see commands below)
 3. Wait for API access approval, then run `/stitch-setup` again
 
+#### Permission Denied (403 - Not Owner/Editor)
+
+Cause: Missing required IAM role for Stitch API usage.
+
+Solution:
+
+1. Grant the Service Usage Consumer role:
+   ```bash
+   gcloud projects add-iam-policy-binding YOUR_PROJECT_ID \
+     --member="user:your-email@gmail.com" \
+     --role="roles/serviceusage.serviceUsageConsumer"
+   ```
+
+2. Verify billing is enabled on your project
+
+3. Re-run `/stitch-setup` to test connection
+
 #### MCP Server Stuck "connecting..."
 
 Cause: MCP server continuously retrying failed connection.
@@ -198,6 +296,28 @@ Solution:
    npx @_davideast/stitch-mcp proxy --debug
    # Check logs at /tmp/stitch-proxy-debug.log
    ```
+
+#### Expired Isolated Credentials
+
+Cause: The credentials stored in `~/.stitch-mcp/config` have expired. This commonly
+happens when the doctor passes but the MCP proxy fails to start.
+
+Symptoms:
+- Doctor shows "All checks passed!"
+- `claude mcp list` shows stitch as "Failed to connect"
+- Proxy error: `Token fetch failed... Failed to retrieve initial access token`
+
+Solution:
+
+```bash
+CLOUDSDK_CONFIG="$HOME/.stitch-mcp/config" gcloud auth application-default login
+```
+
+Then restart Claude Code or run `/mcp` to reconnect.
+
+Note: The `CLOUDSDK_CONFIG` variable only applies to that single command. It stores
+the refreshed credentials in the isolated config directory, which the stitch-mcp
+proxy reads automatically on startup.
 
 #### Authentication Reset
 
