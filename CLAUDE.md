@@ -18,8 +18,8 @@ This repository uses a **marketplace-based plugin system** where each plugin is 
 ```
 arkhe-claude-plugins/
 ├── .claude-plugin/
-│   └── marketplace.json          # Marketplace catalog (9 plugins)
-├── plugins/                       # All 9 plugins
+│   └── marketplace.json          # Marketplace catalog (10 plugins)
+├── plugins/                       # All 10 plugins
 │   ├── core/                      # Quality control and workflow orchestration
 │   ├── ai/                        # AI engineering and LLM development
 │   ├── doc/                       # Documentation generation
@@ -28,7 +28,8 @@ arkhe-claude-plugins/
 │   ├── git/                       # Git workflow automation
 │   ├── design-intent/             # Design Intent for SDD
 │   ├── lang/                      # Language-specific programming skills
-│   └── spring-boot/               # Domain-Driven Design with Spring Boot 4
+│   ├── spring-boot/               # Domain-Driven Design with Spring Boot 4
+│   └── ralph/                     # Autonomous development loop
 ├── docs/                          # Developer documentation
 ├── templates/                     # Plugin templates
 └── assets/                        # Project assets
@@ -108,6 +109,13 @@ Domain-Driven Design patterns with Spring Boot 4 implementation.
 - **Skills**: `domain-driven-design`, `spring-boot-data-ddd`, `spring-boot-web-api`, `spring-boot-modulith`, `spring-boot-security`, `spring-boot-observability`, `spring-boot-testing` (all auto-invoked)
 - **Use**: DDD architecture, Spring Data, REST APIs, Spring Modulith, Spring Security 7, observability, testing
 
+### Ralph Plugin
+Autonomous development loop with fresh context per iteration and Hat-lite builder/verifier system.
+- **Agents**: `ralph-agent`
+- **Commands**: `/ralph`, `/create-prd`
+- **Skills**: `ralph-loop` (command-invoke), `ralph-prd` (command-invoke)
+- **Use**: Greenfield development, POCs, focused features, test coverage campaigns, refactoring tasks
+
 ## Common Development Commands
 
 ### Plugin Management
@@ -126,6 +134,7 @@ Domain-Driven Design patterns with Spring Boot 4 implementation.
 /plugin install google-stitch@arkhe-claude-plugins
 /plugin install lang@arkhe-claude-plugins
 /plugin install spring-boot@arkhe-claude-plugins
+/plugin install ralph@arkhe-claude-plugins
 
 # Verify installation
 /plugin                    # View installed plugins
