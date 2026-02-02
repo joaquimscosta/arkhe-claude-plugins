@@ -141,6 +141,12 @@ Present architecture comparison, then use `AskUserQuestion` tool:
 - **Option A/B/C**: Proceed with selected architecture to Step 2d
 - **REQUEST CHANGES**: Return to requirements phase for modifications
 
+**CRITICAL: STOP AND WAIT for user response. This is a Tier 1 checkpoint - it CANNOT be skipped even with `--auto`.**
+
+**Response Handling:**
+- **1-3**: Proceed with selected architecture option to Step 2d
+- **4**: Return to requirements phase for modifications
+
 ---
 
 ## Plan Saved Checkpoint

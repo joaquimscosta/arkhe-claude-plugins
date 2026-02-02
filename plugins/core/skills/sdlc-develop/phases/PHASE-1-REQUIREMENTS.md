@@ -79,6 +79,8 @@ Present requirements summary, then use `AskUserQuestion` tool:
 
 **STOP: Unless `--auto` is set, WAIT for user response before proceeding to Phase 2.**
 
+**STOP: Unless `--auto` is set, WAIT for user response before proceeding to Phase 2.**
+
 ---
 
 ## Output
