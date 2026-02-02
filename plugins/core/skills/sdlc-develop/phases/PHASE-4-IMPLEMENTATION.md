@@ -14,8 +14,7 @@ For each wave:
 2. Implement following chosen architecture
 3. Follow codebase conventions strictly
 4. Write clean, well-documented code
-5. Update todos as you progress
-6. Mark task complete in tasks.md - change `- [ ]` to `- [x]` for each acceptance criterion met
+5. Use TaskUpdate to mark tasks complete as you progress
 
 ### Implementation Guidelines
 
@@ -24,20 +23,14 @@ For each wave:
 - **Commit frequently** - Small, atomic commits after each task
 - **Preserve existing code** - Enhance, don't replace working logic
 
-### Task Completion Protocol
+### Task Tracking
 
-After completing each T-XX task:
-1. Verify all acceptance criteria are met
-2. Edit `{specs_dir}/{NN}-{slug}/tasks.md`
-3. Change `- [ ]` to `- [x]` for each criterion completed
-4. Move to next task
+Use Claude Code's native task tools for progress tracking:
+- `TaskCreate` - Create tasks at start of implementation
+- `TaskUpdate` - Mark tasks `in_progress` when starting, `completed` when done
+- `TaskList` - Review remaining work
 
-Example:
-```markdown
-### Acceptance Criteria
-- [x] File deleted successfully  ← Changed from [ ] to [x]
-- [x] No broken references remain
-```
+**Note:** The `tasks.md` file in spec directories captures the INITIAL task definitions and acceptance criteria. Progress tracking happens via TaskCreate/TaskUpdate, not by editing checkboxes in tasks.md.
 
 ---
 
@@ -112,58 +105,6 @@ Exclude:
 
 ---
 
-## Step 4d-ui: UI Verification (Optional)
-
-After code review, offer live UI verification using Playwright MCP.
-
-**Always ask using AskUserQuestion:**
-```
-Would you like to verify the UI changes with Playwright?
-
-1. **SKIP** - No UI verification needed
-2. **SCREENSHOT** - Navigate to URL and capture screenshot for visual review
-3. **INTERACTIVE** - Take accessibility snapshot, explore and interact with elements
-4. **TEST SCENARIO** - Run specific test steps (navigate, click, fill, verify)
-```
-
-**Response Handling:**
-
-- **1 (SKIP)**: Proceed to Quality Review checkpoint with `UI Verification: SKIPPED`
-
-- **2 (SCREENSHOT)**:
-  1. Ask for URL to verify
-  2. Use `mcp__playwright__browser_navigate` to open the page
-  3. Use `mcp__playwright__browser_take_screenshot` to capture
-  4. Present screenshot to user for visual confirmation
-  5. Ask: "Does this look correct? (y/n)"
-  6. Set status: `UI Verification: PASSED` or `UI Verification: ISSUES:[user feedback]`
-
-- **3 (INTERACTIVE)**:
-  1. Ask for URL to verify
-  2. Navigate to the URL
-  3. Use `mcp__playwright__browser_snapshot` to capture accessibility tree
-  4. Present snapshot and offer to interact with elements
-  5. User can request clicks, fills, or navigation
-  6. Continue until user says "done"
-  7. Set status based on user's final assessment
-
-- **4 (TEST SCENARIO)**:
-  1. Ask user to describe test steps (or reference from task acceptance criteria)
-  2. Execute each step using Playwright tools:
-     - `browser_navigate` - Go to URL
-     - `browser_snapshot` - Capture current state
-     - `browser_click` - Click elements
-     - `browser_type` - Enter text
-     - `browser_fill_form` - Fill form fields
-     - `browser_take_screenshot` - Capture result
-  3. Report pass/fail for each step
-  4. Present final screenshot
-  5. Set status: `UI Verification: PASSED` or `UI Verification: FAILED:[step details]`
-
-**After UI verification:** Proceed to Quality Review checkpoint with UI verification status included.
-
----
-
 ## User Checkpoint (Quality Review)
 
 **Gate: Conditional** - Tier 1 ⛔ if security/DB changes detected, otherwise Tier 2 ⚠️
@@ -180,26 +121,58 @@ Present validation results:
 1. Quick validation status (PASS/ISSUES)
 2. Deep validation score (if `--validate`)
 3. Code review findings
-4. UI verification status (from Step 4d-ui)
 
 **Ask using AskUserQuestion:**
 
 Present validation results, then use `AskUserQuestion` tool:
 - **header**: "Quality Review"
-- **question**: "[Validation results + UI status]. How would you like to proceed?"
+- **question**: "[Validation results summary]. How would you like to proceed?"
 - **options**:
   - { label: "APPROVE", description: "Proceed to completion" }
   - { label: "REVIEW", description: "Show me the code diff" }
   - { label: "FIX ISSUES", description: "Address the findings first" }
+  - { label: "VERIFY UI", description: "Test UI changes with Playwright" }
   - { label: "CANCEL", description: "Stop here" }
 
 **STOP: Unless `--auto` is set AND no Tier 1 triggers, WAIT for user response.**
 
 **Response Handling:**
 - **APPROVE**: Proceed to Step 4e (Completion Gate)
-- **REVIEW**: Show `git diff` output, then ask "Would you also like to verify UI changes?" before re-presenting this checkpoint
+- **REVIEW**: Show `git diff` output, then re-present this checkpoint
 - **FIX ISSUES**: Address issues, re-run validation, then re-present this checkpoint
+- **VERIFY UI**: Run UI verification workflow (see below), then re-present this checkpoint
 - **CANCEL**: Stop pipeline, remain in Phase 4
+
+### UI Verification Workflow (when VERIFY UI selected)
+
+Live UI verification using Playwright MCP tools:
+
+1. **Ask for verification type:**
+   - **SCREENSHOT** - Navigate to URL and capture screenshot for visual review
+   - **INTERACTIVE** - Take accessibility snapshot, explore and interact with elements
+   - **TEST SCENARIO** - Run specific test steps (navigate, click, fill, verify)
+
+2. **Execute based on selection:**
+
+   **SCREENSHOT:**
+   - Ask for URL to verify
+   - Use `mcp__playwright__browser_navigate` to open the page
+   - Use `mcp__playwright__browser_take_screenshot` to capture
+   - Present screenshot to user for visual confirmation
+
+   **INTERACTIVE:**
+   - Ask for URL to verify
+   - Navigate to the URL
+   - Use `mcp__playwright__browser_snapshot` to capture accessibility tree
+   - Present snapshot and offer to interact with elements
+   - User can request clicks, fills, or navigation
+
+   **TEST SCENARIO:**
+   - Ask user to describe test steps (or reference from task acceptance criteria)
+   - Execute each step using Playwright tools (`browser_navigate`, `browser_snapshot`, `browser_click`, `browser_type`, `browser_fill_form`, `browser_take_screenshot`)
+   - Report pass/fail for each step
+
+3. **After verification:** Return to Quality Review checkpoint with results included
 
 ---
 

@@ -34,7 +34,7 @@ Lightweight orchestrator for 6-phase software development lifecycle with progres
 - **Phase 0 is MANDATORY** - Always analyze existing implementations before designing new ones
 - **Search first, load on demand** - Use Grep to find relevant sections before loading files
 - **Ask clarifying questions early** - Identify ambiguities before designing, not after
-- **Use TodoWrite** - Track all progress throughout every phase
+- **Use TaskCreate/TaskUpdate** - Track all progress throughout every phase
 - **Load phases progressively** - Only read phase files when entering that phase
 
 ## Quick Start

@@ -12,6 +12,32 @@ Convert Google Stitch exports (Tailwind HTML + PNG) into React components with f
 
 ## Quick Start
 
+### 0. Verify Exports Exist (Mandatory)
+
+Before any conversion, verify Stitch exports are available:
+
+```bash
+# Check for HTML/PNG pairs in the expected location
+Glob: design-intent/google-stitch/{feature}/exports/*.html
+Glob: design-intent/google-stitch/{feature}/exports/*.png
+```
+
+**If exports found:** Proceed to Step 1.
+
+**If exports NOT found:**
+1. Check if user specified wrong path - ask for correct location
+2. Suggest running `/stitch-generate` first to create exports
+3. Fall back to design docs: Check `/design-intent/specs/` for feature specs or screenshots
+4. If no design assets exist, inform user and offer to help create them
+
+**Report findings:**
+```
+Export Check: [PASSED/MISSING]
+- HTML files: [count] found
+- PNG files: [count] found
+- Location: design-intent/google-stitch/{feature}/exports/
+```
+
 ### 1. Load Project Context (Mandatory)
 
 Before any conversion:
