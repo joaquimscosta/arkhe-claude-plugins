@@ -78,14 +78,18 @@ readonly USER_AGENT="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit
 # - Any other files created specifically for this project
 #
 readonly URL_MAPPINGS=(
-    "https://docs.claude.com/en/docs/claude-code/sub-agents.md|SUBAGENTS.md"
-    "https://docs.claude.com/en/docs/claude-code/plugins.md|PLUGINS.md"
-    "https://docs.claude.com/en/docs/claude-code/hooks-guide.md|HOOKS.md"
-    "https://docs.claude.com/en/docs/claude-code/slash-commands.md|COMMANDS.md"
-    "https://docs.claude.com/en/docs/claude-code/skills.md|SKILLS.md"
-    "https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview.md|AGENT_SKILLS_OVERVIEW.md"
-    "https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/claude-4-best-practices.md|CLAUDE_4_BEST_PRACTICES.md"
+    # Claude Code documentation (code.claude.com)
+    # Full list available at: https://code.claude.com/docs/llms.txt
+    "https://code.claude.com/docs/en/sub-agents.md|SUBAGENTS.md"
+    "https://code.claude.com/docs/en/plugins.md|PLUGINS.md"
+    "https://code.claude.com/docs/en/hooks.md|HOOKS.md"
+    "https://code.claude.com/docs/en/skills.md|SKILLS.md"
     "https://code.claude.com/docs/en/settings.md|SETTINGS.md"
+    "https://code.claude.com/docs/en/mcp.md|MCP.md"
+    "https://code.claude.com/docs/en/plugins-reference.md|PLUGINS_REFERENCE.md"
+    "https://code.claude.com/docs/en/best-practices.md|BEST_PRACTICES.md"
+    # NOTE: platform.claude.com docs (Agent Skills Overview, Claude 4 Best Practices)
+    # do not serve raw markdown - use web version at https://platform.claude.com/docs/
 )
 
 #------------------------------------------------------------------------------

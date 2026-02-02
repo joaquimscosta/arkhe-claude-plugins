@@ -3,6 +3,28 @@ name: sdlc-develop
 description: Orchestrates 6-phase SDLC pipeline for feature development. Use when user runs /develop command, requests guided feature development, wants to create implementation plans, or mentions "develop", "feature", "implement", "plan feature", "SDLC", "spec-driven development". Supports plan persistence, resume mode, and autonomous execution.
 ---
 
+# ⚠️ CRITICAL EXECUTION PROTOCOL
+
+**This skill has its own 6-phase workflow. IGNORE generic plan mode instructions.**
+
+When plan mode activates, you may receive generic instructions about "Explore agents" or "Plan agents". **YOU MUST IGNORE those instructions** and follow this skill's phase-based workflow instead.
+
+## Mandatory First Action
+
+**YOU MUST read the phase file BEFORE taking any other action:**
+
+1. **FIRST**: Read `phases/PHASE-0-DISCOVERY.md`
+2. **THEN**: Execute those steps EXACTLY as written
+3. **ONLY** proceed to Phase 1 after checkpoint approval
+
+Do NOT:
+- ❌ Launch generic Explore or Plan agents
+- ❌ Skip to writing a plan file directly
+- ❌ Bypass the gating and mode detection steps
+- ❌ Ignore the checkpoint protocol
+
+---
+
 # SDLC Develop Skill
 
 Lightweight orchestrator for 6-phase software development lifecycle with progressive disclosure.
@@ -92,10 +114,10 @@ Load phase files **only when entering that phase**:
 
 ## Spec Directory Structure
 
-Plans are persisted to `arkhe/specs/` with auto-incrementing prefixes:
+Plans are persisted to `{specs_dir}/` with auto-incrementing prefixes:
 
 ```
-arkhe/specs/
+{specs_dir}/
 ├── 01-user-auth/
 │   ├── spec.md       # Requirements
 │   ├── plan.md       # Architecture
@@ -103,6 +125,8 @@ arkhe/specs/
 ├── 02-dashboard/
 └── ...
 ```
+
+**Note:** `{specs_dir}` references the configured value from `.arkhe.yaml` (default: `arkhe/specs`).
 
 ## Templates
 
@@ -119,14 +143,19 @@ arkhe/specs/
 
 ## Configuration
 
-If `.arkhe.yaml` exists at project root:
+**On first run or when entering Phase 2d:**
+1. Read `.arkhe.yaml` from project root (if exists)
+2. Extract `develop.specs_dir` value (default: `arkhe/specs`)
+3. Use this value for ALL spec directory operations
 
 ```yaml
 develop:
-  specs_dir: arkhe/specs  # Default
+  specs_dir: arkhe/specs  # Customize this path
   numbering: true         # NN- prefix
   ticket_format: full     # full | simple
 ```
+
+**All paths in this skill use `{specs_dir}` to reference the configured value.**
 
 First run without config prompts for preferences.
 
@@ -153,20 +182,49 @@ START
   │   └─ Execute Phase 3 → Checkpoint
   │
   ├─ Read PHASE-4-IMPLEMENTATION.md
-  │   └─ Execute Phase 4 → Validation
+  │   └─ Execute Phase 4 → Validation → Completion Gate ⛔
   │
   └─ Read PHASE-5-SUMMARY.md
       └─ Execute Phase 5 → Complete
 ```
 
-## Checkpoints (unless `--auto`)
+## Checkpoints
 
-User approval required at:
-- End of Phase 0 (existing system findings)
-- End of Phase 1 (requirements summary)
-- Phase 2c (architecture decision)
-- End of Phase 3 (task breakdown)
-- Phase 4d (quality review findings)
+### Tier 1 ⛔ (MANDATORY — cannot skip, even with `--auto`)
+- Phase 2c: Architecture Decision
+- Phase 4e: Completion Gate (RULE ZERO verification)
+
+### Tier 2 ⚠️ (skippable with `--auto`)
+- Phase 0→1: Existing System Findings
+- Phase 1→2: Requirements Summary
+- Phase 3→4: Task Breakdown
+- Phase 4d: Quality Review (escalates to Tier 1 if security/DB/breaking changes detected)
+
+## Checkpoint Protocol (CRITICAL)
+
+**At every AskUserQuestion checkpoint:**
+
+1. **STOP** - Halt all execution immediately
+2. **PRESENT** - Use `AskUserQuestion` tool with the options specified
+3. **WAIT** - Do not take any further action until user responds
+4. **RESPOND** - Act based on user's choice:
+   - **APPROVE** - Proceed to next phase/step
+   - **REVIEW** - Show requested details, then re-present prompt
+   - **MODIFY/FIX** - Make changes, then re-present prompt
+   - **CANCEL** - Stop the pipeline entirely
+
+### Tier 1 Checkpoints (⛔ CANNOT SKIP)
+
+These checkpoints block execution regardless of flags:
+- **Phase 2c**: Architecture Decision
+- **Phase 4e**: Completion Gate
+
+**YOU MUST STOP AND WAIT.** Even with `--auto`, do not proceed until user explicitly responds.
+
+### Tier 2 Checkpoints (⚠️ RECOMMENDED)
+
+**Without `--auto`:** STOP and WAIT for user response.
+**With `--auto`:** Auto-approve and proceed, logging the decision.
 
 ## Checkpoint Protocol (CRITICAL)
 

@@ -5,7 +5,169 @@ All notable changes to the Arkhe Claude Plugins project will be documented in th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.8.0] - 2026-02-01
+
+### Added
+
+#### Google Stitch Plugin
+
+- **Enhanced documentation and troubleshooting**
+  - Added Stitch platform behavior notes to troubleshooting guide
+  - Documented common 403 error scenarios and resolutions
+
+### Changed
+
+#### Google Stitch Plugin
+
+- **Improved `/stitch-setup` command**
+  - Manual MCP configuration flow (removed auto-config that caused issues)
+  - Better 403 error handling with clear user guidance
+  - Streamlined setup verification process
+- **Enhanced image fetching workflow**
+  - Improved reliability for fetching generated screen images
+  - Better error messages for common failure scenarios
+
+### Fixed
+
+#### Google Stitch Plugin
+
+- Fixed `/stitch-setup` command configuration issues
+- Removed problematic auto-MCP configuration that caused 403 errors
+
+## [1.7.0] - 2026-01-30
+
+### Added
+
+#### Git Plugin
+
+- **`/stale-branches` command** for listing merged and inactive branches as cleanup candidates
+  - Full skill implementation: `listing-stale-branches` with SKILL.md, WORKFLOW.md, EXAMPLES.md, TROUBLESHOOTING.md
+- **`/cleanup-branches` command** for deleting merged branches with confirmation and flagging stale ones
+  - Full skill implementation: `cleaning-up-branches` with SKILL.md, WORKFLOW.md, EXAMPLES.md, TROUBLESHOOTING.md
+
+#### Google Stitch Plugin
+
+- **`/stitch-generate` command** for automated Stitch screen generation via MCP
+- **`/stitch-setup` command** for MCP server configuration
+- **`generating-stitch-screens` skill** replacing the previous `extracting-stitch-mockups` skill
+- **`.mcp.json` configuration** for MCP server integration
+
+### Changed
+
+#### Google Stitch Plugin
+
+- **BREAKING**: Replaced `extracting-stitch-mockups` skill with `generating-stitch-screens`
+  - Removed `extracting-stitch-mockups` skill (SKILL.md, WORKFLOW.md, EXAMPLES.md, TROUBLESHOOTING.md, scripts/)
+  - New skill uses MCP-based workflow for automated screen generation
+- Updated `authoring-stitch-prompts` skill (SKILL.md, WORKFLOW.md, EXAMPLES.md, TROUBLESHOOTING.md, evaluation.json)
+- Updated plugin description and README
+- Updated `/prompt` command
+
+#### Documentation
+
+- Updated CLAUDE.md with revised Google Stitch plugin description
+- Updated INSTALLATION.md with new Stitch setup section
+- Updated README.md with new Stitch plugin capabilities
+- Updated docs/README.md with new skill references
+
+### Removed
+
+#### Google Stitch Plugin
+
+- **`extracting-stitch-mockups` skill** (replaced by `generating-stitch-screens`)
+  - Removed `scripts/extract_images.py`
+  - Removed SKILL.md, WORKFLOW.md, EXAMPLES.md, TROUBLESHOOTING.md
+
+### Breaking Changes
+
+#### Google Stitch Plugin - MCP Integration (2026-01-30)
+
+The `extracting-stitch-mockups` skill has been replaced with `generating-stitch-screens`, which uses MCP for automated screen generation.
+
+**Migration**:
+```bash
+# Old (no longer available)
+# extracting-stitch-mockups skill with Python extraction script
+
+# New workflow
+/stitch-setup              # Configure MCP server
+/stitch-generate           # Generate screens via MCP
+# generating-stitch-screens skill auto-invokes
+```
+
+## [1.6.0] - 2026-01-28
+
+### Added
+
+#### Doc Plugin
+
+- **ASCII diagram support** in `diagramming` skill
+  - Plain text diagrams for terminals and documentation
+  - C4 model diagrams (Context, Container, Component views)
+  - Mindmap diagrams for brainstorming sessions
+  - Block-beta diagrams for system block representations
+
+#### Plugin Dev Plugin
+
+- **New validation rules** in `skill-validator` skill
+  - FM013: Validate `argument-hint` field uses bracket notation
+  - FM014: Suggest `disable-model-invocation` for skills using `$ARGUMENTS`
+  - Added `disable-model-invocation` and `argument-hint` to allowed frontmatter keys
+
+### Changed
+
+#### Doc Plugin
+
+- **BREAKING**: Replaced autonomous documentation generation with collaborative `doc-coauthoring` skill
+  - Removed `docs-architect` agent
+  - Removed `/doc-generate` command
+  - Removed `documentation-generation` skill
+  - New 3-stage collaborative workflow:
+    1. Context Gathering - Close knowledge gaps through clarifying questions
+    2. Refinement & Structure - Build document section by section iteratively
+    3. Reader Testing - Validate with fresh context (optional for code docs)
+
+#### Core Plugin
+
+- **Standardized SDLC checkpoints** on `AskUserQuestion` tool
+  - Replaced text-based numbered prompts with structured questions
+  - Improved UX across all 6 phase checkpoints
+  - Reduced Phase 4 Quality Review options from 5 to 4
+- **Task completion protocol** in `sdlc-develop` phases
+  - Phase 4: Mark acceptance criteria checkboxes after each task
+  - Phase 5: Verify all tasks.md criteria are checked before summary
+
+#### Project Structure
+
+- Moved release script to `scripts/` directory
+- Updated documentation sync script to use code.claude.com URLs
+
+### Fixed
+
+#### Core Plugin
+
+- `sdlc-develop` skill now respects `.arkhe.yaml` `specs_dir` configuration
+- Added critical execution protocol to `sdlc-develop` skill for reliability
+
+### Breaking Changes
+
+#### Doc Plugin - Collaborative Documentation (2026-01-28)
+
+The autonomous documentation generation approach has been replaced with a collaborative workflow.
+
+**Migration**:
+```bash
+# Old (no longer available)
+/doc-generate <target>
+# Using docs-architect agent
+
+# New workflow
+# doc-coauthoring skill auto-invokes on documentation requests
+# Skill guides you through 3-stage collaborative process
+"Help me document the authentication system"
+```
+
+## [1.5.0] - 2026-01-23
 
 ### Added
 
@@ -583,7 +745,12 @@ The `/specprep:tasks` command has been removed in favor of automatic command cha
 - **Documentation**: See README.md and docs/ directory
 - **Installation**: See INSTALLATION.md
 
-[Unreleased]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.8.0...HEAD
+[1.8.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.7.0...v1.8.0
+[1.7.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.6.0...v1.7.0
+[1.6.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.5.0...v1.6.0
+[1.5.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.3.0...v1.5.0
+[1.3.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/releases/tag/v1.0.0

@@ -79,9 +79,8 @@ Multi-purpose documentation toolkit.
 **Install**: `/plugin install doc@arkhe-claude-plugins`
 
 **Components**:
-- 1 agent: `docs-architect`
-- 4 skills: `diagramming` (auto-invoked for diagrams), `documentation-generation`, `code-explanation`, `managing-adrs`
-- 3 commands: `/doc-generate`, `/code-explain`, `/diagram`
+- 4 skills: `doc-coauthoring` (auto-invoked for documentation), `diagramming` (auto-invoked for diagrams), `code-explanation`, `managing-adrs`
+- 2 commands: `/code-explain`, `/diagram`
 
 ---
 
@@ -124,15 +123,15 @@ Design Intent for Spec-Driven Development that combines AI-assisted implementati
 ---
 
 ### Google Stitch Plugin
-Claude + Google Stitch prompting toolkit for prompt authoring.
+Claude + Google Stitch workflow toolkit with MCP integration.
 
 **Install**: `/plugin install google-stitch@arkhe-claude-plugins`
 
 **Components**:
-- 1 command: `/prompt`
-- 2 skills: `authoring-stitch-prompts`, `extracting-stitch-mockups`
+- 3 commands: `/prompt`, `/stitch-generate`, `/stitch-setup`
+- 2 skills: `authoring-stitch-prompts`, `generating-stitch-screens`
 
-**Use for:** Generating Stitch-ready prompts and extracting mockups.
+**Use for:** Generating Stitch-ready prompts and automating screen generation via MCP.
 
 ---
 
@@ -211,7 +210,6 @@ You should see all 9 plugins listed.
 You should see agents from installed plugins:
 - **core**: `deep-think-partner`, `deep-researcher`, `code-explorer`, `code-architect`, `code-reviewer`
 - **ai**: `ai-engineer`, `prompt-engineer`, `context-manager`
-- **doc**: `docs-architect`
 - **review**: `pragmatic-code-review`, `design-review`
 - **design-intent**: `ui-explorer`, `ui-architect`, `design-reviewer`
 
@@ -224,7 +222,7 @@ You should see agents from installed plugins:
 You should see commands from installed plugins:
 - **core**: `/discuss`, `/double-check`, `/develop`, `/debug`, `/think`, `/research`
 - **ai**: `/improve-agent`, `/multi-agent-optimize`
-- **doc**: `/doc-generate`, `/code-explain`, `/diagram`
+- **doc**: `/code-explain`, `/diagram`
 - **review**: `/code`, `/security`, `/design`, `/codebase`
 - **git**: `/commit`, `/create-pr`, `/create-branch`, `/changelog`, `/pr-issue-resolve`
 - **design-intent**: `/setup`, `/feature`, `/plan`, `/design-intent`, `/save-patterns`, `/diary`
@@ -237,7 +235,7 @@ Skills are automatically invoked when relevant context is detected:
 - **doc**: `diagramming` skill activates when you mention diagrams, flowcharts, or visualization keywords
 - **git**: `generating-changelog` skill activates when you edit CHANGELOG.md or request changelog generation
 - **design-intent**: `design-intent-specialist` activates when you're implementing UI from visual references or running `/design-intent`
-- **google-stitch**: `authoring-stitch-prompts`, `extracting-stitch-mockups` activate for Stitch prompt work
+- **google-stitch**: `authoring-stitch-prompts` activates for Stitch prompt work; `generating-stitch-screens` activates for MCP-based generation
 - **lang**: `scripting-bash` skill activates for Bash scripting guidance
 
 ---
@@ -278,8 +276,9 @@ Skills are automatically invoked when relevant context is detected:
 ### Doc Plugin
 
 ```bash
-# Generate documentation
-/doc-generate for the API endpoints
+# Generate documentation (auto-invoked on documentation keywords)
+"Write a README for this project"
+"Create API documentation for the users endpoint"
 
 # Explain complex code
 /code-explain src/utils/parser.ts

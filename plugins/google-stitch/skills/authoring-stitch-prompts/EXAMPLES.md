@@ -1148,3 +1148,117 @@ Optimize for smooth scroll behavior, accessible search input
 ```
 
 **Note:** Revision requests skip interactive flow because they're targeted edits to existing prompts, not new generations requiring preference gathering.
+
+---
+
+## Example 24 — Full MCP Pipeline (Author + Generate)
+
+Demonstrates the end-to-end flow when Stitch MCP is configured.
+
+**User runs:**
+```
+/prompt "dashboard for fitness app"
+```
+
+**Steps 1-7:** Standard interactive flow (same as Example 21).
+
+**Step 8: MCP Generation Offer**
+
+After prompt file is created, MCP tools are detected:
+```
+Stitch MCP is available. Generate screens from this prompt?
+  → Yes (generate screens in Stitch now)
+  → No (just keep the prompt file)
+```
+
+**User selects:** Yes
+
+**Generation Flow:**
+1. Prompt file parsed: 4 sections (layout + 3 components)
+2. Project created: "Fitness Dashboard Design"
+3. Screens generated via MCP:
+   ```
+   [1/4] Generating: Layout: Fitness Dashboard...
+   [2/4] Generating: Component: Activity Summary...
+   [3/4] Generating: Component: Workout Chart...
+   [4/4] Generating: Component: Goals Progress...
+   ```
+4. Images fetched and saved
+
+**Final Output:**
+```
+Prompt authored and screens generated.
+
+Prompt: design-intent/google-stitch/fitness-dashboard/prompt-v1.md
+Project: Fitness Dashboard Design
+
+Screens (4/4):
+  1. Layout: Fitness Dashboard       -> exports/fitness-dashboard.png
+  2. Component: Activity Summary     -> exports/activity-summary.png
+  3. Component: Workout Chart        -> exports/workout-chart.png
+  4. Component: Goals Progress       -> exports/goals-progress.png
+
+Directory:
+  design-intent/google-stitch/fitness-dashboard/
+  ├── prompt-v1.md
+  └── exports/
+      ├── fitness-dashboard.png
+      ├── activity-summary.png
+      ├── workout-chart.png
+      └── goals-progress.png
+
+Next steps:
+  - Review exported images in exports/
+  - Iterate: /prompt "adjust the activity cards layout"
+  - Re-generate: /stitch-generate @design-intent/google-stitch/fitness-dashboard/prompt-v1.md
+```
+
+**Key Points:**
+- MCP generation is offered as a seamless extension of the /prompt workflow
+- Same prompt authoring quality — MCP adds automated generation on top
+- Images saved to the same feature directory structure
+- User can iterate and re-generate from authored prompts
+
+---
+
+## Example 25 — No MCP Fallback (Standard Prompt Output)
+
+Same input as Example 24, but MCP is NOT configured.
+
+**User runs:**
+```
+/prompt "dashboard for fitness app"
+```
+
+**Steps 1-7:** Standard interactive flow produces prompt file.
+
+**Step 8:** MCP tools not detected. Step is silently skipped — no error, no warning.
+
+**Final Output:**
+```
+📂 Feature: fitness-dashboard/
+📄 File: prompt-v1.md
+
+Contains 4 prompts (within 6-prompt limit ✓):
+  • Layout: Fitness Dashboard
+  • Component: Activity Summary
+  • Component: Workout Chart
+  • Component: Goals Progress
+
+Directory structure:
+  design-intent/google-stitch/fitness-dashboard/
+  ├── prompt-v1.md      ← Generated prompt
+  ├── exports/          ← Place Stitch outputs here
+  └── wireframes/       ← Place mockups/references here
+
+Usage:
+  1. Copy prompt file → Paste into Stitch → Generate designs
+  2. Save Stitch exports to exports/ directory
+  3. Store wireframes/mockups in wireframes/ directory
+```
+
+**Key Points:**
+- No mention of MCP, no error, no "MCP not configured" warning
+- Fully functional standalone output with copy-paste instructions
+- Same prompt quality regardless of MCP availability
+- User can set up MCP later via `/stitch-setup` to unlock automated generation

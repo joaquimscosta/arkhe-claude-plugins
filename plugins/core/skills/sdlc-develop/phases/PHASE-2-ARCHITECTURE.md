@@ -69,12 +69,15 @@ Return:
 
 ## Step 2d: Save Plan
 
-### Directory Structure
+### Load Configuration
 
-1. Check for `.arkhe.yaml` config at project root
-2. If no config, use default: `arkhe/specs/`
-3. Detect highest NN prefix in specs directory, increment for new spec
-4. Create directory: `arkhe/specs/NN-{feature_slug}/`
+**MANDATORY: Read `.arkhe.yaml` from project root first.**
+
+1. If `.arkhe.yaml` exists, read `develop.specs_dir` value
+2. If no config, use default: `arkhe/specs`
+3. Store this value as `{specs_dir}` for all subsequent path operations
+4. Detect highest NN prefix in `{specs_dir}/`, increment for new spec
+5. Create directory: `{specs_dir}/NN-{feature_slug}/`
 
 ### Files to Generate
 
@@ -109,21 +112,34 @@ Present architecture options:
 2. Trade-offs matrix
 3. Your recommendation
 
-**Numbered Prompt:**
+**Ask using AskUserQuestion:**
+
+Present architecture comparison, then use `AskUserQuestion` tool:
+- **header**: "Architecture"
+- **question**: "[Trade-offs summary]. Which approach do you prefer?"
+- **options**: Dynamically generate 2-4 options based on approaches found:
+  - For each approach: { label: "Option {A/B/C}: {name}", description: "{brief rationale}" }
+  - Mark recommended option with "(Recommended)" in label
+  - Always include: { label: "REQUEST CHANGES", description: "Modify requirements first" }
+
+**Example with 2 approaches:**
+```json
+{
+  "header": "Architecture",
+  "question": "Option A optimizes for performance, Option B for simplicity. Which approach?",
+  "options": [
+    { "label": "Option A: Event-Driven (Recommended)", "description": "Best for scalability" },
+    { "label": "Option B: Synchronous", "description": "Simpler implementation" },
+    { "label": "REQUEST CHANGES", "description": "Modify requirements first" }
+  ]
+}
 ```
-## Tier 1 Checkpoint: Architecture Decision ⛔
 
-{Architecture options summary with trade-offs}
+**CRITICAL: STOP AND WAIT for user response. This is a Tier 1 checkpoint - it CANNOT be skipped even with `--auto`.**
 
-**Recommendation:** Option {X} because {reason}
-
-1. **Option A** - {name} (RECOMMENDED)
-2. **Option B** - {name}
-3. **Option C** - {name}
-4. **REQUEST CHANGES** - Modify requirements first
-
-Enter choice (1-4):
-```
+**Response Handling:**
+- **Option A/B/C**: Proceed with selected architecture to Step 2d
+- **REQUEST CHANGES**: Return to requirements phase for modifications
 
 **CRITICAL: STOP AND WAIT for user response. This is a Tier 1 checkpoint - it CANNOT be skipped even with `--auto`.**
 
@@ -139,7 +155,7 @@ Enter choice (1-4):
 
 After saving plan files, automatically proceed to next phase.
 
-Log: "Plan saved to `arkhe/specs/{NN}-{feature_slug}/`"
+Log: "Plan saved to `{specs_dir}/{NN}-{feature_slug}/`"
 
 ---
 
@@ -149,13 +165,13 @@ Log: "Plan saved to `arkhe/specs/{NN}-{feature_slug}/`"
 
 Stop here with message:
 ```
-Spec saved to `arkhe/specs/{NN}-{feature_slug}/`
+Spec saved to `{specs_dir}/{NN}-{feature_slug}/`
 
 Files created:
 - spec.md (requirements)
 - plan.md (architecture)
 
-Run `/develop @arkhe/specs/{NN}-{feature_slug}/` when ready to implement.
+Run `/develop @{specs_dir}/{NN}-{feature_slug}/` when ready to implement.
 ```
 
 ---

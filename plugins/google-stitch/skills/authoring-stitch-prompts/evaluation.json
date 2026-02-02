@@ -106,6 +106,37 @@
         "Part numbering makes processing order explicit (prompt-v1-part1, prompt-v1-part2).",
         "Explains purpose of exports/ and wireframes/ subdirectories."
       ]
+    },
+    {
+      "id": "mcp_pipeline",
+      "query": "Create a dashboard for a fitness app and generate the screens in Stitch",
+      "expected_behavior": [
+        "Authors prompt file using standard authoring workflow.",
+        "Detects MCP availability (checks for generate_screen_from_text tool).",
+        "If MCP available: offers generation after authoring.",
+        "If generation accepted: invokes generating-stitch-screens skill.",
+        "Parses authored prompt sections by --- separators.",
+        "Creates or selects Stitch project via MCP.",
+        "Generates screens for each section via generate_screen_from_text.",
+        "Fetches images via fetch_screen_image.",
+        "Saves images to {feature}/exports/ directory.",
+        "Reports project URL, screen list, and file paths.",
+        "If MCP not available: falls back gracefully to standard prompt output."
+      ]
+    },
+    {
+      "id": "mcp_graceful_degradation",
+      "query": "Create a dashboard for a fitness app",
+      "expected_behavior": [
+        "Authors prompt file using standard authoring workflow regardless of MCP status.",
+        "Prompt quality is identical whether MCP is available or not.",
+        "If MCP not available: does NOT show any error or warning about MCP.",
+        "If MCP not available: presents standard prompt output with copy-paste instructions.",
+        "If MCP not available: does NOT mention 'MCP not configured' or similar messaging.",
+        "Usage instructions reference manual Stitch workflow (copy-paste to Stitch UI).",
+        "Feature directory and subdirectories created normally.",
+        "File output format unchanged from non-MCP behavior."
+      ]
     }
   ]
 }

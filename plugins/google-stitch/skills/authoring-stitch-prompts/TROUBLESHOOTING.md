@@ -213,3 +213,79 @@ Optimize for mobile-first (320px minimum), full keyboard navigation, screen read
 - `package.json` doesn't contain recognizable design system dependencies
 
 **Note:** Standalone mode is valid. Default style cues ("clean, modern, neutral palette") work for any project. Users can always provide specific style cues in their input.
+
+---
+
+## MCP Integration Issues
+
+### MCP Tools Not Detected After Authoring
+
+**Symptom:** After authoring a prompt, the skill doesn't offer MCP generation even though you set up the Stitch MCP server.
+
+**Causes:**
+- MCP server not configured in `.mcp.json`
+- Stitch API access not approved (403 errors)
+- Claude Code session needs restart
+
+**Fix:**
+1. Run `/stitch-setup` to verify MCP configuration
+2. Check MCP status: `claude mcp list`
+3. If not configured, add to your project's `.mcp.json` (see plugin README)
+4. Restart Claude Code to reload MCP servers
+
+**Note:** Stitch API requires preview/allowlist access from Google.
+
+### Generation Failed After Authoring
+
+**Symptom:** MCP generation was offered and accepted, but screens failed to generate.
+
+**Causes:**
+- Authentication expired
+- Project ID not set or invalid
+- Stitch service issue
+
+**Fix:**
+1. Refresh credentials: `gcloud auth application-default login`
+2. Verify project ID: Check `STITCH_PROJECT_ID` environment variable
+3. Try again: `/stitch-generate @{prompt-file-path}`
+4. Check Stitch service at [stitch.withgoogle.com](https://stitch.withgoogle.com)
+
+### Want MCP But Not Set Up
+
+**Symptom:** User wants automated generation but MCP is not configured.
+
+**Fix:**
+1. Run `/stitch-setup` for guided setup
+2. Or manually: `npx @_davideast/stitch-mcp init`
+3. After setup, authored prompts will automatically offer generation
+
+---
+
+## Stitch Platform Behaviors
+
+These are known Stitch platform limitations, not prompting issues.
+
+### Design Resets During Editing
+
+**Symptom:** Stitch resets or significantly alters your design when you make sequential edits.
+
+**Cause:** This is expected Stitch behavior during iterative editing sessions.
+
+**Workaround:**
+1. Save screenshots of designs you like before making further iterations
+2. Use Stitch's built-in export features to preserve good designs
+3. Keep edit prompts focused and minimal to reduce reset likelihood
+4. If a reset occurs, use your saved screenshot as reference for a new prompt
+
+### Complex Table Limitations
+
+**Symptom:** Multi-row tables lose structure or become inconsistent across sequential prompts.
+
+**Cause:** Stitch has difficulty maintaining complex multi-row table layouts when modified across prompts.
+
+**Workaround:**
+- Keep table prompts simple and self-contained
+- Avoid modifying table structure in subsequent prompts
+- Generate tables as standalone components rather than editing existing ones
+- For tables with 4+ rows or complex nesting, consider generating the entire table fresh
+- If table structure is critical, include complete table specification in each prompt rather than incremental changes

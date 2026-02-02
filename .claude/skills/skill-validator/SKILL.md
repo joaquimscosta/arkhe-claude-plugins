@@ -1,6 +1,7 @@
 ---
 name: skill-validator
 description: Validate skills against best practices for YAML frontmatter, structure, content standards, file organization, and security. Use when creating new skills, updating existing skills, before packaging skills, reviewing skill quality, or when user mentions "validate skill", "check skill", "skill best practices", "skill review", or "lint skill".
+argument-hint: [skill-path]
 ---
 
 # Skill Validator
@@ -23,7 +24,7 @@ scripts/validate_skill.py /path/to/skill --min-severity warning
 
 | Category | Rules | Checks |
 |----------|-------|--------|
-| **Frontmatter** | FM001-FM012 | Required fields, naming, description quality |
+| **Frontmatter** | FM001-FM014 | Required fields, naming, description quality, argument-hint, $ARGUMENTS usage |
 | **Structure** | SS001-SS006 | Line limits, progressive disclosure |
 | **Content** | CW001-CW006 | Writing style, terminology |
 | **Files** | FO001-FO007 | Naming conventions, forbidden files |

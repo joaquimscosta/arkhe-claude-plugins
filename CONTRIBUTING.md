@@ -68,7 +68,7 @@ model: sonnet  # Optional - sonnet/opus/haiku or inherit
 System prompt defining the agent's role, capabilities, and approach.
 ```
 
-**Naming:** Use lowercase with hyphens (e.g., `docs-architect`, `ai-engineer`)
+**Naming:** Use lowercase with hyphens (e.g., `code-explorer`, `ai-engineer`)
 
 **Description Guidelines:**
 - Keep under 1,024 characters
@@ -91,7 +91,7 @@ Full prompt that Claude Code will execute when the command is invoked.
 Include specific instructions, context, and expected behavior.
 ```
 
-**Naming:** Use lowercase with hyphens (e.g., `doc-generate`, `code-explain`)
+**Naming:** Use lowercase with hyphens (e.g., `code-explain`, `create-pr`)
 
 ### Creating Skills
 

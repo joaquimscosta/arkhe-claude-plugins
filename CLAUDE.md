@@ -72,9 +72,8 @@ AI engineering toolkit for production-ready LLM applications.
 
 ### Doc Plugin
 Multi-purpose documentation toolkit.
-- **Agents**: `docs-architect`
-- **Skills**: `diagramming`, `documentation-generation`, `code-explanation`, `managing-adrs`
-- **Commands**: `/doc-generate`, `/code-explain`, `/diagram`
+- **Skills**: `doc-coauthoring`, `diagramming`, `code-explanation`, `managing-adrs`
+- **Commands**: `/code-explain`, `/diagram`
 
 ### Review Plugin
 Code quality review tools for development teams.
@@ -82,10 +81,10 @@ Code quality review tools for development teams.
 - **Commands**: `/code`, `/security`, `/design`, `/codebase`
 
 ### Google Stitch Plugin
-Claude + Google Stitch prompting toolkit for prompt authoring.
-- **Commands**: `/prompt`
-- **Skills**: `authoring-stitch-prompts`, `extracting-stitch-mockups`
-- **Use**: Generate Stitch-ready prompts, extract mockups
+Claude + Google Stitch workflow toolkit with MCP integration.
+- **Commands**: `/prompt`, `/stitch-generate`, `/stitch-setup`
+- **Skills**: `authoring-stitch-prompts`, `generating-stitch-screens`
+- **Use**: Generate Stitch-ready prompts, automate screen generation via MCP
 
 ### Git Plugin
 Git workflow automation for commits, pull requests, branching, and changelog generation.
@@ -159,7 +158,7 @@ model: sonnet  # Optional - sonnet/opus/haiku or 'inherit'
 System prompt defining the agent's role, capabilities, and approach.
 ```
 
-**Agent Naming Convention**: Use lowercase with hyphens (e.g., `docs-architect`, `ai-engineer`)
+**Agent Naming Convention**: Use lowercase with hyphens (e.g., `code-explorer`, `ai-engineer`)
 
 **Description Guidelines**:
 - Clearly state when to use the agent
@@ -181,7 +180,7 @@ Full prompt that Claude Code will execute when the command is invoked.
 Include specific instructions, context, and expected behavior.
 ```
 
-**Command Naming Convention**: Use lowercase with hyphens (e.g., `/doc-generate`, `/code-explain`)
+**Command Naming Convention**: Use lowercase with hyphens (e.g., `/code-explain`, `/create-pr`)
 
 ### Skill Files (skills/skill-name/SKILL.md)
 

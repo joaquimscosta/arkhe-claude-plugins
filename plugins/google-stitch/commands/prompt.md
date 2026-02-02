@@ -143,6 +143,25 @@ Display generated prompt(s) with:
 - Style cues applied
 - Next steps for using in Stitch
 
+### Step 8: Offer MCP Generation (Optional)
+
+Check if Stitch MCP tools are available (look for `generate_screen_from_text`).
+
+**If MCP detected AND this is a new prompt (not a revision):**
+
+Offer generation:
+```
+Stitch MCP is available. Generate screens from this prompt?
+  → Yes (generate screens in Stitch now)
+  → No (just keep the prompt file)
+```
+
+If accepted: Orchestrate via `generating-stitch-screens` skill using the authored prompt file.
+
+**If MCP not present:** Skip this step entirely. No error or warning — the command works fully without MCP.
+
+**If revision request:** Skip this step. Revisions are targeted edits, not full generation candidates.
+
 ---
 
 ## Style Mapping

@@ -2,28 +2,14 @@
 
 This document describes the release process for arkhe-claude-plugins.
 
-## Overview
+## Quick Start
 
-Releases are created via a manual GitHub Actions workflow that:
-
-1. Validates the version format (semantic versioning)
-2. Verifies a CHANGELOG.md entry exists
-3. Creates a git tag (if needed)
-4. Creates a GitHub Release with release notes extracted from CHANGELOG.md
-
-## Prerequisites
-
-- Push access to the repository
-- CHANGELOG.md entry for the version you're releasing
-
-## Release Process
-
-### Step 1: Update CHANGELOG.md
+### Step 1: Add CHANGELOG Entry
 
 Add an entry for the new version following [Keep a Changelog](https://keepachangelog.com/) format:
 
 ```markdown
-## [1.4.0] - 2026-01-23
+## [1.6.0] - 2026-01-24
 
 ### Added
 - New feature description
@@ -35,37 +21,22 @@ Add an entry for the new version following [Keep a Changelog](https://keepachang
 - Bug fix description
 ```
 
-**Tips:**
+**Tip:** Use `/changelog` in Claude Code to generate the entry from commit history.
 
-- Use the `/changelog` skill in Claude Code to generate the entry
-- Move content from `## [Unreleased]` to the new version section
-- Update the comparison links at the bottom of CHANGELOG.md
-
-### Step 2: Commit and Push
+### Step 2: Run the Release Script
 
 ```bash
-git add CHANGELOG.md
-git commit -m "docs: prepare release 1.4.0"
-git push origin main
+scripts/release.sh 1.6.0
 ```
 
-### Step 3: Trigger the Release Workflow
+The script will:
 
-1. Go to the repository on GitHub
-2. Navigate to **Actions** tab
-3. Select **"Create Release"** workflow from the left sidebar
-4. Click **"Run workflow"** button
-5. Enter the version (e.g., `1.4.0` or `v1.4.0`)
-6. Click **"Run workflow"**
-
-The workflow will:
-
-- Validate the version format
-- Check that the release doesn't already exist
-- Verify CHANGELOG.md has an entry for the version
-- Extract release notes from CHANGELOG.md
-- Create a git tag (e.g., `v1.4.0`)
-- Create a GitHub Release with the extracted notes
+- Validate version format
+- Check CHANGELOG entry exists
+- Add comparison link to CHANGELOG (if missing)
+- Commit and push changes (prompts for confirmation)
+- Trigger the GitHub Actions workflow
+- Monitor and report the result
 
 ## Version Format
 
@@ -75,16 +46,11 @@ Use semantic versioning (X.Y.Z):
 - **Minor (Y)**: New features, backwards compatible
 - **Patch (Z)**: Bug fixes, backwards compatible
 
-The workflow accepts versions with or without the `v` prefix:
-
-- `1.4.0` → creates tag `v1.4.0`
-- `v1.4.0` → creates tag `v1.4.0`
-
 ## Troubleshooting
 
 ### "No CHANGELOG entry found for version X.Y.Z"
 
-The workflow requires a CHANGELOG.md entry before creating a release. Add an entry with the header:
+Add an entry to CHANGELOG.md with the header:
 
 ```markdown
 ## [X.Y.Z] - YYYY-MM-DD
@@ -95,20 +61,35 @@ The workflow requires a CHANGELOG.md entry before creating a release. Add an ent
 A release with this version already exists. Either:
 
 - Use a different version number
-- Delete the existing release if it was created in error
+- Delete the existing release: `gh release delete vX.Y.Z --yes`
 
 ### "Invalid version format"
 
-The version must follow semantic versioning (X.Y.Z). Examples:
+The version must follow semantic versioning. Examples:
 
 - Valid: `1.4.0`, `2.0.0`, `1.10.5`
 - Invalid: `1.4`, `v1`, `1.4.0-beta`
+
+## Manual Release (Alternative)
+
+If you prefer not to use the release script:
+
+1. Add CHANGELOG entry (as above)
+2. Add comparison link at bottom of CHANGELOG.md:
+
+   ```markdown
+   [1.6.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.5.0...v1.6.0
+   ```
+
+3. Commit and push: `git add CHANGELOG.md && git commit -m "docs: prepare release 1.6.0" && git push`
+4. Trigger workflow: `gh workflow run release.yml -f version=1.6.0`
 
 ## Files
 
 | File | Purpose |
 | ---- | ------- |
-| `.github/workflows/release.yml` | Main workflow orchestration |
+| `scripts/release.sh` | Local release automation (run this) |
+| `.github/workflows/release.yml` | GitHub Actions workflow |
 | `.github/workflows/scripts/validate-changelog.sh` | Verifies CHANGELOG entry exists |
 | `.github/workflows/scripts/extract-release-notes.sh` | Extracts version section from CHANGELOG |
 | `.github/workflows/scripts/create-github-release.sh` | Creates GitHub Release via gh CLI |
