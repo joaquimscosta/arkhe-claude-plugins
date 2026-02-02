@@ -139,6 +139,37 @@ Convert screen names to file-safe slugs:
 - "KPI Metrics" -> `kpi-metrics.png`
 - Lowercase, hyphens for spaces, strip special characters
 
+### URL Transformation for Full Resolution
+
+Screenshot URLs from Google's image CDN (`lh3.googleusercontent.com`) return compressed
+thumbnails by default. To get full resolution images, append size parameters to the URL.
+
+**Transformation steps:**
+
+1. Extract screen dimensions from API response (`width`, `height`)
+2. Append `=s{width}` to the screenshot URL
+3. Download the transformed URL
+
+**Example:**
+```
+Original:    https://lh3.googleusercontent.com/aida/AOf...Fn4
+Transformed: https://lh3.googleusercontent.com/aida/AOf...Fn4=s2560
+```
+
+**Result:**
+- Without parameter: ~12KB thumbnail (blurry)
+- With `=s2560`: ~80KB full resolution (2560×2048)
+
+**Google Image URL Parameters:**
+| Parameter | Effect |
+|-----------|--------|
+| `=s{size}` | Scale to fit within {size}×{size} box |
+| `=w{width}` | Scale to specific width |
+| `=h{height}` | Scale to specific height |
+| `=s0` | Original size (may be very large) |
+
+Use the screen's reported `width` from the API response for best results.
+
 ---
 
 ## Step 7: Fetch Screen Code (Optional)

@@ -20,6 +20,62 @@ The Google Stitch plugin provides prompt authoring skills, slash commands, and o
 
 ---
 
+## How It Works
+
+```mermaid
+graph TD
+    subgraph Input["Entry Points"]
+        A["/prompt"]
+        B["/stitch-generate"]
+    end
+
+    subgraph Authoring["Prompt Authoring"]
+        C[Gather preferences]
+        D[Optimize prompt<br/>with sections]
+        E["Save prompt-v*.md"]
+    end
+
+    A --> C
+    B --> C
+    C --> D --> E
+
+    E --> F{MCP<br/>configured?}
+
+    subgraph WithMCP["With MCP (Automated)"]
+        G[Create Stitch project]
+        H[Generate screens]
+        I[Fetch images & code]
+    end
+
+    subgraph WithoutMCP["Without MCP (Manual)"]
+        L[Copy to Stitch UI]
+        M[Generate in browser]
+        N[Export manually]
+    end
+
+    F -->|Yes| G --> H --> I
+    F -->|No| L --> M --> N
+
+    I --> O[("design-intent/<br/>google-stitch/{feature}/<br/>├── prompt-v*.md<br/>├── exports/*.png<br/>└── code/")]
+    N --> O
+
+    classDef input fill:#e1f5fe,stroke:#01579b
+    classDef authoring fill:#fff3e0,stroke:#e65100
+    classDef mcp fill:#e8f5e9,stroke:#2e7d32
+    classDef manual fill:#fce4ec,stroke:#c2185b
+    classDef output fill:#f3e5f5,stroke:#7b1fa2
+
+    class A,B input
+    class C,D,E authoring
+    class G,H,I mcp
+    class L,M,N manual
+    class O output
+```
+
+The plugin follows a **progressive enhancement** pattern — prompt authoring works identically with or without MCP. MCP adds automated generation and file fetching.
+
+---
+
 ## Prerequisites
 
 - **Claude Code** with plugin support

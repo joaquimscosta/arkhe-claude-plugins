@@ -39,6 +39,15 @@ If MCP tools are detected:
      Once you have Stitch API access, run /stitch-setup again.
      ```
 
+   - **If authentication error** (message contains "invalid authentication credentials",
+     "OAuth 2 access token", or "Token fetch failed"):
+
+     The MCP server connected but the isolated credentials at `~/.stitch-mcp/config`
+     have expired. This commonly happens when doctor passes but API calls fail.
+
+     Proceed directly to Step 2b (Credential Refresh) - no diagnostic needed since
+     the error message already identifies the issue.
+
    - **If MCP tools unavailable but stitch is configured**: The MCP server may be failing to connect. Proceed to Step 2a (Proxy Diagnostic).
 
    - **If other error**: Report the error and suggest checking ADC credentials
@@ -65,9 +74,14 @@ If MCP tools are detected:
 
 5. If `STITCH_PROJECT_ID` is not set, suggest setting it for default project targeting
 
-### Step 2a: Proxy Diagnostic (when MCP fails but doctor passes)
+### Step 2a: Proxy Diagnostic (when MCP connection fails without clear error)
 
-When `claude mcp list` shows stitch as "Failed to connect" but `npx @_davideast/stitch-mcp doctor` passes all checks, the actual error is hidden. Use this diagnostic step:
+Use this step when `claude mcp list` shows "Failed to connect" but the error is not clear.
+For authentication errors with clear messages (e.g., "invalid authentication credentials"),
+skip directly to Step 2b.
+
+When `npx @_davideast/stitch-mcp doctor` passes all checks but the MCP server fails,
+the actual error may be hidden. Use this diagnostic step:
 
 1. **Ask user for permission** to run the proxy diagnostic:
 
