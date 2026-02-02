@@ -5,6 +5,35 @@ All notable changes to the Arkhe Claude Plugins project will be documented in th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.0] - 2026-02-01
+
+### Added
+
+#### Google Stitch Plugin
+
+- **Enhanced documentation and troubleshooting**
+  - Added Stitch platform behavior notes to troubleshooting guide
+  - Documented common 403 error scenarios and resolutions
+
+### Changed
+
+#### Google Stitch Plugin
+
+- **Improved `/stitch-setup` command**
+  - Manual MCP configuration flow (removed auto-config that caused issues)
+  - Better 403 error handling with clear user guidance
+  - Streamlined setup verification process
+- **Enhanced image fetching workflow**
+  - Improved reliability for fetching generated screen images
+  - Better error messages for common failure scenarios
+
+### Fixed
+
+#### Google Stitch Plugin
+
+- Fixed `/stitch-setup` command configuration issues
+- Removed problematic auto-MCP configuration that caused 403 errors
+
 ## [1.7.0] - 2026-01-30
 
 ### Added
@@ -716,7 +745,8 @@ The `/specprep:tasks` command has been removed in favor of automatic command cha
 - **Documentation**: See README.md and docs/ directory
 - **Installation**: See INSTALLATION.md
 
-[Unreleased]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.7.0...HEAD
+[Unreleased]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.8.0...HEAD
+[1.8.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.7.0...v1.8.0
 [1.7.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.3.0...v1.5.0
