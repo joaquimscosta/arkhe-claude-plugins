@@ -258,3 +258,34 @@ Optimize for mobile-first (320px minimum), full keyboard navigation, screen read
 1. Run `/stitch-setup` for guided setup
 2. Or manually: `npx @_davideast/stitch-mcp init`
 3. After setup, authored prompts will automatically offer generation
+
+---
+
+## Stitch Platform Behaviors
+
+These are known Stitch platform limitations, not prompting issues.
+
+### Design Resets During Editing
+
+**Symptom:** Stitch resets or significantly alters your design when you make sequential edits.
+
+**Cause:** This is expected Stitch behavior during iterative editing sessions.
+
+**Workaround:**
+1. Save screenshots of designs you like before making further iterations
+2. Use Stitch's built-in export features to preserve good designs
+3. Keep edit prompts focused and minimal to reduce reset likelihood
+4. If a reset occurs, use your saved screenshot as reference for a new prompt
+
+### Complex Table Limitations
+
+**Symptom:** Multi-row tables lose structure or become inconsistent across sequential prompts.
+
+**Cause:** Stitch has difficulty maintaining complex multi-row table layouts when modified across prompts.
+
+**Workaround:**
+- Keep table prompts simple and self-contained
+- Avoid modifying table structure in subsequent prompts
+- Generate tables as standalone components rather than editing existing ones
+- For tables with 4+ rows or complex nesting, consider generating the entire table fresh
+- If table structure is critical, include complete table specification in each prompt rather than incremental changes

@@ -288,7 +288,7 @@ Reviews UI implementations for visual consistency, accessibility compliance, res
 
 **Confidence scoring**: Only reports issues with confidence >= 80.
 
-## Skill
+## Skills
 
 ### Design Intent Specialist
 
@@ -317,6 +317,52 @@ Auto-invoked skill for creating accurate frontend implementations from visual re
 - `skills/design-intent-specialist/WORKFLOW.md` - Detailed process
 - `skills/design-intent-specialist/EXAMPLES.md` - Usage examples
 - `skills/design-intent-specialist/TROUBLESHOOTING.md` - Common issues
+
+### Stitch to React
+
+Converts Google Stitch exports (Tailwind HTML + PNG pairs) into React components with full design DNA integration.
+
+**Capabilities:**
+
+- Extract design tokens from Stitch Tailwind config
+- Decompose Stitch screens into composable React components
+- Map Stitch tokens to project design system (Fluent UI, Material UI, etc.)
+- Detect and resolve conflicts with existing patterns
+- Generate TypeScript interfaces and properly typed components
+
+**Auto-triggers on:**
+
+- References to `design-intent/google-stitch/` exports
+- "Convert Stitch output" or "Stitch to React" requests
+- Processing directories with HTML + PNG pairs from Stitch
+
+**Input Structure:**
+
+```text
+design-intent/google-stitch/{feature}/exports/
+├── 01-layout-{name}.html    # Tailwind CSS + HTML
+├── 01-layout-{name}.png     # Visual reference
+├── 02-component-{name}.html
+└── 02-component-{name}.png
+```
+
+**Output Structure:**
+
+```text
+src/components/{feature}/
+├── {ComponentName}.tsx     # Main component
+├── {SubComponent}.tsx      # Decomposed parts
+├── tokens.ts               # Design tokens from Stitch
+├── types.ts                # TypeScript interfaces
+└── index.ts                # Re-exports
+```
+
+**Documentation:**
+
+- `skills/stitch-to-react/SKILL.md` - Quick start
+- `skills/stitch-to-react/WORKFLOW.md` - Detailed conversion process
+- `skills/stitch-to-react/EXAMPLES.md` - Conversion examples
+- `skills/stitch-to-react/TROUBLESHOOTING.md` - Common issues
 
 ## Project Structure After Setup
 
