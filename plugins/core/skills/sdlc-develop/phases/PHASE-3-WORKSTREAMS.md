@@ -24,11 +24,11 @@ Group tasks based on dependencies:
 - **Wave 3**: Tasks depending on Wave 2
 - etc.
 
-### 4. Generate tasks.md
+### 4. Generate tasks.md Structure
 
-Save to `{specs_dir}/{NN}-{feature_slug}/tasks.md`
+Prepare tasks.md content using [tasks.md.template](../templates/tasks.md.template).
 
-Use template: [tasks.md.template](../templates/tasks.md.template)
+**Note:** The file will be saved in Step 7 after testing recommendations are processed.
 
 ### 5. Generate Dependency Diagram
 
@@ -40,6 +40,65 @@ Create a Mermaid graph showing task dependencies:
 4. Use `graph TD` (top-down) for <6 tasks, `graph LR` (left-right) for 6+ tasks
 
 Include the diagram in tasks.md before the Summary table.
+
+### 6. Testing Recommendations
+
+After organizing implementation waves, analyze tasks for testing candidates.
+
+**High-value test targets (scan tasks for these patterns):**
+- **Hooks**: Files matching `use*.ts` or tasks mentioning "hook", "custom hook"
+- **Utilities**: Files in `/lib/`, `/utils/`, or tasks mentioning "utility", "helper"
+- **API endpoints**: Tasks involving HTTP routes, controllers, handlers
+- **State logic**: Tasks involving reducers, stores, state machines
+- **Data transformations**: Tasks involving parsers, formatters, mappers
+
+**If test candidates found:**
+
+Present to user:
+```markdown
+**Testing Recommendation**
+
+The following items are good candidates for unit tests:
+- [hook/utility/endpoint name] - [file path]
+- [hook/utility/endpoint name] - [file path]
+
+Would you like to add a testing wave?
+```
+
+Use `AskUserQuestion`:
+- **header**: "Testing"
+- **question**: "[N] test candidates identified. Add a testing wave?"
+- **options**:
+  - { label: "Yes, add testing wave", description: "Add Wave N+1 with test tasks" }
+  - { label: "Add to Next Steps", description: "Document as follow-up, don't block completion" }
+  - { label: "Skip testing", description: "No testing recommendations" }
+
+**Response handling:**
+- **Add testing wave**:
+  1. Create tasks for each test candidate:
+     - Type: `test`
+     - Priority: P2
+     - Effort: S or M
+     - Dependencies: corresponding implementation task
+     - Acceptance criteria: "Tests cover public API of [target]"
+  2. Add as final wave in tasks.md
+- **Add to Next Steps**:
+  1. Store test candidates list for Phase 5
+  2. Set `testing_recommendations = [list]`
+- **Skip**:
+  1. No testing recommendations generated
+
+### 7. Save Task Breakdown
+
+After generating tasks and (optional) testing wave, persist to tasks.md immediately:
+
+1. **Write tasks.md** to `{spec_path}/tasks.md`
+   - Use [tasks.md.template](../templates/tasks.md.template)
+   - Include all waves with dependencies
+   - Include dependency diagram
+2. **Log:** "Tasks saved to `{spec_path}/tasks.md`"
+
+**Rationale:** Saving tasks immediately ensures the task breakdown is not lost if session ends before Phase 4.
 
 ---
 
