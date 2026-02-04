@@ -2,21 +2,74 @@
 
 This document provides a detailed step-by-step breakdown of the branch creation process.
 
-For quick start instructions, see [SKILL.md](SKILL.md).
-
 ## Overview
 
-The branch creation process follows 5 main steps:
+The branch creation process follows 6 main steps:
 
-1. **Parse Description** - Extract user's task description
-2. **Detect Commit Type** - Identify branch type from keywords
-3. **Extract Keywords** - Filter meaningful words from description
-4. **Find Next Number** - Auto-increment sequential number
-5. **Create Branch** - Generate name and create git branch
+1. **Determine Mode** - Check for description, specs, or auto-generate
+1b. **Spec Selection** - (Mode 3 only) Present available specs for selection
+2. **Parse Description** - Extract user's task description
+3. **Detect Commit Type** - Identify branch type from keywords
+4. **Extract Keywords** - Filter meaningful words from description
+5. **Find Next Number** - Auto-increment sequential number
+6. **Create Branch** - Generate name and create git branch
 
 ---
 
-## Step 1: Parse Description
+## Step 1: Determine Operation Mode
+
+Check arguments and environment to determine mode:
+
+```bash
+# Check for arguments
+if [ -n "$DESCRIPTION" ]; then
+    MODE="manual"
+    # Proceed to Step 2 (parse description)
+else
+    # Check for sdlc-develop integration
+    if [ -f ".arkhe.yaml" ]; then
+        SPECS_DIR=$(grep 'specs_dir:' .arkhe.yaml | awk '{print $2}')
+        SPECS_DIR=${SPECS_DIR:-arkhe/specs}
+
+        # Find existing spec directories
+        SPECS=$(find "$SPECS_DIR" -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort)
+
+        if [ -n "$SPECS" ]; then
+            MODE="spec-select"
+            # Proceed to Step 1b (spec selection)
+        else
+            MODE="auto-generate"
+            # Proceed to auto-generate from changes
+        fi
+    else
+        MODE="auto-generate"
+        # Proceed to auto-generate from changes
+    fi
+fi
+```
+
+---
+
+## Step 1b: Spec Selection (Mode 3 Only)
+
+Present available specs for selection:
+
+Use `AskUserQuestion` with options:
+- Each spec directory as an option (e.g., "01-user-auth", "02-dashboard")
+- "None - auto-generate from changes" as final option
+
+If user selects a spec:
+- Extract spec name (e.g., "01-user-auth")
+- Detect type from spec name or default to "feat"
+- Skip to Step 5 (branch name is `{type}/{spec-name}`)
+
+If user selects "None":
+- Set MODE="auto-generate"
+- Proceed to auto-generate from changes
+
+---
+
+## Step 2: Parse Description
 
 Extract and normalize the user's task description.
 
@@ -35,7 +88,7 @@ Extract and normalize the user's task description.
 
 ---
 
-## Step 2: Detect Commit Type
+## Step 3: Detect Commit Type
 
 Analyze description keywords to determine branch type.
 
@@ -68,7 +121,7 @@ The script scans for specific keywords in the description:
 
 ---
 
-## Step 3: Extract Keywords
+## Step 4: Extract Keywords
 
 Filter meaningful words from description for branch name.
 
@@ -112,7 +165,7 @@ Input: "refactor the authentication service module"
 
 ---
 
-## Step 4: Find Next Number
+## Step 5: Find Next Number
 
 Determine the next sequential branch number.
 
@@ -156,7 +209,7 @@ Determine the next sequential branch number.
 
 ---
 
-## Step 5: Create Branch
+## Step 6: Create Branch
 
 Generate branch name and execute git command.
 
@@ -184,17 +237,9 @@ Generate branch name and execute git command.
    git branch --show-current
    ```
 
-3. **Optional: Create feature directory** (only if spec-kit is installed):
-   - Checks for `.specify/` directory in repository root
-   - If found, creates directory at `${FEATURE_DIR:-plan/specs}/{branch-name}/`
-   ```bash
-   # Only executed when .specify/ exists
-   mkdir -p plan/specs/feat-004-user-authentication/
-   ```
-
 **Output**:
 - Success message with branch name
-- Optional feature directory path (only shown if `.specify/` exists)
+- If spec-select mode: shows linked spec directory
 - Current branch confirmation
 
 ---
@@ -208,25 +253,27 @@ Generate branch name and execute git command.
 
 **Step-by-Step Execution**:
 
-1. **Parse**: `"add user authentication system"`
+1. **Determine Mode**: Manual (description provided)
 
-2. **Detect Type**:
+2. **Parse**: `"add user authentication system"`
+
+3. **Detect Type**:
    - Found keyword: "add"
    - Type: `feat`
 
-3. **Extract Keywords**:
+4. **Extract Keywords**:
    - Remove: "add"
    - Keep: "user", "authentication", "system"
    - Limit: "user", "authentication"
    - Result: `user-authentication`
 
-4. **Find Number**:
+5. **Find Number**:
    - Scan: feat/001-profile, feat/002-dashboard
    - Max: 002
    - Next: 003
    - Result: `003`
 
-5. **Create Branch**:
+6. **Create Branch**:
    - Assemble: `feat/003-user-authentication`
    - Execute: `git checkout -b feat/003-user-authentication`
    - Confirm: Branch created successfully
@@ -234,7 +281,6 @@ Generate branch name and execute git command.
 **Final Output**:
 ```
 ✅ Created branch: feat/003-user-authentication
-📁 Feature directory: .claude/specs/feat-003-user-authentication/ (if configured)
 ```
 
 ---
@@ -243,25 +289,21 @@ Generate branch name and execute git command.
 
 ### Environment Variables
 
-**FEATURE_DIR** (optional):
-```bash
-export FEATURE_DIR=".claude/specs"
-```
-Creates a directory at `$FEATURE_DIR/{branch-name}/` for specifications.
-
-**Note**: Directory creation only happens when spec-kit is installed (`.specify/` directory exists in repository root). Without spec-kit, no directory is created regardless of `FEATURE_DIR` setting.
-
 **BRANCH_PREFIX** (optional):
 ```bash
 export BRANCH_PREFIX="myteam-"
 ```
 Adds prefix to all branch names: `myteam-feat/001-user-auth`
 
-### Script Location
+### SDLC-Develop Configuration
 
-The workflow is implemented in shell scripts:
-- **Main**: `/create-branch`
-- **Utilities**: `git/skills/creating-branch/scripts/common.sh`
+When `.arkhe.yaml` exists, the skill reads:
+```yaml
+develop:
+  specs_dir: arkhe/specs  # Default if not specified
+```
+
+The skill scans this directory for existing spec directories to offer as branch name options.
 
 ---
 
@@ -321,22 +363,31 @@ refactor/004-auth-service
 
 This ensures unique identifiers across the entire project.
 
-### Feature Directory Structure
+### SDLC-Develop Integration
 
-When spec-kit is installed (`.specify/` directory exists):
+When `.arkhe.yaml` exists and contains specs:
 ```
-plan/specs/
-├── feat/001-user-auth/
+arkhe/specs/
+├── 01-user-auth/
 │   ├── spec.md
-│   └── notes.md
-├── fix/002-login-bug/
-│   └── investigation.md
-└── feat/003-dashboard/
-    ├── design.md
-    └── requirements.md
+│   └── plan.md
+├── 02-dashboard/
+│   └── spec.md
+└── 03-payment/
+    ├── spec.md
+    └── plan.md
 ```
 
-**Note**: These directories are only created when `.specify/` directory exists in the repository root, indicating spec-kit is installed. Without spec-kit, branch creation skips directory creation entirely.
+Running `/create-branch` without arguments will offer spec selection:
+```
+Select a feature spec for this branch:
+- 01-user-auth
+- 02-dashboard
+- 03-payment
+- None (auto-generate from changes)
+```
+
+Selected spec becomes the branch name: `feat/01-user-auth`
 
 ---
 
@@ -359,9 +410,9 @@ plan/specs/
    - The script shows the branch name before creating it
    - Adjust description if needed
 
-5. **Use Feature Directories**: Configure `FEATURE_DIR` for complex features
-   - Store specifications, designs, and notes
-   - Keep branch-specific documentation organized
+5. **Use SDLC-Develop Integration**: For complex features, use `/develop` first
+   - Creates structured specs in `arkhe/specs/`
+   - `/create-branch` will detect and offer spec selection
 
 ---
 
@@ -372,12 +423,9 @@ The branch creation workflow automates:
 2. ✅ Keyword extraction with stopword filtering
 3. ✅ Sequential numbering across all branches
 4. ✅ Short, readable branch names
-5. ✅ Optional feature directory creation
+5. ✅ SDLC-develop spec detection and selection
 
 **Result**: Consistent, discoverable branch names that align with conventional commits and modern git workflows.
-
-For examples, see [EXAMPLES.md](EXAMPLES.md).
-For troubleshooting, see [TROUBLESHOOTING.md](TROUBLESHOOTING.md).
 
 ---
 

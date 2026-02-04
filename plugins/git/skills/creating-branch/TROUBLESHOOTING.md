@@ -2,10 +2,6 @@
 
 This document provides solutions to common issues when using the `creating-branch` skill.
 
-For quick start instructions, see [SKILL.md](SKILL.md).
-For detailed workflow, see [WORKFLOW.md](WORKFLOW.md).
-For examples, see [EXAMPLES.md](EXAMPLES.md).
-
 ---
 
 ## Common Issues
@@ -134,12 +130,11 @@ chmod +x git/skills/creating-branch/shared utilities
 
 **Solution**: Verify installation
 ```bash
-# Check if files exist
-ls -la inline Bash in SKILL.md
+# Check if skill files exist
+ls -la plugins/git/skills/creating-branch/
 
 # Expected output:
-Branch creation workflow
-Shared utilities (now inline)
+# SKILL.md  WORKFLOW.md  EXAMPLES.md  TROUBLESHOOTING.md
 ```
 
 If files are missing, reinstall the git plugin:
@@ -363,48 +358,56 @@ git checkout -b feat/001-user-authentication-oauth2-jwt
 
 ---
 
-### Issue 8: Feature Directory Not Created
+### Issue 8: Specs Not Detected
 
 **Symptom**:
-Branch is created but no feature directory appears.
+Branch creation doesn't offer spec selection even though specs exist.
 
-**Cause**:
-`FEATURE_DIR` environment variable is not set.
+**Causes & Solutions**:
 
-**Solutions**:
+**Cause A: Missing .arkhe.yaml**
 
-**Solution A: Set Environment Variable**
-
+**Solution**: Create configuration or run `/develop` first
 ```bash
-# Set for current session
-export FEATURE_DIR=".claude/specs"
+# Check for config
+cat .arkhe.yaml
 
-# Then create branch
-/create-branch add payment integration
-→ feat/001-payment-integration
-📁 .claude/specs/feat-001-payment-integration/
+# If missing, create manually
+echo "develop:
+  specs_dir: arkhe/specs" > .arkhe.yaml
 ```
 
-**Solution B: Add to Shell Profile**
+**Cause B: Empty specs directory**
 
-For permanent configuration:
+**Solution**: Run `/develop` to create a spec first
 ```bash
-# Add to ~/.bashrc or ~/.zshrc
-echo 'export FEATURE_DIR=".claude/specs"' >> ~/.bashrc
+/develop add user authentication --plan-only
+# Creates arkhe/specs/01-user-auth/
 
-# Reload shell
-source ~/.bashrc
+# Now /create-branch will detect it
+/create-branch
 ```
 
-**Solution C: Create Directory Manually**
+**Cause C: Custom specs_dir not matching**
 
-If you don't need automatic creation:
+**Solution**: Verify specs_dir in .arkhe.yaml matches actual location
 ```bash
-# Create branch
-/create-branch add payment integration
+# Check config
+grep specs_dir .arkhe.yaml
 
-# Manually create directory
-mkdir -p .claude/specs/feat-001-payment-integration/
+# Verify directory exists
+ls -la arkhe/specs/  # or your custom path
+```
+
+**Cause D: Spec directories have no subdirectories**
+
+**Solution**: Ensure specs are proper directories
+```bash
+# Specs must be directories, not files
+ls -la arkhe/specs/
+# Should show:
+# drwxr-xr-x  01-user-auth/
+# drwxr-xr-x  02-dashboard/
 ```
 
 ---
@@ -585,6 +588,7 @@ git push origin --delete feat/003-user-auth
 | `Permission denied` | Script not executable | `chmod +x the branch creation workflow` |
 | `No such file or directory` | Wrong working directory | Navigate to project root |
 | `fatal: '...' is not a valid branch name` | Invalid characters | Remove special characters from description |
+| No spec selection offered | Missing `.arkhe.yaml` or empty specs | Run `/develop` first or create config manually |
 
 ### Verification Commands
 
@@ -595,14 +599,15 @@ git branch --show-current
 # List all branches
 git branch -a
 
-# Check script permissions
-ls -la inline Bash in SKILL.md
+# Check skill files
+ls -la plugins/git/skills/creating-branch/
 
 # Verify git repository
 git status
 
-# Check environment variables
-echo $FEATURE_DIR
+# Check for SDLC-develop specs
+cat .arkhe.yaml
+ls -la arkhe/specs/
 ```
 
 ### Debugging
@@ -625,23 +630,19 @@ bash /create-branch --help
 
 If issues persist:
 
-1. **Check Skill Documentation**: Review [SKILL.md](SKILL.md) for usage instructions
-
-2. **Review Examples**: See [EXAMPLES.md](EXAMPLES.md) for common patterns
-
-3. **Verify Installation**:
+1. **Verify Installation**:
    ```bash
    /plugin list
    # Ensure git@arkhe-claude-plugins is installed
    ```
 
-4. **Reinstall Plugin**:
+2. **Reinstall Plugin**:
    ```bash
    /plugin uninstall git@arkhe-claude-plugins
    /plugin install git@arkhe-claude-plugins
    ```
 
-5. **Check Git Status**:
+3. **Check Git Status**:
    ```bash
    git status
    git branch -a
