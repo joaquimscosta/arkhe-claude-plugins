@@ -49,7 +49,7 @@ Lightweight orchestrator for 6-phase software development lifecycle with progres
 
 ### UI Features with Stitch Integration
 
-When your feature involves UI work (detected keywords: `UI`, `page`, `screen`, `component`, `button`, `form`, etc.), the skill offers Stitch integration:
+When a feature involves UI work (detected keywords: `UI`, `page`, `screen`, `component`, `button`, `form`, etc.), the skill offers Stitch integration:
 
 1. **Phase 1**: Detects UI keywords → offers to generate Stitch prompts
 2. **Phase 2**: Offers to generate screens from prompts via MCP
@@ -235,32 +235,6 @@ START
    - **REVIEW** - Show requested details, then re-present prompt
    - **MODIFY/FIX** - Make changes, then re-present prompt
    - **CANCEL** - Stop the pipeline entirely
-
-### Tier 1 Checkpoints (⛔ CANNOT SKIP)
-
-These checkpoints block execution regardless of flags:
-- **Phase 2c**: Architecture Decision
-- **Phase 4e**: Completion Gate
-
-**YOU MUST STOP AND WAIT.** Even with `--auto`, do not proceed until user explicitly responds.
-
-### Tier 2 Checkpoints (⚠️ RECOMMENDED)
-
-**Without `--auto`:** STOP and WAIT for user response.
-**With `--auto`:** Auto-approve and proceed, logging the decision.
-
-## Checkpoint Protocol (CRITICAL)
-
-**At every numbered prompt checkpoint:**
-
-1. **STOP** - Halt all execution immediately
-2. **PRESENT** - Display the numbered prompt exactly as shown
-3. **WAIT** - Do not take any further action until user responds
-4. **RESPOND** - Act based on user's numbered choice:
-   - **1 (APPROVE)** - Proceed to next phase/step
-   - **2 (REVIEW)** - Show requested details, then re-present prompt
-   - **3 (MODIFY/FIX)** - Make changes, then re-present prompt
-   - **4 (CANCEL)** - Stop the pipeline entirely
 
 ### Tier 1 Checkpoints (⛔ CANNOT SKIP)
 
