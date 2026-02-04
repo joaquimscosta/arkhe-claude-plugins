@@ -21,6 +21,7 @@ build/
 *.swp
 *.swo
 *~
+*.iml
 
 # Testing
 .pytest_cache/

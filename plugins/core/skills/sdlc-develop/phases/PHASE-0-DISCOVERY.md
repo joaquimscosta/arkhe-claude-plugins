@@ -48,6 +48,78 @@ Return:
 
 ---
 
+## Step 0b-post: Create Spec Directory (FULL_MODE/PLAN_MODE only)
+
+**Skip if:** RESUME_MODE (spec directory already exists)
+
+For new features, create the spec directory immediately after mode detection:
+
+### 1. Load Configuration
+
+Read `.arkhe.yaml` from project root:
+- Extract `develop.specs_dir` value (default: `arkhe/specs`)
+- Extract `develop.numbering` value (default: `true`)
+
+### 2. Determine Spec Path
+
+If `numbering: true`:
+- Use `Glob` to find existing `{specs_dir}/NN-*/` directories
+- Detect highest NN prefix
+- Increment: NN+1
+- Full path: `{specs_dir}/{NN+1}-{feature_slug}/`
+
+If `numbering: false`:
+- Full path: `{specs_dir}/{feature_slug}/`
+
+### 3. Create Directory and Initial Files
+
+Use `Bash` to create the directory structure:
+```bash
+mkdir -p {specs_dir}/{NN}-{feature_slug}
+```
+
+Use `Write` tool to create placeholder files:
+
+**spec.md** (initial):
+```markdown
+# {Feature Name} Specification
+
+**Spec ID:** {NN}-{feature_slug}
+**Status:** In Progress
+**Created:** {date}
+
+---
+
+## Summary
+
+{Brief description from user request}
+
+---
+
+_Requirements will be populated in Phase 1._
+```
+
+**plan.md** (initial):
+```markdown
+# {Feature Name} Implementation Plan
+
+**Spec:** {NN}-{feature_slug}
+**Status:** In Progress
+**Created:** {date}
+
+---
+
+_Architecture will be populated in Phase 2._
+```
+
+### 4. Store Path for Later Phases
+
+Set `spec_path = {specs_dir}/{NN}-{feature_slug}` for use in subsequent phases.
+
+**Log:** "Created spec directory: `{spec_path}/`"
+
+---
+
 ## Step 0c: Existing System Analysis (MANDATORY)
 
 **This step cannot be skipped.**
@@ -125,6 +197,6 @@ Use [reuse-matrix.md.template](../templates/reuse-matrix.md.template) to documen
 - Integration points identified
 - Similar components considered
 
-Save as `{specs_dir}/{NN}-{feature_slug}/reuse-matrix.md`
+Save as `{spec_path}/reuse-matrix.md` (directory was created in Step 0b-post)
 
 **Next:** Proceed to [PHASE-1-REQUIREMENTS.md](PHASE-1-REQUIREMENTS.md)

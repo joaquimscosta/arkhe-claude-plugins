@@ -32,6 +32,45 @@ Use Claude Code's native task tools for progress tracking:
 
 **Note:** The `tasks.md` file in spec directories captures the INITIAL task definitions and acceptance criteria. Progress tracking happens via TaskCreate/TaskUpdate, not by editing checkboxes in tasks.md.
 
+### UI Implementation with Stitch
+
+**Skip this section if:** No `## Design Assets` section in plan.md or status is "Skipped".
+
+When starting a UI-related task, check if Stitch exports are available:
+
+1. **Read plan.md** and locate `## Design Assets` section
+2. **If exports exist** (`stitch_exports_path` is set):
+
+   **For each UI component task:**
+
+   a. Identify corresponding Stitch export by matching:
+      - Task title to export filename (e.g., "Record Button" → `02-record-button.png/html`)
+      - Component name to export name
+
+   b. Present to user:
+   ```markdown
+   **UI Task:** [task title]
+   **Stitch Export:** [matched export path]
+
+   Would you like to use stitch-to-react for this component?
+   ```
+
+   c. Use `AskUserQuestion`:
+      - **header**: "Stitch Convert"
+      - **question**: "Stitch export found for [component]. Use stitch-to-react skill?"
+      - **options**:
+        - { label: "Yes, convert with Stitch (Recommended)", description: "Generate React component from Stitch export" }
+        - { label: "No, implement manually", description: "Use export as visual reference only" }
+
+   d. **If convert selected:**
+      1. Invoke `Skill` tool with `skill: "stitch-to-react"`
+      2. Provide export path and target component location
+      3. Review generated component, adjust as needed
+
+3. **If exports don't exist but were expected** (status "Pending generation"):
+   - Warn user: "Stitch exports were not generated. Implementing from design docs."
+   - Continue with manual implementation using any available design documentation
+
 ---
 
 ## Step 4b: Quick Validation (ALWAYS)

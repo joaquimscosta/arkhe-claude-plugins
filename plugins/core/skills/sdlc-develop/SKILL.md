@@ -44,7 +44,16 @@ Lightweight orchestrator for 6-phase software development lifecycle with progres
 /develop add logout button --auto        # Autonomous mode
 /develop create plan for dashboard --plan-only  # Plan only
 /develop @arkhe/specs/01-user-auth/      # Resume existing plan
+/develop add dashboard page with charts  # UI work → triggers Stitch workflow
 ```
+
+### UI Features with Stitch Integration
+
+When your feature involves UI work (detected keywords: `UI`, `page`, `screen`, `component`, `button`, `form`, etc.), the skill offers Stitch integration:
+
+1. **Phase 1**: Detects UI keywords → offers to generate Stitch prompts
+2. **Phase 2**: Offers to generate screens from prompts via MCP
+3. **Phase 4**: For each UI task, offers `stitch-to-react` conversion
 
 ## Arguments
 
@@ -127,6 +136,20 @@ Plans are persisted to `{specs_dir}/` with auto-incrementing prefixes:
 ```
 
 **Note:** `{specs_dir}` references the configured value from `.arkhe.yaml` (default: `arkhe/specs`).
+
+## Progressive Persistence
+
+Artifacts are saved incrementally at each phase checkpoint to prevent data loss:
+
+| Phase | Artifact Saved | Trigger |
+|-------|----------------|---------|
+| 0 | spec directory + initial spec.md, plan.md | After mode detection (FULL/PLAN modes) |
+| 1 | spec.md (with requirements) | After requirements gathering |
+| 2 | plan.md (with architecture) | After architecture decision |
+| 3 | tasks.md (with task breakdown) | After task breakdown |
+| 5 | tasks.md (checkbox sync) | Before completion summary |
+
+**Crash Recovery:** If session ends mid-phase, resume with `/develop @{spec_path}/` and artifacts from completed phases are preserved.
 
 ## Templates
 
