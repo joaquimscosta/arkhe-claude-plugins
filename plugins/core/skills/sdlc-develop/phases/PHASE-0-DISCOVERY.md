@@ -63,10 +63,10 @@ Read `.arkhe.yaml` from project root:
 ### 2. Determine Spec Path
 
 If `numbering: true`:
-- Use `Glob` to find existing `{specs_dir}/NN-*/` directories
-- Detect highest NN prefix
-- Increment: NN+1
-- Full path: `{specs_dir}/{NN+1}-{feature_slug}/`
+- Use `Glob` to find existing `{specs_dir}/NNN-*/` directories (handles 2 or 3 digit prefixes)
+- Detect highest numeric prefix
+- Increment and zero-pad to 3 digits: NNN+1
+- Full path: `{specs_dir}/{NNN+1}-{feature_slug}/`
 
 If `numbering: false`:
 - Full path: `{specs_dir}/{feature_slug}/`
@@ -75,7 +75,7 @@ If `numbering: false`:
 
 Use `Bash` to create the directory structure:
 ```bash
-mkdir -p {specs_dir}/{NN}-{feature_slug}
+mkdir -p {specs_dir}/{NNN}-{feature_slug}
 ```
 
 Use `Write` tool to create placeholder files:
@@ -84,7 +84,7 @@ Use `Write` tool to create placeholder files:
 ```markdown
 # {Feature Name} Specification
 
-**Spec ID:** {NN}-{feature_slug}
+**Spec ID:** {NNN}-{feature_slug}
 **Status:** In Progress
 **Created:** {date}
 
@@ -103,7 +103,7 @@ _Requirements will be populated in Phase 1._
 ```markdown
 # {Feature Name} Implementation Plan
 
-**Spec:** {NN}-{feature_slug}
+**Spec:** {NNN}-{feature_slug}
 **Status:** In Progress
 **Created:** {date}
 
@@ -114,7 +114,7 @@ _Architecture will be populated in Phase 2._
 
 ### 4. Store Path for Later Phases
 
-Set `spec_path = {specs_dir}/{NN}-{feature_slug}` for use in subsequent phases.
+Set `spec_path = {specs_dir}/{NNN}-{feature_slug}` for use in subsequent phases.
 
 **Log:** "Created spec directory: `{spec_path}/`"
 

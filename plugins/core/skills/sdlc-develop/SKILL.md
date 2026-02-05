@@ -174,7 +174,7 @@ Artifacts are saved incrementally at each phase checkpoint to prevent data loss:
 ```yaml
 develop:
   specs_dir: arkhe/specs  # Customize this path
-  numbering: true         # NN- prefix
+  numbering: true         # NNN- prefix (3-digit, e.g., 001-)
   ticket_format: full     # full | simple
 ```
 

@@ -1,6 +1,6 @@
 # {Feature Name} Data Models
 
-**Spec:** {NN}-{feature_slug}
+**Spec:** {NNN}-{feature_slug}
 **Database:** {PostgreSQL/MySQL/etc.}
 
 ---
@@ -17,6 +17,16 @@
 │ created_at      │       │ created_at      │
 └─────────────────┘       └─────────────────┘
 ```
+
+---
+
+## Enums
+
+| Enum Name | Database Type | Values | Description |
+|-----------|---------------|--------|-------------|
+| `{enum_name}` | {VARCHAR/ENUM} | `VAL_A`, `VAL_B`, `VAL_C` | {What this enum represents} |
+
+**Note:** {Strategy for adding new enum values: migration required / append-only / etc.}
 
 ---
 
@@ -46,11 +56,39 @@
 
 ---
 
-## Migrations
+## Migration Strategy
 
-| Migration | Purpose |
-|-----------|---------|
-| `V{X}.{Y}__{name}.sql` | {What it does} |
+**Migration Tool:** {Flyway / Liquibase / Alembic / Prisma / etc.}
+**Naming Convention:** `V{NNN}__{description}.sql`
+
+| Order | Migration File | Description | Reversible |
+|-------|----------------|-------------|------------|
+| 1 | `V001__{name}.sql` | {What this migration does} | Yes/No |
+
+---
+
+## Soft Delete Strategy
+
+{Include if any entities use soft delete, otherwise remove this section}
+
+| Entity | Strategy | Delete Column | Cascade Behavior |
+|--------|----------|---------------|------------------|
+| `{entity}` | soft_delete | `deleted_at TIMESTAMP` | {child records also soft-deleted / orphaned / etc.} |
+
+**Query Pattern:** All queries must include `WHERE deleted_at IS NULL` unless explicitly querying deleted records.
+
+---
+
+## Audit Fields
+
+{Standard audit columns used across entities}
+
+| Column | Type | Purpose | Auto-populated |
+|--------|------|---------|----------------|
+| `created_at` | TIMESTAMP | Record creation time | Yes (DEFAULT NOW()) |
+| `updated_at` | TIMESTAMP | Last modification | Yes (trigger/app) |
+| `created_by` | UUID/VARCHAR | User who created | App-level |
+| `updated_by` | UUID/VARCHAR | User who last modified | App-level |
 
 ---
 
@@ -68,4 +106,20 @@ SELECT * FROM {table} WHERE id = :id;
 SELECT * FROM {table}
 ORDER BY created_at DESC
 LIMIT :limit OFFSET :offset;
+```
+
+---
+
+## Seed Data
+
+**Development seed script:** `{path/to/seed.sql}` or `{path/to/seed.ts}`
+
+**Seed data includes:**
+- {Entity 1}: {N} sample records
+- {Entity 2}: {N} sample records
+- {Reference data}: {description}
+
+**Run seed:**
+```bash
+{command to run seed, e.g., "npm run db:seed" or "psql -f seed.sql"}
 ```

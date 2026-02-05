@@ -1,4 +1,4 @@
-# Verification Report: {NN}-{feature_slug}
+# Verification Report: {NNN}-{feature_slug}
 
 **Generated:** {timestamp}
 **Mode:** {VERIFY_ARCH | VERIFY_IMPL | FULL}
