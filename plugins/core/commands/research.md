@@ -38,10 +38,11 @@ If arguments don't start with `promote`, `refresh`, or `list`:
 ### Operation: Promote
 If arguments start with `promote <slug>`:
 
-1. Run the promote script to handle the promotion:
+1. Execute the promote script from the deep-research skill's `scripts/` directory:
    ```bash
-   python plugins/core/skills/deep-research/scripts/promote.py {slug}
+   python3 scripts/promote.py {slug}
    ```
+   Note: `scripts/` is relative to the `deep-research` skill root directory.
 2. Parse the JSON output from the script
 3. If success is true, report: "Promoted {slug} to {path}"
 4. If success is false, report the error message
