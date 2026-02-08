@@ -8,20 +8,32 @@
 
 ## Actions
 
+### 0. Sync tasks.md Acceptance Criteria
+
+Before verifying completion, synchronize task status to tasks.md:
+
+1. Read `{spec_path}/tasks.md`
+2. Use `TaskList` to get all tasks and their status
+3. For each task with status `completed`:
+   - Find the corresponding `### T-XX:` section in tasks.md
+   - Locate the "#### Acceptance Criteria" subsection
+   - Replace all `- [ ]` with `- [x]` within that section
+4. Use `Edit` tool to update tasks.md with the changes
+5. Log: "Synced acceptance criteria: X checkboxes marked complete across Y tasks"
+
+**Note:** This ensures tasks.md serves as a complete record of completed work, useful for handoffs and documentation.
+
 ### 1. Final Tasks Verification
 
-**tasks.md confirmation:**
-1. Read `{specs_dir}/{NN}-{slug}/tasks.md`
-2. Confirm ALL acceptance criteria checkboxes are `[x]`
-3. If any remain unchecked (should not occur after Phase 4e gate):
-   - Mark them `[x]` if the work was verified during Phase 4
-   - Log a warning: criteria were completed but not checked off during implementation
+**Task tracking confirmation:**
+1. Use `TaskList` to verify all tasks are marked `completed`
+2. If any tasks remain `in_progress` or `pending` (should not occur after Phase 4e gate):
+   - Use `TaskUpdate` to mark them completed if the work was verified during Phase 4
+   - Log a warning if tasks were completed but not updated during implementation
 
 **spec.md confirmation:**
-1. Read `{specs_dir}/{NN}-{slug}/spec.md`
+1. Read `{spec_path}/spec.md`
 2. Confirm all acceptance criteria are marked complete
-
-If using TodoWrite/TaskUpdate tools, ensure those are also marked complete.
 
 ### 2. Provide Completion Summary
 
@@ -55,6 +67,18 @@ Generate summary in this format:
 3. [Expected behavior]
 
 ### Next Steps
+
+**Always include testing recommendations** (pull from `testing_recommendations` if set in Phase 3, otherwise generate based on implemented files):
+
+- [ ] **Unit tests** for:
+  - [hook/utility name] (`path/to/file`)
+  - [hook/utility name] (`path/to/file`)
+- [ ] **Integration tests** for:
+  - [API endpoint/data flow] (`path/to/file`)
+- [ ] **E2E tests** for:
+  - [user flow description] (if UI work was done)
+
+**Other follow-up items:**
 - [Recommended follow-up actions]
 - [Related features to consider]
 - [Technical debt to address]
@@ -62,7 +86,7 @@ Generate summary in this format:
 
 ### 3. Update Spec Status
 
-Update `{specs_dir}/{NN}-{slug}/spec.md` status to "Complete".
+Update `{spec_path}/spec.md` status to "Complete".
 
 ---
 
@@ -71,7 +95,7 @@ Update `{specs_dir}/{NN}-{slug}/spec.md` status to "Complete".
 Before marking complete, verify ALL items:
 
 **Required Checks:**
-- [ ] All tasks.md acceptance criteria checkboxes are `[x]`
+- [ ] All tasks marked `completed` in TaskList
 - [ ] All FR-XXX requirements have corresponding implementation
 - [ ] Acceptance criteria are testable
 - [ ] Files actually modified (git diff check)

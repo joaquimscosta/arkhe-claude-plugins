@@ -59,6 +59,22 @@ After research, report:
 💡 Run `/research promote {slug}` to add to project docs.
 ```
 
+## Promote Script
+
+When promoting cached research to project docs, execute the promote script:
+
+```bash
+python3 scripts/promote.py {slug}
+```
+
+The `scripts/` path is relative to this skill's directory and resolves automatically.
+
+The script reads from cache, adds section markers (AUTO-GENERATED + TEAM-NOTES), writes to `docs/research/{slug}.md`, and updates the README index.
+
+Parse the JSON output:
+- Success: `{"success": true, "message": "...", "slug": "...", "path": "..."}`
+- Failure: `{"success": false, "message": "...", "slug": "..."}`
+
 ## Agent Delegation
 
 For actual research execution, delegate to `deep-researcher` agent:

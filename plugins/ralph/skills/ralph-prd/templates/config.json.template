@@ -1,0 +1,23 @@
+{
+  "project": "{{project_name}}",
+  "taskset": "{{taskset_name}}",
+  "created": "{{timestamp}}",
+  "ralph_version": "2.0.0",
+  "settings": {
+    "max_iterations": 20,
+    "completion_signal": "RALPH_COMPLETE:"
+  },
+  "tech_stack": {
+    "framework": "{{framework}}",
+    "language": "{{language}}",
+    "build_tool": "{{build_tool}}",
+    "styling": "{{styling}}"
+  },
+  "commands": {
+    "start": "{{start_command}}",
+    "lint": "{{lint_command}}",
+    "typecheck": "{{typecheck_command}}",
+    "test": "{{test_command}}",
+    "build": "{{build_command}}"
+  }
+}

@@ -34,7 +34,7 @@ Lightweight orchestrator for 6-phase software development lifecycle with progres
 - **Phase 0 is MANDATORY** - Always analyze existing implementations before designing new ones
 - **Search first, load on demand** - Use Grep to find relevant sections before loading files
 - **Ask clarifying questions early** - Identify ambiguities before designing, not after
-- **Use TodoWrite** - Track all progress throughout every phase
+- **Use TaskCreate/TaskUpdate** - Track all progress throughout every phase
 - **Load phases progressively** - Only read phase files when entering that phase
 
 ## Quick Start
@@ -44,7 +44,16 @@ Lightweight orchestrator for 6-phase software development lifecycle with progres
 /develop add logout button --auto        # Autonomous mode
 /develop create plan for dashboard --plan-only  # Plan only
 /develop @arkhe/specs/01-user-auth/      # Resume existing plan
+/develop add dashboard page with charts  # UI work → triggers Stitch workflow
 ```
+
+### UI Features with Stitch Integration
+
+When a feature involves UI work (detected keywords: `UI`, `page`, `screen`, `component`, `button`, `form`, etc.), the skill offers Stitch integration:
+
+1. **Phase 1**: Detects UI keywords → offers to generate Stitch prompts
+2. **Phase 2**: Offers to generate screens from prompts via MCP
+3. **Phase 4**: For each UI task, offers `stitch-to-react` conversion
 
 ## Arguments
 
@@ -74,8 +83,10 @@ Parse from `$ARGUMENTS`:
 
 **RESUME_MODE** - If `@path` reference found AND plan.md exists (no verify flags):
 - Read existing plan from path
-- Ask user which phase to continue from
-- Skip to that phase, load only that phase file
+- Auto-detect wave progress via `wave-*-context.md` files and `tasks.md` Status fields
+- If wave context found: offer to continue next wave, re-review, or restart from a phase
+- If no wave context: ask user which phase to continue from (existing behavior)
+- Skip to selected phase, load only that phase file
 
 **PLAN_MODE** - If keywords "create plan", "plan for", "draft plan" OR `--plan-only`:
 - Execute Phases 0-2 only
@@ -119,14 +130,32 @@ Plans are persisted to `{specs_dir}/` with auto-incrementing prefixes:
 ```
 {specs_dir}/
 ├── 01-user-auth/
-│   ├── spec.md       # Requirements
-│   ├── plan.md       # Architecture
-│   └── tasks.md      # Task breakdown
+│   ├── spec.md              # Requirements
+│   ├── plan.md              # Architecture
+│   ├── tasks.md             # Task breakdown (with Status field)
+│   ├── wave-1-context.md    # Wave 1 handoff (generated at checkpoint)
+│   ├── wave-2-context.md    # Wave 2 handoff (generated at checkpoint)
+│   └── ...
 ├── 02-dashboard/
 └── ...
 ```
 
 **Note:** `{specs_dir}` references the configured value from `.arkhe.yaml` (default: `arkhe/specs`).
+
+## Progressive Persistence
+
+Artifacts are saved incrementally at each phase checkpoint to prevent data loss:
+
+| Phase | Artifact Saved | Trigger |
+|-------|----------------|---------|
+| 0 | spec directory + initial spec.md, plan.md | After mode detection (FULL/PLAN modes) |
+| 1 | spec.md (with requirements) | After requirements gathering |
+| 2 | plan.md (with architecture) | After architecture decision |
+| 3 | tasks.md (with task breakdown) | After task breakdown |
+| 4 | tasks.md (Status updates) + wave-{N}-context.md | After each wave checkpoint |
+| 5 | tasks.md (checkbox sync) | Before completion summary |
+
+**Crash Recovery:** If session ends mid-phase, resume with `/develop @{spec_path}/` and artifacts from completed phases are preserved.
 
 ## Templates
 
@@ -139,6 +168,7 @@ Plans are persisted to `{specs_dir}/` with auto-incrementing prefixes:
 | [api-contract.md.template](templates/api-contract.md.template) | 2 | When API endpoints involved |
 | [data-models.md.template](templates/data-models.md.template) | 2 | When database changes involved |
 | [tasks.md.template](templates/tasks.md.template) | 3 | Always (task breakdown) |
+| [wave-context.md.template](templates/wave-context.md.template) | 4 | At each wave checkpoint (context handoff) |
 | [verification-report.md.template](templates/verification-report.md.template) | verify | When `--verify-arch` or `--verify-impl` used |
 
 ## Configuration
@@ -151,7 +181,7 @@ Plans are persisted to `{specs_dir}/` with auto-incrementing prefixes:
 ```yaml
 develop:
   specs_dir: arkhe/specs  # Customize this path
-  numbering: true         # NN- prefix
+  numbering: true         # NNN- prefix (3-digit, e.g., 001-)
   ticket_format: full     # full | simple
 ```
 
@@ -167,7 +197,10 @@ START
   ├─ Parse arguments (flags, path references)
   ├─ Detect mode (RESUME/PLAN/FULL)
   │
-  ├─ [RESUME] Load plan.md → Ask which phase → Jump to phase
+  ├─ [RESUME] Load plan.md
+  │   ├─ Check for wave-*-context.md files
+  │   ├─ If wave context found → Offer: Continue next wave / Re-review / Restart
+  │   └─ If no wave context → Ask which phase → Jump to phase
   │
   ├─ [PLAN/FULL] Read PHASE-0-DISCOVERY.md
   │   └─ Execute Phase 0 → Checkpoint
@@ -182,7 +215,15 @@ START
   │   └─ Execute Phase 3 → Checkpoint
   │
   ├─ Read PHASE-4-IMPLEMENTATION.md
-  │   └─ Execute Phase 4 → Validation → Completion Gate ⛔
+  │   ├─ Step 4.0: Ticket Selection (select/defer tasks)
+  │   └─ For each wave:
+  │       ├─ Step 4a.1: Wave Confirmation
+  │       ├─ Step 4a.2: Implement wave tasks
+  │       └─ Step 4a.3: Wave Checkpoint → CONTINUE or STOP
+  │           ├─ [CONTINUE] → Next wave (4a.1)
+  │           └─ [STOP] → Save context, exit Phase 4
+  │   ├─ Step 4b-4d: Validation → Quality Review
+  │   └─ Step 4e: Completion Gate ⛔
   │
   └─ Read PHASE-5-SUMMARY.md
       └─ Execute Phase 5 → Complete
@@ -198,6 +239,9 @@ START
 - Phase 0→1: Existing System Findings
 - Phase 1→2: Requirements Summary
 - Phase 3→4: Task Breakdown
+- Phase 4.0: Ticket Selection
+- Phase 4a.1: Wave Confirmation (per wave)
+- Phase 4a.3: Wave Checkpoint (per wave — continue or stop)
 - Phase 4d: Quality Review (escalates to Tier 1 if security/DB/breaking changes detected)
 
 ## Checkpoint Protocol (CRITICAL)
@@ -233,7 +277,7 @@ Three-tier Human-in-the-Loop framework based on risk level:
 | Tier | Checkpoints | Behavior |
 |------|-------------|----------|
 | ⛔ Tier 1 | Phase 2c (architecture), Phase 4→5 (completion) | MANDATORY - blocks until approved |
-| ⚠️ Tier 2 | Phase 0→1, 1→2, 3→4 | RECOMMENDED - skippable with `--auto` |
+| ⚠️ Tier 2 | Phase 0→1, 1→2, 3→4, 4.0, 4a.1, 4a.3 | RECOMMENDED - skippable with `--auto` |
 | ✅ Tier 3 | Phase 2→3 (plan saved) | AUTOMATED - proceeds, logs for review |
 
 **Conditional Escalation**: Any phase auto-elevates to Tier 1 if:

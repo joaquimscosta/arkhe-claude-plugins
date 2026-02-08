@@ -1,0 +1,22 @@
+# Memories: {{taskset_name}}
+
+> Persistent learnings that survive across iterations within this task set.
+> Add memories with `/ralph remember "insight"` or append directly.
+
+---
+
+## Patterns
+<!-- Code patterns, conventions, and standards discovered in this project -->
+
+## Decisions
+<!-- Architectural and design decisions made during development -->
+
+## Fixes
+<!-- Solutions to problems encountered (for future reference) -->
+
+## Context
+<!-- Important project context (deprecated folders, naming conventions, etc.) -->
+
+---
+
+<!-- Memories appended below by iterations -->

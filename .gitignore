@@ -21,6 +21,7 @@ build/
 *.swp
 *.swo
 *~
+*.iml
 
 # Testing
 .pytest_cache/
@@ -57,3 +58,5 @@ nosilha
 docs/drafts
 spec-kit
 arkhe
+ralph-orchestrator
+ralph-loop-quickstart

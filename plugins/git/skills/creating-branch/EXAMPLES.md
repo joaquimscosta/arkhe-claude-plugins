@@ -2,9 +2,6 @@
 
 This document provides real-world examples of branch creation with the `creating-branch` skill.
 
-For quick start instructions, see [SKILL.md](SKILL.md).
-For detailed workflow, see [WORKFLOW.md](WORKFLOW.md).
-
 ---
 
 ## Example 1: Feature Branch (New Functionality)
@@ -326,111 +323,76 @@ Branch: fix/010-login-validation
 
 ---
 
-## Example 9: With Spec-Kit Installed (Feature Directory Created)
+## Example 9: From SDLC-Develop Spec
 
 ### Scenario
-Branch creation in a project with spec-kit installed (`.specify/` directory exists).
+Creating a branch linked to an existing feature spec from `/develop`.
 
 ### Prerequisites
 ```bash
-# Project has spec-kit installed
-ls -la .specify/
-# Directory exists
-```
+# Existing specs from /develop workflow
+ls arkhe/specs/
+# 01-user-auth/  02-dashboard/
 
-### Configuration (Optional)
-```bash
-export FEATURE_DIR=".claude/specs"
+# .arkhe.yaml exists with specs_dir configured
+cat .arkhe.yaml
+# develop:
+#   specs_dir: arkhe/specs
 ```
 
 ### Command
 ```bash
-/create-branch add payment gateway integration
+/create-branch  # No arguments
 ```
 
 ### Execution
 
-**Detection**:
+**Step 1: Detect Specs**
 ```
-Type: feat
-Keywords: payment-gateway
-Number: 011
-Branch: feat/011-payment-gateway
+Found .arkhe.yaml with specs_dir: arkhe/specs
+Specs found: 01-user-auth, 02-dashboard
 ```
 
-**Spec-Kit Check**:
-```bash
-# Script checks for .specify/ directory
-if [[ -d ".specify" ]]; then
-    # Directory found - create spec directory
-    mkdir -p plan/specs/feat/011-payment-gateway/
-fi
+**Step 1b: Spec Selection**
+```
+AskUserQuestion:
+"Select a feature spec for this branch"
+Options:
+- 01-user-auth
+- 02-dashboard
+- None (auto-generate from changes)
 ```
 
-### Output
+**User Selection**: 01-user-auth
+
+**Step 6: Generate Branch Name**
 ```
-✅ Branch created: feat/011-payment-gateway
-📁 Spec directory: plan/specs/feat/011-payment-gateway/
-```
-
-### Directory Structure
-```
-plan/specs/
-└── feat/011-payment-gateway/
-    ├── spec.md            # Feature specification
-    ├── design.md          # Design decisions
-    └── notes.md           # Implementation notes
-```
-
-**Note**: Spec directory is automatically created because `.specify/` directory exists in repository root.
-
----
-
-## Example 10: Without Spec-Kit (No Directory Created)
-
-### Scenario
-Branch creation in a project without spec-kit installed (no `.specify/` directory).
-
-### Prerequisites
-```bash
-# Project does NOT have spec-kit
-ls -la .specify/
-# ls: .specify: No such file or directory
-```
-
-### Command
-```bash
-/create-branch add payment gateway integration
-```
-
-### Execution
-
-**Detection**:
-```
-Type: feat
-Keywords: payment-gateway
-Number: 012
-Branch: feat/012-payment-gateway
-```
-
-**Spec-Kit Check**:
-```bash
-# Script checks for .specify/ directory
-if [[ -d ".specify" ]]; then
-    # Directory NOT found - skip spec directory creation
-fi
+Type: feat (default)
+Spec name: 01-user-auth
+Branch: feat/01-user-auth
 ```
 
 ### Output
 ```
-✅ Branch created: feat/012-payment-gateway
+✅ Branch created: feat/01-user-auth
+   Linked to spec: arkhe/specs/01-user-auth/
 ```
 
-**Note**: No spec directory line shown because `.specify/` directory does not exist. No directory is created, preventing unnecessary clutter in non-spec-kit projects.
+### Typical Usage
+```bash
+# Start with a spec
+/develop add user authentication
+# ... Phase 0-2 completes, spec saved ...
+
+# Later, create branch from spec
+/create-branch
+# Select: 01-user-auth
+→ feat/01-user-auth
+```
 
 ---
 
-## Example 11: Sequential Numbering Across Types
+## Example 10: Sequential Numbering Across Types
 
 ### Scenario
 Multiple branches of different types.
@@ -463,7 +425,7 @@ All branches share sequential numbering:
 
 ---
 
-## Example 12: Type Detection Keywords
+## Example 11: Type Detection Keywords
 
 ### Complete Keyword Reference
 
@@ -547,7 +509,59 @@ All branches share sequential numbering:
 
 ---
 
-## Example 12: Edge Cases
+## Example 12: SDLC-Develop with No Specs
+
+### Scenario
+Running `/create-branch` without arguments when `.arkhe.yaml` exists but no specs directory.
+
+### Prerequisites
+```bash
+# .arkhe.yaml exists
+cat .arkhe.yaml
+# develop:
+#   specs_dir: arkhe/specs
+
+# But no specs exist yet
+ls arkhe/specs/
+# (empty or directory doesn't exist)
+```
+
+### Command
+```bash
+/create-branch  # No arguments
+```
+
+### Execution
+
+**Step 1: Detect Specs**
+```
+Found .arkhe.yaml with specs_dir: arkhe/specs
+No specs found - falling back to auto-generate mode
+```
+
+**Step 2: Auto-generate from changes**
+- Proceeds with normal change detection
+- Or prompts for description if no uncommitted changes
+
+### Output (with uncommitted changes)
+```
+ℹ️  Auto-detected description: update authentication flow
+ℹ️  Based on changes in: src/auth/login.js, src/auth/session.js
+✅ Branch created: feat/001-authentication-flow
+```
+
+### Output (without changes)
+```
+❌ Error: No uncommitted changes detected.
+
+To create a branch, either:
+1. Make some changes first, then run /create-branch
+2. Provide a description: /create-branch <description>
+```
+
+---
+
+## Example 13: Edge Cases
 
 ### Empty or Very Short Descriptions
 
@@ -585,7 +599,7 @@ All branches share sequential numbering:
 
 ---
 
-## Example 13: Real-World Project Workflow
+## Example 14: Real-World Project Workflow
 
 ### Scenario: Building a Blog Platform
 
@@ -720,11 +734,9 @@ The `creating-branch` skill automatically:
 - ✅ Generates short, readable names
 - ✅ Maintains sequential numbering
 - ✅ Creates consistent branch names
+- ✅ Integrates with SDLC-develop specs for linked branch creation
 
 **Result**: Professional, discoverable branch names that align with conventional commits.
-
-For detailed workflow, see [WORKFLOW.md](WORKFLOW.md).
-For troubleshooting, see [TROUBLESHOOTING.md](TROUBLESHOOTING.md).
 
 ---
 

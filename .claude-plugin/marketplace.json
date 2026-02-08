@@ -1,7 +1,7 @@
 {
   "name": "arkhe-claude-plugins",
   "metadata": {
-    "description": "Collection of 9 Claude Code plugins for documentation, AI engineering, code review, git workflows, Google Stitch prompting, Design Intent, Domain-Driven Design, and language-specific programming"
+    "description": "Collection of 10 Claude Code plugins for documentation, AI engineering, code review, git workflows, Google Stitch prompting, Design Intent, Domain-Driven Design, language-specific programming, and autonomous development loops"
   },
   "owner": {
     "name": "Arkhe"
@@ -51,6 +51,11 @@
       "name": "spring-boot",
       "source": "./plugins/spring-boot",
       "description": "Domain-Driven Design with Spring Boot 4 (DDD patterns, Spring Data, REST APIs, Spring Modulith)"
+    },
+    {
+      "name": "ralph",
+      "source": "./plugins/ralph",
+      "description": "Autonomous development loop with fresh context per iteration and Hat-lite builder/verifier system"
     }
   ]
 }

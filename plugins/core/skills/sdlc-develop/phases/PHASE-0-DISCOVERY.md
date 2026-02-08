@@ -48,6 +48,129 @@ Return:
 
 ---
 
+## Step 0b-resume: Wave Progress Detection (RESUME_MODE only)
+
+**Skip if:** FULL_MODE or PLAN_MODE
+
+When RESUME_MODE is detected (`@path` + plan.md exists), check for wave-level progress:
+
+### 1. Check for Wave Context Files
+
+Use `Glob` to find `{spec_path}/wave-*-context.md` files.
+
+### 2. Check Task Status Fields
+
+Read `tasks.md` and check for `**Status**:` fields on each task:
+- If Status fields exist: count SELECTED, DEFERRED, COMPLETED tasks
+- If Status fields are missing: treat all tasks as `Status: SELECTED` (backward compatibility)
+
+### 3. Determine Resume Point
+
+- **If wave context files found:**
+  - Find the highest numbered `wave-{N}-context.md` → Wave N is complete
+  - Read the latest wave context file for summary data
+  - Count remaining SELECTED tasks in subsequent waves
+  - Present summary:
+    ```
+    "Previous session completed Wave {N} ({completed_count} tasks: T-XX to T-YY).
+     Wave {N+1} has {remaining_count} remaining tasks: T-ZZ, T-AA, T-BB."
+    ```
+
+- **If no wave context files found:**
+  - Fall through to existing behavior (ask which phase to continue from)
+  - Skip to the existing RESUME_MODE handling below
+
+### 4. Wave Resume Checkpoint
+
+**Gate: Tier 2** ⚠️ (skippable with `--auto` — auto-selects "Continue next wave")
+
+Use `AskUserQuestion`:
+- **header**: "Resume"
+- **question**: "{Wave progress summary}. How would you like to continue?"
+- **options**:
+  - { label: "Continue Wave {N+1} (Recommended)", description: "Jump to Phase 4, Step 4a.1 for the next wave" }
+  - { label: "Re-review completed work", description: "Show git diff of previous waves" }
+  - { label: "Restart from a phase", description: "Choose which phase to continue from" }
+
+**Response Handling:**
+- **Continue Wave {N+1}**: Load PHASE-4-IMPLEMENTATION.md, jump to Step 4a.1 for Wave {N+1}
+- **Re-review completed work**: Run `git diff` for previous wave commits, then re-present this checkpoint
+- **Restart from a phase**: Fall through to existing phase selection behavior
+
+---
+
+## Step 0b-post: Create Spec Directory (FULL_MODE/PLAN_MODE only)
+
+**Skip if:** RESUME_MODE (spec directory already exists)
+
+For new features, create the spec directory immediately after mode detection:
+
+### 1. Load Configuration
+
+Read `.arkhe.yaml` from project root:
+- Extract `develop.specs_dir` value (default: `arkhe/specs`)
+- Extract `develop.numbering` value (default: `true`)
+
+### 2. Determine Spec Path
+
+If `numbering: true`:
+- Use `Glob` to find existing `{specs_dir}/NNN-*/` directories (handles 2 or 3 digit prefixes)
+- Detect highest numeric prefix
+- Increment and zero-pad to 3 digits: NNN+1
+- Full path: `{specs_dir}/{NNN+1}-{feature_slug}/`
+
+If `numbering: false`:
+- Full path: `{specs_dir}/{feature_slug}/`
+
+### 3. Create Directory and Initial Files
+
+Use `Bash` to create the directory structure:
+```bash
+mkdir -p {specs_dir}/{NNN}-{feature_slug}
+```
+
+Use `Write` tool to create placeholder files:
+
+**spec.md** (initial):
+```markdown
+# {Feature Name} Specification
+
+**Spec ID:** {NNN}-{feature_slug}
+**Status:** In Progress
+**Created:** {date}
+
+---
+
+## Summary
+
+{Brief description from user request}
+
+---
+
+_Requirements will be populated in Phase 1._
+```
+
+**plan.md** (initial):
+```markdown
+# {Feature Name} Implementation Plan
+
+**Spec:** {NNN}-{feature_slug}
+**Status:** In Progress
+**Created:** {date}
+
+---
+
+_Architecture will be populated in Phase 2._
+```
+
+### 4. Store Path for Later Phases
+
+Set `spec_path = {specs_dir}/{NNN}-{feature_slug}` for use in subsequent phases.
+
+**Log:** "Created spec directory: `{spec_path}/`"
+
+---
+
 ## Step 0c: Existing System Analysis (MANDATORY)
 
 **This step cannot be skipped.**
@@ -106,6 +229,8 @@ Present findings summary, then use `AskUserQuestion` tool:
 
 **STOP: Unless `--auto` is set, WAIT for user response before proceeding to Phase 1.**
 
+**STOP: Unless `--auto` is set, WAIT for user response before proceeding to Phase 1.**
+
 ---
 
 ## Output
@@ -123,6 +248,6 @@ Use [reuse-matrix.md.template](../templates/reuse-matrix.md.template) to documen
 - Integration points identified
 - Similar components considered
 
-Save as `{specs_dir}/{NN}-{feature_slug}/reuse-matrix.md`
+Save as `{spec_path}/reuse-matrix.md` (directory was created in Step 0b-post)
 
 **Next:** Proceed to [PHASE-1-REQUIREMENTS.md](PHASE-1-REQUIREMENTS.md)

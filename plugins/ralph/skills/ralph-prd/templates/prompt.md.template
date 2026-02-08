@@ -1,0 +1,144 @@
+@.ralph/current-taskset/tasks.json @.ralph/current-taskset/activity.log @.ralph/current-taskset/memories.md
+
+# Ralph Iteration Instructions
+
+You are an autonomous development agent operating in the Ralph Wiggum loop. Each iteration runs in a **fresh context window**.
+
+## Your Goals
+
+1. Complete ONE task from the task list
+2. Verify your work
+3. Update task status
+4. Commit changes
+5. (Optional) Save learnings to memories
+
+---
+
+## Step 1: Orient
+
+Read the files referenced above to understand:
+- Current task state (tasks.json)
+- Recent activity (activity.log - last 5 entries)
+- Past learnings (memories.md - review relevant patterns)
+
+---
+
+## Step 2: Build (Builder Hat)
+
+### Pick ONE Task
+
+Find the first task in `.ralph/current-taskset/tasks.json` where `passes: false`.
+
+### Implement
+
+Follow the steps exactly as described in the task.
+
+### Start the Application
+
+{{start_command}}
+
+### Verify
+
+Run these commands to verify your work:
+
+```bash
+{{lint_command}}
+{{typecheck_command}}
+{{test_command}}
+```
+
+---
+
+## Step 3: Verify (Verifier Hat)
+
+### Review
+
+- Does the implementation meet all task steps?
+- Did all verification commands pass?
+- Is the code clean and documented?
+
+### Update Task Status
+
+Edit `.ralph/current-taskset/tasks.json`:
+- Set `passes: true` for the completed task
+- Set `iteration_completed` to the current iteration number
+
+### Log Activity
+
+Append to `.ralph/current-taskset/activity.log`:
+
+```
+=== ITERATION N | YYYY-MM-DD HH:MM:SS ===
+TASK: {task_id} - {description}
+ACTIONS:
+- {what you did}
+STATUS: PASS
+COMMIT: {hash} "{message}"
+---
+```
+
+### Commit
+
+```bash
+git add .
+git commit -m "feat: {descriptive message}"
+```
+
+---
+
+## Step 4: Learn (Optional)
+
+If you discovered something worth remembering for future iterations:
+
+Append to `.ralph/current-taskset/memories.md`:
+
+```
+## YYYY-MM-DD: {insight title}
+
+{detailed insight - what you learned, why it matters}
+
+---
+```
+
+Examples of useful memories:
+- "Found that X library requires Y configuration"
+- "Pattern for handling Z works better than expected"
+- "Gotcha: A causes B under conditions C"
+
+---
+
+## Step 5: Decide
+
+Check `.ralph/current-taskset/tasks.json`:
+
+**If ALL tasks have `passes: true`:**
+
+Output this exact signal:
+
+```
+RALPH_COMPLETE: All tasks verified
+```
+
+**If tasks remain incomplete:**
+
+End this iteration. The loop will continue with fresh context.
+
+---
+
+## Important Rules
+
+1. **ONE task per iteration** - Do not work on multiple tasks
+2. **Complete fully** - Don't leave partial work
+3. **Always verify** - Run lint/typecheck/tests
+4. **Always commit** - One commit per completed task
+5. **Log everything** - Future iterations need context
+6. **Save learnings** - Help future iterations avoid mistakes
+
+---
+
+## Project Info
+
+- **Project:** {{project_name}}
+- **Task Set:** {{taskset_name}}
+- **Tech Stack:** {{tech_stack}}
+- **PRD:** `.ralph/current-taskset/prd.md`

@@ -6,6 +6,56 @@
 
 ---
 
+## Step 2a-pre: Design Asset Generation (if UI work)
+
+**Skip this step if:** `skip_stitch_workflow = true` or no UI keywords detected in Phase 1.
+
+### If `stitch_prompts_generated = true`:
+
+Stitch prompts were generated in Phase 1. Now offer to generate actual screens:
+
+1. Review the generated prompts (read from stored path)
+2. Use `AskUserQuestion`:
+   - **header**: "Stitch Generation"
+   - **question**: "Stitch prompts are ready. Would you like to generate screens now?"
+   - **options**:
+     - { label: "Generate screens now (Recommended)", description: "Run generating-stitch-screens to create visual assets" }
+     - { label: "Generate later", description: "Save prompts, I'll generate manually" }
+     - { label: "Use prompts only", description: "Skip generation, use prompts as design reference" }
+
+3. **Response handling:**
+   - **Generate screens now**:
+     1. Invoke `Skill` tool with `skill: "generating-stitch-screens"`
+     2. Wait for generation to complete
+     3. Store export paths: `stitch_exports_path = [generated path]`
+   - **Generate later / Use prompts only**:
+     1. Note in plan.md that Stitch screens should be generated before implementation
+     2. Set `stitch_exports_path = null`
+
+### If `existing_designs_path` was provided:
+
+User provided existing design assets in Phase 1.
+
+1. Verify the path exists using `Glob` tool
+2. If path doesn't exist or is empty:
+   - Warn user: "Design assets not found at [path]"
+   - Offer to generate using Stitch or continue without
+3. If path exists: Store for use in Phase 4
+
+### Store in plan.md
+
+Add to plan.md under `## Design Assets`:
+```markdown
+## Design Assets
+
+**Source:** Stitch generated | User provided | None
+**Prompts:** `{prompts_path}` (if applicable)
+**Exports:** `{exports_path}` (if applicable)
+**Status:** Ready | Pending generation | Skipped
+```
+
+---
+
 ## Step 2a: Codebase Exploration
 
 Launch 2-3 `code-explorer` agents in parallel:
@@ -67,37 +117,36 @@ Return:
 
 ---
 
-## Step 2d: Save Plan
+## Step 2c-post: Save Architecture
 
-### Load Configuration
+After user approves architecture decision, persist to plan.md immediately:
 
-**MANDATORY: Read `.arkhe.yaml` from project root first.**
+1. **Read existing plan.md** from `{spec_path}/plan.md`
+2. **Update with architecture:**
+   - Selected approach and rationale
+   - Technical architecture (components, data flow)
+   - Implementation phases
+   - Design assets section (if UI work)
+3. **Write updated plan.md** using [plan.md.template](../templates/plan.md.template)
+4. **Log:** "Architecture saved to `{spec_path}/plan.md`"
 
-1. If `.arkhe.yaml` exists, read `develop.specs_dir` value
-2. If no config, use default: `arkhe/specs`
-3. Store this value as `{specs_dir}` for all subsequent path operations
-4. Detect highest NN prefix in `{specs_dir}/`, increment for new spec
-5. Create directory: `{specs_dir}/NN-{feature_slug}/`
+---
 
-### Files to Generate
+## Step 2d: Save Additional Artifacts (if applicable)
 
-Use templates from [../templates/](../templates/):
+**Note:** Spec directory was created in Phase 0 (Step 0b-post). spec.md and plan.md were updated incrementally in Phase 1 and Step 2c-post.
 
-**Always generate:**
-1. **spec.md** - Requirements summary (use [spec.md.template](../templates/spec.md.template))
-2. **plan.md** - Architecture design (use [plan.md.template](../templates/plan.md.template))
+Generate additional files when applicable:
 
-**Generate when applicable:**
-3. **adr-{NNN}.md** - For significant architectural decisions (use [adr.md.template](../templates/adr.md.template))
-4. **api-contract.md** - When feature includes API endpoints (use [api-contract.md.template](../templates/api-contract.md.template))
-5. **data-models.md** - When feature involves database changes (use [data-models.md.template](../templates/data-models.md.template))
+1. **adr-{NNN}.md** - For significant architectural decisions (use [adr.md.template](../templates/adr.md.template))
+2. **api-contract.md** - When feature includes API endpoints (use [api-contract.md.template](../templates/api-contract.md.template))
+3. **data-models.md** - When feature involves database changes (use [data-models.md.template](../templates/data-models.md.template))
 
 ### First-Run Behavior
 
 **Unless `--auto`:**
-- If no `.arkhe.yaml` exists, ask user for preferences
+- If no `.arkhe.yaml` exists (checked in Phase 0), ask user for preferences
 - Create `.arkhe.yaml` with chosen settings
-- Continue with spec creation
 
 ---
 
@@ -141,6 +190,12 @@ Present architecture comparison, then use `AskUserQuestion` tool:
 - **Option A/B/C**: Proceed with selected architecture to Step 2d
 - **REQUEST CHANGES**: Return to requirements phase for modifications
 
+**CRITICAL: STOP AND WAIT for user response. This is a Tier 1 checkpoint - it CANNOT be skipped even with `--auto`.**
+
+**Response Handling:**
+- **1-3**: Proceed with selected architecture option to Step 2d
+- **4**: Return to requirements phase for modifications
+
 ---
 
 ## Plan Saved Checkpoint
@@ -149,7 +204,7 @@ Present architecture comparison, then use `AskUserQuestion` tool:
 
 After saving plan files, automatically proceed to next phase.
 
-Log: "Plan saved to `{specs_dir}/{NN}-{feature_slug}/`"
+Log: "Artifacts saved to `{spec_path}/`"
 
 ---
 
@@ -159,13 +214,13 @@ Log: "Plan saved to `{specs_dir}/{NN}-{feature_slug}/`"
 
 Stop here with message:
 ```
-Spec saved to `{specs_dir}/{NN}-{feature_slug}/`
+Spec saved to `{spec_path}/`
 
 Files created:
 - spec.md (requirements)
 - plan.md (architecture)
 
-Run `/develop @{specs_dir}/{NN}-{feature_slug}/` when ready to implement.
+Run `/develop @{spec_path}/` when ready to implement.
 ```
 
 ---

@@ -5,15 +5,15 @@
 
 
   <p>
-    <b>A collection of 9 Claude Code plugins</b> for documentation, AI engineering, code review, <br />
-    UI/UX design, git workflows, Google Stitch prompting, Design Intent, and Domain-Driven Design.
+    <b>A collection of 10 Claude Code plugins</b> for documentation, AI engineering, code review, <br />
+    UI/UX design, git workflows, Google Stitch prompting, Design Intent, Domain-Driven Design, and autonomous development.
   </p>
 
   <p>
     <a href="LICENSE">
       <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License" />
     </a>
-    <img src="https://img.shields.io/badge/Plugins-9-blue" alt="Plugins Count" />
+    <img src="https://img.shields.io/badge/Plugins-10-blue" alt="Plugins Count" />
     <img src="https://img.shields.io/badge/Version-1.0.0-orange" alt="Version" />
     <a href="https://github.com/joaquimscosta/arkhe-claude-plugins/stargazers">
       <img src="https://img.shields.io/github/stars/joaquimscosta/arkhe-claude-plugins" alt="Stars" />
@@ -48,6 +48,7 @@
 | 📐 **Design Intent** | Spec-Driven Development (SDD) & Figma Dialect. | `/feature`, `/plan`, `design-intent-specialist` | [View](./plugins/design-intent/README.md) |
 | 💻 **Lang** | Language-specific skills (Bash/Shell). | `scripting-bash`, POSIX compliance | [View](./plugins/lang/README.md) |
 | 🍃 **Spring Boot** | DDD with Spring Boot 4 implementation. | 7 skills: DDD, data, web-api, modulith, security, observability, testing | [View](./plugins/spring-boot/README.md) |
+| 🔄 **Ralph** | Autonomous development loop with fresh context. | `ralph-agent`, `/ralph`, `/create-prd`, Hat-lite system | [View](./plugins/ralph/README.md) |
 
 ---
 
@@ -82,6 +83,7 @@ You can install all plugins at once:
 /plugin install google-stitch@arkhe-claude-plugins
 /plugin install lang@arkhe-claude-plugins
 /plugin install spring-boot@arkhe-claude-plugins
+/plugin install ralph@arkhe-claude-plugins
 ```
 
 *Or install selectively based on your needs.*
@@ -152,7 +154,7 @@ If multiple plugins provide commands with similar names, use namespaced invocati
 arkhe-claude-plugins/
 ├── .claude-plugin/
 │   └── marketplace.json              # Marketplace catalog
-├── plugins/                          # All 9 plugins
+├── plugins/                          # All 10 plugins
 │   ├── core/                         # 1. Quality control & orchestration
 │   ├── ai/                           # 2. AI engineering toolkit
 │   ├── doc/                          # 3. Documentation toolkit
@@ -161,7 +163,8 @@ arkhe-claude-plugins/
 │   ├── git/                          # 6. Git workflow automation
 │   ├── design-intent/                # 7. Design Intent for SDD
 │   ├── lang/                         # 8. Language-specific skills
-│   └── spring-boot/                  # 9. Domain-Driven Design with Spring Boot 4
+│   ├── spring-boot/                  # 9. Domain-Driven Design with Spring Boot 4
+│   └── ralph/                        # 10. Autonomous development loop
 ├── docs/                             # Developer documentation
 ├── templates/                        # Plugin templates
 ├── assets/                           # Project assets

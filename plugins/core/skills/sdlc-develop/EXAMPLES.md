@@ -148,7 +148,7 @@ Where should specs be saved?
 3. docs/specs/
 4. Custom path...
 
-Use numbered prefixes (01-, 02-)?
+Use numbered prefixes (001-, 002-)?
 1. Yes (Recommended)
 2. No
 ```
@@ -180,18 +180,18 @@ After multiple features:
 
 ```
 arkhe/specs/
-├── 01-user-auth/
+├── 001-user-auth/
 │   ├── spec.md
 │   ├── plan.md
 │   └── tasks.md
-├── 02-dashboard/
+├── 002-dashboard/
 │   ├── spec.md
 │   └── plan.md        # --plan-only stopped here
-├── 03-logout-button/
+├── 003-logout-button/
 │   ├── spec.md
 │   ├── plan.md
 │   └── tasks.md
-└── 04-payment-refactor/
+└── 004-payment-refactor/
     ├── spec.md
     ├── plan.md
     ├── tasks.md

@@ -147,6 +147,20 @@ Language-specific programming skills for various languages.
 
 ---
 
+### Ralph Plugin
+Autonomous development loop with fresh context per iteration and Hat-lite builder/verifier system.
+
+**Install**: `/plugin install ralph@arkhe-claude-plugins`
+
+**Components**:
+- 1 agent: `ralph-agent`
+- 2 commands: `/ralph` (loop runner), `/create-prd` (PRD wizard)
+- 2 skills: `ralph-loop` (command-invoke), `ralph-prd` (command-invoke)
+
+**Use for:** Greenfield development, POCs, focused features, test coverage campaigns, refactoring tasks with clear boundaries.
+
+---
+
 ## Selective Installation
 
 Install only the plugins you need:
@@ -187,6 +201,11 @@ Install only the plugins you need:
 /plugin install lang@arkhe-claude-plugins
 ```
 
+### For Autonomous Development Loops
+```bash
+/plugin install ralph@arkhe-claude-plugins
+```
+
 ---
 
 ## Verification
@@ -199,7 +218,7 @@ After installation, verify that everything works:
 /plugin
 ```
 
-You should see all 9 plugins listed.
+You should see all 10 plugins listed.
 
 ### Check Available Agents
 
@@ -212,6 +231,7 @@ You should see agents from installed plugins:
 - **ai**: `ai-engineer`, `prompt-engineer`, `context-manager`
 - **review**: `pragmatic-code-review`, `design-review`
 - **design-intent**: `ui-explorer`, `ui-architect`, `design-reviewer`
+- **ralph**: `ralph-agent`
 
 ### Check Available Commands
 

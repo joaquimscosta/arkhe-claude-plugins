@@ -74,9 +74,9 @@ echo "{}" > ~/.claude/plugins/research/index.json
 ### Problem: Promoted file not appearing in README
 **Symptoms:** File exists in `docs/research/` but not in README index.
 
-**Solution:** Run the index generator manually:
+**Solution:** Run the index generator manually from the deep-research skill directory:
 ```bash
-python plugins/core/skills/deep-research/scripts/index_generator.py --docs
+python3 scripts/index_generator.py --docs
 ```
 
 ---
@@ -105,9 +105,9 @@ python plugins/core/skills/deep-research/scripts/index_generator.py --docs
 ### Problem: Scripts fail with permission denied
 **Symptoms:** Python scripts can't execute.
 
-**Solution:** Make scripts executable:
+**Solution:** Make scripts executable from the deep-research skill directory:
 ```bash
-chmod +x plugins/core/skills/deep-research/scripts/*.py
+chmod +x scripts/*.py
 ```
 
 ### Problem: Scripts fail with import errors
