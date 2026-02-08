@@ -523,6 +523,7 @@ chmod +x scripts/*.py
 
 **Development Tools**:
 - `docs/CLAUDE_4_BEST_PRACTICES.md` - Official prompt engineering techniques for Claude 4 models (synced)
+- `docs/CLAUDE_CODE_GUIDE.md` - Curated practitioner's guide to Claude Code V4 (custom)
 
 ### Automated Documentation Sync
 
