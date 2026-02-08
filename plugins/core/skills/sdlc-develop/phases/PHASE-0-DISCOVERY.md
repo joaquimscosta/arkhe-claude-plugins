@@ -48,6 +48,57 @@ Return:
 
 ---
 
+## Step 0b-resume: Wave Progress Detection (RESUME_MODE only)
+
+**Skip if:** FULL_MODE or PLAN_MODE
+
+When RESUME_MODE is detected (`@path` + plan.md exists), check for wave-level progress:
+
+### 1. Check for Wave Context Files
+
+Use `Glob` to find `{spec_path}/wave-*-context.md` files.
+
+### 2. Check Task Status Fields
+
+Read `tasks.md` and check for `**Status**:` fields on each task:
+- If Status fields exist: count SELECTED, DEFERRED, COMPLETED tasks
+- If Status fields are missing: treat all tasks as `Status: SELECTED` (backward compatibility)
+
+### 3. Determine Resume Point
+
+- **If wave context files found:**
+  - Find the highest numbered `wave-{N}-context.md` → Wave N is complete
+  - Read the latest wave context file for summary data
+  - Count remaining SELECTED tasks in subsequent waves
+  - Present summary:
+    ```
+    "Previous session completed Wave {N} ({completed_count} tasks: T-XX to T-YY).
+     Wave {N+1} has {remaining_count} remaining tasks: T-ZZ, T-AA, T-BB."
+    ```
+
+- **If no wave context files found:**
+  - Fall through to existing behavior (ask which phase to continue from)
+  - Skip to the existing RESUME_MODE handling below
+
+### 4. Wave Resume Checkpoint
+
+**Gate: Tier 2** ⚠️ (skippable with `--auto` — auto-selects "Continue next wave")
+
+Use `AskUserQuestion`:
+- **header**: "Resume"
+- **question**: "{Wave progress summary}. How would you like to continue?"
+- **options**:
+  - { label: "Continue Wave {N+1} (Recommended)", description: "Jump to Phase 4, Step 4a.1 for the next wave" }
+  - { label: "Re-review completed work", description: "Show git diff of previous waves" }
+  - { label: "Restart from a phase", description: "Choose which phase to continue from" }
+
+**Response Handling:**
+- **Continue Wave {N+1}**: Load PHASE-4-IMPLEMENTATION.md, jump to Step 4a.1 for Wave {N+1}
+- **Re-review completed work**: Run `git diff` for previous wave commits, then re-present this checkpoint
+- **Restart from a phase**: Fall through to existing phase selection behavior
+
+---
+
 ## Step 0b-post: Create Spec Directory (FULL_MODE/PLAN_MODE only)
 
 **Skip if:** RESUME_MODE (spec directory already exists)

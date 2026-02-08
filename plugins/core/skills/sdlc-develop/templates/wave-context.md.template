@@ -1,0 +1,107 @@
+# Wave {N} Context — {Feature Name}
+
+**Spec:** {NNN}-{feature_slug}
+**Wave:** {N} of {total_waves}
+**Generated:** {timestamp}
+**Session:** completed
+
+---
+
+## Feature Summary
+
+{Brief feature description from spec.md}
+
+**Spec path:** `{spec_path}/`
+
+---
+
+## Architecture Overview
+
+{Key architecture decisions from plan.md — approach, patterns, tech stack}
+
+---
+
+## Completed Wave {N} Summary
+
+### Tasks Completed
+
+| Task | Title | Effort | Status |
+|------|-------|--------|--------|
+| {T-XX} | {title} | {effort} | COMPLETED |
+
+### Files Changed
+
+```
+{list of files added/modified/deleted in this wave}
+```
+
+### Test Status
+
+- **Tests added:** {count}
+- **Tests passing:** {count}/{total}
+- **Coverage:** {if available}
+
+### Commits
+
+```
+{git log --oneline for this wave's commits}
+```
+
+### Key Decisions
+
+- {Decision 1 — what was decided and why}
+- {Decision 2 — what was decided and why}
+
+### Notes
+
+{Any implementation notes, gotchas discovered, or deviations from plan}
+
+---
+
+## Next Wave: Wave {N+1}
+
+### Tasks
+
+| Task | Title | Effort | Dependencies Met? |
+|------|-------|--------|-------------------|
+| {T-XX} | {title} | {effort} | Yes/No |
+
+### Files to Modify
+
+```
+{list of files the next wave will create or modify}
+```
+
+### Prerequisites
+
+- {Any setup or state the next wave depends on}
+
+---
+
+## Git State
+
+- **Branch:** `{branch_name}`
+- **Last commit:** `{commit_hash} {commit_message}`
+- **Diff stat:** `{insertions} insertions, {deletions} deletions, {files_changed} files changed`
+
+---
+
+## Resume Instructions
+
+To continue from Wave {N+1}:
+
+```bash
+/develop @{spec_path}/
+```
+
+The skill will auto-detect this context file and offer to continue from Wave {N+1}.
+
+---
+
+## Session Metadata
+
+- **Waves completed:** {N} of {total_waves}
+- **Total tasks completed:** {completed_count} of {total_count}
+- **Tasks deferred:** {deferred_count}
+- **Elapsed waves:** 1-{N}
+- **Remaining waves:** {N+1}-{total_waves}

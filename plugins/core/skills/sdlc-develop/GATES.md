@@ -21,6 +21,9 @@ Human-in-the-Loop gates ensure appropriate oversight at critical decision points
 | Phase 2c | Architecture Decision | ⛔ Tier 1 | Cannot skip, even with `--auto` |
 | Phase 2 → 3 | Plan Saved | ✅ Tier 3 | Auto-proceed, log only |
 | Phase 3 → 4 | Task Breakdown | ⚠️ Tier 2 | Validate before implementation |
+| Phase 4.0 | Ticket Selection | ⚠️ Tier 2 | Select tasks for session |
+| Phase 4a.1 | Wave Confirmation | ⚠️ Tier 2 | Confirm wave plan |
+| Phase 4a.3 | Wave Checkpoint | ⚠️ Tier 2 | Wave complete, continue or stop |
 | Phase 4d | Quality Review | Conditional | Tier 1 if security/DB, else Tier 2 |
 | Phase 4 → 5 | Completion | ⛔ Tier 1 | RULE ZERO verification |
 
@@ -141,6 +144,21 @@ Present RULE ZERO status, then use `AskUserQuestion`:
     { "label": "REVIEW", "description": "Show me full requirements" },
     { "label": "MODIFY", "description": "I want to change requirements" },
     { "label": "CANCEL", "description": "Stop here" }
+  ]
+}
+```
+
+### Example: Wave Checkpoint (Tier 2)
+
+Present wave completion metrics, then use `AskUserQuestion`:
+
+```json
+{
+  "header": "Wave Complete",
+  "question": "Wave 2 complete: 4 tasks done, 8 files changed, 15/15 tests passing. Wave 3 has 3 remaining tasks (T-05, T-06, T-07). Continue or stop?",
+  "options": [
+    { "label": "CONTINUE", "description": "Proceed to Wave 3" },
+    { "label": "STOP", "description": "Save context and exit (resume later with /develop @spec/)" }
   ]
 }
 ```
