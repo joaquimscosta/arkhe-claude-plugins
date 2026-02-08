@@ -35,7 +35,7 @@ htmlcov/
 *.tmp
 *.temp
 .cache/
-
+.orphaned_at
 # OS generated files
 Thumbs.db
 ehthumbs.db

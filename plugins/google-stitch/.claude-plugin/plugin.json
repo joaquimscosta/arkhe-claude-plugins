@@ -1,7 +1,7 @@
 {
   "name": "google-stitch",
   "description": "Claude + Google Stitch workflow toolkit with MCP integration (prompt authoring, screen generation, design extraction)",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "author": {
     "name": "Arkhe"
   }

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Ralph Wiggum Autonomous Development Loop
 # =========================================
 # Runs Claude Code in a continuous loop, each iteration with a fresh

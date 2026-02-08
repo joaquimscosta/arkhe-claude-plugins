@@ -261,7 +261,8 @@ google-stitch/
 │   │   ├── TROUBLESHOOTING.md
 │   │   ├── evaluation.json
 │   │   └── templates/
-│   │       └── authoring-stitch-prompts-template.md
+│   │       ├── authoring-stitch-prompts-template.md
+│   │       └── layout-prompt-template.md
 │   └── generating-stitch-screens/
 │       ├── SKILL.md
 │       ├── WORKFLOW.md

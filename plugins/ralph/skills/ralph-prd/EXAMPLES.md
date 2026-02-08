@@ -35,6 +35,8 @@ A: I can add, complete, and delete todos. Data persists on refresh.
 
 ### Generated tasks.json
 
+(timestamps are generated at creation time)
+
 ```json
 {
   "project": "simple-todo",

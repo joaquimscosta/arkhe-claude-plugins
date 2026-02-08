@@ -30,7 +30,7 @@
     {
       "name": "google-stitch",
       "source": "./plugins/google-stitch",
-      "description": "Claude + Google Stitch prompting toolkit (prompt authoring + session management)"
+      "description": "Claude + Google Stitch workflow toolkit with MCP integration (prompt authoring, screen generation, design extraction)"
     },
     {
       "name": "git",

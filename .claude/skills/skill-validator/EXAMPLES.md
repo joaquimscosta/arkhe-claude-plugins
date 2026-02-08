@@ -165,3 +165,76 @@ Summary: 1 critical, 1 warning
 
 ──────────────────────────────────────────────────────────────────────
 ```
+
+## Example 7: Forked Context Validation
+
+```bash
+$ scripts/validate_skill.py /path/to/forked-skill
+
+=== Skill Validation Report: forked-skill ===
+Path: /path/to/forked-skill
+
+Summary: 1 warning
+
+──────────────────────────────────────────────────────────────────────
+
+[WARNING] FM015: 'agent' field has no effect without 'context: fork'
+  Location: SKILL.md frontmatter
+  Found: agent: Explore
+  Fix: Add 'context: fork' to use the agent field, or remove 'agent'
+
+──────────────────────────────────────────────────────────────────────
+```
+
+## Example 8: Hook Validation
+
+```bash
+$ scripts/validate_skill.py /path/to/hooked-skill
+
+=== Skill Validation Report: hooked-skill ===
+Path: /path/to/hooked-skill
+
+Summary: 1 error, 1 warning
+
+──────────────────────────────────────────────────────────────────────
+
+[ERROR] HK002: Hook type must be 'command' or 'prompt', got 'None'
+  Location: SKILL.md frontmatter -> PreToolUse[0].hooks[0]
+  Fix: Use 'type: command' with 'command' field, or 'type: prompt' with 'prompt' field
+
+──────────────────────────────────────────────────────────────────────
+
+[WARNING] HK001: Unknown hook event: OnSave
+  Location: SKILL.md frontmatter
+  Found: OnSave
+  Fix: Valid skill events: PostToolUse, PreToolUse, Stop
+
+──────────────────────────────────────────────────────────────────────
+```
+
+## Example 9: String Substitution + Memory Validation
+
+```bash
+$ scripts/validate_skill.py /path/to/arg-skill
+
+=== Skill Validation Report: arg-skill ===
+Path: /path/to/arg-skill
+
+Summary: 1 error, 1 warning
+
+──────────────────────────────────────────────────────────────────────
+
+[ERROR] FM018: memory must be one of: user, project, local
+  Location: SKILL.md frontmatter
+  Found: global
+  Fix: Use 'memory: user', 'memory: project', or 'memory: local'
+
+──────────────────────────────────────────────────────────────────────
+
+[WARNING] CW007: String substitution used without disable-model-invocation
+  Location: SKILL.md
+  Found: $ARGUMENTS
+  Fix: Add 'disable-model-invocation: true' for skills that use argument substitution
+
+──────────────────────────────────────────────────────────────────────
+```

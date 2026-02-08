@@ -180,15 +180,15 @@ You've created a plugin with a skill, but plugins can include much more: custom 
   **Common mistake**: Don't put `commands/`, `agents/`, `skills/`, or `hooks/` inside the `.claude-plugin/` directory. Only `plugin.json` goes inside `.claude-plugin/`. All other directories must be at the plugin root level.
 </Warning>
 
-| Directory         | Location    | Purpose                                         |
-| :---------------- | :---------- | :---------------------------------------------- |
-| `.claude-plugin/` | Plugin root | Contains only `plugin.json` manifest (required) |
-| `commands/`       | Plugin root | Skills as Markdown files                        |
-| `agents/`         | Plugin root | Custom agent definitions                        |
-| `skills/`         | Plugin root | Agent Skills with `SKILL.md` files              |
-| `hooks/`          | Plugin root | Event handlers in `hooks.json`                  |
-| `.mcp.json`       | Plugin root | MCP server configurations                       |
-| `.lsp.json`       | Plugin root | LSP server configurations for code intelligence |
+| Directory         | Location    | Purpose                                                                        |
+| :---------------- | :---------- | :----------------------------------------------------------------------------- |
+| `.claude-plugin/` | Plugin root | Contains `plugin.json` manifest (optional if components use default locations) |
+| `commands/`       | Plugin root | Skills as Markdown files                                                       |
+| `agents/`         | Plugin root | Custom agent definitions                                                       |
+| `skills/`         | Plugin root | Agent Skills with `SKILL.md` files                                             |
+| `hooks/`          | Plugin root | Event handlers in `hooks.json`                                                 |
+| `.mcp.json`       | Plugin root | MCP server configurations                                                      |
+| `.lsp.json`       | Plugin root | LSP server configurations for code intelligence                                |
 
 <Note>
   **Next steps**: Ready to add more features? Jump to [Develop more complex plugins](#develop-more-complex-plugins) to add agents, hooks, MCP servers, and LSP servers. For complete technical specifications of all plugin components, see [Plugins reference](/en/plugins-reference).
@@ -350,7 +350,7 @@ If you already have skills or hooks in your `.claude/` directory, you can conver
     mkdir my-plugin/hooks
     ```
 
-    Create `my-plugin/hooks/hooks.json` with your hooks configuration. Copy the `hooks` object from your `.claude/settings.json` or `settings.local.json`—the format is the same:
+    Create `my-plugin/hooks/hooks.json` with your hooks configuration. Copy the `hooks` object from your `.claude/settings.json` or `settings.local.json`, since the format is the same. The command receives hook input as JSON on stdin, so use `jq` to extract the file path:
 
     ```json my-plugin/hooks/hooks.json theme={null}
     {
@@ -358,7 +358,7 @@ If you already have skills or hooks in your `.claude/` directory, you can conver
         "PostToolUse": [
           {
             "matcher": "Write|Edit",
-            "hooks": [{ "type": "command", "command": "npm run lint:fix $FILE" }]
+            "hooks": [{ "type": "command", "command": "jq -r '.tool_input.file_path' | xargs npm run lint:fix" }]
           }
         ]
       }

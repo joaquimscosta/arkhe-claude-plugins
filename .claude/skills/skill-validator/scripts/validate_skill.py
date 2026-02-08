@@ -89,31 +89,51 @@ def parse_frontmatter(content: str) -> Tuple[Optional[Dict], str, str]:
         frontmatter = {}
         current_key = None
         current_value = []
+        block_scalar = None  # '>' (folded) or '|' (literal)
+
+        def _store_value():
+            if block_scalar == '>':
+                # Folded: join continuation lines with spaces
+                text = ' '.join(l.strip() for l in current_value if l.strip())
+            elif block_scalar == '|':
+                # Literal: preserve newlines
+                text = '\n'.join(current_value)
+            else:
+                text = '\n'.join(current_value)
+            frontmatter[current_key] = text.strip()
 
         for line in frontmatter_text.split('\n'):
             if ':' in line and not line.startswith(' ') and not line.startswith('\t'):
                 if current_key:
-                    frontmatter[current_key] = '\n'.join(current_value).strip()
+                    _store_value()
                 key, _, value = line.partition(':')
                 current_key = key.strip()
-                current_value = [value.strip()] if value.strip() else []
+                value = value.strip()
+                # Detect YAML block scalar indicators
+                if value in ('>', '|', '>-', '|-'):
+                    block_scalar = value[0]
+                    current_value = []
+                else:
+                    block_scalar = None
+                    current_value = [value] if value else []
             elif current_key:
                 current_value.append(line)
 
         if current_key:
-            frontmatter[current_key] = '\n'.join(current_value).strip()
+            _store_value()
 
         return frontmatter, body, ""
 
 
 # ============================================================================
-# Frontmatter Validators (FM001-FM012)
+# Frontmatter Validators (FM001-FM018)
 # ============================================================================
 
 ALLOWED_FRONTMATTER_KEYS = {
     'name', 'description', 'license', 'allowed-tools', 'metadata',
     'model', 'context', 'agent', 'hooks', 'user-invocable',
-    'disable-model-invocation', 'argument-hint'
+    'disable-model-invocation', 'argument-hint',
+    'maxTurns', 'mcpServers', 'memory', 'skills'
 }
 
 RESERVED_WORDS = {'anthropic', 'claude'}
@@ -355,6 +375,113 @@ def validate_frontmatter(skill_path: Path, frontmatter: Dict, body: str) -> List
             fix_suggestion="Consider adding 'disable-model-invocation: true' for skills that require arguments"
         ))
 
+    # FM015: context:fork + agent cross-validation
+    context_val = frontmatter.get('context', '')
+    agent_val = frontmatter.get('agent', '')
+    if context_val == 'fork' and not agent_val:
+        issues.append(Issue(
+            rule_id="FM015",
+            severity=Severity.WARNING,
+            message="context: fork without agent specification",
+            location="SKILL.md frontmatter",
+            fix_suggestion="Add 'agent: Explore' (or Plan, general-purpose, or custom agent name)"
+        ))
+    if agent_val and context_val != 'fork':
+        issues.append(Issue(
+            rule_id="FM015",
+            severity=Severity.WARNING,
+            message="'agent' field has no effect without 'context: fork'",
+            location="SKILL.md frontmatter",
+            current_value=f"agent: {agent_val}",
+            fix_suggestion="Add 'context: fork' to use the agent field, or remove 'agent'"
+        ))
+
+    # FM016: disable-model-invocation type check
+    dmi = frontmatter.get('disable-model-invocation')
+    if dmi is not None:
+        if not isinstance(dmi, bool):
+            issues.append(Issue(
+                rule_id="FM016",
+                severity=Severity.ERROR,
+                message=f"disable-model-invocation must be boolean, got {type(dmi).__name__}",
+                location="SKILL.md frontmatter",
+                current_value=str(dmi),
+                fix_suggestion="Use 'disable-model-invocation: true' or 'disable-model-invocation: false'"
+            ))
+        elif dmi is True and not frontmatter.get('argument-hint'):
+            issues.append(Issue(
+                rule_id="FM016",
+                severity=Severity.SUGGESTION,
+                message="disable-model-invocation is true but no argument-hint provided",
+                location="SKILL.md frontmatter",
+                fix_suggestion="Add 'argument-hint: [args]' to guide users on expected arguments"
+            ))
+
+    # FM017: maxTurns validation
+    max_turns = frontmatter.get('maxTurns')
+    if max_turns is not None:
+        if not isinstance(max_turns, int) or isinstance(max_turns, bool):
+            issues.append(Issue(
+                rule_id="FM017",
+                severity=Severity.ERROR,
+                message=f"maxTurns must be a positive integer, got {type(max_turns).__name__}",
+                location="SKILL.md frontmatter",
+                current_value=str(max_turns),
+                fix_suggestion="Set maxTurns to a positive integer (e.g., maxTurns: 25)"
+            ))
+        elif max_turns <= 0:
+            issues.append(Issue(
+                rule_id="FM017",
+                severity=Severity.ERROR,
+                message=f"maxTurns must be positive, got {max_turns}",
+                location="SKILL.md frontmatter",
+                current_value=str(max_turns),
+                fix_suggestion="Set maxTurns to a positive integer"
+            ))
+        elif max_turns > 100:
+            issues.append(Issue(
+                rule_id="FM017",
+                severity=Severity.SUGGESTION,
+                message=f"maxTurns is unusually high ({max_turns})",
+                location="SKILL.md frontmatter",
+                current_value=str(max_turns),
+                fix_suggestion="Consider if this many turns is necessary; typical range is 5-50"
+            ))
+
+    # FM018: memory field validation
+    memory_val = frontmatter.get('memory')
+    if memory_val is not None:
+        valid_scopes = {'user', 'project', 'local'}
+        if isinstance(memory_val, str):
+            if memory_val not in valid_scopes:
+                issues.append(Issue(
+                    rule_id="FM018",
+                    severity=Severity.ERROR,
+                    message="memory must be one of: user, project, local",
+                    location="SKILL.md frontmatter",
+                    current_value=memory_val,
+                    fix_suggestion="Use 'memory: user', 'memory: project', or 'memory: local'"
+                ))
+        elif isinstance(memory_val, dict):
+            scope = memory_val.get('scope')
+            if scope and scope not in valid_scopes:
+                issues.append(Issue(
+                    rule_id="FM018",
+                    severity=Severity.ERROR,
+                    message="memory.scope must be one of: user, project, local",
+                    location="SKILL.md frontmatter",
+                    current_value=str(scope),
+                    fix_suggestion="Use scope: user, project, or local"
+                ))
+        else:
+            issues.append(Issue(
+                rule_id="FM018",
+                severity=Severity.ERROR,
+                message=f"memory must be a string or object, got {type(memory_val).__name__}",
+                location="SKILL.md frontmatter",
+                fix_suggestion="Use 'memory: user' or 'memory: {scope: user}'"
+            ))
+
     return issues
 
 
@@ -447,10 +574,10 @@ def validate_structure(skill_path: Path, content: str, body: str) -> List[Issue]
 
 
 # ============================================================================
-# Content & Writing Validators (CW001-CW006)
+# Content & Writing Validators (CW001-CW009)
 # ============================================================================
 
-def validate_content(skill_path: Path, body: str) -> List[Issue]:
+def validate_content(skill_path: Path, body: str, frontmatter: Optional[Dict] = None) -> List[Issue]:
     """Validate content and writing standards."""
     issues = []
     lines = body.split('\n')
@@ -532,6 +659,62 @@ def validate_content(skill_path: Path, body: str) -> List[Issue]:
                     current_value=tool_name,
                     fix_suggestion="Use 'ServerName:tool_name' format for MCP tools"
                 ))
+
+    # CW007: String substitution without disable-model-invocation
+    if frontmatter:
+        disable_model = frontmatter.get('disable-model-invocation', False)
+        body_no_code = re.sub(r'```.*?```', '', body, flags=re.DOTALL)
+        body_no_code = re.sub(r'`[^`]+`', '', body_no_code)
+        substitution_patterns = [
+            r'\$ARGUMENTS\b',
+            r'\$\d+\b',
+            r'\$ARGUMENTS\[\d+\]',
+            r'\$\{CLAUDE_SESSION_ID\}',
+        ]
+        found_substitution = None
+        for pattern in substitution_patterns:
+            match = re.search(pattern, body_no_code)
+            if match:
+                found_substitution = match.group()
+                break
+        if found_substitution and not disable_model:
+            issues.append(Issue(
+                rule_id="CW007",
+                severity=Severity.WARNING,
+                message="String substitution used without disable-model-invocation",
+                location="SKILL.md",
+                current_value=found_substitution,
+                fix_suggestion="Add 'disable-model-invocation: true' for skills that use argument substitution"
+            ))
+
+    # CW008: Dynamic context injection syntax validation
+    body_no_code_blocks = re.sub(r'```.*?```', '', body, flags=re.DOTALL)
+    injection_starts = list(re.finditer(r'!`', body_no_code_blocks))
+    for match in injection_starts:
+        start_pos = match.end()
+        remaining = body_no_code_blocks[start_pos:]
+        close_pos = remaining.find('`')
+        if close_pos == -1:
+            line_num = body_no_code_blocks[:match.start()].count('\n') + 1
+            issues.append(Issue(
+                rule_id="CW008",
+                severity=Severity.WARNING,
+                message="Unclosed dynamic context injection (missing closing backtick)",
+                location=f"SKILL.md:{line_num}",
+                current_value=body_no_code_blocks[match.start():match.start()+30].strip(),
+                fix_suggestion="Close with backtick: !`command`"
+            ))
+
+    # CW009: ultrathink keyword detection
+    body_no_code_for_ultra = re.sub(r'```.*?```', '', body, flags=re.DOTALL)
+    if re.search(r'\bultrathink\b', body_no_code_for_ultra, re.IGNORECASE):
+        issues.append(Issue(
+            rule_id="CW009",
+            severity=Severity.SUGGESTION,
+            message="'ultrathink' keyword detected - enables extended thinking mode",
+            location="SKILL.md",
+            fix_suggestion="This is informational. 'ultrathink' enables extended thinking for deeper analysis."
+        ))
 
     return issues
 
@@ -762,7 +945,7 @@ def validate_security(skill_path: Path) -> List[Issue]:
             if 'SC002' not in ignored_rules:
                 for i, line in enumerate(lines, 1):
                     # Look for numeric assignments
-                    number_match = re.search(r'=\s*(\d{2,})\s*$', line)
+                    number_match = re.search(r'=\s*(\d{3,})\s*$', line)
                     if number_match:
                         # Check if there's a comment on this line or the line above
                         has_comment = '#' in line
@@ -813,6 +996,192 @@ def validate_security(skill_path: Path) -> List[Issue]:
 
 
 # ============================================================================
+# Hook Validators (HK001-HK003)
+# ============================================================================
+
+VALID_HOOK_EVENTS = {
+    'PreToolUse', 'PostToolUse', 'Stop',
+    'SessionStart', 'UserPromptSubmit', 'PermissionRequest',
+    'PostToolUseFailure', 'Notification', 'SubagentStart',
+    'SubagentStop', 'TeammateIdle', 'TaskCompleted',
+    'PreCompact', 'SessionEnd',
+}
+
+SKILL_HOOK_EVENTS = {'PreToolUse', 'PostToolUse', 'Stop'}
+
+
+def validate_hooks(skill_path: Path, frontmatter: Dict) -> List[Issue]:
+    """Validate hooks configuration in frontmatter."""
+    issues = []
+    hooks = frontmatter.get('hooks')
+    if hooks is None:
+        return issues
+
+    # HK001: hooks must be a dict (skip deep validation if fallback parser returned string)
+    if not isinstance(hooks, dict):
+        issues.append(Issue(
+            rule_id="HK001",
+            severity=Severity.ERROR,
+            message=f"hooks must be a mapping of event names to handler arrays, got {type(hooks).__name__}",
+            location="SKILL.md frontmatter",
+            fix_suggestion="Use format: hooks:\n  PreToolUse:\n    - matcher: 'Bash'\n      hooks:\n        - type: command\n          command: './script.sh'"
+        ))
+        return issues
+
+    for event_name, event_handlers in hooks.items():
+        # HK001: validate event name
+        if event_name not in VALID_HOOK_EVENTS:
+            issues.append(Issue(
+                rule_id="HK001",
+                severity=Severity.WARNING,
+                message=f"Unknown hook event: {event_name}",
+                location="SKILL.md frontmatter",
+                current_value=event_name,
+                fix_suggestion=f"Valid skill events: {', '.join(sorted(SKILL_HOOK_EVENTS))}"
+            ))
+
+        # HK002: handler format validation
+        if not isinstance(event_handlers, list):
+            issues.append(Issue(
+                rule_id="HK002",
+                severity=Severity.ERROR,
+                message=f"Hook event '{event_name}' handlers must be a list",
+                location="SKILL.md frontmatter",
+                fix_suggestion=f"Wrap handlers in a list for '{event_name}'"
+            ))
+            continue
+
+        for idx, handler_group in enumerate(event_handlers):
+            if not isinstance(handler_group, dict):
+                issues.append(Issue(
+                    rule_id="HK002",
+                    severity=Severity.ERROR,
+                    message=f"Hook handler {idx} in '{event_name}' must be a mapping",
+                    location="SKILL.md frontmatter",
+                    fix_suggestion="Each handler needs at minimum a 'hooks' key with handler definitions"
+                ))
+                continue
+
+            # HK003: matcher format
+            matcher = handler_group.get('matcher')
+            if matcher is not None and not isinstance(matcher, str):
+                issues.append(Issue(
+                    rule_id="HK003",
+                    severity=Severity.WARNING,
+                    message=f"Hook matcher must be a string, got {type(matcher).__name__}",
+                    location=f"SKILL.md frontmatter -> {event_name}[{idx}]",
+                    fix_suggestion="Use a string matcher: matcher: 'Bash' or matcher: 'Edit|Write'"
+                ))
+
+            # HK002: validate inner hooks array
+            inner_hooks = handler_group.get('hooks')
+            if inner_hooks is None:
+                issues.append(Issue(
+                    rule_id="HK002",
+                    severity=Severity.ERROR,
+                    message=f"Handler group {idx} in '{event_name}' missing 'hooks' array",
+                    location="SKILL.md frontmatter",
+                    fix_suggestion="Add hooks array with handler definitions"
+                ))
+                continue
+
+            if not isinstance(inner_hooks, list):
+                issues.append(Issue(
+                    rule_id="HK002",
+                    severity=Severity.ERROR,
+                    message=f"Inner hooks in '{event_name}[{idx}]' must be a list",
+                    location="SKILL.md frontmatter",
+                    fix_suggestion="Wrap in list: hooks:\n  - type: command\n    command: '...'"
+                ))
+                continue
+
+            for h_idx, hook_def in enumerate(inner_hooks):
+                if not isinstance(hook_def, dict):
+                    issues.append(Issue(
+                        rule_id="HK002",
+                        severity=Severity.ERROR,
+                        message=f"Hook definition {h_idx} in '{event_name}[{idx}]' must be a mapping",
+                        location="SKILL.md frontmatter",
+                        fix_suggestion="Use: type: command\n  command: './script.sh'"
+                    ))
+                    continue
+
+                hook_type = hook_def.get('type')
+                if hook_type not in ('command', 'prompt'):
+                    issues.append(Issue(
+                        rule_id="HK002",
+                        severity=Severity.ERROR,
+                        message=f"Hook type must be 'command' or 'prompt', got '{hook_type}'",
+                        location=f"SKILL.md frontmatter -> {event_name}[{idx}].hooks[{h_idx}]",
+                        fix_suggestion="Use 'type: command' with 'command' field, or 'type: prompt' with 'prompt' field"
+                    ))
+                elif hook_type == 'command' and 'command' not in hook_def:
+                    issues.append(Issue(
+                        rule_id="HK002",
+                        severity=Severity.ERROR,
+                        message="Command hook missing 'command' field",
+                        location=f"SKILL.md frontmatter -> {event_name}[{idx}].hooks[{h_idx}]",
+                        fix_suggestion="Add 'command: ./path/to/script.sh'"
+                    ))
+                elif hook_type == 'prompt' and 'prompt' not in hook_def:
+                    issues.append(Issue(
+                        rule_id="HK002",
+                        severity=Severity.ERROR,
+                        message="Prompt hook missing 'prompt' field",
+                        location=f"SKILL.md frontmatter -> {event_name}[{idx}].hooks[{h_idx}]",
+                        fix_suggestion="Add 'prompt: Your prompt text here'"
+                    ))
+
+    return issues
+
+
+# ============================================================================
+# MCP Validators (MC001)
+# ============================================================================
+
+def validate_mcp(skill_path: Path, frontmatter: Dict) -> List[Issue]:
+    """Validate MCP server configuration in frontmatter."""
+    issues = []
+    mcp_servers = frontmatter.get('mcpServers')
+    if mcp_servers is None:
+        return issues
+
+    # MC001: mcpServers field validation (skip if fallback parser returned string)
+    if isinstance(mcp_servers, dict):
+        for server_name, server_config in mcp_servers.items():
+            if not isinstance(server_config, dict):
+                issues.append(Issue(
+                    rule_id="MC001",
+                    severity=Severity.ERROR,
+                    message=f"MCP server '{server_name}' config must be an object",
+                    location="SKILL.md frontmatter",
+                    fix_suggestion=f"Provide server config: mcpServers:\n  {server_name}:\n    command: '...'"
+                ))
+    elif isinstance(mcp_servers, list):
+        for idx, item in enumerate(mcp_servers):
+            if not isinstance(item, (str, dict)):
+                issues.append(Issue(
+                    rule_id="MC001",
+                    severity=Severity.ERROR,
+                    message=f"MCP server entry {idx} must be a string (name) or object (config)",
+                    location="SKILL.md frontmatter",
+                    fix_suggestion="Use server name string or full config object"
+                ))
+    elif isinstance(mcp_servers, str):
+        pass  # String from fallback parser - skip deep validation
+    else:
+        issues.append(Issue(
+            rule_id="MC001",
+            severity=Severity.ERROR,
+            message=f"mcpServers must be an object or array, got {type(mcp_servers).__name__}",
+            location="SKILL.md frontmatter",
+            fix_suggestion="Use object format: mcpServers:\n  server-name:\n    command: '...'"
+        ))
+
+    return issues
+
+
+# ============================================================================
 # Main Validation Function
 # ============================================================================
 
@@ -852,8 +1221,10 @@ def validate_skill(skill_path: Path, ignored_rules: Set[str] = None) -> List[Iss
     # Run validators
     if frontmatter:
         issues.extend(validate_frontmatter(skill_path, frontmatter, body))
+        issues.extend(validate_hooks(skill_path, frontmatter))
+        issues.extend(validate_mcp(skill_path, frontmatter))
     issues.extend(validate_structure(skill_path, content, body))
-    issues.extend(validate_content(skill_path, body))
+    issues.extend(validate_content(skill_path, body, frontmatter))
     issues.extend(validate_files(skill_path))
     issues.extend(validate_references(skill_path, body))
     issues.extend(validate_security(skill_path))

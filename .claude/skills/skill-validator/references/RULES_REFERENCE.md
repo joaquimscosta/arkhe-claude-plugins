@@ -8,6 +8,8 @@
 - [File Organization Rules (FO)](#file-organization-rules-fo)
 - [Reference Integrity Rules (RI)](#reference-integrity-rules-ri)
 - [Security Rules (SC)](#security-rules-sc)
+- [Hook Rules (HK)](#hook-rules-hk)
+- [MCP Rules (MC)](#mcp-rules-mc)
 
 ---
 
@@ -48,7 +50,8 @@
 
 ### FM009: Unknown Keys [WARNING]
 **Check**: All frontmatter keys are recognized.
-**Allowed**: `name`, `description`, `license`, `allowed-tools`, `metadata`, `model`, `context`, `agent`, `hooks`, `user-invocable`, `disable-model-invocation`, `argument-hint`
+**Allowed**: `name`, `description`, `license`, `allowed-tools`, `metadata`, `model`, `context`, `agent`, `hooks`, `user-invocable`, `disable-model-invocation`, `argument-hint`, `maxTurns`, `mcpServers`, `memory`, `skills`
+<!-- Keep this list in sync with ALLOWED_FRONTMATTER_KEYS in scripts/validate_skill.py -->
 **Fix**: Remove unrecognized keys.
 
 ### FM010: Trigger Keywords [WARNING]
@@ -76,6 +79,23 @@
 **Check**: Skills using `$ARGUMENTS`, `$0`, `$1`, or `${CLAUDE_SESSION_ID}` should typically disable model invocation.
 **Reason**: Skills requiring arguments are usually meant for manual invocation via `/skill-name arg`.
 **Fix**: Add `disable-model-invocation: true` to prevent Claude from auto-invoking.
+
+### FM015: Context Fork + Agent [WARNING]
+**Check**: `context: fork` and `agent` are used together.
+**Rules**: If `context: fork` set, `agent` should be specified. If `agent` set, `context: fork` required.
+**Fix**: Add matching field or remove orphaned field.
+
+### FM016: Disable Model Invocation Type [ERROR/SUGGESTION]
+**Check**: `disable-model-invocation` is boolean. If true, suggests `argument-hint`.
+**Fix**: Use `true` or `false`. Consider adding `argument-hint`.
+
+### FM017: Max Turns [ERROR/SUGGESTION]
+**Check**: `maxTurns` is a positive integer. Warns if > 100.
+**Fix**: Set to positive integer in typical range (5-50).
+
+### FM018: Memory Scope [ERROR]
+**Check**: `memory` is valid scope: `user`, `project`, or `local`.
+**Fix**: Use one of the three valid scope values.
 
 ---
 
@@ -137,6 +157,19 @@
 ### CW006: Inconsistent Terms [SUGGESTION]
 **Check**: Uses consistent terminology.
 **Fix**: Pick one term (e.g., "endpoint" vs "URL") throughout.
+
+### CW007: String Substitution Invocation [WARNING]
+**Check**: Skills using `$ARGUMENTS`, `$N`, or `${CLAUDE_SESSION_ID}` have `disable-model-invocation: true`.
+**Reason**: Skills with substitution patterns are typically user-invoked.
+**Fix**: Add `disable-model-invocation: true` to frontmatter.
+
+### CW008: Dynamic Context Injection Syntax [WARNING]
+**Check**: `` !`command` `` syntax has matching backticks.
+**Fix**: Ensure opening and closing backticks match.
+
+### CW009: Extended Thinking Keyword [SUGGESTION]
+**Check**: Informational note when "ultrathink" is detected.
+**Note**: Awareness check only, not an error. The keyword enables extended thinking mode.
 
 ---
 
@@ -210,3 +243,29 @@
 ### SC005: Sensitive Logging [SUGGESTION]
 **Check**: Logs don't contain credentials.
 **Fix**: Remove sensitive data from log statements.
+
+---
+
+## Hook Rules (HK)
+
+### HK001: Hook Structure [ERROR/WARNING]
+**Check**: `hooks` field is a proper mapping of event names to handler arrays.
+**Valid Skill Events**: `PreToolUse`, `PostToolUse`, `Stop`
+**All Valid Events**: `PreToolUse`, `PostToolUse`, `Stop`, `SessionStart`, `UserPromptSubmit`, `PermissionRequest`, `PostToolUseFailure`, `Notification`, `SubagentStart`, `SubagentStop`, `TeammateIdle`, `TaskCompleted`, `PreCompact`, `SessionEnd`
+**Fix**: Use proper hook structure with event names as keys.
+
+### HK002: Hook Handler Format [ERROR]
+**Check**: Each hook handler has `type` (command/prompt) and corresponding field.
+**Fix**: Add `type: command` with `command` field, or `type: prompt` with `prompt` field.
+
+### HK003: Hook Matcher Format [WARNING]
+**Check**: Hook matchers are strings (e.g., `"Bash"`, `"Edit|Write"`).
+**Fix**: Use string matchers.
+
+---
+
+## MCP Rules (MC)
+
+### MC001: MCP Servers Format [ERROR]
+**Check**: `mcpServers` is an object (name -> config) or array (list of names/configs).
+**Fix**: Use object format with server names as keys and config objects as values.

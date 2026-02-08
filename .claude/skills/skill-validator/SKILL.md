@@ -1,12 +1,12 @@
 ---
 name: skill-validator
-description: Validate skills against best practices for YAML frontmatter, structure, content standards, file organization, and security. Use when creating new skills, updating existing skills, before packaging skills, reviewing skill quality, or when user mentions "validate skill", "check skill", "skill best practices", "skill review", or "lint skill".
+description: Validate skills against Anthropic best practices for frontmatter, structure, content, file organization, hooks, MCP, and security (62 rules in 8 categories). Use when creating new skills, updating existing skills, before publishing skills, reviewing skill quality, or when user mentions "validate skill", "check skill", "skill best practices", "skill review", or "lint skill".
 argument-hint: [skill-path]
 ---
 
 # Skill Validator
 
-Validate skills against Anthropic's best practices for structure, content, and security.
+Run automated checks against 62 rules covering frontmatter, structure, content, files, references, security, hooks, and MCP.
 
 ## Quick Start
 
@@ -24,12 +24,14 @@ scripts/validate_skill.py /path/to/skill --min-severity warning
 
 | Category | Rules | Checks |
 |----------|-------|--------|
-| **Frontmatter** | FM001-FM014 | Required fields, naming, description quality, argument-hint, $ARGUMENTS usage |
+| **Frontmatter** | FM001-FM018 | Required fields, naming, description, context/agent, maxTurns, memory, disable-model-invocation |
 | **Structure** | SS001-SS006 | Line limits, progressive disclosure |
-| **Content** | CW001-CW006 | Writing style, terminology |
+| **Content** | CW001-CW009 | Writing style, terminology, string substitution, dynamic context injection, ultrathink |
 | **Files** | FO001-FO007 | Naming conventions, forbidden files |
 | **References** | RI001-RI003 | Broken links, orphan files |
 | **Security** | SC001-SC005 | eval/exec, undocumented constants |
+| **Hooks** | HK001-HK003 | Hook structure, handler format, matcher format |
+| **MCP** | MC001 | MCP server configuration format |
 
 ## Severity Levels
 
@@ -73,6 +75,9 @@ Summary: 0 critical, 1 error, 2 warnings, 1 suggestion
 
 **"Script security warning"**
 - Add inline comment: `# skill-validator: ignore SC001`
+
+**"Hook/MCP validation incomplete"**
+- Install PyYAML for full nested structure validation: `pip install pyyaml`
 
 See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for complete issue handling.
 

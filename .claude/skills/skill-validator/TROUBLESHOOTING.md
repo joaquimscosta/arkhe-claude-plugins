@@ -162,3 +162,45 @@ SECONDS_PER_DAY = 86400
 1. Add reference in SKILL.md
 2. Delete if truly unused
 3. If used by scripts only, add brief mention in SKILL.md
+
+### CW007: String Substitution False Positives
+
+**Issue**: `$ARGUMENTS` detected in documentation or examples, not actual skill instructions.
+
+**Solution**: The validator strips code blocks and inline code before checking.
+If still triggering falsely, suppress with: `--ignore CW007`
+
+**Note**: CW007 (WARNING) overlaps with FM014 (SUGGESTION). They can be independently suppressed. CW007 is stricter and checks the body text, while FM014 checks any `$ARGUMENTS` usage in the body.
+
+### HK001-HK003: Hook Validation Edge Cases
+
+**Issue**: Complex hook structures flagged incorrectly.
+
+**Solution**: The validator checks basic structure only:
+- `hooks` must be a dict with event name keys
+- Each event has an array of handler groups
+- Each handler group has a `hooks` array with `type`/`command` or `type`/`prompt`
+
+**Note**: Without PyYAML, nested YAML structures (hooks, mcpServers) are parsed as strings by the fallback parser. Deep validation is skipped in this case. Install PyYAML for full hook validation: `pip install pyyaml`
+
+### MC001: MCP Server Configuration
+
+**Issue**: `mcpServers` flagged as invalid format.
+
+**Solution**: Valid formats:
+1. Object with server names as keys:
+   ```yaml
+   mcpServers:
+     my-server:
+       command: node
+       args: ['server.js']
+   ```
+2. Array of server names or configs:
+   ```yaml
+   mcpServers:
+     - my-server
+     - name: another-server
+       command: python
+   ```
+
+**Note**: Same as hooks, requires PyYAML for proper nested structure parsing.

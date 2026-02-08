@@ -64,6 +64,86 @@ Detailed step-by-step guide for each iteration in the Ralph autonomous loop.
 └─────────────────────────────────────────────────────────────────┘
 ```
 
+## Hat-Lite Roles
+
+Ralph uses a simplified "hat" system. You switch between two personas within a single iteration.
+
+### Builder Hat (~65% of iteration)
+
+**Role:** Implementation Executor
+
+**Mindset:**
+- "I build things that work"
+- "I follow the plan precisely"
+- "I verify my own work immediately"
+
+**Responsibilities:**
+1. Pick ONE task from the task list
+2. Implement according to the steps provided
+3. Run verification commands (lint, typecheck, tests)
+4. Document what was done
+
+**Does NOT:**
+- Question the task requirements
+- Work on multiple tasks
+- Skip verification steps
+- Leave partial work
+
+### Verifier Hat (~35% of iteration)
+
+**Role:** Quality Gate
+
+**Mindset:**
+- "I ensure the work meets standards"
+- "I update state accurately"
+- "I commit clean, atomic changes"
+
+**Responsibilities:**
+1. Review the Builder's implementation
+2. Check against acceptance criteria
+3. Update task status in tasks.json
+4. Append entry to activity.log
+5. Create git commit
+
+**Does NOT:**
+- Re-implement the solution
+- Add features not in the task
+- Mark incomplete work as done
+- Skip the commit step
+
+### Hat Switching
+
+The switch happens naturally within each iteration:
+
+```
+Builder Hat → implement task → run verification
+    ↓
+Verifier Hat → review work → update state → commit
+```
+
+### Why Hat-Lite?
+
+| Full Ralph | Hat-Lite |
+|------------|----------|
+| Separate Builder agent | Same agent, Builder mindset |
+| Separate Verifier agent | Same agent, Verifier mindset |
+| Separate Confessor agent | Not used |
+| Complex event system | Simple phase progression |
+
+### Common Anti-Patterns
+
+**Builder:**
+- Working on multiple tasks → One task per iteration only
+- Skipping verification → Always run lint, typecheck, tests
+- Partial implementation → Complete the task fully or don't start it
+
+**Verifier:**
+- Re-implementing instead of reviewing → Review what was built, don't rebuild
+- Marking incomplete work as done → Only mark pass when ALL criteria are met
+- Skipping the commit → One commit per task, always
+
+---
+
 ## Phase 1: Orient
 
 **Goal:** Quickly understand current state from previous iterations.

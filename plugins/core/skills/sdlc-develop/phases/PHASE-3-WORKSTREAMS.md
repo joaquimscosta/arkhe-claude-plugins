@@ -170,8 +170,6 @@ Present task breakdown summary, then use `AskUserQuestion` tool:
 
 **STOP: Unless `--auto` is set, WAIT for user response before proceeding to Phase 4.**
 
-**STOP: Unless `--auto` is set, WAIT for user response before proceeding to Phase 4.**
-
 ---
 
 ## Output

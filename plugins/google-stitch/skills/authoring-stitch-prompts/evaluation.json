@@ -7,7 +7,7 @@
       "id": "dashboard_basic",
       "query": "Create a web dashboard for tracking team productivity with charts and filters.",
       "expected_behavior": [
-        "Generates one Stitch-ready prompt under 1000 words.",
+        "Generates one Stitch-ready prompt under 400 words (target under 250).",
         "Uses clear UI nouns (dashboard, charts, filters, sidebar, etc.).",
         "Includes visual style cues (3–6).",
         "Avoids conversational phrasing.",
