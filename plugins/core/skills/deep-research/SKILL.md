@@ -16,10 +16,11 @@ Coordinate deep technical research with intelligent caching for cross-project re
 
 When research is needed:
 
-1. **Check cache first** - Read `~/.claude/plugins/research/index.json`
-2. **If cached and valid** - Return cached content, note source
-3. **If cache miss or expired** - Invoke `deep-researcher` agent
-4. **Report findings** - Include cache status and promote suggestion
+1. **Resolve scripts path** - Find `plugins/core/skills/deep-research/scripts/` (or Glob for `**/deep-research/scripts/cache_manager.py`)
+2. **Check cache first** - Run `python3 {scripts_dir}/cache_manager.py check "{topic}"`
+3. **If cached and valid** - Run `cache_manager.py get "{slug}"` and return content directly (no agent needed)
+4. **If cache miss** - Invoke `deep-researcher` agent for EXA research, which caches via `cache_manager.py put`
+5. **Report findings** - Include cache status and promote suggestion
 
 ## Cache Architecture
 
@@ -30,12 +31,23 @@ When research is needed:
 
 ## Operations
 
-| Operation | Trigger | Action |
-|-----------|---------|--------|
-| Research | `/research <topic>` or natural language | Check cache → research if needed → cache results |
-| Promote | `/research promote <slug>` | Cache → project docs with section markers |
-| Refresh | `/research refresh <slug>` | Force re-research, preserve team notes |
-| List | `/research list` | Show inventory of cached + promoted |
+| Operation | Trigger | Fast Path? | Action |
+|-----------|---------|------------|--------|
+| Research | `/research <topic>` or natural language | Yes (cache hit) | Check cache → return if valid, else research → cache |
+| Promote | `/research promote <slug>` | Yes | Run `promote.py {slug}` directly |
+| Refresh | `/research refresh <slug>` | No | Spawn agent → fresh research → cache → update promoted |
+| List | `/research list` | Yes | Run `cache_manager.py list` directly |
+
+## Scripts
+
+All cache operations use Python scripts in `scripts/`:
+
+| Script | Purpose |
+|--------|---------|
+| `research_utils.py` | Shared utilities (imported by all scripts) |
+| `cache_manager.py` | Cache CRUD: get, put, check, list, delete |
+| `promote.py` | Tier 1 → Tier 2 promotion with team notes |
+| `index_generator.py` | README index generation for both tiers |
 
 ## Slug Normalization
 
@@ -56,30 +68,14 @@ After research, report:
 
 [Brief summary of findings]
 
-💡 Run `/research promote {slug}` to add to project docs.
+Run `/research promote {slug}` to add to project docs.
 ```
-
-## Promote Script
-
-When promoting cached research to project docs, execute the promote script:
-
-```bash
-python3 scripts/promote.py {slug}
-```
-
-The `scripts/` path is relative to this skill's directory and resolves automatically.
-
-The script reads from cache, adds section markers (AUTO-GENERATED + TEAM-NOTES), writes to `docs/research/{slug}.md`, and updates the README index.
-
-Parse the JSON output:
-- Success: `{"success": true, "message": "...", "slug": "...", "path": "..."}`
-- Failure: `{"success": false, "message": "...", "slug": "..."}`
 
 ## Agent Delegation
 
-For actual research execution, delegate to `deep-researcher` agent:
+For actual research execution (cache miss or refresh only), delegate to `deep-researcher` agent:
 - Has MCP tool access (EXA web search, code context)
-- Handles cache read/write operations
+- Uses `cache_manager.py put` for cache write operations
 - Structures research output consistently
 
 ## Additional Resources
