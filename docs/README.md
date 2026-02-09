@@ -410,6 +410,16 @@ This workflow uses both `git` and `review` plugins together, demonstrating how m
 
 ---
 
+## Environment Setup
+
+LSP (Language Server Protocol) setup guides for configuring language intelligence in Claude Code projects.
+
+- [Java LSP Setup](./lsp-setup/JAVA_LSP_SETUP.md) - Configure Java language server for code intelligence
+- [Kotlin LSP Setup](./lsp-setup/KOTLIN_LSP_SETUP.md) - Configure Kotlin language server for code intelligence
+- [TypeScript LSP Setup](./lsp-setup/TYPESCRIPT_LSP_SETUP.md) - Configure TypeScript language server for code intelligence
+
+---
+
 ## Additional Resources
 
 ### Official Claude Code Documentation
