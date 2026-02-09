@@ -5,16 +5,18 @@
 
 
   <p>
-    <b>A collection of 10 Claude Code plugins</b> for documentation, AI engineering, code review, <br />
-    UI/UX design, git workflows, Google Stitch prompting, Design Intent, Domain-Driven Design, and autonomous development.
+    <b>Supercharge Claude Code with 80 specialized components</b> — from deep reasoning and autonomous dev loops to<br />
+    DDD architecture, design system enforcement, and git workflow automation. 16 agents, 34 commands, 30 skills across 10 modular plugins.
   </p>
 
   <p>
     <a href="LICENSE">
       <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License" />
     </a>
-    <img src="https://img.shields.io/badge/Plugins-10-blue" alt="Plugins Count" />
-    <img src="https://img.shields.io/badge/Version-1.0.0-orange" alt="Version" />
+    <img src="https://img.shields.io/badge/Plugins-10-blue" alt="Plugins" />
+    <img src="https://img.shields.io/badge/Agents-16-purple" alt="Agents" />
+    <img src="https://img.shields.io/badge/Commands-34-orange" alt="Commands" />
+    <img src="https://img.shields.io/badge/Skills-30-green" alt="Skills" />
     <a href="https://github.com/joaquimscosta/arkhe-claude-plugins/stargazers">
       <img src="https://img.shields.io/github/stars/joaquimscosta/arkhe-claude-plugins" alt="Stars" />
     </a>
@@ -130,20 +132,19 @@ If multiple plugins provide commands with similar names, use namespaced invocati
 
 ### Skills Development
 
-- **[Skills Guide](./docs/SKILLS.md)** - Creating and managing Agent Skills.
-- **[Agent Skills Overview](./docs/AGENT_SKILLS_OVERVIEW.md)** - Architecture and progressive disclosure.
-- **[Skill Development Best Practices](./docs/SKILL_DEVELOPMENT_BEST_PRACTICES.md)** - Real-world lessons and token optimization.
-- **[Anthropic Skills Repository](https://github.com/anthropics/skills)** - Reference implementations.
+- **[Skills Guide](./docs/SKILLS.md)** — Creating and managing Agent Skills
+- **[Skill Development Best Practices](./docs/SKILL_DEVELOPMENT_BEST_PRACTICES.md)** — Real-world lessons and token optimization
+- **[Anthropic Skills Repository](https://github.com/anthropics/skills)** — Reference implementations
 
-### Prompt Engineering
+### Plugin & Agent Development
 
-- **[Claude 4 Best Practices](./docs/CLAUDE_4_BEST_PRACTICES.md)** - Official techniques for Sonnet 4.5, Opus 4.1.
+- **[Plugins Guide](./docs/PLUGINS.md)** — Plugin system documentation
+- **[Subagents Guide](./docs/SUBAGENTS.md)** — Agent configuration and usage
+- **[Best Practices](./docs/BEST_PRACTICES.md)** — Official Claude Code best practices
 
-### Creating Plugins
+### Reference
 
-1. Review the existing plugin structure.
-2. Read the [Skills Development Best Practices](./docs/SKILL_DEVELOPMENT_BEST_PRACTICES.md).
-3. Follow patterns in `plugins/core`, `plugins/doc`, and `plugins/git`.
+- **[Claude Code Guide](./docs/CLAUDE_CODE_GUIDE.md)** — Curated practitioner's guide
 
 </details>
 

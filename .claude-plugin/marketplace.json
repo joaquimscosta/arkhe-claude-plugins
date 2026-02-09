@@ -1,7 +1,7 @@
 {
   "name": "arkhe-claude-plugins",
   "metadata": {
-    "description": "Collection of 10 Claude Code plugins for documentation, AI engineering, code review, git workflows, Google Stitch prompting, Design Intent, Domain-Driven Design, language-specific programming, and autonomous development loops"
+    "description": "Supercharge Claude Code with 80 specialized components — from deep reasoning and autonomous dev loops to DDD architecture, design system enforcement, and git workflow automation. 16 agents, 34 commands, 30 skills across 10 modular plugins."
   },
   "owner": {
     "name": "Arkhe"
@@ -20,7 +20,7 @@
     {
       "name": "doc",
       "source": "./plugins/doc",
-      "description": "Multi-purpose documentation toolkit"
+      "description": "Multi-purpose documentation toolkit (generation, explanation, diagrams)"
     },
     {
       "name": "review",
@@ -40,12 +40,12 @@
     {
       "name": "design-intent",
       "source": "./plugins/design-intent",
-      "description": "UI/UX Design Plugin - Visual fidelity from Figma/mockups, design system enforcement, and React UI prototyping with pattern memory"
+      "description": "UI/UX Design Plugin - Visual fidelity from Figma/mockups, design system enforcement, and React UI prototyping with pattern memory. Focused exclusively on frontend visual implementation."
     },
     {
       "name": "lang",
       "source": "./plugins/lang",
-      "description": "Language-specific programming skills (Bash, Python, Rust, TypeScript)"
+      "description": "Language-specific programming skills for production-grade code (Bash)"
     },
     {
       "name": "spring-boot",
@@ -55,7 +55,7 @@
     {
       "name": "ralph",
       "source": "./plugins/ralph",
-      "description": "Autonomous development loop with fresh context per iteration and Hat-lite builder/verifier system"
+      "description": "Autonomous development loop with fresh context per iteration, Hat-lite builder/verifier system, task sets, and persistent memories"
     }
   ]
 }

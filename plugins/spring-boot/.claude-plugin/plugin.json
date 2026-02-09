@@ -1,6 +1,6 @@
 {
   "name": "spring-boot",
-  "description": "Domain-Driven Design patterns and Spring Boot 4 implementation for complex business systems",
+  "description": "Domain-Driven Design with Spring Boot 4 (DDD patterns, Spring Data, REST APIs, Spring Modulith)",
   "version": "1.0.0",
   "author": {
     "name": "Arkhe"
