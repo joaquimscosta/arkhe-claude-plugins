@@ -7,10 +7,12 @@ Domain-Driven Design patterns with Spring Boot 4 implementation for complex busi
 ### Agents
 
 - **spring-boot-reviewer**: Reviews Spring Boot codebases against all spring-boot skills for correctness, best practices, and Spring Boot 4 compatibility. Uses confidence-based filtering (≥80) to report only high-priority issues.
+- **spring-boot-upgrade-verifier**: Verifies Spring Boot upgrade readiness using parallel multi-skill analysis. Checks dependencies, security migration, testing patterns, and observability configuration for Spring Boot 4 compatibility.
 
 ### Commands
 
 - **/spring-review**: Comprehensive Spring Boot implementation review against DDD, security, testing, and other best practices. Supports natural language scopes like "all", "the order module", "security configuration", or specific file paths.
+- **/verify-upgrade**: Verify Spring Boot project upgrade readiness with parallel multi-skill analysis.
 
 ### Skills
 
@@ -156,18 +158,18 @@ Skills auto-invoke based on context:
 
 | Skill | References |
 |-------|------------|
-| **domain-driven-design** | `tactical-patterns.md`, `strategic-design.md`, `architecture-decisions.md` |
-| **spring-boot-data-ddd** | `aggregates.md`, `repositories.md`, `transactions.md` |
-| **spring-boot-web-api** | `controllers.md`, `error-handling.md`, `webflux.md` |
-| **spring-boot-modulith** | `module-structure.md`, `events.md` |
-| **spring-boot-security** | `security-config.md`, `authentication.md`, `jwt-oauth2.md` |
-| **spring-boot-observability** | `actuator.md`, `metrics.md`, `tracing.md` |
-| **spring-boot-testing** | `slice-tests.md`, `testcontainers.md`, `security-testing.md`, `modulith-testing.md` |
-| **spring-boot-verify** | `dependencies.md`, `configuration.md` |
+| **domain-driven-design** | `STRATEGIC-PATTERNS.md`, `TACTICAL-PATTERNS.md`, `ARCHITECTURE-ALIGNMENT.md`, `ANTI-PATTERNS.md` |
+| **spring-boot-data-ddd** | `AGGREGATES.md`, `REPOSITORIES.md`, `TRANSACTIONS.md` |
+| **spring-boot-web-api** | `CONTROLLERS.md`, `ERROR-HANDLING.md`, `WEBFLUX.md` |
+| **spring-boot-modulith** | `MODULE-STRUCTURE.md`, `EVENTS.md` |
+| **spring-boot-security** | `SECURITY-CONFIG.md`, `AUTHENTICATION.md`, `JWT-OAUTH2.md` |
+| **spring-boot-observability** | `ACTUATOR.md`, `METRICS.md`, `TRACING.md` |
+| **spring-boot-testing** | `SLICE-TESTS.md`, `TESTCONTAINERS.md`, `SECURITY-TESTING.md`, `MODULITH-TESTING.md` |
+| **spring-boot-verify** | `DEPENDENCIES.md`, `CONFIGURATION.md` |
 
 ## Skill Supporting Documentation
 
-Each skill (except `domain-driven-design`) includes:
+Each skill includes:
 - **EXAMPLES.md** - Complete working code examples
 - **TROUBLESHOOTING.md** - Common issues and Spring Boot 4 migration
 

@@ -1,6 +1,6 @@
 ---
 name: ralph-prd
-description: Create PRD and setup for Ralph autonomous loop. Use when user runs /create-prd command, wants to set up a project for Ralph, mentions "ralph setup", "create prd", or needs to generate tasks for autonomous development.
+description: Create Product Requirements Document (PRD) and setup for Ralph autonomous loop. Use when user runs /create-prd command, wants to set up a project for Ralph, mentions "ralph setup", "create prd", "product requirements", or needs to generate tasks for autonomous development.
 ---
 
 # Ralph PRD Creation
@@ -33,7 +33,7 @@ project/
 
 ## Discovery Questions
 
-The wizard asks:
+Ask these discovery questions:
 
 0. **Task Set Name** - What should this collection be called? (default: "initial")
 1. **Problem** - What problem are you solving?
@@ -48,28 +48,7 @@ The wizard asks:
 
 ## Task Generation
 
-Converts features into atomic tasks:
-
-```json
-{
-  "tasks": [
-    {
-      "id": "setup-001",
-      "category": "setup",
-      "description": "Initialize Next.js with TypeScript",
-      "steps": ["Run create-next-app", "Install deps", "Verify dev server"],
-      "passes": false
-    }
-  ]
-}
-```
-
-**Task Categories:**
-- `setup` - Project initialization
-- `feature` - Core functionality
-- `integration` - External services
-- `styling` - UI/UX implementation
-- `testing` - Test coverage
+Convert features into atomic tasks with categories: `setup`, `feature`, `integration`, `styling`, `testing`. See [WORKFLOW.md](WORKFLOW.md) for task format and categories.
 
 ## Workflow
 
@@ -78,6 +57,19 @@ See [WORKFLOW.md](WORKFLOW.md) for detailed discovery flow.
 ## Examples
 
 See [EXAMPLES.md](EXAMPLES.md) for PRD examples.
+
+## Troubleshooting
+
+See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for common issues.
+
+## Templates
+
+Use templates from [templates/](templates/) for generating output files:
+- `prd.md.template` - PRD document structure
+- `tasks.json.template` - Task list format
+- `prompt.md.template` - Iteration instructions
+- `config.json.template` - Ralph configuration
+- `memories.md.template` - Learnings file
 
 ## After Setup
 

@@ -1,6 +1,6 @@
 {
   "name": "lang",
-  "description": "Language-specific programming skills (Bash, Python, Rust, TypeScript)",
+  "description": "Language-specific programming skills for production-grade code (Bash)",
   "version": "1.0.0",
   "author": {
     "name": "Arkhe"

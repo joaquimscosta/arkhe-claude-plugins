@@ -16,170 +16,25 @@ Environment:
 
 import argparse
 import json
-import os
-import re
 import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Optional
 
-# Configuration
-DEFAULT_CACHE_DIR = Path.home() / ".claude" / "plugins" / "research"
-DEFAULT_TTL_DAYS = 30
+# Ensure sibling imports work from any working directory
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-
-def get_cache_dir() -> Path:
-    """Get cache directory from environment or default."""
-    env_dir = os.environ.get("RESEARCH_CACHE_DIR")
-    if env_dir:
-        return Path(env_dir)
-    return DEFAULT_CACHE_DIR
-
-
-def get_ttl_days() -> int:
-    """Get TTL days from environment or default."""
-    env_ttl = os.environ.get("RESEARCH_TTL_DAYS")
-    if env_ttl:
-        try:
-            return int(env_ttl)
-        except ValueError:
-            pass
-    return DEFAULT_TTL_DAYS
-
-
-def normalize_slug(topic: str) -> str:
-    """
-    Convert a topic to a normalized slug.
-
-    Examples:
-        "Domain-Driven Design" -> "domain-driven-design"
-        "React Hooks" -> "react-hooks"
-        "C# async/await" -> "csharp-async-await"
-    """
-    # Lowercase
-    slug = topic.lower()
-
-    # Replace C# with csharp, C++ with cpp, etc.
-    slug = slug.replace("c#", "csharp").replace("c++", "cpp")
-
-    # Replace special characters with hyphens
-    slug = re.sub(r"[^a-z0-9]+", "-", slug)
-
-    # Remove leading/trailing hyphens
-    slug = slug.strip("-")
-
-    # Collapse multiple hyphens
-    slug = re.sub(r"-+", "-", slug)
-
-    return slug
-
-
-def ensure_cache_dir() -> Path:
-    """Ensure cache directory structure exists."""
-    cache_dir = get_cache_dir()
-    entries_dir = cache_dir / "entries"
-    entries_dir.mkdir(parents=True, exist_ok=True)
-
-    # Ensure index.json exists
-    index_file = cache_dir / "index.json"
-    if not index_file.exists():
-        index_file.write_text("{}")
-
-    return cache_dir
-
-
-def get_index() -> dict:
-    """Read the cache index."""
-    cache_dir = get_cache_dir()
-    index_file = cache_dir / "index.json"
-
-    if not index_file.exists():
-        return {}
-
-    try:
-        return json.loads(index_file.read_text())
-    except json.JSONDecodeError:
-        return {}
-
-
-def save_index(index: dict) -> None:
-    """Write the cache index."""
-    cache_dir = ensure_cache_dir()
-    index_file = cache_dir / "index.json"
-    index_file.write_text(json.dumps(index, indent=2, sort_keys=True))
-
-
-def find_by_alias(topic: str) -> Optional[str]:
-    """
-    Find a slug by alias lookup.
-
-    Returns the canonical slug if found, None otherwise.
-    """
-    normalized = normalize_slug(topic)
-    index = get_index()
-
-    # Direct match
-    if normalized in index:
-        return normalized
-
-    # Search aliases
-    for slug, metadata in index.items():
-        aliases = metadata.get("aliases", [])
-        normalized_aliases = [normalize_slug(a) for a in aliases]
-        if normalized in normalized_aliases:
-            return slug
-
-    return None
-
-
-def get_entry(slug: str) -> Optional[dict]:
-    """
-    Get a cache entry by slug.
-
-    Returns dict with 'metadata' and 'content' keys, or None if not found.
-    """
-    cache_dir = get_cache_dir()
-    entry_dir = cache_dir / "entries" / slug
-
-    metadata_file = entry_dir / "metadata.json"
-    content_file = entry_dir / "content.md"
-
-    if not metadata_file.exists() or not content_file.exists():
-        return None
-
-    try:
-        metadata = json.loads(metadata_file.read_text())
-        content = content_file.read_text()
-
-        return {
-            "metadata": metadata,
-            "content": content
-        }
-    except (json.JSONDecodeError, IOError):
-        return None
-
-
-def check_expiration(metadata: dict) -> dict:
-    """
-    Check if a cache entry is expired.
-
-    Returns dict with 'expired' (bool) and 'expires_at' (str).
-    """
-    expires_at_str = metadata.get("expires_at", "")
-
-    if not expires_at_str:
-        return {"expired": True, "expires_at": None}
-
-    try:
-        expires_at = datetime.fromisoformat(expires_at_str.replace("Z", "+00:00"))
-        now = datetime.now(expires_at.tzinfo) if expires_at.tzinfo else datetime.now()
-
-        return {
-            "expired": now > expires_at,
-            "expires_at": expires_at_str
-        }
-    except ValueError:
-        return {"expired": True, "expires_at": expires_at_str}
+from research_utils import (
+    check_expiration,
+    ensure_cache_dir,
+    find_by_alias,
+    get_cache_dir,
+    get_entry,
+    get_index,
+    get_ttl_days,
+    normalize_slug,
+    save_index,
+)
 
 
 def put_entry(
@@ -188,7 +43,7 @@ def put_entry(
     content: str,
     aliases: Optional[list] = None,
     tags: Optional[list] = None,
-    sources: Optional[list] = None
+    sources: Optional[list] = None,
 ) -> dict:
     """
     Store a research entry in the cache.
@@ -210,7 +65,7 @@ def put_entry(
         "tags": tags or [],
         "sources": sources or [],
         "researched_at": now.isoformat(),
-        "expires_at": expires_at.isoformat()
+        "expires_at": expires_at.isoformat(),
     }
 
     # Write metadata
@@ -228,7 +83,7 @@ def put_entry(
         "title": title,
         "aliases": aliases or [],
         "researched_at": metadata["researched_at"],
-        "expires_at": metadata["expires_at"]
+        "expires_at": metadata["expires_at"],
     }
     save_index(index)
 
@@ -247,12 +102,10 @@ def delete_entry(slug: str) -> bool:
     if not entry_dir.exists():
         return False
 
-    # Remove files
     for f in entry_dir.iterdir():
         f.unlink()
     entry_dir.rmdir()
 
-    # Update index
     index = get_index()
     if slug in index:
         del index[slug]
@@ -278,14 +131,16 @@ def list_entries() -> list:
             "aliases": meta.get("aliases", []),
             "researched_at": meta.get("researched_at", ""),
             "expires_at": expiration["expires_at"],
-            "expired": expiration["expired"]
+            "expired": expiration["expired"],
         })
 
-    # Sort by researched_at descending
     entries.sort(key=lambda x: x.get("researched_at", ""), reverse=True)
-
     return entries
 
+
+# ---------------------------------------------------------------------------
+# CLI command handlers
+# ---------------------------------------------------------------------------
 
 def cmd_get(args) -> int:
     """Handle 'get' command."""
@@ -302,7 +157,7 @@ def cmd_get(args) -> int:
         "slug": slug,
         "metadata": entry["metadata"],
         "content": entry["content"],
-        "cache_status": "expired" if expiration["expired"] else "valid"
+        "cache_status": "expired" if expiration["expired"] else "valid",
     }
 
     print(json.dumps(result, indent=2))
@@ -313,7 +168,6 @@ def cmd_put(args) -> int:
     """Handle 'put' command."""
     slug = normalize_slug(args.slug)
 
-    # Read content from file or stdin
     if args.content_file:
         content_path = Path(args.content_file)
         try:
@@ -327,7 +181,6 @@ def cmd_put(args) -> int:
     else:
         content = sys.stdin.read()
 
-    # Parse aliases and tags
     aliases = args.aliases.split(",") if args.aliases else []
     tags = args.tags.split(",") if args.tags else []
 
@@ -336,14 +189,14 @@ def cmd_put(args) -> int:
         title=args.title or slug,
         content=content,
         aliases=[a.strip() for a in aliases if a.strip()],
-        tags=[t.strip() for t in tags if t.strip()]
+        tags=[t.strip() for t in tags if t.strip()],
     )
 
     print(json.dumps({
         "status": "cached",
         "slug": slug,
         "path": str(get_cache_dir() / "entries" / slug),
-        "expires_at": metadata["expires_at"]
+        "expires_at": metadata["expires_at"],
     }, indent=2))
 
     return 0
@@ -355,10 +208,7 @@ def cmd_check(args) -> int:
     entry = get_entry(slug)
 
     if not entry:
-        print(json.dumps({
-            "exists": False,
-            "slug": slug
-        }))
+        print(json.dumps({"exists": False, "slug": slug}))
         return 0
 
     expiration = check_expiration(entry["metadata"])
@@ -369,7 +219,7 @@ def cmd_check(args) -> int:
         "title": entry["metadata"].get("title", slug),
         "expired": expiration["expired"],
         "expires_at": expiration["expires_at"],
-        "researched_at": entry["metadata"].get("researched_at", "")
+        "researched_at": entry["metadata"].get("researched_at", ""),
     }, indent=2))
 
     return 0
@@ -382,7 +232,6 @@ def cmd_list(args) -> int:
     if args.format == "json":
         print(json.dumps(entries, indent=2))
     else:
-        # Table format
         print(f"{'Slug':<30} {'Title':<30} {'Status':<10} {'Expires':<12}")
         print("-" * 85)
         for e in entries:
@@ -437,7 +286,7 @@ def main() -> int:
         "--format", "-f",
         choices=["table", "json"],
         default="table",
-        help="Output format"
+        help="Output format",
     )
     list_parser.set_defaults(func=cmd_list)
 

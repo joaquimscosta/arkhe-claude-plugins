@@ -20,7 +20,7 @@ Most best practices are based on one constraint: Claude's context window fills u
 
 Claude's context window holds your entire conversation, including every message, every file Claude reads, and every command output. However, this can fill up fast. A single debugging session or codebase exploration might generate and consume tens of thousands of tokens.
 
-This matters since LLM performance degrades as context fills. When the context window is getting full, Claude may start "forgetting" earlier instructions or making more mistakes. The context window is the most important resource to manage. For detailed strategies on reducing token usage, see [Reduce token usage](/en/costs#reduce-token-usage).
+This matters since LLM performance degrades as context fills. When the context window is getting full, Claude may start "forgetting" earlier instructions or making more mistakes. The context window is the most important resource to manage. Track context usage continuously with a [custom status line](/en/statusline), and see [Reduce token usage](/en/costs#reduce-token-usage) for strategies on reducing token usage.
 
 ***
 
@@ -40,7 +40,7 @@ Without clear success criteria, it might produce something that looks right but 
 | **Verify UI changes visually**        | *"make the dashboard look better"*                      | *"\[paste screenshot] implement this design. take a screenshot of the result and compare it to the original. list differences and fix them"*                                                            |
 | **Address root causes, not symptoms** | *"the build is failing"*                                | *"the build fails with this error: \[paste error]. fix it and verify the build succeeds. address the root cause, don't suppress the error"*                                                             |
 
-UI changes can be verified using the [Claude in Chrome extension](/en/chrome). It opens a browser, tests the UI, and iterates until the code works.
+UI changes can be verified using the [Claude in Chrome extension](/en/chrome). It opens new tabs in your browser, tests the UI, and iterates until the code works.
 
 Your verification can also be a test suite, a linter, or a Bash command that checks output. Invest in making your verification rock-solid.
 
@@ -381,7 +381,7 @@ Conversations are persistent and reversible. Use this to your advantage!
 The best results come from tight feedback loops. Though Claude occasionally solves problems perfectly on the first attempt, correcting it quickly generally produces better solutions faster.
 
 * **`Esc`**: Stop Claude mid-action with the `Esc` key. Context is preserved, so you can redirect.
-* **`Esc + Esc` or `/rewind`**: Press `Esc` twice or run `/rewind` to open the rewind menu and restore previous conversation and code state.
+* **`Esc + Esc` or `/rewind`**: Press `Esc` twice or run `/rewind` to open the rewind menu and restore previous conversation and code state, or summarize from a selected message.
 * **`"Undo that"`**: Have Claude revert its changes.
 * **`/clear`**: Reset context between unrelated tasks. Long sessions with irrelevant context can reduce performance.
 
@@ -400,6 +400,7 @@ During long sessions, Claude's context window can fill with irrelevant conversat
 * Use `/clear` frequently between tasks to reset the context window entirely
 * When auto compaction triggers, Claude summarizes what matters most, including code patterns, file states, and key decisions
 * For more control, run `/compact <instructions>`, like `/compact Focus on the API changes`
+* To compact only part of the conversation, use `Esc + Esc` or `/rewind`, select a message checkpoint, and choose **Summarize from here**. This condenses messages from that point forward while keeping earlier context intact.
 * Customize compaction behavior in CLAUDE.md with instructions like `"When compacting, always preserve the full list of modified files and any test commands"` to ensure critical context survives summarization
 
 ### Use subagents for investigation
@@ -429,7 +430,7 @@ use a subagent to review this code for edge cases
   Every action Claude makes creates a checkpoint. You can restore conversation, code, or both to any previous checkpoint.
 </Tip>
 
-Claude automatically checkpoints before changes. Double-tap `Escape` or run `/rewind` to open the checkpoint menu. You can restore conversation only (keep code changes), restore code only (keep conversation), or restore both.
+Claude automatically checkpoints before changes. Double-tap `Escape` or run `/rewind` to open the rewind menu. You can restore conversation only, restore code only, restore both, or summarize from a selected message. See [Checkpointing](/en/checkpointing) for details.
 
 Instead of carefully planning every move, you can tell Claude to try something risky. If it doesn't work, rewind and try a different approach. Checkpoints persist across sessions, so you can close your terminal and still rewind later.
 
@@ -485,10 +486,11 @@ claude -p "Analyze this log file" --output-format stream-json
   Run multiple Claude sessions in parallel to speed up development, run isolated experiments, or start complex workflows.
 </Tip>
 
-There are two main ways to run parallel sessions:
+There are three main ways to run parallel sessions:
 
 * [Claude Desktop](/en/desktop): Manage multiple local sessions visually. Each session gets its own isolated worktree.
 * [Claude Code on the web](/en/claude-code-on-the-web): Run on Anthropic's secure cloud infrastructure in isolated VMs.
+* [Agent teams](/en/agent-teams): Automated coordination of multiple sessions with shared tasks, messaging, and a team lead.
 
 Beyond parallelizing work, multiple sessions enable quality-focused workflows. A fresh context improves code review since Claude won't be biased toward code it just wrote.
 

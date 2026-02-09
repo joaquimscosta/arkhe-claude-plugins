@@ -1,7 +1,6 @@
 ---
 name: authoring-stitch-prompts
-description: Converts natural-language descriptions or UI spec files into optimized Google Stitch prompts. Use when creating, refining, or validating design directives for Google Stitch. Follows Stitch best practices with short, directive prompts focused on screens, structure, and visual hierarchy.
-allowed-tools: Read, Grep, Write
+description: Converts natural-language descriptions or UI spec files into optimized Google Stitch prompts. Use when creating, refining, or validating design directives for Google Stitch. Use when user says "create a Stitch prompt", "optimize this for Stitch", "convert this spec to a Stitch prompt", "write a UI prompt", or mentions Google Stitch prompt authoring. Follows Stitch best practices with short, directive prompts focused on screens, structure, and visual hierarchy.
 ---
 
 # Authoring Stitch Prompts
@@ -24,189 +23,17 @@ Use this Skill whenever users need Stitch-ready wording, prompt refinements, or 
 
 ---
 
-## File Output (design-intent/google-stitch/{feature}/)
+## File Output
 
-Generate optimized prompts in **feature-based directories** with organized artifact storage:
+Prompts are saved to feature-based directories under `design-intent/google-stitch/{feature}/`:
+- **Feature name** derived from screen/page purpose (kebab-case, semantic, concise)
+- **Prompt files**: `prompt-v{version}.md` (auto-incremented from existing versions)
+- **Pre-created subdirectories**: `exports/` (Stitch outputs) and `wireframes/` (reference mockups)
+- **File composition**: `<!-- Layout: {Name} -->` header, then `---` separators between component sections (`<!-- Component: {Name} -->`)
+- **6-prompt Stitch limit**: If >6 prompts, split into `prompt-v{version}-part{N}.md` files (max 6 per part)
+- **Copy-paste ready**: Entire file works directly in Stitch interface
 
-1. **Feature Name (Directory)**:
-   - Derive from main screen/page purpose
-   - Lowercase, replace whitespace with hyphens
-   - Strip non `a-z0-9-` characters, collapse duplicate hyphens, trim ends
-   - Examples: "analytics dashboard" → `dashboard`, "landing page" → `landing`, "admin panel" → `admin-panel`
-   - Keep semantic and concise (prefer "dashboard" over "analytics-dashboard" when unambiguous)
-
-2. **Directory Structure**:
-   - Create feature directory: `design-intent/google-stitch/{feature}/`
-   - Pre-create subdirectories:
-     * `exports/` - For Stitch-generated outputs (PNG, SVG, HTML)
-     * `wireframes/` - For pre-work mockups and reference images
-   - Prompt files live at feature root
-
-3. **File Composition**:
-   - Start with `<!-- Layout: {Title Case Name} -->` HTML comment label
-   - Add layout prompt content
-   - Add `---` separator line
-   - For each component:
-     * Add `<!-- Component: {Title Case Name} -->` HTML comment label
-     * Add component prompt content
-     * Add `---` separator (between components, not after last)
-
-4. **6-Prompt Stitch Limit**:
-   - Count total prompts (layout + all components)
-   - If ≤6 prompts: Save as `prompt-v{version}.md`
-   - If >6 prompts: Split into multiple part files
-     * Part 1: Layout + first 5 components (6 prompts)
-     * Part 2: Next 6 components
-     * Part N: Remaining components (max 6 per part)
-     * Save as: `prompt-v{version}-part{N}.md`
-     * Warn user about Stitch's 6-screen generation limit
-
-5. **Version Auto-Increment**:
-   - Scan `design-intent/google-stitch/{feature}/prompt-v*.md`
-   - Find highest version number, increment automatically
-   - Start at v1 if no matches
-   - Each feature maintains independent version history
-   - Note: Entire file versioned together (not per-component)
-
-6. **File Path Resolution**:
-   - Resolve repo root via `git rev-parse --show-toplevel`
-   - Create `{root}/design-intent/google-stitch/{feature}/` directory
-   - Create `{feature}/exports/` and `{feature}/wireframes/` subdirectories
-   - Write composed Markdown file to `{feature}/prompt-v{version}.md`
-
-7. **Report**:
-   - After presenting prompts inline, show file info:
-     ```
-     📂 Feature: {feature}/
-     📄 File: prompt-v{version}.md
-
-     Contains {N} prompts (within 6-prompt limit ✓):
-       • Layout: {Title}
-       • Component: {Title}
-       • Component: {Title}
-
-     Directory structure:
-       design-intent/google-stitch/{feature}/
-       ├── prompt-v{version}.md     ← Generated prompt
-       ├── exports/                 ← Place Stitch outputs here
-       └── wireframes/              ← Place mockups/references here
-
-     Usage:
-       1. Copy prompt file → Paste into Stitch → Generate designs
-       2. Save Stitch exports to exports/ directory
-       3. Store wireframes/mockups in wireframes/ directory
-     ```
-
-**Examples:**
-
-Multi-component page (4 prompts):
-```
-Input: "Analytics dashboard with KPI cards, revenue chart, and subscriptions table"
-
-Output: design-intent/google-stitch/dashboard/prompt-v1.md
-
-Directory created:
-  design-intent/google-stitch/dashboard/
-  ├── prompt-v1.md
-  ├── exports/
-  └── wireframes/
-
-File content:
-  <!-- Layout: Analytics Dashboard -->
-  Design a web dashboard page for SaaS analytics overview.
-  [...layout prompt content...]
-
-  ---
-
-  <!-- Component: KPI Metrics -->
-  Design metric cards displaying key SaaS performance indicators.
-  [...component prompt content...]
-
-  ---
-
-  <!-- Component: Revenue Chart -->
-  Design an interactive line chart for monthly revenue tracking.
-  [...component prompt content...]
-
-  ---
-
-  <!-- Component: Subscriptions Table -->
-  Design a subscription activity table showing recent changes.
-  [...component prompt content...]
-```
-
-Single component (1 prompt):
-```
-Input: "Login form with email and password"
-
-Output: design-intent/google-stitch/login/prompt-v1.md
-
-Directory created:
-  design-intent/google-stitch/login/
-  ├── prompt-v1.md
-  ├── exports/
-  └── wireframes/
-
-File content:
-  <!-- Component: Login Form -->
-  Design a login form for web application.
-  [...component prompt content...]
-```
-
-Large page split (8 prompts → 2 files):
-```
-Input: "Admin panel with navigation, dashboard, users, roles, settings, audit logs, notifications"
-
-Output: design-intent/google-stitch/admin-panel/prompt-v1-part1.md (6 prompts)
-- Layout: Admin Panel
-- Component: Navigation
-- Component: Dashboard
-- Component: Users
-- Component: Roles
-- Component: Settings
-
-Output: design-intent/google-stitch/admin-panel/prompt-v1-part2.md (2 prompts)
-- Component: Audit Logs
-- Component: Notifications
-
-Directory created:
-  design-intent/google-stitch/admin-panel/
-  ├── prompt-v1-part1.md
-  ├── prompt-v1-part2.md
-  ├── exports/
-  └── wireframes/
-
-⚠️ Warning: Use part1 first, then part2 in separate Stitch session
-```
-
-Iteration (auto-increment):
-```
-Existing: design-intent/google-stitch/dashboard/prompt-v1.md
-
-Input: "Update analytics dashboard with new metrics"
-
-Auto-detected version → prompt-v2.md
-
-Output: design-intent/google-stitch/dashboard/prompt-v2.md
-
-Directory structure:
-  design-intent/google-stitch/dashboard/
-  ├── prompt-v1.md      ← Previous version
-  ├── prompt-v2.md      ← New version
-  ├── exports/
-  └── wireframes/
-
-(Entire file versioned together, versions coexist in same directory)
-```
-
-**Feature Directory Benefits:**
-- **Organized artifacts**: All design files grouped by feature
-- **Version history**: All versions accessible in one location
-- **Design workflow**: Natural home for Stitch exports and wireframes
-- **Stitch-native**: Uses Stitch's `---` separator convention
-- **Auto-increment**: Detects existing versions, increments automatically
-- **Batch generation**: Copy one file, generate entire page
-- **Copy-paste ready**: File content works directly in Stitch interface
+See [WORKFLOW.md](WORKFLOW.md#35-generate-layout-prompt-if-detected) for detailed file composition rules, [REFERENCE.md](REFERENCE.md) for Stitch best practices, and [EXAMPLES.md](EXAMPLES.md) for worked examples (Examples 14–16 cover multi-component and split scenarios).
 
 ---
 
@@ -224,60 +51,15 @@ Directory structure:
 
 ## Structured Input (from /prompt command)
 
-When invoked via the `/prompt` command with user preferences, the skill receives structured input:
+When invoked via `/prompt`, the skill may receive pre-parsed preferences (`Brief`, `Components`, `Style`, `Structure`). Parse structured fields and apply style mappings before proceeding. See [WORKFLOW.md](WORKFLOW.md#08-parse-structured-input-if-present) for field handling and style mapping tables.
 
-```
-Brief: dashboard for fitness app
-Components: activity-summary, workout-chart, goals-progress
-Style: Consumer
-Structure: Combined
-```
-
-**Field Handling:**
-
-| Field | Behavior |
-|-------|----------|
-| `Brief` | Original user input - process normally |
-| `Components` | Use specified list, skip auto-detection |
-| `Style` | Apply style mapping, override design context |
-| `Structure` | Respect choice: Combined/Split/Auto |
-
-**Style Mapping:**
-
-| Style Value | Applied Cues |
-|-------------|--------------|
-| Enterprise | enterprise-grade, professional, data-dense, clean sans-serif typography |
-| Consumer | friendly, approachable, vibrant accents, generous whitespace |
-| Minimal | clean, minimal, ample whitespace, subtle shadows, restrained palette |
-| Playful | playful, colorful, fun, animated feel, rounded corners, bold typography |
-| Custom: [text] | Extract cues from user's custom description |
-| Auto | Use design context discovery (Step 0.5) |
-
-**Structure Handling:**
-
-| Structure Value | Behavior |
-|-----------------|----------|
-| Combined | Skip split detection, generate single file with all components |
-| Split | Force separate prompts per component |
-| Auto | Use smart defaults (Step 1.5/1.6) |
-
-See [WORKFLOW.md](WORKFLOW.md#08-parse-structured-input-if-present) for detailed parsing logic.
-
-**Input Detail Levels**
-
-All detail levels are valid—Stitch infers patterns from minimal descriptions:
-
-- **High-level** (minimal): "fitness tracker app", "professional project management dashboard"
-- **Medium**: "fitness tracker with daily goals and progress charts"
-- **Detailed**: Full component list with specific features and interactions
-
-Use adjectives to convey vibe when details are sparse ("vibrant fitness app", "minimal meditation app").
+All input detail levels are valid — Stitch infers patterns from minimal descriptions. Use adjectives to convey vibe when details are sparse ("vibrant fitness app", "minimal meditation app").
 
 ---
 
 ## Workflow Overview
 
-High-level loop: parse → condense → format → validate.  
+High-level loop: parse → condense → format → validate.
 Detailed branching logic, including cue extraction and revision handling, lives in [WORKFLOW.md](WORKFLOW.md).
 
 ---
@@ -297,15 +79,6 @@ Reference [templates/authoring-stitch-prompts-template.md](templates/authoring-s
 ## Examples
 
 Representative before/after samples (SaaS dashboard, banking app, iterative edits, spec conversions) are in [EXAMPLES.md](EXAMPLES.md). Use them to mirror tone and formatting; keep this file lean by not re-embedding the full transcripts here.
-
----
-
-## Implementation Notes
-
-* Keep SKILL.md under 500 lines; detailed prompt transformation logic can go in `REFERENCE.md` or `templates/authoring-stitch-prompts-template.md`.
-* Use concise, declarative language.
-* Avoid narrative, meta, or conversational phrasing in outputs.
-* Always output one atomic, Stitch-compatible prompt per request.
 
 ---
 
@@ -339,9 +112,9 @@ If accepted, invoke the `generating-stitch-screens` skill with the authored prom
 
 ## Common Issues
 
-- **Prompts too verbose** – Re-run formatting with the template and trim narration. See [TROUBLESHOOTING.md](TROUBLESHOOTING.md)#L1 for guidance.
-- **Missing style cues** – Derive palette/typography keywords from user input or prior session context before finalizing. See [TROUBLESHOOTING.md](TROUBLESHOOTING.md)#L25.
-- **Multi-goal briefs** – Split into multiple prompts; re-emphasize Stitch's atomic focus. See [TROUBLESHOOTING.md](TROUBLESHOOTING.md)#L43.
+- **Prompts too verbose** – Re-run formatting with the template and trim narration. See [TROUBLESHOOTING.md](TROUBLESHOOTING.md#prompts-are-too-verbose).
+- **Missing style cues** – Derive palette/typography keywords from user input or prior session context before finalizing. See [TROUBLESHOOTING.md](TROUBLESHOOTING.md#missing-style-cues).
+- **Multi-goal briefs** – Split into multiple prompts; re-emphasize Stitch's atomic focus. See [TROUBLESHOOTING.md](TROUBLESHOOTING.md#multi-screen-prompts).
 
 ---
 
@@ -354,9 +127,3 @@ For advanced usage:
 * [WORKFLOW.md](WORKFLOW.md) — Detailed processing loop
 * [TROUBLESHOOTING.md](TROUBLESHOOTING.md) — Error-handling guidance
 * [templates/authoring-stitch-prompts-template.md](templates/authoring-stitch-prompts-template.md) — Output format template
-
----
-
-## Version History
-
-* v1.0.0 (2025-11-10): Initial release — authoring assistant for Stitch prompt optimization.

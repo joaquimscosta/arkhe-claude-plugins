@@ -1,6 +1,6 @@
 ---
 name: sdlc-develop
-description: Orchestrates 6-phase SDLC pipeline for feature development. Use when user runs /develop command, requests guided feature development, wants to create implementation plans, or mentions "develop", "feature", "implement", "plan feature", "SDLC", "spec-driven development". Supports plan persistence, resume mode, and autonomous execution.
+description: Orchestrates 6-phase SDLC pipeline (discovery, requirements, architecture, workstreams, implementation, summary) for guided feature development. Use when user runs /develop command, requests spec-driven development, wants to create implementation plans with architecture decisions, or mentions "SDLC", "spec-driven", "plan feature", "development pipeline". Supports plan persistence, wave-based resume, autonomous mode, and architecture/implementation verification.
 ---
 
 # ⚠️ CRITICAL EXECUTION PROTOCOL
@@ -191,101 +191,22 @@ First run without config prompts for preferences.
 
 ## Execution Flow
 
-```
-START
-  │
-  ├─ Parse arguments (flags, path references)
-  ├─ Detect mode (RESUME/PLAN/FULL)
-  │
-  ├─ [RESUME] Load plan.md
-  │   ├─ Check for wave-*-context.md files
-  │   ├─ If wave context found → Offer: Continue next wave / Re-review / Restart
-  │   └─ If no wave context → Ask which phase → Jump to phase
-  │
-  ├─ [PLAN/FULL] Read PHASE-0-DISCOVERY.md
-  │   └─ Execute Phase 0 → Checkpoint
-  │
-  ├─ Read PHASE-1-REQUIREMENTS.md
-  │   └─ Execute Phase 1 → Checkpoint
-  │
-  ├─ Read PHASE-2-ARCHITECTURE.md
-  │   └─ Execute Phase 2 → Save plan → [PLAN stops here]
-  │
-  ├─ [FULL] Read PHASE-3-WORKSTREAMS.md
-  │   └─ Execute Phase 3 → Checkpoint
-  │
-  ├─ Read PHASE-4-IMPLEMENTATION.md
-  │   ├─ Step 4.0: Ticket Selection (select/defer tasks)
-  │   └─ For each wave:
-  │       ├─ Step 4a.1: Wave Confirmation
-  │       ├─ Step 4a.2: Implement wave tasks
-  │       └─ Step 4a.3: Wave Checkpoint → CONTINUE or STOP
-  │           ├─ [CONTINUE] → Next wave (4a.1)
-  │           └─ [STOP] → Save context, exit Phase 4
-  │   ├─ Step 4b-4d: Validation → Quality Review
-  │   └─ Step 4e: Completion Gate ⛔
-  │
-  └─ Read PHASE-5-SUMMARY.md
-      └─ Execute Phase 5 → Complete
-```
+Parse arguments and detect mode (RESUME/PLAN/FULL), then execute phases sequentially.
+RESUME loads existing plan and offers wave continuation. PLAN stops after Phase 2.
+FULL executes all 6 phases with checkpoints between each.
+
+See [WORKFLOW.md](WORKFLOW.md) for the detailed execution flow diagram.
 
 ## Checkpoints
 
-### Tier 1 ⛔ (MANDATORY — cannot skip, even with `--auto`)
-- Phase 2c: Architecture Decision
-- Phase 4e: Completion Gate (RULE ZERO verification)
-
-### Tier 2 ⚠️ (skippable with `--auto`)
-- Phase 0→1: Existing System Findings
-- Phase 1→2: Requirements Summary
-- Phase 3→4: Task Breakdown
-- Phase 4.0: Ticket Selection
-- Phase 4a.1: Wave Confirmation (per wave)
-- Phase 4a.3: Wave Checkpoint (per wave — continue or stop)
-- Phase 4d: Quality Review (escalates to Tier 1 if security/DB/breaking changes detected)
-
-## Checkpoint Protocol (CRITICAL)
-
-**At every AskUserQuestion checkpoint:**
-
-1. **STOP** - Halt all execution immediately
-2. **PRESENT** - Use `AskUserQuestion` tool with the options specified
-3. **WAIT** - Do not take any further action until user responds
-4. **RESPOND** - Act based on user's choice:
-   - **APPROVE** - Proceed to next phase/step
-   - **REVIEW** - Show requested details, then re-present prompt
-   - **MODIFY/FIX** - Make changes, then re-present prompt
-   - **CANCEL** - Stop the pipeline entirely
-
-### Tier 1 Checkpoints (⛔ CANNOT SKIP)
-
-These checkpoints block execution regardless of flags:
+Two mandatory Tier 1 gates (cannot skip, even with `--auto`):
 - **Phase 2c**: Architecture Decision
-- **Phase 4e**: Completion Gate
+- **Phase 4e**: Completion Gate (RULE ZERO verification)
 
-**YOU MUST STOP AND WAIT.** Even with `--auto`, do not proceed until user explicitly responds.
+All other checkpoints are Tier 2 (skippable with `--auto`).
+Conditional escalation to Tier 1 if: DB schema changes, security work, or breaking API changes.
 
-### Tier 2 Checkpoints (⚠️ RECOMMENDED)
-
-**Without `--auto`:** STOP and WAIT for user response.
-**With `--auto`:** Auto-approve and proceed, logging the decision.
-
-## Gates (HITL Tiers)
-
-Three-tier Human-in-the-Loop framework based on risk level:
-
-| Tier | Checkpoints | Behavior |
-|------|-------------|----------|
-| ⛔ Tier 1 | Phase 2c (architecture), Phase 4→5 (completion) | MANDATORY - blocks until approved |
-| ⚠️ Tier 2 | Phase 0→1, 1→2, 3→4, 4.0, 4a.1, 4a.3 | RECOMMENDED - skippable with `--auto` |
-| ✅ Tier 3 | Phase 2→3 (plan saved) | AUTOMATED - proceeds, logs for review |
-
-**Conditional Escalation**: Any phase auto-elevates to Tier 1 if:
-- Database schema changes detected
-- Security implementation involved
-- Breaking API changes proposed
-
-See [GATES.md](GATES.md) for decision criteria and prompt patterns.
+See [GATES.md](GATES.md) for full checkpoint protocol, decision criteria, and prompt patterns.
 
 ## Examples
 

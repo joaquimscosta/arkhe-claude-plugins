@@ -76,6 +76,7 @@ Consider microservices when:
 - **Tactical Patterns**: See [references/TACTICAL-PATTERNS.md](references/TACTICAL-PATTERNS.md) for entities, value objects, aggregates, services, repositories
 - **Architecture Alignment**: See [references/ARCHITECTURE-ALIGNMENT.md](references/ARCHITECTURE-ALIGNMENT.md) for clean/hexagonal architecture, modular monolith, microservices
 - **Anti-Patterns**: See [references/ANTI-PATTERNS.md](references/ANTI-PATTERNS.md) for common pitfalls and how to avoid them
+- **Examples**: See [EXAMPLES.md](EXAMPLES.md) for scenario walkthroughs applying DDD concepts
 - **Troubleshooting**: See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for common issues and solutions
 
 ## Critical Reminders

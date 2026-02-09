@@ -21,47 +21,80 @@ argument-hint: "<topic> | promote <slug> | refresh <slug> | list"
 
 ## Instructions
 
-Parse the arguments to determine the operation:
+Parse the arguments to determine the operation.
+
+**IMPORTANT:** The `scripts/` path references below are relative to the `deep-research` skill directory. Resolve the absolute path by finding the skill at `plugins/core/skills/deep-research/scripts/` (or use Glob to locate `deep-research/scripts/cache_manager.py`).
 
 ### Operation: Research Topic (default)
 If arguments don't start with `promote`, `refresh`, or `list`:
 
-1. Use the Task tool to spawn the `deep-researcher` agent (subagent_type: "core:deep-researcher")
-2. Pass the topic for research
-3. The agent will:
-   - Check cache at `~/.claude/plugins/research/`
-   - Return cached content if valid (not expired)
-   - Conduct new research via EXA if cache miss
-   - Save results to cache
-   - Report findings with cache status
+**Cache-first approach** — check cache BEFORE spawning the agent to avoid unnecessary agent overhead on cache hits:
+
+1. **Resolve script path:** Use Glob to find `**/deep-research/scripts/cache_manager.py` and note the directory.
+
+2. **Check cache:** Run:
+   ```bash
+   python3 {scripts_dir}/cache_manager.py check "{topic}"
+   ```
+   Parse the JSON output. It returns `exists`, `slug`, `expired`, `expires_at`, `researched_at`.
+
+3. **If cache hit (exists=true, expired=false):**
+   - Read the cached content directly:
+     ```bash
+     python3 {scripts_dir}/cache_manager.py get "{slug}"
+     ```
+   - Parse the JSON output and present the content to the user.
+   - Report cache status: HIT, source: Cached, path, expiration date.
+   - Suggest: `/research promote {slug}` to add to project docs.
+   - **Do NOT spawn the agent.** This is the fast path.
+
+4. **If cache expired (exists=true, expired=true):**
+   - Read and return the cached content (same as cache hit).
+   - Warn the user: "Cache expired. Returning cached content but refresh recommended."
+   - Suggest: `/research refresh {slug}` to update.
+   - **Do NOT spawn the agent.** Return stale content with the warning.
+
+5. **If cache miss (exists=false):**
+   - Spawn the `deep-researcher` agent using the Task tool (subagent_type: `core:deep-researcher`).
+   - Pass the topic and the resolved `scripts_dir` path so the agent can use `cache_manager.py put` to cache results.
+   - The agent will conduct research via EXA tools, cache the results, and report findings.
 
 ### Operation: Promote
 If arguments start with `promote <slug>`:
 
-1. Execute the promote script from the deep-research skill's `scripts/` directory:
+1. Resolve the script path as above.
+2. Execute:
    ```bash
-   python3 scripts/promote.py {slug}
+   python3 {scripts_dir}/promote.py {slug}
    ```
-   Note: `scripts/` is relative to the `deep-research` skill root directory.
-2. Parse the JSON output from the script
-3. If success is true, report: "Promoted {slug} to {path}"
-4. If success is false, report the error message
+3. Parse the JSON output from the script.
+4. If `success` is true, report: "Promoted {slug} to {path}"
+5. If `success` is false, report the error message.
 
 ### Operation: Refresh
 If arguments start with `refresh <slug>`:
 
-1. Use the Task tool to spawn the `deep-researcher` agent
-2. Instruct it to bypass cache and conduct fresh research
-3. For Tier 1 (cache): Replace entirely
-4. For Tier 2 (promoted): Only update AUTO-GENERATED sections, preserve TEAM-NOTES
-5. Report what was updated
+1. Spawn the `deep-researcher` agent using the Task tool (subagent_type: `core:deep-researcher`).
+2. Instruct it to:
+   - Bypass cache and conduct fresh research via EXA
+   - Use `cache_manager.py put` to save results (replacing existing cache entry)
+   - Check if a promoted version exists at `docs/research/{slug}.md`
+   - If promoted: use `promote.py {slug} --refresh` to update Tier 2 while preserving TEAM-NOTES
+3. Report what was updated.
 
 ### Operation: List
 If arguments equal `list`:
 
-1. Read `~/.claude/plugins/research/index.json` for cached entries
-2. Scan `docs/research/` for promoted entries
-3. Display inventory:
+**Fast path** — no agent needed:
+
+1. Resolve the script path.
+2. Run:
+   ```bash
+   python3 {scripts_dir}/cache_manager.py list --format json
+   ```
+3. Parse the JSON output (array of entries with slug, title, expired, expires_at, researched_at).
+4. Scan `docs/research/` directory for promoted entries.
+5. Display inventory in formatted markdown:
 
 ```markdown
 ## Research Inventory
@@ -70,7 +103,6 @@ If arguments equal `list`:
 | Slug | Title | Researched | Expires | Status |
 |------|-------|------------|---------|--------|
 | domain-driven-design | Domain-Driven Design | 2025-01-14 | 2025-02-13 | Valid |
-| react-hooks | React Hooks | 2024-12-01 | 2024-12-31 | Expired |
 
 ### Promoted (Tier 2)
 | Slug | Title | Promoted | Has Team Notes |
@@ -86,7 +118,7 @@ If arguments equal `list`:
 ## Examples
 
 ```bash
-# Research a topic
+# Research a topic (checks cache first — instant if cached)
 /research domain-driven design
 /research event sourcing patterns
 /research "React Server Components"
@@ -94,9 +126,9 @@ If arguments equal `list`:
 # Promote to project docs
 /research promote domain-driven-design
 
-# Force refresh
+# Force refresh (always re-researches)
 /research refresh domain-driven-design
 
-# View inventory
+# View inventory (instant — no agent needed)
 /research list
 ```

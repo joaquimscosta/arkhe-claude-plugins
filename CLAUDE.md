@@ -106,7 +106,9 @@ Language-specific programming skills for production-grade code.
 
 ### Spring Boot Plugin
 Domain-Driven Design patterns with Spring Boot 4 implementation.
-- **Skills**: `domain-driven-design`, `spring-boot-data-ddd`, `spring-boot-web-api`, `spring-boot-modulith`, `spring-boot-security`, `spring-boot-observability`, `spring-boot-testing` (all auto-invoked)
+- **Agents**: `spring-boot-reviewer`, `spring-boot-upgrade-verifier`
+- **Commands**: `/spring-review`, `/verify-upgrade`
+- **Skills**: `spring-boot-scanner`, `domain-driven-design`, `spring-boot-data-ddd`, `spring-boot-web-api`, `spring-boot-modulith`, `spring-boot-security`, `spring-boot-observability`, `spring-boot-testing`, `spring-boot-verify` (all auto-invoked)
 - **Use**: DDD architecture, Spring Data, REST APIs, Spring Modulith, Spring Security 7, observability, testing
 
 ### Ralph Plugin
@@ -258,6 +260,10 @@ Script description and usage.
 import json
 import sys
 from pathlib import Path
+
+# For sibling imports (shared utils across scripts in same directory)
+# sys.path.insert(0, str(Path(__file__).resolve().parent))
+# from shared_utils import normalize_slug, get_cache_dir
 
 def main():
     """Main entry point."""
@@ -510,17 +516,18 @@ chmod +x scripts/*.py
 **Skills Development** (most important for skill creation):
 - `docs/SKILL_DEVELOPMENT_BEST_PRACTICES.md` - **PRIMARY GUIDE**: Integrated best practices from official docs and real implementations (custom)
 - `docs/SKILLS.md` - Practical guide to creating and managing Agent Skills in Claude Code (synced)
-- `docs/AGENT_SKILLS_OVERVIEW.md` - Comprehensive guide to Agent Skills architecture (synced)
-- [Official Best Practices](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/best-practices.md) - Anthropic's official skill authoring guide (online)
+- `docs/BEST_PRACTICES.md` - Official best practices for Claude Code (synced)
 
 **Plugin System**:
 - `docs/PLUGINS.md` - Plugin system documentation (synced)
+- `docs/PLUGINS_REFERENCE.md` - Plugin manifest reference (synced)
 - `docs/SUBAGENTS.md` - Agent configuration and usage guide (synced)
-- `docs/COMMANDS.md` - Slash commands reference and development guide (synced)
 - `docs/HOOKS.md` - Event handling documentation (synced)
+- `docs/SETTINGS.md` - Configuration and settings reference (synced)
+- `docs/MCP.md` - MCP server integration guide (synced)
 
 **Development Tools**:
-- `docs/CLAUDE_4_BEST_PRACTICES.md` - Official prompt engineering techniques for Claude 4 models (synced)
+- `docs/CLAUDE_CODE_GUIDE.md` - Curated practitioner's guide to Claude Code V4 (custom)
 
 ### Automated Documentation Sync
 
@@ -531,9 +538,9 @@ The `docs/` directory includes both **custom documentation** (written for this p
 cd docs && ./update-claude-docs.sh
 ```
 
-**Synced files** (7 total):
-- SUBAGENTS.md, PLUGINS.md, HOOKS.md, COMMANDS.md, SKILLS.md
-- AGENT_SKILLS_OVERVIEW.md, CLAUDE_4_BEST_PRACTICES.md
+**Synced files** (8 total):
+- SUBAGENTS.md, PLUGINS.md, HOOKS.md, SKILLS.md
+- SETTINGS.md, MCP.md, PLUGINS_REFERENCE.md, BEST_PRACTICES.md
 
 **Custom files** (never overwritten):
 - SKILL_DEVELOPMENT_BEST_PRACTICES.md, README.md
@@ -554,16 +561,15 @@ See [docs/README.md](docs/README.md) "Maintaining This Documentation" section fo
 
 ## Plugin Versions
 
-All plugins are currently at **version 1.0.0**. When making breaking changes, increment the major version and update `plugin.json`.
+All plugins are at **version 1.0.0** except Ralph (2.0.0). When making breaking changes, increment the major version and update `plugin.json`.
 
 ## Related Documentation
 
 For complete technical specifications:
 - **Plugin System**: `docs/PLUGINS.md`
 - **Agent Configuration**: `docs/SUBAGENTS.md`
-- **Commands Development**: `docs/COMMANDS.md`
 - **Skill Development**: `docs/SKILL_DEVELOPMENT_BEST_PRACTICES.md`
-- **Prompt Engineering**: `docs/CLAUDE_4_BEST_PRACTICES.md`
+- **Best Practices**: `docs/BEST_PRACTICES.md`
 - **Installation Guide**: `INSTALLATION.md`
 - **Main README**: `README.md`
 

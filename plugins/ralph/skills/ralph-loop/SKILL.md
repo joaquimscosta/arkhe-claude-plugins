@@ -1,6 +1,6 @@
 ---
 name: ralph-loop
-description: Autonomous development loop with fresh context per iteration. Use when user runs /ralph command, mentions "ralph loop", "autonomous loop", "hat-lite", "builder verifier", or wants iterative autonomous development with task tracking.
+description: Execute an autonomous development loop that picks one task per iteration, implements it, verifies it, and commits the result — each iteration in a fresh context window. Use when user runs /ralph, mentions "ralph loop", "autonomous loop", "builder verifier", "run tasks automatically", "iterate on tasks", "develop autonomously", or wants an automated build-verify-commit cycle with task tracking.
 ---
 
 # Ralph Loop Execution Protocol
@@ -35,8 +35,8 @@ Each iteration runs in a **fresh context window**:
 
 | Role | When | Responsibility |
 |------|------|----------------|
-| **Builder** | 70% of iteration | Implement ONE task |
-| **Verifier** | 30% of iteration | Review, update, commit |
+| **Builder** | ~65% of iteration | Implement ONE task |
+| **Verifier** | ~35% of iteration | Review, update, commit |
 
 ## Key Files
 
@@ -76,30 +76,16 @@ RALPH_COMPLETE: All tasks verified
 
 ## Commands
 
-| Command | Action |
-|---------|--------|
-| `/ralph run [N]` | Start loop with N iterations |
-| `/ralph status` | Show task completion progress |
-| `/ralph init` | Initialize Ralph in existing project |
-| `/ralph taskset new` | Create new task set |
-| `/ralph taskset list` | List all task sets |
-| `/ralph taskset switch` | Switch active task set |
-| `/ralph add-task` | Add task to current set |
-| `/ralph remember` | Save insight to memories |
-| `/ralph memories` | View memories |
+Subcommands: `/ralph run [N]`, `/ralph status`, `/ralph init`, `/ralph taskset <new|list|switch|delete>`, `/ralph add-task`, `/ralph remember`, `/ralph memories`.
 
 ## Workflow Details
 
-See [WORKFLOW.md](WORKFLOW.md) for detailed iteration steps.
-
-## Hat Definitions
-
-See [HATS.md](HATS.md) for Builder/Verifier persona details.
+See [WORKFLOW.md](WORKFLOW.md) for the 5-phase iteration lifecycle (Orient, Build, Verify, Learn, Decide) and Hat-Lite role definitions.
 
 ## Examples
 
-See [EXAMPLES.md](EXAMPLES.md) for usage scenarios.
+See [EXAMPLES.md](EXAMPLES.md) for web app, API, resumption, and mid-loop status checking scenarios.
 
 ## Troubleshooting
 
-See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for common issues.
+See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for immediate exit, premature completion, infinite loop, and context issues.

@@ -27,37 +27,11 @@ Interactive wizard to create a Product Requirements Document and set up your pro
 
 ## Discovery Questions
 
-The wizard will ask about:
-
-0. **Task Set Name** - What should this collection be called? (default: "initial")
-1. **Problem** - What are you solving?
-2. **Audience** - Who is the user?
-3. **Features** - What are the 3-5 core features?
-4. **Tech Stack** - Framework, language, tools?
-5. **Architecture** - Frontend only? Fullstack? API?
-6. **UI/UX** - Design preferences?
-7. **Auth** - Authentication needed?
-8. **Integrations** - Third-party services?
-9. **Success Criteria** - What defines "done"?
+Ask 10 discovery questions (task set name, problem, audience, features, tech stack, architecture, UI/UX, auth, integrations, success criteria). See the ralph-prd skill's [WORKFLOW.md](../skills/ralph-prd/WORKFLOW.md) for question details and good answer examples.
 
 ## Output Files
 
-After completion, your project will have:
-
-```
-your-project/
-├── PROMPT.md                          # Instructions for each iteration
-├── ralph.sh                           # Loop runner (executable)
-└── .ralph/
-    ├── current-taskset -> tasksets/initial  # Symlink to active taskset
-    └── tasksets/
-        └── initial/                   # Your task set
-            ├── tasks.json             # Task list (JSON)
-            ├── prd.md                 # Requirements (Markdown)
-            ├── memories.md            # Persistent learnings
-            ├── config.json            # Ralph settings
-            └── activity.log           # Empty, ready for logging
-```
+See the ralph-prd skill's [SKILL.md](../skills/ralph-prd/SKILL.md#what-it-creates) "What It Creates" section for the full directory structure. Use [templates/](../skills/ralph-prd/templates/) for generating each file.
 
 ## Implementation
 
@@ -185,15 +159,7 @@ In this case:
 
 ## Task Categories
 
-Generated tasks use these categories:
-
-| Category | Description |
-|----------|-------------|
-| `setup` | Project initialization |
-| `feature` | Core functionality |
-| `integration` | External services |
-| `styling` | UI/UX work |
-| `testing` | Test coverage |
+Categories: `setup`, `feature`, `integration`, `styling`, `testing`. See [WORKFLOW.md](../skills/ralph-prd/WORKFLOW.md) for details.
 
 ## Tech Stack Defaults
 

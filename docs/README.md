@@ -114,6 +114,20 @@ Official prompt engineering guide for Claude 4 models.
 
 ---
 
+### [Claude Code V4 Guide](./CLAUDE_CODE_GUIDE.md)
+
+Curated practitioner's guide covering Claude Code configuration, extensibility, and V4 features.
+
+**Topics covered:**
+- CLAUDE.md hierarchy and security gatekeeper patterns
+- MCP servers, commands, skills, hooks, and LSP
+- V4: MCP Tool Search, custom agents, session teleportation
+- Background tasks, custom keybindings, and environment variables
+
+**Best for:** Understanding Claude Code features end-to-end with practical tips and code examples
+
+---
+
 ## Plugin Development Resources
 
 Now that you understand the foundational concepts and specialized features, explore the reference implementations that demonstrate these patterns in practice.
@@ -396,6 +410,16 @@ This workflow uses both `git` and `review` plugins together, demonstrating how m
 
 ---
 
+## Environment Setup
+
+LSP (Language Server Protocol) setup guides for configuring language intelligence in Claude Code projects.
+
+- [Java LSP Setup](./lsp-setup/JAVA_LSP_SETUP.md) - Configure Java language server for code intelligence
+- [Kotlin LSP Setup](./lsp-setup/KOTLIN_LSP_SETUP.md) - Configure Kotlin language server for code intelligence
+- [TypeScript LSP Setup](./lsp-setup/TYPESCRIPT_LSP_SETUP.md) - Configure TypeScript language server for code intelligence
+
+---
+
 ## Additional Resources
 
 ### Official Claude Code Documentation
@@ -445,6 +469,7 @@ The following files are automatically synced from official Claude Code documenta
 These files contain project-specific content and are **never** modified by the sync script:
 
 - **SKILL_DEVELOPMENT_BEST_PRACTICES.md** - Lessons learned from implementations
+- **CLAUDE_CODE_GUIDE.md** - Curated practitioner's guide to Claude Code V4 features
 - **README.md** - This file - developer documentation index
 
 ### How to Update Documentation

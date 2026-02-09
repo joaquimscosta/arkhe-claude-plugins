@@ -147,28 +147,32 @@ mkdir my-api && cd my-api
       "category": "setup",
       "description": "Initialize Node.js project",
       "steps": ["npm init", "Install Express and TypeScript", "Configure tsconfig"],
-      "passes": false
+      "passes": false,
+      "iteration_completed": null
     },
     {
       "id": "feat-001",
       "category": "feature",
       "description": "Create user CRUD endpoints",
       "steps": ["GET /users", "GET /users/:id", "POST /users", "PUT /users/:id", "DELETE /users/:id"],
-      "passes": false
+      "passes": false,
+      "iteration_completed": null
     },
     {
       "id": "feat-002",
       "category": "feature",
       "description": "Add request validation",
       "steps": ["Install zod", "Create user schema", "Add validation middleware"],
-      "passes": false
+      "passes": false,
+      "iteration_completed": null
     },
     {
       "id": "test-001",
       "category": "testing",
       "description": "Add API tests",
       "steps": ["Install vitest and supertest", "Write endpoint tests", "Achieve >80% coverage"],
-      "passes": false
+      "passes": false,
+      "iteration_completed": null
     }
   ]
 }

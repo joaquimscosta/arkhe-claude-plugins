@@ -76,12 +76,12 @@ This example creates a skill that teaches Claude to explain code using visual di
 
 Where you store a skill determines who can use it:
 
-| Location   | Path                                             | Applies to                     |
-| :--------- | :----------------------------------------------- | :----------------------------- |
-| Enterprise | See [managed settings](/en/iam#managed-settings) | All users in your organization |
-| Personal   | `~/.claude/skills/<skill-name>/SKILL.md`         | All your projects              |
-| Project    | `.claude/skills/<skill-name>/SKILL.md`           | This project only              |
-| Plugin     | `<plugin>/skills/<skill-name>/SKILL.md`          | Where plugin is enabled        |
+| Location   | Path                                                     | Applies to                     |
+| :--------- | :------------------------------------------------------- | :----------------------------- |
+| Enterprise | See [managed settings](/en/permissions#managed-settings) | All users in your organization |
+| Personal   | `~/.claude/skills/<skill-name>/SKILL.md`                 | All your projects              |
+| Project    | `.claude/skills/<skill-name>/SKILL.md`                   | This project only              |
+| Plugin     | `<plugin>/skills/<skill-name>/SKILL.md`                  | Where plugin is enabled        |
 
 When skills share the same name across levels, higher-priority locations win: enterprise > personal > project. Plugin skills use a `plugin-name:skill-name` namespace, so they cannot conflict with other levels. If you have files in `.claude/commands/`, those work the same way, but if a skill and a command share the same name, the skill takes precedence.
 
@@ -105,6 +105,14 @@ The `SKILL.md` contains the main instructions and is required. Other files are o
 
 <Note>
   Files in `.claude/commands/` still work and support the same [frontmatter](#frontmatter-reference). Skills are recommended since they support additional features like supporting files.
+</Note>
+
+#### Skills from additional directories
+
+Skills defined in `.claude/skills/` within directories added via `--add-dir` are loaded automatically and picked up by live change detection, so you can edit them during a session without restarting.
+
+<Note>
+  CLAUDE.md files from `--add-dir` directories are not loaded by default. To load them, set `CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1`. See [Load memory from additional directories](/en/memory#load-memory-from-additional-directories).
 </Note>
 
 ## Configure skills
@@ -175,7 +183,7 @@ All fields are optional. Only `description` is recommended so Claude knows when 
 | `model`                    | No          | Model to use when this skill is active.                                                                                                               |
 | `context`                  | No          | Set to `fork` to run in a forked subagent context.                                                                                                    |
 | `agent`                    | No          | Which subagent type to use when `context: fork` is set.                                                                                               |
-| `hooks`                    | No          | Hooks scoped to this skill's lifecycle. See [Hooks](/en/hooks) for configuration format.                                                              |
+| `hooks`                    | No          | Hooks scoped to this skill's lifecycle. See [Hooks in skills and agents](/en/hooks#hooks-in-skills-and-agents) for configuration format.              |
 
 #### Available string substitutions
 
@@ -409,7 +417,7 @@ The `agent` field specifies which subagent configuration to use. Options include
 
 ### Restrict Claude's skill access
 
-By default, Claude can invoke any skill that doesn't have `disable-model-invocation: true` set. Skills that define `allowed-tools` grant Claude access to those tools without per-use approval when the skill is active. Your [permission settings](/en/iam) still govern baseline approval behavior for all other tools. Built-in commands like `/compact` and `/init` are not available through the Skill tool.
+By default, Claude can invoke any skill that doesn't have `disable-model-invocation: true` set. Skills that define `allowed-tools` grant Claude access to those tools without per-use approval when the skill is active. Your [permission settings](/en/permissions) still govern baseline approval behavior for all other tools. Built-in commands like `/compact` and `/init` are not available through the Skill tool.
 
 Three ways to control which skills Claude can invoke:
 
@@ -420,7 +428,7 @@ Three ways to control which skills Claude can invoke:
 Skill
 ```
 
-**Allow or deny specific skills** using [permission rules](/en/iam):
+**Allow or deny specific skills** using [permission rules](/en/permissions):
 
 ```
 # Allow only specific skills
@@ -445,7 +453,7 @@ Skills can be distributed at different scopes depending on your audience:
 
 * **Project skills**: Commit `.claude/skills/` to version control
 * **Plugins**: Create a `skills/` directory in your [plugin](/en/plugins)
-* **Managed**: Deploy organization-wide through [managed settings](/en/iam#managed-settings)
+* **Managed**: Deploy organization-wide through [managed settings](/en/permissions#managed-settings)
 
 ### Generate visual output
 
@@ -656,9 +664,9 @@ If Claude uses your skill when you don't want it:
 
 ### Claude doesn't see all my skills
 
-Skill descriptions are loaded into context so Claude knows what's available. If you have many skills, they may exceed the character budget (default 15,000 characters). Run `/context` to check for a warning about excluded skills.
+Skill descriptions are loaded into context so Claude knows what's available. If you have many skills, they may exceed the character budget. The budget scales dynamically at 2% of the context window, with a fallback of 16,000 characters. Run `/context` to check for a warning about excluded skills.
 
-To increase the limit, set the `SLASH_COMMAND_TOOL_CHAR_BUDGET` environment variable.
+To override the limit, set the `SLASH_COMMAND_TOOL_CHAR_BUDGET` environment variable.
 
 ## Related resources
 
@@ -667,4 +675,4 @@ To increase the limit, set the `SLASH_COMMAND_TOOL_CHAR_BUDGET` environment vari
 * **[Hooks](/en/hooks)**: automate workflows around tool events
 * **[Memory](/en/memory)**: manage CLAUDE.md files for persistent context
 * **[Interactive mode](/en/interactive-mode#built-in-commands)**: built-in commands and shortcuts
-* **[Permissions](/en/iam)**: control tool and skill access
+* **[Permissions](/en/permissions)**: control tool and skill access

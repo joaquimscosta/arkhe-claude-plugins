@@ -1,6 +1,6 @@
 {
   "name": "ai",
-  "description": "AI engineering toolkit",
+  "description": "AI engineering toolkit for production-ready LLM applications",
   "version": "1.0.0",
   "author": {
     "name": "Arkhe"

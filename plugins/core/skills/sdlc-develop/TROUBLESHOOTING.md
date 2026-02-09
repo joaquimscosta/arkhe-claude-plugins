@@ -84,7 +84,7 @@ Common issues and solutions when using the `/develop` command.
 
 **Symptom:** Error when generating spec files
 
-**Solution:** Templates should be at `plugins/core/skills/sdlc-develop/templates/`. Verify plugin installation:
+**Solution:** Templates should be in the `templates/` directory relative to this skill. Verify plugin installation:
 ```bash
 /plugin uninstall core@arkhe-claude-plugins
 /plugin install core@arkhe-claude-plugins
