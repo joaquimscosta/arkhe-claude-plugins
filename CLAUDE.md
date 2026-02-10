@@ -515,38 +515,38 @@ chmod +x scripts/*.py
 
 **Skills Development** (most important for skill creation):
 - `docs/SKILL_DEVELOPMENT_BEST_PRACTICES.md` - **PRIMARY GUIDE**: Integrated best practices from official docs and real implementations (custom)
-- `docs/SKILLS.md` - Practical guide to creating and managing Agent Skills in Claude Code (synced)
-- `docs/BEST_PRACTICES.md` - Official best practices for Claude Code (synced)
+- `docs/reference/SKILLS.md` - Practical guide to creating and managing Agent Skills in Claude Code (synced)
+- `docs/reference/BEST_PRACTICES.md` - Official best practices for Claude Code (synced)
 
 **Plugin System**:
-- `docs/PLUGINS.md` - Plugin system documentation (synced)
-- `docs/PLUGINS_REFERENCE.md` - Plugin manifest reference (synced)
-- `docs/SUBAGENTS.md` - Agent configuration and usage guide (synced)
-- `docs/HOOKS.md` - Event handling documentation (synced)
-- `docs/SETTINGS.md` - Configuration and settings reference (synced)
-- `docs/MCP.md` - MCP server integration guide (synced)
+- `docs/reference/PLUGINS.md` - Plugin system documentation (synced)
+- `docs/reference/PLUGINS_REFERENCE.md` - Plugin manifest reference (synced)
+- `docs/reference/SUBAGENTS.md` - Agent configuration and usage guide (synced)
+- `docs/reference/HOOKS.md` - Event handling documentation (synced)
+- `docs/reference/SETTINGS.md` - Configuration and settings reference (synced)
+- `docs/reference/MCP.md` - MCP server integration guide (synced)
 
 **Development Tools**:
 - `docs/CLAUDE_CODE_GUIDE.md` - Curated practitioner's guide to Claude Code V4 (custom)
 
 ### Automated Documentation Sync
 
-The `docs/` directory includes both **custom documentation** (written for this project) and **synced documentation** (automated copies of official Claude Code documentation).
+Synced documentation lives in `docs/reference/` (automated copies of official Claude Code documentation). Custom documentation stays in `docs/`.
 
 **To update synced documentation**:
 ```bash
-cd docs && ./update-claude-docs.sh
+cd docs/reference && ./update-claude-docs.sh
 ```
 
-**Synced files** (8 total):
+**Synced files** (in `docs/reference/`, 8 total):
 - SUBAGENTS.md, PLUGINS.md, HOOKS.md, SKILLS.md
 - SETTINGS.md, MCP.md, PLUGINS_REFERENCE.md, BEST_PRACTICES.md
 
-**Custom files** (never overwritten):
-- SKILL_DEVELOPMENT_BEST_PRACTICES.md, README.md
+**Custom files** (in `docs/`, never overwritten):
+- SKILL_DEVELOPMENT_BEST_PRACTICES.md, CLAUDE_CODE_GUIDE.md, README.md
 
 **To add new documentation URLs**:
-1. Edit `docs/update-claude-docs.sh` and add to `URL_MAPPINGS` array
+1. Edit `docs/reference/update-claude-docs.sh` and add to `URL_MAPPINGS` array
 2. Run `./update-claude-docs.sh` to download
 3. Update README.md, CLAUDE.md, and docs/README.md to reference new file
 
@@ -566,10 +566,10 @@ All plugins are at **version 1.0.0** except Ralph (2.0.0). When making breaking 
 ## Related Documentation
 
 For complete technical specifications:
-- **Plugin System**: `docs/PLUGINS.md`
-- **Agent Configuration**: `docs/SUBAGENTS.md`
+- **Plugin System**: `docs/reference/PLUGINS.md`
+- **Agent Configuration**: `docs/reference/SUBAGENTS.md`
 - **Skill Development**: `docs/SKILL_DEVELOPMENT_BEST_PRACTICES.md`
-- **Best Practices**: `docs/BEST_PRACTICES.md`
+- **Best Practices**: `docs/reference/BEST_PRACTICES.md`
 - **Installation Guide**: `INSTALLATION.md`
 - **Main README**: `README.md`
 

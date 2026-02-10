@@ -1,12 +1,12 @@
 # Agent Skill Development: Best Practices
 
-**Primary Source**: [SKILLS.md](./SKILLS.md) (Claude Code-specific)
-**Architecture Reference**: [BEST_PRACTICES.md](./BEST_PRACTICES.md) (Claude Code best practices)
+**Primary Source**: [SKILLS.md](./reference/SKILLS.md) (Claude Code-specific)
+**Architecture Reference**: [BEST_PRACTICES.md](./reference/BEST_PRACTICES.md) (Claude Code best practices)
 **Official Best Practices**: [Anthropic Docs](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/best-practices)
 **Date**: 2026-01-28
 **Version**: 3.0
 
-> **Scope**: This document focuses on **Claude Code plugin development**. For general Claude Code best practices, see [BEST_PRACTICES.md](./BEST_PRACTICES.md).
+> **Scope**: This document focuses on **Claude Code plugin development**. For general Claude Code best practices, see [BEST_PRACTICES.md](./reference/BEST_PRACTICES.md).
 
 ---
 
@@ -749,7 +749,7 @@ hooks:
           command: "./scripts/lint-file.sh $TOOL_INPUT"
 ```
 
-For complete hook configuration reference, see [HOOKS.md](./HOOKS.md).
+For complete hook configuration reference, see [HOOKS.md](./reference/HOOKS.md).
 
 ### Skill-Subagent Integration
 
@@ -796,7 +796,7 @@ This runs the Skill using your custom `code-reviewer` agent in an isolated conte
 | Skills in subagent | You want a subagent to always have certain Skills available |
 | Skill in forked context | You want a specific Skill to run in isolation with a specific agent |
 
-For complete subagent configuration, see [SUBAGENTS.md](./SUBAGENTS.md).
+For complete subagent configuration, see [SUBAGENTS.md](./reference/SUBAGENTS.md).
 
 ---
 
@@ -1123,10 +1123,10 @@ Error output
 - [skill-creator](https://github.com/anthropics/skills/tree/main/skill-creator) - Official reference implementation
 
 **Local Documentation**:
-- [SKILLS.md](./SKILLS.md) - Claude Code-specific guide
-- [BEST_PRACTICES.md](./BEST_PRACTICES.md) - Claude Code best practices
-- [SUBAGENTS.md](./SUBAGENTS.md) - Subagent configuration
-- [HOOKS.md](./HOOKS.md) - Hook configuration
+- [SKILLS.md](./reference/SKILLS.md) - Claude Code-specific guide
+- [BEST_PRACTICES.md](./reference/BEST_PRACTICES.md) - Claude Code best practices
+- [SUBAGENTS.md](./reference/SUBAGENTS.md) - Subagent configuration
+- [HOOKS.md](./reference/HOOKS.md) - Hook configuration
 
 ---
 

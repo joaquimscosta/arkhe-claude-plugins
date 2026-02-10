@@ -19,7 +19,7 @@ Whether you're building your first plugin or architecting complex multi-componen
 
 Master the core architecture of Claude Code's plugin system. These guides provide essential understanding for all plugin development.
 
-### 📖 [Plugins Guide](./PLUGINS.md)
+### 📖 [Plugins Guide](./reference/PLUGINS.md)
 
 Complete introduction to Claude Code's plugin system.
 
@@ -34,7 +34,7 @@ Complete introduction to Claude Code's plugin system.
 
 ---
 
-### 🤖 [Subagents (Agents) Guide](./SUBAGENTS.md)
+### 🤖 [Subagents (Agents) Guide](./reference/SUBAGENTS.md)
 
 Comprehensive guide to creating and using specialized AI subagents.
 
@@ -49,7 +49,7 @@ Comprehensive guide to creating and using specialized AI subagents.
 
 ---
 
-### ⚡ [Hooks Guide](./HOOKS.md)
+### ⚡ [Hooks Guide](./reference/HOOKS.md)
 
 Learn to customize and extend Claude Code's behavior with event-driven automation.
 
@@ -254,9 +254,9 @@ Choose your learning path based on your goals and experience level.
 
 **Goal**: Understand plugin fundamentals and create your first plugin
 
-1. **Start here:** Read [Plugins Guide](./PLUGINS.md) - Understand plugin architecture and components
-2. **Understand agents:** Review [Subagents Guide](./SUBAGENTS.md) - Learn about specialized AI assistants
-3. **Learn automation:** Explore [Hooks Guide](./HOOKS.md) - Understand event-driven automation
+1. **Start here:** Read [Plugins Guide](./reference/PLUGINS.md) - Understand plugin architecture and components
+2. **Understand agents:** Review [Subagents Guide](./reference/SUBAGENTS.md) - Learn about specialized AI assistants
+3. **Learn automation:** Explore [Hooks Guide](./reference/HOOKS.md) - Understand event-driven automation
 4. **Explore examples:** Browse `core`, `git`, and `review` plugin directories
 5. **Create your first plugin:** Follow the quickstart in Plugins Guide
 6. **Test locally:** Use the marketplace structure to test your plugin
@@ -278,7 +278,7 @@ Choose your learning path based on your goals and experience level.
 
 **Goal**: Create sophisticated model-invoked capabilities
 
-1. **Understand architecture:** Read progressive disclosure section in [Agent Skills Overview](./AGENT_SKILLS_OVERVIEW.md)
+1. **Understand architecture:** Read progressive disclosure section in [Skill Development Best Practices](./SKILL_DEVELOPMENT_BEST_PRACTICES.md)
 2. **Learn best practices:** Study [Skill Development Best Practices](./SKILL_DEVELOPMENT_BEST_PRACTICES.md)
 3. **Examine real implementation:** Explore `doc/skills/diagramming/` or `git/skills/` in detail
 4. **Master token optimization:** Apply three-level loading strategy
@@ -424,12 +424,12 @@ LSP (Language Server Protocol) setup guides for configuring language intelligenc
 
 ### Official Claude Code Documentation
 
-- [Claude Code Plugins Guide](https://docs.claude.com/en/docs/claude-code/plugins) - Also available locally: [PLUGINS.md](./PLUGINS.md)
-- [Subagents Guide](https://docs.claude.com/en/docs/claude-code/sub-agents) - Also available locally: [SUBAGENTS.md](./SUBAGENTS.md)
+- [Claude Code Plugins Guide](https://docs.claude.com/en/docs/claude-code/plugins) - Also available locally: [PLUGINS.md](./reference/PLUGINS.md)
+- [Subagents Guide](https://docs.claude.com/en/docs/claude-code/sub-agents) - Also available locally: [SUBAGENTS.md](./reference/SUBAGENTS.md)
 - [Slash Commands Guide](https://docs.claude.com/en/docs/claude-code/slash-commands) - Also available locally: [COMMANDS.md](./COMMANDS.md)
-- [Skills Guide](https://docs.claude.com/en/docs/claude-code/skills) - Also available locally: [SKILLS.md](./SKILLS.md)
-- [Hooks Guide](https://docs.claude.com/en/docs/claude-code/hooks-guide) - Also available locally: [HOOKS.md](./HOOKS.md)
-- [Settings Guide](https://docs.claude.com/en/docs/claude-code/settings) - Also available locally: [SETTINGS.md](./SETTINGS.md)
+- [Skills Guide](https://docs.claude.com/en/docs/claude-code/skills) - Also available locally: [SKILLS.md](./reference/SKILLS.md)
+- [Hooks Guide](https://docs.claude.com/en/docs/claude-code/hooks-guide) - Also available locally: [HOOKS.md](./reference/HOOKS.md)
+- [Settings Guide](https://docs.claude.com/en/docs/claude-code/settings) - Also available locally: [SETTINGS.md](./reference/SETTINGS.md)
 - [Agent Skills Overview](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview) - Also available locally: [AGENT_SKILLS_OVERVIEW.md](./AGENT_SKILLS_OVERVIEW.md)
 - [Claude 4 Best Practices](https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/claude-4-best-practices) - Also available locally: [CLAUDE_4_BEST_PRACTICES.md](./CLAUDE_4_BEST_PRACTICES.md)
 
@@ -453,23 +453,24 @@ This documentation directory includes both **custom documentation** (written spe
 
 ### Synced Documentation (Auto-Updated)
 
-The following files are automatically synced from official Claude Code documentation using `update-claude-docs.sh`:
+The following files are automatically synced from official Claude Code documentation using `update-claude-docs.sh` and stored in the `reference/` subdirectory:
 
-- **SUBAGENTS.md** - Agent configuration and usage guide
-- **PLUGINS.md** - Plugin system documentation
-- **HOOKS.md** - Event handling documentation
-- **COMMANDS.md** - Slash commands reference
-- **SKILLS.md** - Using Skills in Claude Code
-- **AGENT_SKILLS_OVERVIEW.md** - Agent Skills architecture guide
-- **CLAUDE_4_BEST_PRACTICES.md** - Prompt engineering for Claude 4 models
-- **SETTINGS.md** - Claude Code settings and configuration reference
+- **reference/SUBAGENTS.md** - Agent configuration and usage guide
+- **reference/PLUGINS.md** - Plugin system documentation
+- **reference/HOOKS.md** - Event handling documentation
+- **reference/SKILLS.md** - Using Skills in Claude Code
+- **reference/SETTINGS.md** - Claude Code settings and configuration reference
+- **reference/MCP.md** - MCP server integration guide
+- **reference/PLUGINS_REFERENCE.md** - Plugin manifest reference
+- **reference/BEST_PRACTICES.md** - Official Claude Code best practices
 
 ### Custom Documentation (Never Overwritten)
 
-These files contain project-specific content and are **never** modified by the sync script:
+These files remain in `docs/` and are **never** modified by the sync script:
 
 - **SKILL_DEVELOPMENT_BEST_PRACTICES.md** - Lessons learned from implementations
 - **CLAUDE_CODE_GUIDE.md** - Curated practitioner's guide to Claude Code V4 features
+- **PLAYWRIGHT_CLI.md** - Playwright CLI guide for Claude Code
 - **README.md** - This file - developer documentation index
 
 ### How to Update Documentation
@@ -477,7 +478,7 @@ These files contain project-specific content and are **never** modified by the s
 To sync the latest official Claude Code documentation:
 
 ```bash
-cd docs
+cd docs/reference
 ./update-claude-docs.sh
 ```
 
@@ -498,14 +499,14 @@ cd docs
 
 To add new official Claude Code documentation to the sync system:
 
-1. **Edit the script**: Open `update-claude-docs.sh` and add a new line to the `URL_MAPPINGS` array:
+1. **Edit the script**: Open `reference/update-claude-docs.sh` and add a new line to the `URL_MAPPINGS` array:
    ```bash
    "https://docs.claude.com/path/to/doc.md|YOUR_FILENAME.md"
    ```
 
 2. **Follow naming conventions**: Use `UPPERCASE_WITH_UNDERSCORES.md` format (e.g., `CLAUDE_4_BEST_PRACTICES.md`)
 
-3. **Run the sync script**: Execute `./update-claude-docs.sh` to download the new documentation
+3. **Run the sync script**: Execute `./reference/update-claude-docs.sh` to download the new documentation
 
 4. **Update references**: Add the new file to:
    - Main `README.md` (repository overview)
@@ -539,8 +540,8 @@ Want to contribute to these plugins or create your own?
 ## Questions or Issues?
 
 - Review the [Skill Development Best Practices](./SKILL_DEVELOPMENT_BEST_PRACTICES.md) for common pitfalls
-- Examine the reference implementations (`git`, `review`, `core`, `doc`, `ui`)
-- Check the foundational guides (Plugins, Subagents, Hooks)
+- Examine the reference implementations (`git`, `review`, `core`, `doc`)
+- Check the foundational guides ([Plugins](./reference/PLUGINS.md), [Subagents](./reference/SUBAGENTS.md), [Hooks](./reference/HOOKS.md))
 - Check the official Claude Code documentation
 - Open an issue in the repository
 

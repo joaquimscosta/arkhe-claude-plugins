@@ -132,15 +132,15 @@ If multiple plugins provide commands with similar names, use namespaced invocati
 
 ### Skills Development
 
-- **[Skills Guide](./docs/SKILLS.md)** — Creating and managing Agent Skills
+- **[Skills Guide](./docs/reference/SKILLS.md)** — Creating and managing Agent Skills
 - **[Skill Development Best Practices](./docs/SKILL_DEVELOPMENT_BEST_PRACTICES.md)** — Real-world lessons and token optimization
 - **[Anthropic Skills Repository](https://github.com/anthropics/skills)** — Reference implementations
 
 ### Plugin & Agent Development
 
-- **[Plugins Guide](./docs/PLUGINS.md)** — Plugin system documentation
-- **[Subagents Guide](./docs/SUBAGENTS.md)** — Agent configuration and usage
-- **[Best Practices](./docs/BEST_PRACTICES.md)** — Official Claude Code best practices
+- **[Plugins Guide](./docs/reference/PLUGINS.md)** — Plugin system documentation
+- **[Subagents Guide](./docs/reference/SUBAGENTS.md)** — Agent configuration and usage
+- **[Best Practices](./docs/reference/BEST_PRACTICES.md)** — Official Claude Code best practices
 
 ### Reference
 

@@ -7,7 +7,7 @@
 This guide covers Claude Code configuration, extensibility, and V4-specific features across 13 topics. It serves as a practitioner-oriented companion to the official reference docs already synced in this repository.
 
 **Existing reference docs** (for deep dives into specific topics):
-[SETTINGS.md](./SETTINGS.md) | [MCP.md](./MCP.md) | [SKILLS.md](./SKILLS.md) | [HOOKS.md](./HOOKS.md) | [SUBAGENTS.md](./SUBAGENTS.md) | [BEST_PRACTICES.md](./BEST_PRACTICES.md)
+[SETTINGS.md](./reference/SETTINGS.md) | [MCP.md](./reference/MCP.md) | [SKILLS.md](./reference/SKILLS.md) | [HOOKS.md](./reference/HOOKS.md) | [SUBAGENTS.md](./reference/SUBAGENTS.md) | [BEST_PRACTICES.md](./reference/BEST_PRACTICES.md)
 
 ---
 
@@ -54,7 +54,7 @@ The global `~/.claude/CLAUDE.md` file sits at the top of a four-level memory hie
 | Project | `./CLAUDE.md` | Team-shared instructions |
 | Project Local | `./CLAUDE.local.md` | Personal overrides |
 
-> **Official Reference**: For the complete settings specification, see [SETTINGS.md](./SETTINGS.md).
+> **Official Reference**: For the complete settings specification, see [SETTINGS.md](./reference/SETTINGS.md).
 
 #### Security Rules
 
@@ -165,7 +165,7 @@ claude mcp list
 claude mcp remove <server-name>
 ```
 
-> **Official Reference**: For the complete MCP specification, see [MCP.md](./MCP.md).
+> **Official Reference**: For the complete MCP specification, see [MCP.md](./reference/MCP.md).
 
 #### When NOT to Use MCP
 
@@ -223,7 +223,7 @@ claude mcp remove <server-name>
 
 Commands are personal shortcuts — slash commands that expand to full prompts.
 
-> **Official Reference**: For the complete commands specification, see [PLUGINS_REFERENCE.md](./PLUGINS_REFERENCE.md).
+> **Official Reference**: For the complete commands specification, see [PLUGINS_REFERENCE.md](./reference/PLUGINS_REFERENCE.md).
 
 #### Basic Command
 
@@ -288,7 +288,7 @@ The `!` backtick syntax executes shell commands inline when the command loads, i
 
 Skills are reusable expertise that Claude can invoke automatically based on context.
 
-> **Official Reference**: For the complete skills specification, see [SKILLS.md](./SKILLS.md) and [SKILL_DEVELOPMENT_BEST_PRACTICES.md](./SKILL_DEVELOPMENT_BEST_PRACTICES.md).
+> **Official Reference**: For the complete skills specification, see [SKILLS.md](./reference/SKILLS.md) and [SKILL_DEVELOPMENT_BEST_PRACTICES.md](./SKILL_DEVELOPMENT_BEST_PRACTICES.md).
 
 #### Skill Creation Example
 
@@ -336,7 +336,7 @@ Skills are now automatically discovered from nested `.claude/skills/` directorie
 
 Research shows that context management directly impacts Claude's performance.
 
-> **Official Reference**: For context engineering best practices, see [BEST_PRACTICES.md](./BEST_PRACTICES.md).
+> **Official Reference**: For context engineering best practices, see [BEST_PRACTICES.md](./reference/BEST_PRACTICES.md).
 
 #### Research Findings
 
@@ -374,7 +374,7 @@ Shows `context_window.used_percentage` and `context_window.remaining_percentage`
 
 Hooks provide deterministic enforcement where CLAUDE.md provides suggestions.
 
-> **Official Reference**: For the complete hooks specification, see [HOOKS.md](./HOOKS.md).
+> **Official Reference**: For the complete hooks specification, see [HOOKS.md](./reference/HOOKS.md).
 
 #### CLAUDE.md vs Hooks
 
@@ -502,7 +502,7 @@ export ENABLE_LSP_TOOL=1
 
 MCP Tool Search is the headline V4 feature — an 85% reduction in initial context consumption through lazy tool loading.
 
-> **Official Reference**: For the complete MCP specification, see [MCP.md](./MCP.md).
+> **Official Reference**: For the complete MCP specification, see [MCP.md](./reference/MCP.md).
 
 #### The Problem
 
@@ -576,7 +576,7 @@ Use `/context` to check current token usage.
 
 Custom agents provide context isolation, focused system prompts, and automatic delegation.
 
-> **Official Reference**: For the complete agents specification, see [SUBAGENTS.md](./SUBAGENTS.md).
+> **Official Reference**: For the complete agents specification, see [SUBAGENTS.md](./reference/SUBAGENTS.md).
 
 #### Why Agents?
 
@@ -876,13 +876,13 @@ claude --add-dir ../shared-configs ../team-standards
 
 ### Synced Official Docs (in this repository)
 
-- [SETTINGS.md](./SETTINGS.md) — Claude Code settings and configuration
-- [MCP.md](./MCP.md) — Model Context Protocol reference
-- [SKILLS.md](./SKILLS.md) — Using Skills in Claude Code
-- [HOOKS.md](./HOOKS.md) — Event handling and hooks
-- [SUBAGENTS.md](./SUBAGENTS.md) — Agent configuration and usage
-- [BEST_PRACTICES.md](./BEST_PRACTICES.md) — Context engineering best practices
-- [PLUGINS_REFERENCE.md](./PLUGINS_REFERENCE.md) — Plugins reference
+- [SETTINGS.md](./reference/SETTINGS.md) — Claude Code settings and configuration
+- [MCP.md](./reference/MCP.md) — Model Context Protocol reference
+- [SKILLS.md](./reference/SKILLS.md) — Using Skills in Claude Code
+- [HOOKS.md](./reference/HOOKS.md) — Event handling and hooks
+- [SUBAGENTS.md](./reference/SUBAGENTS.md) — Agent configuration and usage
+- [BEST_PRACTICES.md](./reference/BEST_PRACTICES.md) — Context engineering best practices
+- [PLUGINS_REFERENCE.md](./reference/PLUGINS_REFERENCE.md) — Plugins reference
 
 ### Custom Docs (in this repository)
 

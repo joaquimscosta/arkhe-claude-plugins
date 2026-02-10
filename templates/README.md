@@ -74,4 +74,4 @@ plugin-template/
 
 - [CONTRIBUTING.md](../CONTRIBUTING.md) - Full contribution guide
 - [docs/SKILL_DEVELOPMENT_BEST_PRACTICES.md](../docs/SKILL_DEVELOPMENT_BEST_PRACTICES.md) - Skill guidelines
-- [docs/PLUGINS.md](../docs/PLUGINS.md) - Plugin system documentation
+- [docs/reference/PLUGINS.md](../docs/reference/PLUGINS.md) - Plugin system documentation
