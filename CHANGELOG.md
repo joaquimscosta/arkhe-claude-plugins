@@ -5,6 +5,97 @@ All notable changes to the Arkhe Claude Plugins project will be documented in th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.9.0] - 2026-02-09
+
+### Added
+
+#### Ralph Plugin
+
+- **New plugin: Autonomous development loop** (#21)
+  - Hat-lite builder/verifier system for each iteration
+  - Task set management for isolated development efforts
+  - Persistent memories across iterations
+  - JSON-based task tracking with fresh context per iteration
+  - `ralph-agent` for autonomous development
+  - `/ralph` and `/create-prd` commands
+  - `ralph-loop` and `ralph-prd` skills
+  - Interactive PRD creation wizard
+  - Loop runner script (`ralph.sh`)
+
+#### Design Intent Plugin
+
+- **`stitch-to-react` skill** for converting Google Stitch exports into React components
+  - Extract design tokens from Stitch Tailwind config
+  - Decompose screens into composable React components
+  - Map tokens to project design system (Fluent UI, Material UI, etc.)
+  - Detect and resolve conflicts with existing patterns
+  - Generate TypeScript interfaces and properly typed components
+
+#### Core Plugin
+
+- **`sdlc-develop` enhancements** (#23)
+  - Progressive persistence: save artifacts incrementally at phase checkpoints
+  - Stitch integration: detect UI keywords, offer prompt and screen generation
+  - Crash recovery: create spec directory early in Phase 0 for resume support
+  - Wave-based execution in Phase 4 with checkpoints and resume support
+  - Wave context files (`wave-{N}-context.md`) for session handoff
+  - Wave progress detection in resume mode
+  - `--verify-arch` and `--verify-impl` flags for on-demand verification
+  - Architecture verification (7 checks: key files, components, API contracts, patterns, etc.)
+  - Implementation verification (5 checks: requirements, acceptance criteria, tests, etc.)
+  - `verification-report.md.template` with confidence scoring
+- **Deep-research refactoring** (#24)
+  - Extracted shared utilities into `research_utils.py`
+  - Cache-first approach that skips agent spawning on cache hits
+  - Delegated cache I/O to Python scripts instead of inline file ops
+
+#### Documentation
+
+- **Claude Code V4 practitioner's guide** (`docs/CLAUDE_CODE_GUIDE.md`) (#24)
+  - Covers all 13 parts from "The Complete Guide to Claude Code V4"
+  - CLAUDE.md hierarchy, MCP servers, commands, skills, hooks, LSP, and V4 features
+- **LSP setup guides** moved to `docs/lsp-setup/` subdirectory (#24)
+
+#### CI/CD
+
+- **Plugin release checker** skill and documentation specialist agent (#24)
+
+### Changed
+
+#### Core Plugin
+
+- **`sdlc-develop` skill** (#23)
+  - Updated spec numbering from 2-digit (`NN-`) to 3-digit (`NNN-`) format
+  - Enhanced `api-contract.md.template` with versioning strategy, breaking changes, OpenAPI schema
+  - Enhanced `data-models.md.template` with enums, migration strategy, soft delete patterns, audit fields
+  - Simplified task tracking to use only `TaskCreate`/`TaskUpdate` (removed `tasks.md` checkbox editing)
+  - Merged UI verification into Quality Review checkpoint
+  - Improved `debug` command to delegate to `deep-think-partner` agent
+- **`creating-branch` skill** (#23)
+  - Added Mode 3: detect and select feature specs from `.arkhe.yaml`
+  - Scans `arkhe/specs/` for existing spec directories
+
+#### Ralph Plugin
+
+- **Plugin version**: 1.0.0 → 2.0.0 (refined Hat-lite system and workflow)
+
+#### Documentation
+
+- Synced official Anthropic docs: HOOKS, SETTINGS, PLUGINS_REFERENCE, SUBAGENTS, MCP, SKILLS, BEST_PRACTICES (#24)
+- Renamed spring-boot reference files to UPPERCASE convention (#24)
+- Updated plugin descriptions and README with accurate component counts (16 agents, 34 commands, 30 skills) (#24)
+- Enhanced skill-validator with expanded rules, examples, and troubleshooting (#24)
+- Improved Ralph plugin workflow (replaced HATS.md with WORKFLOW.md, refined PRD skill) (#24)
+- Refined Google Stitch authoring skill and plugin metadata (#24)
+- Removed deprecated skill-creator symlink (#24)
+
+### Fixed
+
+#### Core Plugin
+
+- Fixed deep-research `promote`/`index` script paths to use relative references (#23)
+- Added asset pre-flight check to `stitch-to-react` for missing Stitch exports (#23)
+
 ## [1.8.0] - 2026-02-01
 
 ### Added
@@ -745,7 +836,8 @@ The `/specprep:tasks` command has been removed in favor of automatic command cha
 - **Documentation**: See README.md and docs/ directory
 - **Installation**: See INSTALLATION.md
 
-[Unreleased]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.8.0...HEAD
+[Unreleased]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.9.0...HEAD
+[1.9.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.8.0...v1.9.0
 [1.8.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.7.0...v1.8.0
 [1.7.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.5.0...v1.6.0

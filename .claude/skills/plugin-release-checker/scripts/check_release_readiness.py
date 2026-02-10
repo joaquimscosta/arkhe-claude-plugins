@@ -123,18 +123,40 @@ def parse_frontmatter(content: str) -> Tuple[Optional[Dict], str]:
     fm_text = match.group(1)
     body = content[match.end():]
 
-    # Simple key-value parsing (avoids PyYAML dependency)
+    # Key-value parsing with support for YAML block scalars (avoids PyYAML dependency)
     fm = {}
-    for line in fm_text.split("\n"):
-        line = line.strip()
-        if not line or line.startswith("#"):
+    lines = fm_text.split("\n")
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#"):
+            i += 1
             continue
-        if ":" in line:
-            key, _, value = line.partition(":")
+        if ":" in stripped:
+            key, _, value = stripped.partition(":")
             key = key.strip()
             value = value.strip().strip("'\"")
+
+            # Handle YAML block scalars (> or |)
+            if value in (">", "|", ">-", "|-"):
+                separator = " " if value.startswith(">") else "\n"
+                block_lines = []
+                i += 1
+                while i < len(lines):
+                    next_line = lines[i]
+                    if next_line and not next_line[0].isspace():
+                        break
+                    block_lines.append(next_line.strip())
+                    i += 1
+                value = separator.join(bl for bl in block_lines if bl).strip()
+                if value:
+                    fm[key] = value
+                continue
+
             if value:
                 fm[key] = value
+        i += 1
 
     return fm, body
 
@@ -207,6 +229,7 @@ def check_version_consistency(plugin_name: str, version: str, changelog: str, re
 def check_cross_references(plugin_dir: Path, result: CheckResult) -> None:
     """Check for broken cross-references in markdown files."""
     broken = []
+    fence_pattern = re.compile(r"^\s*(`{3,}|~{3,})")
 
     for md_file in plugin_dir.rglob("*.md"):
         try:
@@ -214,21 +237,31 @@ def check_cross_references(plugin_dir: Path, result: CheckResult) -> None:
         except OSError:
             continue
 
-        # Find markdown links to local files: [text](path.md) or [text](./path.md)
-        links = re.findall(r"\[.*?\]\(([^)]+)\)", content)
-        for link in links:
-            # Skip external URLs, anchors, and variables
-            if link.startswith(("http://", "https://", "#", "$", "mailto:")):
+        # Process line-by-line to skip links inside fenced code blocks
+        in_code_block = False
+        for line in content.split("\n"):
+            fence_match = fence_pattern.match(line)
+            if fence_match:
+                in_code_block = not in_code_block
                 continue
-            # Skip script references like scripts/validate_skill.py
-            if not link.endswith(".md"):
+            if in_code_block:
                 continue
 
-            # Resolve relative to the markdown file's directory
-            target = (md_file.parent / link).resolve()
-            if not target.exists():
-                rel_source = md_file.relative_to(plugin_dir)
-                broken.append(f"{rel_source} → {link}")
+            # Find markdown links to local files: [text](path.md) or [text](./path.md)
+            links = re.findall(r"\[.*?\]\(([^)]+)\)", line)
+            for link in links:
+                # Skip external URLs, anchors, and variables
+                if link.startswith(("http://", "https://", "#", "$", "mailto:")):
+                    continue
+                # Skip non-markdown references
+                if not link.endswith(".md"):
+                    continue
+
+                # Resolve relative to the markdown file's directory
+                target = (md_file.parent / link).resolve()
+                if not target.exists():
+                    rel_source = md_file.relative_to(plugin_dir)
+                    broken.append(f"{rel_source} → {link}")
 
     if broken:
         for ref in broken[:5]:  # Limit to first 5
@@ -314,9 +347,10 @@ def check_python_scripts(plugin_dir: Path, result: CheckResult) -> None:
         rel_path = py_file.relative_to(plugin_dir)
         content = py_file.read_text(encoding="utf-8")
 
-        # Check shebang
-        if not content.startswith("#!/usr/bin/env python3"):
-            issues.append(f"{rel_path}: missing shebang (#!/usr/bin/env python3)")
+        # Check shebang (accept standard python3 or uv run)
+        valid_shebangs = ("#!/usr/bin/env python3", "#!/usr/bin/env -S uv run")
+        if not any(content.startswith(sb) for sb in valid_shebangs):
+            issues.append(f"{rel_path}: missing shebang (#!/usr/bin/env python3 or #!/usr/bin/env -S uv run --script)")
 
         # Check for third-party imports
         forbidden_imports = ["requests", "flask", "django", "fastapi", "numpy", "pandas"]

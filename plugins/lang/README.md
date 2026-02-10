@@ -124,10 +124,6 @@ Contributions are welcome! When adding a new language skill:
 6. Test trigger keywords
 7. Update this README
 
-## Architecture
-
-For technical details about the plugin architecture and skill patterns, see [ARCHITECTURE.md](ARCHITECTURE.md).
-
 ## License
 
 MIT License

@@ -1,6 +1,6 @@
 ---
 name: spring-boot-scanner
-description: Smart code scanner that detects Spring Boot patterns and routes to appropriate skills. Auto-invokes when editing Java or Kotlin files in Spring Boot projects, working with pom.xml/build.gradle containing spring-boot-starter, or when context suggests Spring Boot development. Detects annotations (@RestController, @Entity, @EnableWebSecurity, @SpringBootTest) to determine relevant skills and provides contextual guidance. Uses progressive automation - auto-invokes for low-risk patterns (web-api, data, DDD), confirms before loading high-risk skills (security, testing, verify).
+description: Smart code scanner that detects Spring Boot patterns and routes to appropriate skills. Use when editing Java or Kotlin files in Spring Boot projects, working with pom.xml/build.gradle containing spring-boot-starter, or when context suggests Spring Boot development. Detects annotations (@RestController, @Entity, @EnableWebSecurity, @SpringBootTest) to determine relevant skills and provides contextual guidance. Uses progressive automation - auto-invokes for low-risk patterns (web-api, data, DDD), confirms before loading high-risk skills (security, testing, verify).
 ---
 
 # Spring Boot Scanner
