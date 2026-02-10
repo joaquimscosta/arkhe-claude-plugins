@@ -24,7 +24,7 @@ Principal Engineer code reviewer implementing the "Pragmatic Quality" framework 
 **Use via**: `/agents` interface
 
 #### 2. design-review
-Elite design review specialist conducting comprehensive UI/UX reviews using Playwright MCP for automated browser testing.
+Elite design review specialist conducting comprehensive UI/UX reviews using Playwright CLI for automated browser testing.
 
 **Capabilities**:
 - Live environment interaction testing
@@ -87,7 +87,7 @@ Security-focused code review identifying high-confidence exploitable vulnerabili
 ---
 
 #### 3. /design
-Frontend design review with Playwright automation for interactive testing.
+Frontend design review with Playwright CLI for interactive testing.
 
 **Features**:
 - Live environment testing (requires preview URL)
@@ -105,7 +105,7 @@ Frontend design review with Playwright automation for interactive testing.
 5. Robustness testing (edge cases, error states)
 6. Code health review
 
-**Requirements**: Playwright MCP server (see [MCP Setup](#mcp-requirements))
+**Requirements**: Playwright CLI (see [Browser Automation](#browser-automation))
 
 **Usage**:
 ```bash
@@ -204,26 +204,24 @@ This will show both:
 - **pragmatic-code-review** - Principal Engineer code reviewer
 - **design-review** - Elite design review specialist
 
-## MCP Requirements
+## Browser Automation
 
-### Playwright MCP (design-review command)
+### Playwright CLI (design-review command)
 
-The `/design` command requires the Playwright MCP server for automated browser testing.
+The `/design` command uses Playwright CLI for automated browser testing via Bash.
 
 **Setup**:
-1. Install Playwright MCP server
-2. Configure in your project's `.mcp.json`
-3. Ensure MCP server is running
+1. Install Playwright CLI: `npm install -g @playwright/cli@latest`
+2. Verify: `playwright-cli --help`
 
-**Playwright Tools Used**:
-- `browser_navigate` - Navigate to preview URLs
-- `browser_click/type/select_option` - Interactive testing
-- `browser_take_screenshot` - Visual evidence capture
-- `browser_resize` - Viewport testing
-- `browser_snapshot` - DOM analysis
-- `browser_console_messages` - Error detection
+**Playwright CLI Commands Used**:
+- `playwright-cli open <url>` - Navigate to preview URLs
+- `playwright-cli click <ref>` / `playwright-cli type <text>` / `playwright-cli select <ref> <values>` - Interactive testing
+- `playwright-cli screenshot [filename]` - Visual evidence capture
+- `playwright-cli snapshot` - Accessibility tree / DOM analysis
+- `playwright-cli press <key>` - Keyboard interaction
 
-For detailed Playwright MCP setup, see Playwright MCP documentation.
+For detailed Playwright CLI usage, see [Playwright CLI Guide](../../docs/PLAYWRIGHT_CLI.md).
 
 ## Configuration
 
@@ -289,13 +287,13 @@ If commands aren't recognized after installation:
 If another plugin provides the same command name:
 - Use namespaced invocation: `/review:command-name`
 
-### Playwright MCP Issues
+### Playwright CLI Issues
 
-If `/design` fails:
-1. Verify Playwright MCP server is running
-2. Check `.mcp.json` configuration
+If `/design` fails with browser automation:
+1. Verify Playwright CLI is installed: `playwright-cli --help`
+2. Check active sessions: `playwright-cli list`
 3. Ensure preview environment is accessible
-4. Review MCP server logs
+4. Force-kill stuck sessions: `playwright-cli kill-all`
 
 ### Output Path Issues
 

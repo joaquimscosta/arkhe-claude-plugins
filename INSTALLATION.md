@@ -319,7 +319,7 @@ Skills are automatically invoked when relevant context is detected:
 # Security assessment
 /security
 
-# Design review (requires Playwright MCP)
+# Design review (requires Playwright CLI)
 /design
 
 # Complete codebase documentation
@@ -445,13 +445,13 @@ Skills are model-invoked, so they activate automatically based on context. Make 
 2. Your request clearly matches the skill's use case
 3. You're providing the necessary information (e.g., diagram type for diagramming skill)
 
-### Playwright MCP Issues (for design-review)
+### Playwright CLI Issues (for design-review)
 
 If the `/design` command or `design-review` agent fails:
-1. Verify Playwright MCP server is installed and running
-2. Check `.mcp.json` configuration in your project
+1. Verify Playwright CLI is installed: `playwright-cli --help`
+2. Check active sessions: `playwright-cli list`
 3. Ensure preview environment is accessible
-4. Review MCP server logs for errors
+4. Force-kill stuck sessions: `playwright-cli kill-all`
 
 ---
 

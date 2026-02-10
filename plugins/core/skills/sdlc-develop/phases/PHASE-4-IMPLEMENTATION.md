@@ -333,7 +333,7 @@ Present validation results, then use `AskUserQuestion` tool:
 
 ### UI Verification Workflow (when VERIFY UI selected)
 
-Live UI verification using Playwright MCP tools:
+Live UI verification using Playwright CLI:
 
 1. **Ask for verification type:**
    - **SCREENSHOT** - Navigate to URL and capture screenshot for visual review
@@ -344,20 +344,20 @@ Live UI verification using Playwright MCP tools:
 
    **SCREENSHOT:**
    - Ask for URL to verify
-   - Use `mcp__playwright__browser_navigate` to open the page
-   - Use `mcp__playwright__browser_take_screenshot` to capture
+   - Use `playwright-cli open <url>` to open the page
+   - Use `playwright-cli screenshot [filename]` to capture
    - Present screenshot to user for visual confirmation
 
    **INTERACTIVE:**
    - Ask for URL to verify
    - Navigate to the URL
-   - Use `mcp__playwright__browser_snapshot` to capture accessibility tree
+   - Use `playwright-cli snapshot` to capture accessibility tree
    - Present snapshot and offer to interact with elements
    - User can request clicks, fills, or navigation
 
    **TEST SCENARIO:**
    - Ask user to describe test steps (or reference from task acceptance criteria)
-   - Execute each step using Playwright tools (`browser_navigate`, `browser_snapshot`, `browser_click`, `browser_type`, `browser_fill_form`, `browser_take_screenshot`)
+   - Execute each step using Playwright CLI commands (`playwright-cli open`, `playwright-cli snapshot`, `playwright-cli click`, `playwright-cli type`, `playwright-cli fill`, `playwright-cli screenshot`)
    - Report pass/fail for each step
 
 3. **After verification:** Return to Quality Review checkpoint with results included

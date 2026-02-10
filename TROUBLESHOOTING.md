@@ -138,22 +138,22 @@ ls -la arkhe-claude-plugins/
 
 ## MCP Server Issues
 
-### Playwright MCP Issues (for design-review)
+### Playwright CLI Issues (for design-review)
 
 **Symptom:** `/design` command or `design-review` agent fails.
 
 **Solutions:**
-1. Verify Playwright MCP server is installed
-2. Check `.mcp.json` configuration in your project
+1. Verify Playwright CLI is installed: `playwright-cli --help`
+2. Check active sessions: `playwright-cli list`
 3. Ensure preview environment is accessible
-4. Review MCP server logs for errors
+4. Force-kill stuck sessions: `playwright-cli kill-all`
 
 ```bash
-# Check MCP configuration
-cat .mcp.json
+# Verify Playwright CLI is installed
+playwright-cli --help
 
-# Verify Playwright is installed
-npx playwright --version
+# Check active sessions
+playwright-cli list
 ```
 
 ### GitHub CLI Issues (for git plugin)

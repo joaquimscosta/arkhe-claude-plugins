@@ -50,11 +50,11 @@ The AI is expected to:
 - Verify API usage and best practices
 - Access examples and migration guides
 
-**With Playwright MCP:**
-- Test implementations across viewports
-- Verify responsive behavior
-- Screenshot UI states for review
-- Automate interaction testing
+**With Playwright CLI:**
+- Test implementations across viewports via `playwright-cli open <url>`
+- Verify responsive behavior with viewport configuration
+- Screenshot UI states with `playwright-cli screenshot`
+- Automate interaction testing via CLI commands
 
 **Without MCPs:**
 - Rely on built-in knowledge (may be outdated)

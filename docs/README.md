@@ -214,12 +214,12 @@ Use these plugins as templates for your own development. Each demonstrates diffe
 **Key Features**:
 - Code quality review with Pragmatic Quality framework
 - Security assessment with vulnerability analysis
-- Design review with Playwright MCP integration
+- Design review with Playwright CLI integration
 - Workflow orchestration with task tracking
 
 **Best for learning**:
 - Coordinating agents and commands
-- MCP server integration (Playwright)
+- Playwright CLI integration (via Bash)
 - Customizable output paths
 - Complex review workflows
 
@@ -290,7 +290,7 @@ Choose your learning path based on your goals and experience level.
 **Goal**: Build complex integrations and multi-plugin workflows
 
 1. **Multi-component integration:** Study `review` plugin architecture
-2. **MCP server integration:** Examine Playwright MCP usage in `/design` command
+2. **Playwright CLI integration:** Examine Playwright CLI usage in `/design` command
 3. **Hook automation:** Implement sophisticated automation with hooks
 4. **Workflow orchestration:** Understand `/develop` command patterns
 5. **Multi-plugin workflows:** Combine `git` + `review` for complete development workflow

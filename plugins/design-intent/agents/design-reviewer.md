@@ -1,7 +1,7 @@
 ---
 name: design-reviewer
 description: Reviews UI implementations for visual consistency, accessibility compliance, responsive behavior, and design pattern adherence using confidence-based filtering
-tools: Glob, Grep, LS, Read, NotebookRead, WebFetch, TodoWrite, Bash, mcp__playwright__browser_navigate, mcp__playwright__browser_resize, mcp__playwright__browser_take_screenshot, mcp__playwright__browser_snapshot, mcp__playwright__browser_click, mcp__playwright__browser_type, mcp__playwright__browser_console_messages
+tools: Glob, Grep, LS, Read, NotebookRead, WebFetch, TodoWrite, Bash
 model: sonnet
 color: magenta
 ---
@@ -17,16 +17,16 @@ By default, review recently modified UI files (check git status). The user may s
 When the user provides a preview URL or explicitly requests live testing:
 
 **Setup**
-- Navigate to the provided URL using `mcp__playwright__browser_navigate`
+- Navigate to the provided URL using `playwright-cli open <url>` (via Bash)
 - If no URL provided, check for common dev servers (localhost:3000, localhost:5173, localhost:4200, localhost:8080)
 - If no server detected, ask user for the preview URL
 
 **Verification Workflow**
-1. Take initial snapshot with `mcp__playwright__browser_snapshot`
-2. For **Responsive** issues: Use `mcp__playwright__browser_resize` to test breakpoints (375px mobile, 768px tablet, 1440px desktop)
-3. For **Visual** issues: Use `mcp__playwright__browser_take_screenshot` for evidence
-4. For **Accessibility** issues: Test keyboard navigation with `mcp__playwright__browser_click` and tab sequences
-5. Check console for errors with `mcp__playwright__browser_console_messages`
+1. Take initial snapshot with `playwright-cli snapshot`
+2. For **Responsive** issues: Configure viewport in `playwright-cli.json` or use separate sessions to test breakpoints (375px mobile, 768px tablet, 1440px desktop)
+3. For **Visual** issues: Use `playwright-cli screenshot [filename]` for evidence
+4. For **Accessibility** issues: Test keyboard navigation with `playwright-cli click <ref>` and `playwright-cli press Tab` sequences
+5. Check console for errors via `playwright-cli snapshot` output
 
 **When to Verify Live**
 - User explicitly provides a URL or requests "live review"
