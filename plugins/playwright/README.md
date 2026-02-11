@@ -58,9 +58,17 @@ plugins/playwright/
 │   └── plugin.json
 ├── skills/
 │   └── playwright-cli/
-│       ├── SKILL.md              # Core instructions (~110 lines)
+│       ├── SKILL.md              # Core instructions (~140 lines)
 │       ├── EXAMPLES.md           # 5 workflow examples
-│       └── TROUBLESHOOTING.md    # 6 problem/solution guides
+│       ├── TROUBLESHOOTING.md    # 6 problem/solution guides
+│       └── references/           # 7 deep-dive reference docs
+│           ├── request-mocking.md
+│           ├── running-code.md
+│           ├── session-management.md
+│           ├── storage-state.md
+│           ├── test-generation.md
+│           ├── tracing.md
+│           └── video-recording.md
 └── README.md
 ```
 
