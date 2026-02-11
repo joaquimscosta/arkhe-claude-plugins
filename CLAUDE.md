@@ -107,6 +107,7 @@ Language-specific programming skills for production-grade code.
 
 ### Playwright Plugin
 Browser automation via Playwright CLI for testing, screenshots, and interaction workflows.
+- **Commands**: `/playwright-setup`
 - **Skills**: `playwright-cli` (auto-invoked for browser automation)
 - **Use**: Navigate pages, interact with elements, capture screenshots, test web applications via CLI
 
