@@ -41,7 +41,8 @@ Initial request: $ARGUMENTS
    - Screenshot/image reference provided
    - Figma URL provided
    - Text description of UI to build
-   - Feature spec reference
+   - Lightweight brief or notes (inline or file)
+   - Existing spec from /develop or other workflow (read if present)
 4. If visual reference provided, perform initial visual analysis:
    - Layout structure
    - Key components visible

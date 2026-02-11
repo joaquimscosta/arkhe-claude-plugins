@@ -26,7 +26,7 @@ arkhe-claude-plugins/
 │   ├── review/                    # Code review and quality
 │   ├── google-stitch/             # Google Stitch prompting toolkit
 │   ├── git/                       # Git workflow automation
-│   ├── design-intent/             # Design Intent for SDD
+│   ├── design-intent/             # Design Intent for UI development
 │   ├── lang/                      # Language-specific programming skills
 │   ├── playwright/                # Browser automation via Playwright CLI
 │   ├── spring-boot/               # Domain-Driven Design with Spring Boot 4
@@ -95,8 +95,8 @@ Git workflow automation for commits, pull requests, branching, and changelog gen
 - **Scripts**: 4 shell scripts for git workflow automation
 
 ### Design Intent Plugin
-Design Intent for Spec-Driven Development that combines AI-assisted implementation with persistent pattern memory.
-- **Commands**: `/setup`, `/feature`, `/plan`, `/design-intent`, `/save-patterns`, `/diary`
+Design Intent for UI development that combines AI-assisted implementation with persistent pattern memory.
+- **Commands**: `/setup`, `/design-intent`, `/save-patterns`, `/diary`
 - **Skills**: `design-intent-specialist` (auto-invoked for visual implementation work)
 - **Use**: Build React prototypes from Figma/screenshots, capture proven patterns, and maintain design-intent diaries
 

@@ -47,7 +47,7 @@
 | 🔍 **Review** | Code quality & security review tools. | `pragmatic-code-review`, `/code`, `/security` | [View](./plugins/review/README.md) |
 | 🧵 **Stitch** | Google Stitch workflow toolkit with MCP integration. | `/prompt`, `/stitch-generate`, `generating-stitch-screens` | [View](./plugins/google-stitch/README.md) |
 | 🔀 **Git** | Workflow automation (PRs, Commits, Changelogs). | `/commit`, `/create-pr`, Smart pre-commit | [View](./plugins/git/README.md) |
-| 📐 **Design Intent** | Spec-Driven Development (SDD) & Figma Dialect. | `/feature`, `/plan`, `design-intent-specialist` | [View](./plugins/design-intent/README.md) |
+| 📐 **Design Intent** | UI implementation & Figma Dialect. | `/design-intent`, `/save-patterns`, `design-intent-specialist` | [View](./plugins/design-intent/README.md) |
 | 💻 **Lang** | Language-specific skills (Bash/Shell). | `scripting-bash`, POSIX compliance | [View](./plugins/lang/README.md) |
 | 🎭 **Playwright** | Browser automation via CLI. | `playwright-cli`, `/playwright-setup`, screenshots, testing | [View](./plugins/playwright/README.md) |
 | 🍃 **Spring Boot** | DDD with Spring Boot 4 implementation. | 7 skills: DDD, data, web-api, modulith, security, observability, testing | [View](./plugins/spring-boot/README.md) |
@@ -122,7 +122,7 @@ If multiple plugins provide commands with similar names, use namespaced invocati
 
 # Namespaced invocation (to avoid conflicts)
 /git:commit
-/design-intent:feature
+/design-intent:design-intent
 ```
 
 ---
@@ -164,7 +164,7 @@ arkhe-claude-plugins/
 │   ├── review/                       # 4. Code review tools
 │   ├── google-stitch/                # 5. Google Stitch prompting
 │   ├── git/                          # 6. Git workflow automation
-│   ├── design-intent/                # 7. Design Intent for SDD
+│   ├── design-intent/                # 7. Design Intent for UI development
 │   ├── lang/                         # 8. Language-specific skills
 │   ├── playwright/                   # 9. Browser automation via Playwright CLI
 │   ├── spring-boot/                  # 10. Domain-Driven Design with Spring Boot 4
