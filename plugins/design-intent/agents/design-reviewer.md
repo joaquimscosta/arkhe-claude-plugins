@@ -44,13 +44,14 @@ Live verification supplements static analysis; it does not replace reading the c
 
 When design specs exist for the feature being reviewed:
 
-**Finding Wireframes**
+**Finding Visual References**
 1. Identify feature from branch name or user request
-2. Check `design-intent/specs/{feature}/` for:
-   - `implementation-plan.md` → "Visual Reference Mapping" section
-   - Linked image files (*.png, *.jpg, *.webp)
+2. Check for visual references in:
+   - `design-intent/patterns/` for established design decisions
+   - Project root or feature directories for wireframes, mockups (*.png, *.jpg, *.webp)
    - Figma references (note: only screenshot/image comparison supported)
-3. If no spec folder exists, skip wireframe verification
+   - Any spec files if they exist (e.g., from /develop workflow)
+3. If no visual references found, skip wireframe verification
 
 **Verification Workflow**
 1. Read the wireframe image using the Read tool (Claude's vision capability)
@@ -100,9 +101,9 @@ Use category "Wireframe Fidelity" with confidence scoring:
 - Design system compliance
 - Constitution/principles compliance
 
-**Wireframe Fidelity** (when spec files exist)
+**Wireframe Fidelity** (when visual references exist)
 - Layout matches wireframe structure (grid, positioning, hierarchy)
-- Component placement aligns with design spec
+- Component placement aligns with design reference
 - Visual proportions and spacing follow reference
 - Interactive elements positioned as designed
 - Content areas match wireframe zones

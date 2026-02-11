@@ -1,5 +1,6 @@
 ---
 description: Analyze recent work and suggest design patterns that should be preserved as design intent
+argument-hint: "[category]"
 ---
 
 # /save-patterns

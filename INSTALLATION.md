@@ -111,12 +111,12 @@ Git workflow automation for commits, pull requests, branching, and changelog gen
 ---
 
 ### Design Intent Plugin
-Design Intent for Spec-Driven Development that combines AI-assisted implementation with documented design patterns.
+Design Intent for UI development that combines AI-assisted implementation with documented design patterns.
 
 **Install**: `/plugin install design-intent@arkhe-claude-plugins`
 
 **Components**:
-- 6 commands: `/setup`, `/feature`, `/plan`, `/design-intent`, `/save-patterns`, `/diary`
+- 4 commands: `/setup`, `/design-intent`, `/save-patterns`, `/diary`
 - 1 skill: `design-intent-specialist` (auto-invoked when implementing from visual references)
 
 **Use for:** Capturing team-specific design intent, translating Figma/screenshots into React implementations, and keeping pattern memory plus diaries synchronized.
@@ -260,7 +260,7 @@ You should see commands from installed plugins:
 - **doc**: `/code-explain`, `/diagram`
 - **review**: `/code`, `/security`, `/design`, `/codebase`
 - **git**: `/commit`, `/create-pr`, `/create-branch`, `/changelog`, `/pr-issue-resolve`
-- **design-intent**: `/setup`, `/feature`, `/plan`, `/design-intent`, `/save-patterns`, `/diary`
+- **design-intent**: `/setup`, `/design-intent`, `/save-patterns`, `/diary`
 - **google-stitch**: `/prompt`
 
 ### Check Skills
@@ -351,11 +351,8 @@ Skills are automatically invoked when relevant context is detected:
 # Initialize the design-intent folder structure with memory + templates
 /setup
 
-# Create a feature spec + implementation plan scaffolding
-/feature onboarding dashboard layout
-
 # Turn Figma or screenshot references into React code
-/design https://www.figma.com/file/EXAMPLE
+/design-intent https://www.figma.com/file/EXAMPLE
 
 # Capture successful patterns for reuse
 /save-patterns

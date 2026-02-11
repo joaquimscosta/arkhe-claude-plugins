@@ -58,7 +58,7 @@ Unnecessary modifications are discouraged. Implementation code, refactoring, or 
 * Enabling measurable benefits
 * **Exception**: Changes that improve demo storytelling are always justified
 
-Cosmetic or speculative changes are considered non-compliant unless tied to an approved implementation plan.
+Cosmetic or speculative changes are considered non-compliant unless tied to a documented design decision.
 
 ### Section 1.6: Browser Simulation Constraints
 
@@ -135,7 +135,7 @@ Design and implementation **MUST** consider mobile experience:
 
 Every UI component implementation **MUST**:
 
-* Define responsive behavior in specification
+* Define responsive behavior before implementation
 * Test across target breakpoints
 * Document responsive patterns used
 * Verify accessibility across device sizes
@@ -221,7 +221,7 @@ Improve UI quality by:
 * **Performance**: Optimize images, lazy load, smooth scrolling
 
 Never improve quality by:
-* Adding features not in spec
+* Adding features not in the agreed scope
 * Removing features for cleaner look
 * Changing navigation for aesthetics
 * Prioritizing beauty over function
@@ -250,8 +250,8 @@ The `/design-intent/` folder is the persistent memory of successful design decis
 * NO documentation during iteration - focus on getting it right
 
 **During Documentation Phase** (triggered by user command):
-* `/document-intent` - Document all design dialect patterns
-* `/document-intent [pattern]` - Document specific pattern only
+* `/save-patterns` - Document all design dialect patterns
+* `/save-patterns [pattern]` - Document specific pattern only
 * Capture only successful, proven decisions
 
 ### Section 7.3: What to Document (Design Dialect Only)
