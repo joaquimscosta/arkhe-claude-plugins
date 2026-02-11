@@ -5,18 +5,18 @@
 
 
   <p>
-    <b>Supercharge Claude Code with 80 specialized components</b> — from deep reasoning and autonomous dev loops to<br />
-    DDD architecture, design system enforcement, and git workflow automation. 16 agents, 34 commands, 30 skills across 10 modular plugins.
+    <b>Supercharge Claude Code with 81 specialized components</b> — from deep reasoning and autonomous dev loops to<br />
+    DDD architecture, design system enforcement, and git workflow automation. 16 agents, 34 commands, 31 skills across 11 modular plugins.
   </p>
 
   <p>
     <a href="LICENSE">
       <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License" />
     </a>
-    <img src="https://img.shields.io/badge/Plugins-10-blue" alt="Plugins" />
+    <img src="https://img.shields.io/badge/Plugins-11-blue" alt="Plugins" />
     <img src="https://img.shields.io/badge/Agents-16-purple" alt="Agents" />
     <img src="https://img.shields.io/badge/Commands-34-orange" alt="Commands" />
-    <img src="https://img.shields.io/badge/Skills-30-green" alt="Skills" />
+    <img src="https://img.shields.io/badge/Skills-31-green" alt="Skills" />
     <a href="https://github.com/joaquimscosta/arkhe-claude-plugins/stargazers">
       <img src="https://img.shields.io/github/stars/joaquimscosta/arkhe-claude-plugins" alt="Stars" />
     </a>
@@ -49,6 +49,7 @@
 | 🔀 **Git** | Workflow automation (PRs, Commits, Changelogs). | `/commit`, `/create-pr`, Smart pre-commit | [View](./plugins/git/README.md) |
 | 📐 **Design Intent** | Spec-Driven Development (SDD) & Figma Dialect. | `/feature`, `/plan`, `design-intent-specialist` | [View](./plugins/design-intent/README.md) |
 | 💻 **Lang** | Language-specific skills (Bash/Shell). | `scripting-bash`, POSIX compliance | [View](./plugins/lang/README.md) |
+| 🎭 **Playwright** | Browser automation via CLI. | `playwright-cli`, screenshots, testing | [View](./plugins/playwright/README.md) |
 | 🍃 **Spring Boot** | DDD with Spring Boot 4 implementation. | 7 skills: DDD, data, web-api, modulith, security, observability, testing | [View](./plugins/spring-boot/README.md) |
 | 🔄 **Ralph** | Autonomous development loop with fresh context. | `ralph-agent`, `/ralph`, `/create-prd`, Hat-lite system | [View](./plugins/ralph/README.md) |
 
@@ -84,6 +85,7 @@ You can install all plugins at once:
 /plugin install git@arkhe-claude-plugins
 /plugin install google-stitch@arkhe-claude-plugins
 /plugin install lang@arkhe-claude-plugins
+/plugin install playwright@arkhe-claude-plugins
 /plugin install spring-boot@arkhe-claude-plugins
 /plugin install ralph@arkhe-claude-plugins
 ```
@@ -155,7 +157,7 @@ If multiple plugins provide commands with similar names, use namespaced invocati
 arkhe-claude-plugins/
 ├── .claude-plugin/
 │   └── marketplace.json              # Marketplace catalog
-├── plugins/                          # All 10 plugins
+├── plugins/                          # All 11 plugins
 │   ├── core/                         # 1. Quality control & orchestration
 │   ├── ai/                           # 2. AI engineering toolkit
 │   ├── doc/                          # 3. Documentation toolkit
@@ -164,8 +166,9 @@ arkhe-claude-plugins/
 │   ├── git/                          # 6. Git workflow automation
 │   ├── design-intent/                # 7. Design Intent for SDD
 │   ├── lang/                         # 8. Language-specific skills
-│   ├── spring-boot/                  # 9. Domain-Driven Design with Spring Boot 4
-│   └── ralph/                        # 10. Autonomous development loop
+│   ├── playwright/                   # 9. Browser automation via Playwright CLI
+│   ├── spring-boot/                  # 10. Domain-Driven Design with Spring Boot 4
+│   └── ralph/                        # 11. Autonomous development loop
 ├── docs/                             # Developer documentation
 ├── templates/                        # Plugin templates
 ├── assets/                           # Project assets

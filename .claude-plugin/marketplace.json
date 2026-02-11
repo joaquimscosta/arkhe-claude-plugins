@@ -1,7 +1,7 @@
 {
   "name": "arkhe-claude-plugins",
   "metadata": {
-    "description": "Supercharge Claude Code with 80 specialized components — from deep reasoning and autonomous dev loops to DDD architecture, design system enforcement, and git workflow automation. 16 agents, 34 commands, 30 skills across 10 modular plugins."
+    "description": "Supercharge Claude Code with 81 specialized components — from deep reasoning and autonomous dev loops to DDD architecture, design system enforcement, and git workflow automation. 16 agents, 34 commands, 31 skills across 11 modular plugins."
   },
   "owner": {
     "name": "Arkhe"
@@ -51,6 +51,11 @@
       "name": "spring-boot",
       "source": "./plugins/spring-boot",
       "description": "Domain-Driven Design with Spring Boot 4 (DDD patterns, Spring Data, REST APIs, Spring Modulith)"
+    },
+    {
+      "name": "playwright",
+      "source": "./plugins/playwright",
+      "description": "Browser automation via Playwright CLI for testing, screenshots, and interaction workflows"
     },
     {
       "name": "ralph",

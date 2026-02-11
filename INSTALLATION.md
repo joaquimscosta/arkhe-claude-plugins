@@ -38,6 +38,7 @@ git clone https://github.com/joaquimscosta/arkhe-claude-plugins.git
 /plugin install git@arkhe-claude-plugins
 /plugin install google-stitch@arkhe-claude-plugins
 /plugin install lang@arkhe-claude-plugins
+/plugin install playwright@arkhe-claude-plugins
 /plugin install spring-boot@arkhe-claude-plugins
 ```
 
@@ -147,6 +148,20 @@ Language-specific programming skills for various languages.
 
 ---
 
+### Playwright Plugin
+Browser automation via Playwright CLI for testing, screenshots, and interaction workflows.
+
+**Install**: `/plugin install playwright@arkhe-claude-plugins`
+
+**Requirements**: Node.js 18+, Playwright CLI (`npm install -g @playwright/cli@latest`)
+
+**Components**:
+- 1 skill: `playwright-cli` (auto-invoked for browser automation)
+
+**Use for:** Navigating pages, interacting with elements, capturing screenshots, testing web applications via CLI commands.
+
+---
+
 ### Ralph Plugin
 Autonomous development loop with fresh context per iteration and Hat-lite builder/verifier system.
 
@@ -218,7 +233,7 @@ After installation, verify that everything works:
 /plugin
 ```
 
-You should see all 10 plugins listed.
+You should see all 11 plugins listed.
 
 ### Check Available Agents
 
