@@ -362,6 +362,10 @@ date=$(date +"%Y-%m-%d")
 # (Use sed or awk to insert after section header)
 ```
 
+## Task Tracking
+
+`tasks.json` is the sole source of truth for task state. Do NOT use Claude Code's `TaskCreate`/`TaskUpdate` tools — they are session-scoped and incompatible with Ralph's fresh-context architecture where each iteration runs in a new context window.
+
 ## Notes
 
 - The `/ralph run` command executes an external bash script for true fresh context isolation
