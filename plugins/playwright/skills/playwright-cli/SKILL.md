@@ -7,28 +7,24 @@ description: >-
   "take a screenshot", "browser testing", "headless browser", "web testing",
   "fill out a form", "e2e test", or needs to automate browser workflows
   from the command line.
+allowed-tools: Bash(playwright-cli:*)
 ---
 
 # Playwright CLI
 
-Automate browsers through shell commands executed via the Bash tool.
-Navigate pages, interact with elements, capture screenshots, and test
-web applications — without MCP server configuration.
-
-Both CLI and MCP use the same Playwright engine and do not conflict. See
-`docs/PLAYWRIGHT_CLI.md` (project root) for the complete reference.
+Automate browsers through shell commands via the Bash tool.
 
 ## Core Workflow
 
-Every browser interaction follows this pattern:
+Every interaction follows this pattern:
 
 1. **Open** a page: `playwright-cli open <url>`
 2. **Snapshot** to discover elements: `playwright-cli snapshot`
 3. **Interact** using refs from the snapshot: `playwright-cli click <ref>`
 4. **Verify** the result: `playwright-cli screenshot` or `playwright-cli snapshot`
 
-Always run `snapshot` before interacting — element references (`<ref>`) come
-exclusively from snapshot output and become stale after navigation.
+Always run `snapshot` before interacting — element refs come exclusively from
+snapshot output and become stale after navigation.
 
 ## Command Reference
 
@@ -38,8 +34,7 @@ exclusively from snapshot output and become stale after navigation.
 |---------|-------------|
 | `open <url>` | Open URL in new page |
 | `goto <url>` | Navigate current page |
-| `go-back` | Browser back button |
-| `go-forward` | Browser forward button |
+| `go-back` / `go-forward` | Browser back/forward |
 | `reload` | Reload current page |
 | `close` | Close the browser |
 
@@ -55,16 +50,20 @@ exclusively from snapshot output and become stale after navigation.
 | `select <ref> <values>` | Select dropdown option(s) |
 | `hover <ref>` | Hover over element |
 | `drag <start> <end>` | Drag between elements |
-| `press <key>` | Press key (Enter, Tab, ArrowDown) |
 | `upload <ref> <paths>` | Upload file(s) to file input |
+| `eval "<js>"` | Evaluate JavaScript on page |
+| `eval "<js>" <ref>` | Evaluate JavaScript on element |
+| `dialog-accept [text]` | Accept dialog (optional prompt text) |
+| `dialog-dismiss` | Dismiss dialog |
+| `resize <w> <h>` | Resize browser window |
 
 ### Output
 
 | Command | Description |
 |---------|-------------|
-| `screenshot [filename]` | Capture PNG screenshot |
-| `snapshot` | Accessibility tree — structured, token-efficient |
-| `pdf [filename]` | Generate PDF of the page |
+| `screenshot [ref] [--filename=f]` | Capture PNG screenshot (page or element) |
+| `snapshot [--filename=f]` | Accessibility tree — structured, token-efficient |
+| `pdf [--filename=f]` | Generate PDF of the page |
 
 ### Tabs
 
@@ -75,33 +74,53 @@ exclusively from snapshot output and become stale after navigation.
 | `tab select <index>` | Switch to tab |
 | `tab close [index]` | Close tab |
 
+### Keyboard
+
+```bash
+playwright-cli press Enter          # Enter, Tab, Escape, ArrowDown, etc.
+playwright-cli keydown Shift         # Hold key down
+playwright-cli keyup Shift           # Release key
+```
+
+### Mouse
+
+```bash
+playwright-cli mousemove 150 300     # Move to coordinates
+playwright-cli mousedown [button]    # Press button (left/right)
+playwright-cli mouseup [button]      # Release button
+playwright-cli mousewheel 0 100      # Scroll (deltaX deltaY)
+```
+
 ## Sessions
 
-Sessions persist browser state (cookies, localStorage, open tabs) across
-CLI invocations within the same session.
-
 - **Default session** — all commands share one session automatically
-- **Named sessions** — `playwright-cli -s=<name> open <url>` for parallel instances
-- **Environment variable** — `PLAYWRIGHT_CLI_SESSION=my-project`
+- **Named sessions** — `playwright-cli -s=<name> open <url>` for parallel browsers
 - **List sessions** — `playwright-cli list`
-- **Cleanup** — `playwright-cli close-all` or `playwright-cli kill-all` (force)
+- **Close one** — `playwright-cli -s=<name> close`
+- **Close all** — `playwright-cli close-all`
+- **Force kill** — `playwright-cli kill-all`
+- **Persistent profile** — `playwright-cli open <url> --persistent`
+- **Custom profile** — `playwright-cli open <url> --profile=/path/to/dir`
+- **Delete data** — `playwright-cli delete-data` or `playwright-cli -s=<name> delete-data`
+- **Environment variable** — `PLAYWRIGHT_CLI_SESSION=my-project`
 
 ## Configuration
 
-Create `playwright-cli.json` in the project root:
-
-```json
-{
-  "browserName": "chromium",
-  "headless": true,
-  "actionTimeout": 5000,
-  "navigationTimeout": 60000
-}
+```bash
+playwright-cli open <url> --browser=chromium    # chromium (default), firefox, webkit, chrome, msedge
+playwright-cli open <url> --headed              # Visible browser window
+playwright-cli open <url> --config=config.json  # Custom config file
+playwright-cli open <url> --extension           # Connect via browser extension
 ```
 
-- Use `--headed` flag for a visible browser window (debugging, demos)
-- Environment variables use `PLAYWRIGHT_MCP_` prefix, shared with MCP configuration (e.g., `PLAYWRIGHT_MCP_BROWSER=firefox`)
-- Other options: `allowedOrigins`, `blockedOrigins`, `saveVideo`, `outputDir`
+Create `playwright-cli.json` in the project root for persistent settings:
+
+```json
+{ "browserName": "chromium", "headless": true, "actionTimeout": 5000, "navigationTimeout": 60000 }
+```
+
+Other options: `allowedOrigins`, `blockedOrigins`, `saveVideo`, `outputDir`.
+Environment variables use `PLAYWRIGHT_MCP_` prefix (e.g., `PLAYWRIGHT_MCP_BROWSER=firefox`).
 
 ## Common Pitfalls
 
@@ -114,4 +133,10 @@ Create `playwright-cli.json` in the project root:
 
 - [EXAMPLES.md](EXAMPLES.md) — Multi-step workflow examples
 - [TROUBLESHOOTING.md](TROUBLESHOOTING.md) — Error diagnosis and fixes
-- `docs/PLAYWRIGHT_CLI.md` (project root) — Complete reference
+- [references/request-mocking.md](references/request-mocking.md) — Intercept, mock, and block network requests
+- [references/running-code.md](references/running-code.md) — Execute arbitrary Playwright code via `run-code`
+- [references/session-management.md](references/session-management.md) — Named sessions, isolation, concurrent browsers
+- [references/storage-state.md](references/storage-state.md) — Cookies, localStorage, sessionStorage management
+- [references/test-generation.md](references/test-generation.md) — Generate Playwright test code from CLI actions
+- [references/tracing.md](references/tracing.md) — Capture execution traces for debugging
+- [references/video-recording.md](references/video-recording.md) — Record browser sessions as WebM video
