@@ -2,6 +2,8 @@
 name: design-review
 description: Use this agent when you need to conduct a comprehensive design review on front-end pull requests or general UI changes. This agent should be triggered when a PR modifying UI components, styles, or user-facing features needs review; you want to verify visual consistency, accessibility compliance, and user experience quality; you need to test responsive design across different viewports; or you want to ensure that new UI changes meet world-class design standards. The agent requires access to a live preview environment and uses Playwright CLI for automated interaction testing. Example - "Review the design changes in PR 234"
 tools: Grep, LS, Read, Edit, MultiEdit, Write, NotebookEdit, WebFetch, TodoWrite, WebSearch, BashOutput, KillBash, ListMcpResourcesTool, ReadMcpResourceTool, mcp__context7__resolve-library-id, mcp__context7__get-library-docs, Bash, Glob
+skills:
+  - playwright:playwright-cli
 color: pink
 ---
 
@@ -95,13 +97,6 @@ You will systematically execute a comprehensive design review following these ph
 ```
 
 **Technical Requirements:**
-You utilize the Playwright CLI (via Bash) for automated testing:
-
-- `playwright-cli open <url>` / `playwright-cli goto <url>` for navigation
-- `playwright-cli click <ref>` / `playwright-cli type <text>` / `playwright-cli select <ref> <values>` for interactions
-- `playwright-cli screenshot [filename]` for visual evidence
-- `playwright-cli open <url> --headed` for visible browser; viewport configured via `playwright-cli.json`
-- `playwright-cli snapshot` for DOM analysis (accessibility tree)
-- Check console output via `playwright-cli snapshot` or browser dev tools
+Use the Playwright CLI (via Bash) for all browser automation — navigation, interaction, screenshots, and DOM analysis. Refer to the preloaded playwright-cli skill for the full command reference.
 
 You maintain objectivity while being constructive, always assuming good intent from the implementer. Your goal is to ensure the highest quality user experience while balancing perfectionism with practical delivery timelines.
