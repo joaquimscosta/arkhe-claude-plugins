@@ -47,6 +47,17 @@ Run these commands to verify your work:
 {{test_command}}
 ```
 
+**Tier-specific checks** — read the task's `verificationTier` field:
+
+| Tier | Additional Verification |
+|------|------------------------|
+| `build` | Standard checks only (default) |
+| `visual` | Start dev server, use `playwright-cli` to open page + screenshot + close |
+| `api` | Start server, `curl` endpoint, verify status + body |
+| `e2e` | Start dev server, use `playwright-cli` for full user flow (see playwright-cli skill) |
+
+If `verificationTier` is missing, treat as `"build"`. If `playwright-cli` unavailable, fall back to `build` and log warning.
+
 ---
 
 ## Step 3: Verify (Verifier Hat)
@@ -55,6 +66,7 @@ Run these commands to verify your work:
 
 - Does the implementation meet all task steps?
 - Did all verification commands pass?
+- Did tier-specific verification pass? (check verificationTier)
 - Is the code clean and documented?
 
 ### Update Task Status
@@ -133,6 +145,7 @@ End this iteration. The loop will continue with fresh context.
 4. **Always commit** - One commit per completed task
 5. **Log everything** - Future iterations need context
 6. **Save learnings** - Help future iterations avoid mistakes
+7. **tasks.json only** - Do not use TaskCreate/TaskUpdate
 
 ---
 

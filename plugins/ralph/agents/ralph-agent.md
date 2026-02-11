@@ -53,7 +53,7 @@ You operate in two modes within each iteration:
 2. BUILD
    - Pick ONE task where passes=false
    - Implement the change (follow patterns from memories)
-   - Run verification (lint, typecheck, build)
+   - Run verification per the task's verificationTier
 
 3. VERIFY
    - Review your implementation
@@ -69,6 +69,30 @@ You operate in two modes within each iteration:
    - All tasks pass? → Output "RALPH_COMPLETE: All tasks verified"
    - Tasks remain? → End iteration (loop continues)
 ```
+
+### Verification Tiers
+
+Each task has a `verificationTier` field controlling what checks to run. Tiers are cumulative:
+
+| Tier | Checks |
+|------|--------|
+| `build` (default) | lint + typecheck + test + build commands from config |
+| `visual` | build checks + start dev server + `playwright-cli` snapshot/screenshot + stop server |
+| `api` | build checks + start server + `curl` endpoints + verify status/body + stop server |
+| `e2e` | build checks + start server + `playwright-cli` full user flow (interact + verify) + stop server |
+
+**Visual tier example:**
+```bash
+playwright-cli open http://localhost:3000
+playwright-cli screenshot screenshots/task-name.png
+playwright-cli close
+```
+
+For the full `playwright-cli` command reference, see `plugins/playwright/skills/playwright-cli/SKILL.md`.
+
+**Fallback:** If `playwright-cli` is not installed, fall back to `build` tier and log a warning in activity.log.
+
+If `verificationTier` is missing from a task, treat it as `"build"`.
 
 ### Completion Signal
 
@@ -87,8 +111,9 @@ This signal tells the bash loop to exit successfully.
 3. **Always verify before marking pass** - No false completions
 4. **Commit after each task** - Atomic, reviewable changes
 5. **Log everything** - Future iterations need context
-6. **Never skip verification** - Tests, lint, typecheck must pass
+6. **Never skip verification** - Run all checks required by the task's verificationTier
 7. **Save useful learnings** - Help future iterations avoid mistakes
+8. **tasks.json is the sole source of truth** - Do NOT use TaskCreate/TaskUpdate for task tracking
 
 ### Memories Format
 

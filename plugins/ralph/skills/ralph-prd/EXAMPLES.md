@@ -52,6 +52,7 @@ A: I can add, complete, and delete todos. Data persists on refresh.
         "Install Tailwind CSS",
         "Verify dev server starts"
       ],
+      "verificationTier": "build",
       "passes": false,
       "iteration_completed": null
     },
@@ -64,6 +65,7 @@ A: I can add, complete, and delete todos. Data persists on refresh.
         "Add useState for todos array",
         "Render list of todo items"
       ],
+      "verificationTier": "build",
       "passes": false,
       "iteration_completed": null
     },
@@ -76,6 +78,7 @@ A: I can add, complete, and delete todos. Data persists on refresh.
         "Add input field and submit handler",
         "Connect to parent state"
       ],
+      "verificationTier": "build",
       "passes": false,
       "iteration_completed": null
     },
@@ -88,6 +91,7 @@ A: I can add, complete, and delete todos. Data persists on refresh.
         "Add delete handler",
         "Style completed items differently"
       ],
+      "verificationTier": "build",
       "passes": false,
       "iteration_completed": null
     },
@@ -100,6 +104,7 @@ A: I can add, complete, and delete todos. Data persists on refresh.
         "Load todos from localStorage on mount",
         "Verify persistence across page refresh"
       ],
+      "verificationTier": "build",
       "passes": false,
       "iteration_completed": null
     },
@@ -112,6 +117,24 @@ A: I can add, complete, and delete todos. Data persists on refresh.
         "Style todo items",
         "Add hover and focus states"
       ],
+      "verificationTier": "visual",
+      "passes": false,
+      "iteration_completed": null
+    },
+    {
+      "id": "verify-001",
+      "category": "verification",
+      "description": "Final visual verification of complete todo app",
+      "steps": [
+        "Start dev server",
+        "Open http://localhost:5173 with playwright-cli",
+        "Take snapshot to verify layout renders correctly",
+        "Add a todo item, mark it complete, delete another",
+        "Screenshot final state",
+        "Verify localStorage persistence by refreshing",
+        "Stop dev server"
+      ],
+      "verificationTier": "e2e",
       "passes": false,
       "iteration_completed": null
     }
@@ -170,6 +193,7 @@ A: All endpoints work, JWT auth functional, documented with OpenAPI.
         "Configure tsconfig.json",
         "Create basic server.ts"
       ],
+      "verificationTier": "build",
       "passes": false
     },
     {
@@ -181,6 +205,7 @@ A: All endpoints work, JWT auth functional, documented with OpenAPI.
         "Create user schema",
         "Run initial migration"
       ],
+      "verificationTier": "build",
       "passes": false
     },
     {
@@ -194,6 +219,7 @@ A: All endpoints work, JWT auth functional, documented with OpenAPI.
         "PUT /users/:id",
         "DELETE /users/:id"
       ],
+      "verificationTier": "api",
       "passes": false
     },
     {
@@ -206,6 +232,7 @@ A: All endpoints work, JWT auth functional, documented with OpenAPI.
         "JWT token generation",
         "Auth middleware"
       ],
+      "verificationTier": "api",
       "passes": false
     },
     {
@@ -217,6 +244,7 @@ A: All endpoints work, JWT auth functional, documented with OpenAPI.
         "POST /auth/reset-password",
         "Token generation and validation"
       ],
+      "verificationTier": "build",
       "passes": false
     },
     {
@@ -228,6 +256,7 @@ A: All endpoints work, JWT auth functional, documented with OpenAPI.
         "Create email service",
         "Send verification and reset emails"
       ],
+      "verificationTier": "build",
       "passes": false
     },
     {
@@ -239,6 +268,23 @@ A: All endpoints work, JWT auth functional, documented with OpenAPI.
         "Test auth endpoints",
         "Test user CRUD"
       ],
+      "verificationTier": "build",
+      "passes": false
+    },
+    {
+      "id": "verify-001",
+      "category": "verification",
+      "description": "Final API verification of all endpoints",
+      "steps": [
+        "Start server",
+        "curl POST /auth/register with test user",
+        "curl POST /auth/login and capture JWT",
+        "curl GET /users with JWT header, verify 200",
+        "curl POST /users, PUT /users/:id, DELETE /users/:id",
+        "Verify all status codes and response bodies",
+        "Stop server"
+      ],
+      "verificationTier": "api",
       "passes": false
     }
   ]
@@ -311,4 +357,113 @@ Success:
 - Markdown renders correctly
 - Notes persist across sessions
 - Works on Chrome and Firefox
+```
+
+---
+
+## Anti-Patterns: Discovery Question Specificity
+
+When discovery involves destructive operations, vague questions lead to user confusion about scope.
+
+### File Deletion
+
+❌ **Vague:**
+```
+Q: Should I clean up the old components?
+A: Yes, go ahead.
+```
+
+✅ **Specific:**
+```
+Q: I will delete these 3 files (47 lines total):
+   - src/components/OldHeader.tsx (18 lines)
+   - src/components/OldFooter.tsx (22 lines)
+   - src/components/OldNav.tsx (7 lines)
+   The new Header.tsx, Footer.tsx, and Nav.tsx are NOT affected.
+   Should I proceed?
+A: Yes, delete those 3 files.
+```
+
+### Dependency Removal
+
+❌ **Vague:**
+```
+Q: Should I remove the unused packages?
+A: Sure.
+```
+
+✅ **Specific:**
+```
+Q: I found 2 unused dependencies to remove:
+   - lodash (used nowhere after refactor)
+   - moment (replaced by date-fns in src/utils/date.ts)
+   Keeping: react, react-dom, date-fns, tailwindcss (all actively used).
+   Should I run `npm uninstall lodash moment`?
+A: Yes, remove both.
+```
+
+### Route/Page Removal
+
+❌ **Vague:**
+```
+Q: The old pages aren't needed anymore, right?
+```
+
+✅ **Specific:**
+```
+Q: Task says to remove the legacy dashboard. This will delete:
+   - src/pages/Dashboard.tsx (142 lines) — the old dashboard
+   - src/pages/DashboardSettings.tsx (89 lines) — old settings panel
+   NOT affected: src/pages/NewDashboard.tsx (the replacement)
+   The sidebar link in Layout.tsx will be updated to point to NewDashboard.
+   Should I proceed?
+```
+
+---
+
+## Example: Final Verification Task
+
+Every task set should end with a verification task that confirms the complete application works.
+
+### UI Project (verificationTier: "visual" or "e2e")
+
+```json
+{
+  "id": "verify-001",
+  "category": "verification",
+  "description": "Final visual verification of complete application",
+  "steps": [
+    "Start dev server",
+    "Open http://localhost:5173 with playwright-cli",
+    "Take snapshot to verify page structure",
+    "Screenshot the main page",
+    "Navigate to each route and screenshot",
+    "Verify no blank pages or broken layouts",
+    "Stop dev server"
+  ],
+  "verificationTier": "visual",
+  "passes": false,
+  "iteration_completed": null
+}
+```
+
+### API Project (verificationTier: "api")
+
+```json
+{
+  "id": "verify-001",
+  "category": "verification",
+  "description": "Final API verification of all endpoints",
+  "steps": [
+    "Start server",
+    "curl each endpoint with valid auth",
+    "Verify all return expected status codes",
+    "Verify response bodies match schema",
+    "Test error cases (401, 404, 422)",
+    "Stop server"
+  ],
+  "verificationTier": "api",
+  "passes": false,
+  "iteration_completed": null
+}
 ```

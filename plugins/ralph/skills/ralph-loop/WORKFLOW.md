@@ -37,7 +37,7 @@ Detailed step-by-step guide for each iteration in the Ralph autonomous loop.
 │  │ PHASE 3: VERIFY (25% of iteration)                      │   │
 │  │                                                          │   │
 │  │ 1. Review implementation against acceptance criteria    │   │
-│  │ 2. Visual verification (optional, via agent-browser)    │   │
+│  │ 2. Tier-specific verification (per verificationTier)    │   │
 │  │ 3. Update task status in tasks.json                     │   │
 │  │ 4. Append entry to activity.log                         │   │
 │  │ 5. Stage and commit changes                             │   │
@@ -219,11 +219,12 @@ Verifier Hat → review work → update state → commit
    - Is the code clean and documented?
    - Did all verification commands pass?
 
-2. **Visual Verification (Optional)**
+2. **Visual Verification (Per verificationTier)**
    ```bash
-   # If UI changes, use agent-browser
-   agent-browser open http://localhost:3000
-   agent-browser screenshot screenshots/task-name.png
+   # If verificationTier is "visual" or "e2e", use playwright-cli
+   playwright-cli open http://localhost:3000
+   playwright-cli screenshot screenshots/task-name.png
+   playwright-cli close
    ```
 
 3. **Update Task Status**
@@ -339,6 +340,7 @@ This is detected by `ralph.sh` to exit the loop successfully.
         "Install dependencies",
         "Verify dev server starts"
       ],
+      "verificationTier": "build",
       "passes": true,
       "iteration_completed": 1
     },
@@ -351,6 +353,7 @@ This is detected by `ralph.sh` to exit the loop successfully.
         "Add login form",
         "Implement session management"
       ],
+      "verificationTier": "build",
       "passes": false,
       "iteration_completed": null
     }
@@ -446,3 +449,71 @@ Better to use Tailwind classes directly or use CSS-in-JS.
 - One commit per completed task
 - Clear, descriptive messages
 - Easy to review and revert
+
+---
+
+## Verification Tiers Reference
+
+Tiers are cumulative — each higher tier includes all checks from lower tiers.
+
+```
+build (default)
+  └── lint + typecheck + test + build
+        │
+        ├── visual
+        │     └── + start dev server → playwright-cli snapshot/screenshot → stop server
+        │
+        ├── api
+        │     └── + start server → curl endpoints → verify status/body → stop server
+        │
+        └── e2e
+              └── + start server → playwright-cli full user flow (interact + verify) → stop server
+```
+
+### Tier Details
+
+| Tier | When to Use | Additional Checks |
+|------|------------|-------------------|
+| `build` | Most tasks (logic, refactoring, setup) | Standard lint/typecheck/test/build only |
+| `visual` | UI changes, styling, layout | Open page in browser, capture screenshot, verify rendering |
+| `api` | API endpoints, server responses | `curl` endpoints, check status codes and response bodies |
+| `e2e` | User flows, multi-page interactions | Full browser interaction: navigate, click, fill forms, verify |
+
+### Dev Server Management Pattern
+
+For `visual`, `api`, and `e2e` tiers, manage the dev server within the iteration:
+
+```bash
+# Start dev server in background
+npm run dev &
+DEV_PID=$!
+
+# Wait for server to be ready
+curl --retry 5 --retry-delay 2 --retry-connrefused http://localhost:3000 > /dev/null 2>&1
+
+# ... run tier-specific verification ...
+
+# Stop dev server
+kill $DEV_PID
+```
+
+### Playwright CLI Reference
+
+For `visual` and `e2e` tiers, use the `playwright-cli` skill for browser interaction. See `plugins/playwright/skills/playwright-cli/SKILL.md` for the full command reference.
+
+Common patterns:
+- **Visual:** `open` → `snapshot` → `screenshot` → `close`
+- **E2E:** `open` → `snapshot` → interact (click, type, fill) → verify → `close`
+
+See `plugins/playwright/skills/playwright-cli/EXAMPLES.md` for interaction patterns.
+
+### Fallback Behavior
+
+If `playwright-cli` is not installed:
+1. Fall back to `build` tier checks
+2. Log a warning in activity.log: `WARNING: playwright-cli not available, fell back to build tier`
+3. Do NOT mark the task as failed — build-tier checks are still valid
+
+### Missing verificationTier
+
+If a task has no `verificationTier` field, treat it as `"build"`. This ensures backward compatibility with existing tasks.json files.
