@@ -1,10 +1,10 @@
 ---
-description: Initialize design intent project structure with templates for memory, specs, and design patterns
+description: Initialize design intent project structure with templates for memory, patterns, and session diary
 ---
 
 # /setup
 
-**Purpose**: Initialize the Design Intent for SDD (Spec-Driven Development) structure in your project with smart auto-detection
+**Purpose**: Initialize the Design Intent project structure in your project with smart auto-detection
 
 **Usage**: `/setup`
 
@@ -25,10 +25,6 @@ your-project/
 │   │   ├── constitution.md      # Core development principles
 │   │   ├── team-roles.md        # AI/User collaboration expectations
 │   │   └── project-vision.md    # Your project overview (template)
-│   ├── specs/
-│   │   └── 000-template/
-│   │       ├── feature-spec.md       # Feature specification template
-│   │       └── implementation-plan.md # Implementation plan template
 │   ├── patterns/
 │   │   └── design-intent-template.md  # Pattern documentation template
 │   └── diary/
@@ -113,7 +109,6 @@ Could not determine project type. What best describes your project?
 
 ```bash
 mkdir -p design-intent/memory
-mkdir -p design-intent/specs/000-template
 mkdir -p design-intent/patterns
 mkdir -p design-intent/diary
 ```
@@ -154,14 +149,13 @@ Based on confirmed settings, customize each template:
 ✓ design-intent/memory/constitution.md (customized for React + Fluent UI)
 ✓ design-intent/memory/team-roles.md (MCP-aware)
 ✓ design-intent/memory/project-vision.md (pre-filled from README)
-✓ design-intent/specs/000-template/ (spec templates)
 ✓ design-intent/patterns/design-intent-template.md
 ✓ design-intent/diary/session-template.md
 
 ### Next Steps
 1. Review: design-intent/memory/constitution.md
 2. Refine: design-intent/memory/project-vision.md (add specifics)
-3. Start: /feature [your first feature]
+3. Start: /design-intent [visual reference or description]
 ```
 
 ## Template Locations in Plugin

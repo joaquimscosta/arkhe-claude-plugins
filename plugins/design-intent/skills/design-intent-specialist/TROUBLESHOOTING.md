@@ -26,7 +26,6 @@ Run the setup command to create the design intent structure:
 
 This creates:
 - `/design-intent/memory/` - Constitution and team roles
-- `/design-intent/specs/` - Feature specifications
 - `/design-intent/patterns/` - Design patterns
 - `/design-intent/diary/` - Session documentation
 

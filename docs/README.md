@@ -145,7 +145,7 @@ The Arkhe Claude Plugins marketplace demonstrates all plugin component types acr
 - **git**: 4 commands - `/commit`, `/create-pr`, `/create-branch`, `/changelog`
 - **review**: 4 commands - `/code`, `/security`, `/design`, `/codebase`
 - **google-stitch**: 1 command - `/prompt`
-- **design-intent**: 7 commands - `/setup`, `/feature`, `/plan`, `/design`, `/implement`, `/save-patterns`, `/diary`
+- **design-intent**: 4 commands - `/setup`, `/design-intent`, `/save-patterns`, `/diary`
 
 **Agents** (specialized AI assistants):
 - **ai**: 3 agents - `ai-engineer`, `prompt-engineer`, `context-manager`
@@ -227,13 +227,13 @@ Use these plugins as templates for your own development. Each demonstrates diffe
 
 ---
 
-#### **design-intent** - Spec-Driven Design Workflows
+#### **design-intent** - UI Development Workflows
 
-**Structure**: 7 commands + 1 auto-invoked skill
+**Structure**: 4 commands + 1 auto-invoked skill
 **Complexity**: High
 **Key Features**:
-- `/setup`, `/feature`, and `/plan` commands scaffold design-intent memory plus implementation plans
-- `/design` and `/implement` pair AI execution with documented pattern checks
+- `/setup` scaffolds design-intent memory with constitution, patterns, and diary templates
+- `/design-intent` runs a 7-phase workflow pairing AI execution with documented pattern checks
 - `/save-patterns` captures reusable patterns; `/diary` maintains session handoffs
 - `design-intent-specialist` skill enforces pattern review before implementing from Figma/screenshots
 

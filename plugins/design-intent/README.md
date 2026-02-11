@@ -32,12 +32,11 @@ For backend implementation, use the core plugin (`/develop`) or standard Claude 
 
 ## Background & Credits
 
-This plugin is based on [design-intent-for-sdd](https://github.com/HugoPalomares/design-intent-for-sdd) by Hugo Palomares, which builds upon the Spec-Driven Development (SDD) methodology created by [John Lam](https://github.com/jflam) at GitHub.
+This plugin is inspired by [design-intent-for-sdd](https://github.com/HugoPalomares/design-intent-for-sdd) by Hugo Palomares and the Spec-Driven Development methodology by [John Lam](https://github.com/jflam). The concept of capturing a team's "design dialect" as persistent memory originates from that work.
 
 **Related Resources:**
 
-- [github/spec-kit](https://github.com/github/spec-kit) - The original SDD framework for feature specifications and implementation plans
-- [design-intent-for-sdd](https://github.com/HugoPalomares/design-intent-for-sdd) - The standalone project this plugin was adapted from
+- [design-intent-for-sdd](https://github.com/HugoPalomares/design-intent-for-sdd) - The original project that inspired this plugin
 
 ## What is Design Intent?
 
@@ -114,8 +113,6 @@ Skips exploration and architecture phases.
 For specific tasks, use individual commands:
 
 ```bash
-/feature user authentication flow   # Create UI feature spec
-/plan                               # Generate UI implementation plan
 /save-patterns                      # Capture successful patterns
 /diary                              # Create session diary
 ```
@@ -127,34 +124,23 @@ flowchart TD
     START["What do you need?"] --> Q1{"Starting a<br/>new project?"}
 
     Q1 -->|Yes| SETUP["/setup"]
-    Q1 -->|No| Q2{"Have a visual<br/>reference?"}
+    Q1 -->|No| Q2{"Have a visual<br/>reference or brief?"}
 
-    Q2 -->|"Screenshot/Figma"| Q3{"Need full<br/>exploration?"}
-    Q2 -->|"Just a description"| Q4{"Have a feature<br/>spec already?"}
+    Q2 -->|"Yes, thorough work"| DESIGN_INTENT["/design-intent"]
+    Q2 -->|"Quick change"| DESIGN_INTENT_QUICK["/design-intent --quick"]
 
-    Q3 -->|"Yes, thorough"| DESIGN_INTENT["/design-intent"]
-    Q3 -->|"No, quick impl"| DESIGN_INTENT_QUICK["/design-intent --quick"]
-
-    Q4 -->|No| FEATURE["/feature"]
-    Q4 -->|Yes| PLAN["/plan"]
-
-    PLAN --> DESIGN_INTENT
-    FEATURE --> PLAN
-
-    DESIGN_INTENT --> Q5{"Done implementing?"}
-    Q5 -->|"Want to save patterns"| SAVE["/save-patterns"]
-    Q5 -->|"End of session"| DIARY["/diary"]
+    DESIGN_INTENT --> Q3{"Done implementing?"}
+    DESIGN_INTENT_QUICK --> Q3
+    Q3 -->|"Want to save patterns"| SAVE["/save-patterns"]
+    Q3 -->|"End of session"| DIARY["/diary"]
 
     SETUP:::init
-    FEATURE:::spec
-    PLAN:::spec
     DESIGN_INTENT:::main
     DESIGN_INTENT_QUICK:::main
     SAVE:::capture
     DIARY:::capture
 
     classDef init fill:#e1f5fe,stroke:#0288d1
-    classDef spec fill:#fff3e0,stroke:#f57c00
     classDef main fill:#e3f2fd,stroke:#1976d2,stroke-width:2px
     classDef capture fill:#f3e5f5,stroke:#7b1fa2
 ```
@@ -212,21 +198,16 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-    A["/setup"] --> B["/feature"]
-    B --> C["/plan"]
-    C --> D["/design-intent"]
-    D --> E["/save-patterns"]
-    E --> F["/diary"]
+    A["/setup"] --> B["/design-intent"]
+    B --> C["/save-patterns"]
+    C --> D["/diary"]
 
     A:::init
-    B:::spec
-    C:::spec
-    D:::build
-    E:::capture
-    F:::capture
+    B:::build
+    C:::capture
+    D:::capture
 
     classDef init fill:#e1f5fe
-    classDef spec fill:#fff3e0
     classDef build fill:#e8f5e9
     classDef capture fill:#f3e5f5
 ```
@@ -238,8 +219,6 @@ flowchart TD
 | `/design-intent [ref]` | 7-phase structured UI workflow | Complex UI work needing exploration and architecture |
 | `/design-intent --quick [ref]` | Streamlined 5-phase workflow | Simple changes, known patterns |
 | `/setup` | Initialize design intent structure | Starting a new project |
-| `/feature [desc]` | Create UI feature specification | Defining new UI features |
-| `/plan` | Generate UI implementation plan | After feature spec approved |
 | `/save-patterns` | Extract and document UI patterns | After successful implementation |
 | `/diary` | Create session handoff doc | End of work session |
 
@@ -373,8 +352,6 @@ your-project/
 │   │   ├── constitution.md      # Core development principles (7 Articles)
 │   │   ├── team-roles.md        # AI/User collaboration expectations
 │   │   └── project-vision.md    # Your project overview
-│   ├── specs/
-│   │   └── 000-template/        # Feature spec and plan templates
 │   ├── patterns/
 │   │   └── design-intent-template.md  # Pattern documentation template
 │   └── diary/
@@ -503,11 +480,9 @@ Phase 7: Patterns       → Document patterns
 
 ```text
 1. /setup              → Initialize project structure
-2. /feature            → Create UI feature specification
-3. /plan               → Generate UI implementation plan
-4. /design-intent      → Build the UI feature
-5. /save-patterns      → Capture successful patterns
-6. /diary              → Document session for handoff
+2. /design-intent      → Build the UI feature
+3. /save-patterns      → Capture successful patterns
+4. /diary              → Document session for handoff
 ```
 
 ### Design Intent Pattern
