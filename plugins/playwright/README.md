@@ -14,6 +14,12 @@ The CLI approach is token-efficient (no tool schemas loaded into context) and wo
 - **Playwright CLI**: `npm install -g @playwright/cli@latest`
 - Verify: `playwright-cli --help`
 
+## Available Commands
+
+### `/playwright-setup`
+
+Verify Playwright CLI installation and create a `playwright-cli.json` configuration file. Guides you through browser engine selection, headless mode, output directory, and optional advanced settings (timeouts, video recording, allowed origins).
+
 ## Available Skills
 
 ### Playwright CLI (`playwright-cli`)
@@ -56,11 +62,21 @@ The skill auto-invokes when Claude detects browser automation context. Example p
 plugins/playwright/
 ├── .claude-plugin/
 │   └── plugin.json
+├── commands/
+│   └── playwright-setup.md
 ├── skills/
 │   └── playwright-cli/
-│       ├── SKILL.md              # Core instructions (~110 lines)
+│       ├── SKILL.md              # Core instructions (~140 lines)
 │       ├── EXAMPLES.md           # 5 workflow examples
-│       └── TROUBLESHOOTING.md    # 6 problem/solution guides
+│       ├── TROUBLESHOOTING.md    # 6 problem/solution guides
+│       └── references/           # 7 deep-dive reference docs
+│           ├── request-mocking.md
+│           ├── running-code.md
+│           ├── session-management.md
+│           ├── storage-state.md
+│           ├── test-generation.md
+│           ├── tracing.md
+│           └── video-recording.md
 └── README.md
 ```
 

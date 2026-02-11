@@ -5,8 +5,8 @@
 
 
   <p>
-    <b>Supercharge Claude Code with 81 specialized components</b> — from deep reasoning and autonomous dev loops to<br />
-    DDD architecture, design system enforcement, and git workflow automation. 16 agents, 34 commands, 31 skills across 11 modular plugins.
+    <b>Supercharge Claude Code with 82 specialized components</b> — from deep reasoning and autonomous dev loops to<br />
+    DDD architecture, design system enforcement, and git workflow automation. 16 agents, 35 commands, 31 skills across 11 modular plugins.
   </p>
 
   <p>
@@ -15,7 +15,7 @@
     </a>
     <img src="https://img.shields.io/badge/Plugins-11-blue" alt="Plugins" />
     <img src="https://img.shields.io/badge/Agents-16-purple" alt="Agents" />
-    <img src="https://img.shields.io/badge/Commands-34-orange" alt="Commands" />
+    <img src="https://img.shields.io/badge/Commands-35-orange" alt="Commands" />
     <img src="https://img.shields.io/badge/Skills-31-green" alt="Skills" />
     <a href="https://github.com/joaquimscosta/arkhe-claude-plugins/stargazers">
       <img src="https://img.shields.io/github/stars/joaquimscosta/arkhe-claude-plugins" alt="Stars" />
@@ -49,7 +49,7 @@
 | 🔀 **Git** | Workflow automation (PRs, Commits, Changelogs). | `/commit`, `/create-pr`, Smart pre-commit | [View](./plugins/git/README.md) |
 | 📐 **Design Intent** | Spec-Driven Development (SDD) & Figma Dialect. | `/feature`, `/plan`, `design-intent-specialist` | [View](./plugins/design-intent/README.md) |
 | 💻 **Lang** | Language-specific skills (Bash/Shell). | `scripting-bash`, POSIX compliance | [View](./plugins/lang/README.md) |
-| 🎭 **Playwright** | Browser automation via CLI. | `playwright-cli`, screenshots, testing | [View](./plugins/playwright/README.md) |
+| 🎭 **Playwright** | Browser automation via CLI. | `playwright-cli`, `/playwright-setup`, screenshots, testing | [View](./plugins/playwright/README.md) |
 | 🍃 **Spring Boot** | DDD with Spring Boot 4 implementation. | 7 skills: DDD, data, web-api, modulith, security, observability, testing | [View](./plugins/spring-boot/README.md) |
 | 🔄 **Ralph** | Autonomous development loop with fresh context. | `ralph-agent`, `/ralph`, `/create-prd`, Hat-lite system | [View](./plugins/ralph/README.md) |
 
