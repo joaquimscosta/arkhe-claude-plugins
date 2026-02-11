@@ -18,8 +18,8 @@ This repository uses a **marketplace-based plugin system** where each plugin is 
 ```
 arkhe-claude-plugins/
 ├── .claude-plugin/
-│   └── marketplace.json          # Marketplace catalog (10 plugins)
-├── plugins/                       # All 10 plugins
+│   └── marketplace.json          # Marketplace catalog (11 plugins)
+├── plugins/                       # All 11 plugins
 │   ├── core/                      # Quality control and workflow orchestration
 │   ├── ai/                        # AI engineering and LLM development
 │   ├── doc/                       # Documentation generation
@@ -28,6 +28,7 @@ arkhe-claude-plugins/
 │   ├── git/                       # Git workflow automation
 │   ├── design-intent/             # Design Intent for SDD
 │   ├── lang/                      # Language-specific programming skills
+│   ├── playwright/                # Browser automation via Playwright CLI
 │   ├── spring-boot/               # Domain-Driven Design with Spring Boot 4
 │   └── ralph/                     # Autonomous development loop
 ├── docs/                          # Developer documentation
@@ -104,6 +105,12 @@ Language-specific programming skills for production-grade code.
 - **Skills**: `scripting-bash` (auto-invoked for Bash scripting)
 - **Use**: Production-ready Bash scripting, defensive programming, CI/CD scripts
 
+### Playwright Plugin
+Browser automation via Playwright CLI for testing, screenshots, and interaction workflows.
+- **Commands**: `/playwright-setup`
+- **Skills**: `playwright-cli` (auto-invoked for browser automation)
+- **Use**: Navigate pages, interact with elements, capture screenshots, test web applications via CLI
+
 ### Spring Boot Plugin
 Domain-Driven Design patterns with Spring Boot 4 implementation.
 - **Agents**: `spring-boot-reviewer`, `spring-boot-upgrade-verifier`
@@ -135,6 +142,7 @@ Autonomous development loop with fresh context per iteration and Hat-lite builde
 /plugin install git@arkhe-claude-plugins
 /plugin install google-stitch@arkhe-claude-plugins
 /plugin install lang@arkhe-claude-plugins
+/plugin install playwright@arkhe-claude-plugins
 /plugin install spring-boot@arkhe-claude-plugins
 /plugin install ralph@arkhe-claude-plugins
 
