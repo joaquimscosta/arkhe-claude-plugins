@@ -79,12 +79,14 @@ playwright-cli open https://myapp.com
 
 **Solutions:**
 
-Create or update `playwright-cli.json` in the project root:
+Create or update `.playwright/cli.config.json` in the project:
 
 ```json
 {
-  "actionTimeout": 15000,
-  "navigationTimeout": 120000
+  "timeouts": {
+    "action": 15000,
+    "navigation": 120000
+  }
 }
 ```
 
@@ -133,14 +135,14 @@ node --version
 - Different behavior in CI vs local development
 
 **Causes:**
-- `playwright-cli.json` has `"headless": false` but `--headed` flag is expected
+- `.playwright/cli.config.json` has `"browser.launchOptions.headless": false` but `--headed` flag is expected
 - Environment variable overrides config file
 - CI environment forces headless regardless
 
 **Resolution order** (highest priority first):
 1. Command-line flag: `--headed`
 2. Environment variable: `PLAYWRIGHT_MCP_HEADLESS=false`
-3. Config file: `playwright-cli.json` → `"headless": false`
+3. Config file: `.playwright/cli.config.json` → `"browser.launchOptions.headless": false`
 4. Default: headless (no visible window)
 
 ```bash
@@ -192,7 +194,7 @@ If an element appears in the snapshot but interactions fail, it may be obscured 
 | Invalid ref | Run `playwright-cli snapshot` |
 | Stale ref after navigation | Run `playwright-cli snapshot` again |
 | Session stuck | Run `playwright-cli kill-all` |
-| Timeout error | Increase timeouts in `playwright-cli.json` |
+| Timeout error | Increase timeouts in `.playwright/cli.config.json` |
 | CLI not found | Run `npm install -g @playwright/cli@latest` |
 | No visible browser | Add `--headed` flag |
 | Empty snapshot | Wait, then `snapshot` again |

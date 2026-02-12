@@ -149,13 +149,19 @@ playwright-cli close-all
 Set up a persistent configuration for visual debugging:
 
 ```json
-// playwright-cli.json (project root)
+// .playwright/cli.config.json
 {
-  "browserName": "chromium",
-  "headless": false,
-  "actionTimeout": 10000,
-  "navigationTimeout": 30000,
-  "outputDir": "./screenshots"
+  "browser": {
+    "browserName": "chromium",
+    "launchOptions": {
+      "headless": false
+    }
+  },
+  "outputDir": "./screenshots",
+  "timeouts": {
+    "action": 10000,
+    "navigation": 30000
+  }
 }
 ```
 
@@ -179,7 +185,7 @@ PLAYWRIGHT_MCP_BROWSER=firefox playwright-cli open https://myapp.com
 ```
 
 **Key points:**
-- `playwright-cli.json` persists configuration across all CLI invocations
+- `.playwright/cli.config.json` persists configuration across all CLI invocations
 - Set `headless: false` for visual debugging sessions
 - Increase timeouts for slow-loading pages
 - `outputDir` controls where screenshots and PDFs are saved
