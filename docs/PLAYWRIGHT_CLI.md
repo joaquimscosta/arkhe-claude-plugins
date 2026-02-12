@@ -235,6 +235,9 @@ Create a `.playwright/cli.config.json` file in your project for persistent confi
 | Save video | `saveVideo` | `false` | Record video of browser sessions |
 | Output directory | `outputDir` | `".playwright-cli"` | Directory for screenshots, PDFs, videos |
 
+> **Note:** `outputDir` only applies to auto-named outputs. When using `--filename`,
+> include the directory path explicitly (e.g., `--filename=.playwright-cli/name.png`).
+
 ### Environment variables
 
 All options can also be set via environment variables prefixed with `PLAYWRIGHT_MCP_`:
@@ -268,7 +271,7 @@ playwright-cli check e21
 playwright-cli check e35
 
 # 5. Capture the result
-playwright-cli screenshot todo-done.png
+playwright-cli screenshot --filename=.playwright-cli/todo-done.png
 ```
 
 Each command builds on the persistent session state. The `snapshot` in step 3 gives you the element references needed for `check` in step 4.
