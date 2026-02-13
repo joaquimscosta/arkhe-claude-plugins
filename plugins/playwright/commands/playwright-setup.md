@@ -1,10 +1,10 @@
 ---
-description: Verify Playwright CLI installation and create a playwright-cli.json configuration file
+description: Verify Playwright CLI installation and create a .playwright/cli.config.json configuration file
 ---
 
 # /playwright-setup
 
-Verify Playwright CLI installation and interactively create a `playwright-cli.json` configuration file.
+Verify Playwright CLI installation and interactively create a `.playwright/cli.config.json` configuration file.
 
 ## Step 1 — Verify CLI Installation
 
@@ -31,7 +31,7 @@ If the user cancels, stop and summarize what happened.
 
 ## Step 2 — Check for Existing Config
 
-Check if `playwright-cli.json` exists in the project root (current working directory).
+Check if `.playwright/cli.config.json` exists in the project (current working directory).
 
 **If exists and valid JSON**: Display current settings in a table, then ask via `AskUserQuestion`:
 - **"Config exists"** — Options: "Reconfigure all settings" (proceed to Step 3), "Keep current config" (stop here)
@@ -49,7 +49,7 @@ Use `AskUserQuestion` to gather settings. Ask these essential questions together
 |---|----------|--------|---------|---------|
 | Q1 | Which browser engine? | Browser | chromium, firefox, webkit | chromium |
 | Q2 | Run in headless mode? | Headless | Yes (headless), No (headed) | Yes |
-| Q3 | Output directory for screenshots/videos? | Output dir | `.` (project root), `./test-results`, `./playwright-output` | `.` |
+| Q3 | Output directory for screenshots/videos? | Output dir | `.playwright-cli`, `./test-results`, `./playwright-output` | `.playwright-cli` |
 
 Then ask whether to configure advanced settings:
 
@@ -66,17 +66,21 @@ Then ask whether to configure advanced settings:
 | Q4c | Save video recordings of sessions? | Video | Yes, No | No |
 | Q4d | Allowed origins (comma-separated, blank for all)? | Origins | Text input via "Other" | (empty) |
 
-## Step 4 — Create `playwright-cli.json`
+## Step 4 — Create `.playwright/cli.config.json`
 
-Build the configuration object and write it with `Write` tool using 2-space indentation.
+Create the `.playwright/` directory if it doesn't exist, then build the configuration object and write it with `Write` tool using 2-space indentation.
 
 **Basic config** (when advanced settings are skipped):
 
 ```json
 {
-  "browserName": "chromium",
-  "headless": true,
-  "outputDir": "."
+  "browser": {
+    "browserName": "chromium",
+    "launchOptions": {
+      "headless": true
+    }
+  },
+  "outputDir": ".playwright-cli"
 }
 ```
 
@@ -84,13 +88,21 @@ Build the configuration object and write it with `Write` tool using 2-space inde
 
 ```json
 {
-  "browserName": "chromium",
-  "headless": true,
-  "outputDir": ".",
-  "actionTimeout": 5000,
-  "navigationTimeout": 60000,
+  "browser": {
+    "browserName": "chromium",
+    "launchOptions": {
+      "headless": true
+    }
+  },
+  "outputDir": ".playwright-cli",
+  "network": {
+    "allowedOrigins": []
+  },
   "saveVideo": false,
-  "allowedOrigins": []
+  "timeouts": {
+    "action": 5000,
+    "navigation": 60000
+  }
 }
 ```
 
@@ -117,8 +129,8 @@ Remind the user that the `playwright-cli` skill auto-invokes when mentioning:
 
 ### Override Priority
 
-Mention that CLI flags override environment variables, which override `playwright-cli.json` settings:
+Mention that CLI flags override environment variables, which override `.playwright/cli.config.json` settings:
 
 ```
-CLI flags > Environment variables > playwright-cli.json
+CLI flags > Environment variables > .playwright/cli.config.json
 ```

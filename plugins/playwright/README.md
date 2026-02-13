@@ -18,7 +18,7 @@ The CLI approach is token-efficient (no tool schemas loaded into context) and wo
 
 ### `/playwright-setup`
 
-Verify Playwright CLI installation and create a `playwright-cli.json` configuration file. Guides you through browser engine selection, headless mode, output directory, and optional advanced settings (timeouts, video recording, allowed origins).
+Verify Playwright CLI installation and create a `.playwright/cli.config.json` configuration file. Guides you through browser engine selection, headless mode, output directory, and optional advanced settings (timeouts, video recording, allowed origins).
 
 ## Available Skills
 
@@ -86,7 +86,7 @@ plugins/playwright/
 |---------|-----------|
 | Invalid element ref | Run `playwright-cli snapshot` before interacting |
 | Session stuck | Run `playwright-cli kill-all` |
-| Timeout error | Increase timeouts in `playwright-cli.json` |
+| Timeout error | Increase timeouts in `.playwright/cli.config.json` |
 | CLI not found | Run `npm install -g @playwright/cli@latest` |
 
 See [TROUBLESHOOTING.md](skills/playwright-cli/TROUBLESHOOTING.md) for detailed solutions.

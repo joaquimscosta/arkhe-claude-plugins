@@ -204,29 +204,39 @@ All subsequent commands in that session will use the visible browser.
 
 ## Configuration
 
-Create a `playwright-cli.json` file in your project root for persistent configuration:
+Create a `.playwright/cli.config.json` file in your project for persistent configuration:
 
 ```json
 {
-  "browserName": "chromium",
-  "headless": true,
-  "actionTimeout": 5000,
-  "navigationTimeout": 60000
+  "browser": {
+    "browserName": "chromium",
+    "launchOptions": {
+      "headless": true
+    }
+  },
+  "outputDir": ".playwright-cli",
+  "timeouts": {
+    "action": 5000,
+    "navigation": 60000
+  }
 }
 ```
 
 ### Key configuration options
 
-| Option | Default | Description |
-|--------|---------|-------------|
-| `browserName` | `"chromium"` | Browser engine: `chromium`, `firefox`, or `webkit` |
-| `headless` | `true` | Run without visible window |
-| `actionTimeout` | `5000` | Timeout for click/fill/type actions (ms) |
-| `navigationTimeout` | `60000` | Timeout for page navigation (ms) |
-| `allowedOrigins` | all | Restrict which origins the browser can visit |
-| `blockedOrigins` | none | Block specific origins |
-| `saveVideo` | `false` | Record video of browser sessions |
-| `outputDir` | `"."` | Directory for screenshots, PDFs, videos |
+| Option | Path in config | Default | Description |
+|--------|---------------|---------|-------------|
+| Browser engine | `browser.browserName` | `"chromium"` | `chromium`, `firefox`, or `webkit` |
+| Headless mode | `browser.launchOptions.headless` | `true` (daemon), `false` (non-Linux) | Run without visible window |
+| Action timeout | `timeouts.action` | `5000` | Timeout for click/fill/type actions (ms) |
+| Navigation timeout | `timeouts.navigation` | `60000` | Timeout for page navigation (ms) |
+| Allowed origins | `network.allowedOrigins` | all | Restrict which origins the browser can visit |
+| Blocked origins | `network.blockedOrigins` | none | Block specific origins |
+| Save video | `saveVideo` | `false` | Record video of browser sessions |
+| Output directory | `outputDir` | `".playwright-cli"` | Directory for screenshots, PDFs, videos |
+
+> **Note:** `outputDir` only applies to auto-named outputs. When using `--filename`,
+> include the directory path explicitly (e.g., `--filename=.playwright-cli/name.png`).
 
 ### Environment variables
 
@@ -261,7 +271,7 @@ playwright-cli check e21
 playwright-cli check e35
 
 # 5. Capture the result
-playwright-cli screenshot todo-done.png
+playwright-cli screenshot --filename=.playwright-cli/todo-done.png
 ```
 
 Each command builds on the persistent session state. The `snapshot` in step 3 gives you the element references needed for `check` in step 4.

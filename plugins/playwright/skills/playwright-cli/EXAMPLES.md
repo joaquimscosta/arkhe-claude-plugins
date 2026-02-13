@@ -12,8 +12,8 @@ Capture a screenshot of any public page:
 # Open the page
 playwright-cli open https://example.com
 
-# Capture screenshot
-playwright-cli screenshot example-homepage.png
+# Capture screenshot (--filename must include outputDir path)
+playwright-cli screenshot --filename=.playwright-cli/example-homepage.png
 
 # Close the browser
 playwright-cli close
@@ -47,8 +47,8 @@ playwright-cli click e18
 playwright-cli snapshot
 # Look for dashboard elements in the output
 
-# Capture evidence
-playwright-cli screenshot logged-in-dashboard.png
+# Capture evidence (--filename must include outputDir path)
+playwright-cli screenshot --filename=.playwright-cli/logged-in-dashboard.png
 ```
 
 **Key points:**
@@ -85,8 +85,8 @@ playwright-cli snapshot
 playwright-cli check e21
 playwright-cli check e28
 
-# Verify the result
-playwright-cli screenshot todo-progress.png
+# Verify the result (--filename must include outputDir path)
+playwright-cli screenshot --filename=.playwright-cli/todo-progress.png
 
 # Clean up
 playwright-cli close
@@ -148,14 +148,20 @@ playwright-cli close-all
 
 Set up a persistent configuration for visual debugging:
 
+`.playwright/cli.config.json`:
 ```json
-// playwright-cli.json (project root)
 {
-  "browserName": "chromium",
-  "headless": false,
-  "actionTimeout": 10000,
-  "navigationTimeout": 30000,
-  "outputDir": "./screenshots"
+  "browser": {
+    "browserName": "chromium",
+    "launchOptions": {
+      "headless": false
+    }
+  },
+  "outputDir": "./screenshots",
+  "timeouts": {
+    "action": 10000,
+    "navigation": 30000
+  }
 }
 ```
 
@@ -171,18 +177,19 @@ playwright-cli click e5
 playwright-cli fill e10 "search query"
 playwright-cli press Enter
 
-# Screenshot saves to ./screenshots/ per config
-playwright-cli screenshot debug-result.png
+# --filename must include outputDir path (./screenshots/ here)
+playwright-cli screenshot --filename=./screenshots/debug-result.png
 
 # Override browser engine via environment variable
 PLAYWRIGHT_MCP_BROWSER=firefox playwright-cli open https://myapp.com
 ```
 
 **Key points:**
-- `playwright-cli.json` persists configuration across all CLI invocations
+- `.playwright/cli.config.json` persists configuration across all CLI invocations
 - Set `headless: false` for visual debugging sessions
 - Increase timeouts for slow-loading pages
-- `outputDir` controls where screenshots and PDFs are saved
+- `outputDir` controls where auto-named screenshots and PDFs are saved
+- When using `--filename`, prepend the `outputDir` path (e.g., `./screenshots/name.png`)
 - Environment variables (`PLAYWRIGHT_MCP_` prefix) override config file settings
 
 ---
