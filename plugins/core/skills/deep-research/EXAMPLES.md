@@ -169,12 +169,14 @@ Your team notes remain intact:
 
 ## Inventory
 
-### List All Research
+### List Research (Project-Scoped — Default)
 
 ```
 User: /research list
 
 Claude: ## Research Inventory
+
+Project: my-ecommerce-app (2 of 6 entries)
 
 ### Cached (Tier 1: ~/.claude/plugins/research/)
 
@@ -182,19 +184,39 @@ Claude: ## Research Inventory
 |------|-------|------------|---------|--------|
 | domain-driven-design | Domain-Driven Design | 2025-01-14 | 2025-02-13 | ✅ Valid |
 | event-sourcing | Event Sourcing | 2025-01-10 | 2025-02-09 | ✅ Valid |
-| cqrs | CQRS Pattern | 2024-11-15 | 2024-12-15 | ⚠️ Expired |
-| react-hooks | React Hooks | 2025-01-05 | 2025-02-04 | ✅ Valid |
 
 ### Promoted (Tier 2: docs/research/)
 
 | Slug | Title | Promoted | Team Notes |
 |------|-------|----------|------------|
 | domain-driven-design | Domain-Driven Design | 2025-01-14 | ✅ Yes |
-| event-sourcing | Event Sourcing | 2025-01-12 | ✅ Yes |
+
+Use --all to see all 6 entries across all projects.
+```
+
+### List All Research (Global)
+
+```
+User: /research list --all
+
+Claude: ## Research Inventory
+
+All projects (6 entries)
+
+### Cached (Tier 1: ~/.claude/plugins/research/)
+
+| Slug | Title | Projects | Researched | Expires | Status |
+|------|-------|----------|------------|---------|--------|
+| domain-driven-design | Domain-Driven Design | my-ecommerce-app | 2025-01-14 | 2025-02-13 | ✅ Valid |
+| event-sourcing | Event Sourcing | my-ecommerce-app | 2025-01-10 | 2025-02-09 | ✅ Valid |
+| react-hooks | React Hooks | my-frontend-app | 2025-01-05 | 2025-02-04 | ✅ Valid |
+| cqrs | CQRS Pattern | (unassociated) | 2024-11-15 | 2024-12-15 | ⚠️ Expired |
+| nextjs-app-router | Next.js App Router | my-frontend-app | 2025-01-08 | 2025-02-07 | ✅ Valid |
+| tailwindcss-v4 | TailwindCSS v4 | my-frontend-app | 2025-01-02 | 2025-02-01 | ✅ Valid |
 
 ### Summary
-- **Cached:** 4 topics (1 expired)
-- **Promoted:** 2 topics (both with team notes)
+- **Cached:** 6 topics (1 expired)
+- **Promoted:** 1 topic (with team notes)
 
 💡 Commands:
 - `/research <topic>` - Research new topic

@@ -4,9 +4,9 @@ Cache management for deep research results.
 
 Usage:
     python cache_manager.py get <slug>
-    python cache_manager.py put <slug> --title "Title" --content-file content.md
+    python cache_manager.py put <slug> --title "Title" --content-file content.md [--project name]
     python cache_manager.py check <slug>
-    python cache_manager.py list
+    python cache_manager.py list [--all | --project <name>]
     python cache_manager.py delete <slug>
 
 Environment:
@@ -29,6 +29,7 @@ from research_utils import (
     ensure_cache_dir,
     find_by_alias,
     get_cache_dir,
+    get_current_project,
     get_entry,
     get_index,
     get_ttl_days,
@@ -44,15 +45,36 @@ def put_entry(
     aliases: Optional[list] = None,
     tags: Optional[list] = None,
     sources: Optional[list] = None,
+    project: Optional[str] = None,
 ) -> dict:
     """
     Store a research entry in the cache.
+
+    The ``project`` parameter associates the entry with a project name.
+    When ``None``, the current git repo name is auto-detected.
+    Existing project associations are preserved and merged.
 
     Returns the metadata dict.
     """
     cache_dir = ensure_cache_dir()
     entry_dir = cache_dir / "entries" / slug
     entry_dir.mkdir(parents=True, exist_ok=True)
+
+    # Resolve project name (auto-detect if not provided)
+    if project is None:
+        project = get_current_project()
+
+    # Merge with existing projects list
+    existing_projects: list = []
+    metadata_file = entry_dir / "metadata.json"
+    if metadata_file.exists():
+        try:
+            existing_meta = json.loads(metadata_file.read_text())
+            existing_projects = existing_meta.get("projects", [])
+        except (json.JSONDecodeError, IOError):
+            pass
+
+    projects = sorted(set(existing_projects + ([project] if project else [])))
 
     now = datetime.now(timezone.utc)
     ttl_days = get_ttl_days()
@@ -64,12 +86,12 @@ def put_entry(
         "aliases": aliases or [],
         "tags": tags or [],
         "sources": sources or [],
+        "projects": projects,
         "researched_at": now.isoformat(),
         "expires_at": expires_at.isoformat(),
     }
 
     # Write metadata
-    metadata_file = entry_dir / "metadata.json"
     metadata_file.write_text(json.dumps(metadata, indent=2))
 
     # Write content
@@ -82,6 +104,7 @@ def put_entry(
         "slug": slug,
         "title": title,
         "aliases": aliases or [],
+        "projects": projects,
         "researched_at": metadata["researched_at"],
         "expires_at": metadata["expires_at"],
     }
@@ -114,21 +137,32 @@ def delete_entry(slug: str) -> bool:
     return True
 
 
-def list_entries() -> list:
+def list_entries(project: Optional[str] = None) -> list:
     """
-    List all cache entries with their status.
+    List cache entries with their status.
 
-    Returns list of dicts with slug, title, researched_at, expires_at, expired.
+    When *project* is given, only entries associated with that project are
+    returned.  Entries without a ``projects`` field are included only when
+    *project* is ``None`` (i.e. unfiltered / ``--all`` mode).
+
+    Returns list of dicts with slug, title, projects, researched_at,
+    expires_at, expired.
     """
     index = get_index()
     entries = []
 
     for slug, meta in index.items():
+        entry_projects = meta.get("projects", [])
+
+        if project is not None and project not in entry_projects:
+            continue
+
         expiration = check_expiration(meta)
         entries.append({
             "slug": slug,
             "title": meta.get("title", slug),
             "aliases": meta.get("aliases", []),
+            "projects": entry_projects,
             "researched_at": meta.get("researched_at", ""),
             "expires_at": expiration["expires_at"],
             "expired": expiration["expired"],
@@ -190,6 +224,7 @@ def cmd_put(args) -> int:
         content=content,
         aliases=[a.strip() for a in aliases if a.strip()],
         tags=[t.strip() for t in tags if t.strip()],
+        project=getattr(args, "project", None),
     )
 
     print(json.dumps({
@@ -227,18 +262,67 @@ def cmd_check(args) -> int:
 
 def cmd_list(args) -> int:
     """Handle 'list' command."""
-    entries = list_entries()
+    show_all = getattr(args, "all", False)
+    explicit_project = getattr(args, "project", None)
+
+    # Determine filter
+    if show_all:
+        project_filter = None
+    elif explicit_project:
+        project_filter = explicit_project
+    else:
+        project_filter = get_current_project()
+
+    # Get total count (unfiltered) for context header
+    all_entries = list_entries(project=None)
+    total_count = len(all_entries)
+
+    # Get filtered entries
+    if project_filter is not None:
+        entries = list_entries(project=project_filter)
+    else:
+        entries = all_entries
 
     if args.format == "json":
-        print(json.dumps(entries, indent=2))
+        result = {
+            "entries": entries,
+            "filter": {
+                "project": project_filter,
+                "matched": len(entries),
+                "total": total_count,
+            },
+        }
+        print(json.dumps(result, indent=2))
     else:
-        print(f"{'Slug':<30} {'Title':<30} {'Status':<10} {'Expires':<12}")
-        print("-" * 85)
-        for e in entries:
-            status = "Expired" if e["expired"] else "Valid"
-            expires = e["expires_at"][:10] if e["expires_at"] else "N/A"
-            title = e["title"][:28] + ".." if len(e["title"]) > 30 else e["title"]
-            print(f"{e['slug']:<30} {title:<30} {status:<10} {expires:<12}")
+        # Context header
+        if project_filter:
+            print(f"Project: {project_filter} ({len(entries)} of {total_count} entries)")
+        else:
+            print(f"All projects ({total_count} entries)")
+        print()
+
+        if show_all:
+            print(f"{'Slug':<30} {'Title':<30} {'Status':<10} {'Expires':<12} {'Projects'}")
+            print("-" * 105)
+            for e in entries:
+                status = "Expired" if e["expired"] else "Valid"
+                expires = e["expires_at"][:10] if e["expires_at"] else "N/A"
+                title = e["title"][:28] + ".." if len(e["title"]) > 30 else e["title"]
+                projects = ", ".join(e.get("projects", [])) or "(unassociated)"
+                print(f"{e['slug']:<30} {title:<30} {status:<10} {expires:<12} {projects}")
+        else:
+            print(f"{'Slug':<30} {'Title':<30} {'Status':<10} {'Expires':<12}")
+            print("-" * 85)
+            for e in entries:
+                status = "Expired" if e["expired"] else "Valid"
+                expires = e["expires_at"][:10] if e["expires_at"] else "N/A"
+                title = e["title"][:28] + ".." if len(e["title"]) > 30 else e["title"]
+                print(f"{e['slug']:<30} {title:<30} {status:<10} {expires:<12}")
+
+        # Hint when project-scoped
+        if project_filter and total_count > len(entries):
+            print()
+            print(f"Use --all to see all {total_count} entries across all projects.")
 
     return 0
 
@@ -273,6 +357,7 @@ def main() -> int:
     put_parser.add_argument("--content-file", "-f", help="Path to content file")
     put_parser.add_argument("--aliases", "-a", help="Comma-separated aliases")
     put_parser.add_argument("--tags", help="Comma-separated tags")
+    put_parser.add_argument("--project", "-p", help="Project name (auto-detected from git repo if omitted)")
     put_parser.set_defaults(func=cmd_put)
 
     # check
@@ -281,12 +366,21 @@ def main() -> int:
     check_parser.set_defaults(func=cmd_check)
 
     # list
-    list_parser = subparsers.add_parser("list", help="List all cached research")
+    list_parser = subparsers.add_parser("list", help="List cached research (project-scoped by default)")
     list_parser.add_argument(
         "--format", "-f",
         choices=["table", "json"],
         default="table",
         help="Output format",
+    )
+    list_parser.add_argument(
+        "--all", "-a",
+        action="store_true",
+        help="Show entries from all projects",
+    )
+    list_parser.add_argument(
+        "--project", "-p",
+        help="Filter by specific project name",
     )
     list_parser.set_defaults(func=cmd_list)
 

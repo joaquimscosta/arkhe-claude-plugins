@@ -9,6 +9,7 @@ and promote.py to avoid duplication.
 import json
 import os
 import re
+import subprocess
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
@@ -63,6 +64,24 @@ def get_ttl_days() -> int:
         except ValueError:
             pass
     return DEFAULT_TTL_DAYS
+
+
+def get_current_project() -> Optional[str]:
+    """Detect the current project from the git repository name.
+
+    Returns the basename of the git repo root directory, or None if
+    not inside a git repository or git is unavailable.
+    """
+    try:
+        result = subprocess.run(
+            ["git", "rev-parse", "--show-toplevel"],
+            capture_output=True, text=True, timeout=5,
+        )
+        if result.returncode == 0 and result.stdout.strip():
+            return Path(result.stdout.strip()).name
+    except Exception:
+        pass
+    return None
 
 
 # ---------------------------------------------------------------------------

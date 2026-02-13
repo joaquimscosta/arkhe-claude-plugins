@@ -13,7 +13,8 @@ argument-hint: "<topic> | promote <slug> | refresh <slug> | list"
 - `/research <topic>` - Research a topic (checks cache first)
 - `/research promote <slug>` - Promote cached research to project docs
 - `/research refresh <slug>` - Force refresh of cached research
-- `/research list` - Show all cached and promoted research
+- `/research list` - Show research for current project (scoped by git repo)
+- `/research list --all` - Show all cached research across all projects
 
 ## Context
 
@@ -83,18 +84,23 @@ If arguments start with `refresh <slug>`:
 3. Report what was updated.
 
 ### Operation: List
-If arguments equal `list`:
+If arguments start with `list`:
 
 **Fast path** — no agent needed:
 
 1. Resolve the script path.
-2. Run:
+2. Determine scope:
+   - `list` (no flags) → project-scoped (auto-detected from git repo)
+   - `list --all` → show all entries across all projects
+   - `list --project <name>` → filter by specific project
+3. Run:
    ```bash
-   python3 {scripts_dir}/cache_manager.py list --format json
+   python3 {scripts_dir}/cache_manager.py list --format json [--all | --project <name>]
    ```
-3. Parse the JSON output (array of entries with slug, title, expired, expires_at, researched_at).
-4. Scan `docs/research/` directory for promoted entries.
-5. Display inventory in formatted markdown:
+   Pass `--all` if the user requests all entries.
+4. Parse the JSON output (object with `entries` array and `filter` metadata).
+5. Scan `docs/research/` directory for promoted entries.
+6. Display inventory in formatted markdown:
 
 ```markdown
 ## Research Inventory
@@ -129,6 +135,9 @@ If arguments equal `list`:
 # Force refresh (always re-researches)
 /research refresh domain-driven-design
 
-# View inventory (instant — no agent needed)
+# View inventory for current project (instant — no agent needed)
 /research list
+
+# View all research across all projects
+/research list --all
 ```

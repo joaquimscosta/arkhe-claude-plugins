@@ -69,9 +69,11 @@ Detailed process flows for the deep-research skill.
                     │                                 │
                     │ Write:                          │
                     │ - metadata.json (timestamps,    │
-                    │   aliases, tags)                │
+                    │   aliases, tags, projects)      │
                     │ - content.md (full research)    │
                     │                                 │
+                    │ Auto-detect project from git    │
+                    │ repo and add to projects list.  │
                     │ Update index.json               │
                     └─────────────────────────────────┘
                                         │
@@ -223,6 +225,7 @@ Detailed process flows for the deep-research skill.
 │     "title": "Domain-Driven Design",
 │     "aliases": ["DDD", "domain driven design"],
 │     "tags": ["architecture", "patterns", "modeling"],
+│     "projects": ["my-ecommerce-app"],
 │     "researched_at": "2025-01-14T10:30:00Z",
 │     "expires_at": "2025-02-13T10:30:00Z",
 │     "sources": [
@@ -282,6 +285,7 @@ last_refreshed: 2025-01-14T10:30:00Z
     "slug": "domain-driven-design",
     "title": "Domain-Driven Design",
     "aliases": ["DDD", "domain driven design"],
+    "projects": ["my-ecommerce-app"],
     "researched_at": "2025-01-14T10:30:00Z",
     "expires_at": "2025-02-13T10:30:00Z"
   },
@@ -289,6 +293,7 @@ last_refreshed: 2025-01-14T10:30:00Z
     "slug": "event-sourcing",
     "title": "Event Sourcing",
     "aliases": ["ES"],
+    "projects": ["my-ecommerce-app"],
     "researched_at": "2025-01-10T08:00:00Z",
     "expires_at": "2025-02-09T08:00:00Z"
   }

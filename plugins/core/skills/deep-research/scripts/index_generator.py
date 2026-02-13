@@ -56,8 +56,8 @@ def generate_cache_readme() -> str:
         "",
         "## Index",
         "",
-        "| Slug | Title | Researched | Expires | Status |",
-        "|------|-------|------------|---------|--------|",
+        "| Slug | Title | Projects | Researched | Expires | Status |",
+        "|------|-------|----------|------------|---------|--------|",
     ]
 
     valid_count = 0
@@ -66,6 +66,8 @@ def generate_cache_readme() -> str:
     for entry in entries:
         slug = entry.get("slug", "")
         title = entry.get("title", slug)
+        projects = entry.get("projects", [])
+        projects_str = ", ".join(projects) if projects else "(unassociated)"
         researched = format_date(entry.get("researched_at", ""))
         expires = format_date(entry.get("expires_at", ""))
         expired = check_expiration(entry.get("expires_at", ""))["expired"]
@@ -81,7 +83,7 @@ def generate_cache_readme() -> str:
         if len(title) > 35:
             title = title[:32] + "..."
 
-        lines.append(f"| {slug} | {title} | {researched} | {expires} | {status_icon} {status} |")
+        lines.append(f"| {slug} | {title} | {projects_str} | {researched} | {expires} | {status_icon} {status} |")
 
     lines.extend([
         "",
