@@ -4,7 +4,7 @@
 
 > **Last updated**: February 2026 | **Java baseline**: 21+ | **Build tools**: Gradle 9.x / Maven 3.9+
 >
-> This guide evaluates 18 tools across four categories for Java and Kotlin teams building
+> This guide evaluates 19 tools across four categories for Java and Kotlin teams building
 > production systems with Spring Boot. Every tool listed is free or has a meaningful free tier.
 > Configurations are shown in both Gradle (Kotlin DSL) and Maven where applicable.
 
@@ -34,6 +34,7 @@
 | **JMH** | Performance & Security | 1.37 | Yes | N/A | Yes | Yes | Yes | Free | 2.6k |
 | **OWASP DC** | Performance & Security | 12.2.0 | Yes | N/A | Yes | Yes | Yes | Free | 7.4k |
 | **Trivy** | Performance & Security | 0.69.x | Yes | N/A | Yes | Via CLI | Via CLI | Free | 31.9k |
+| **Snyk** | Performance & Security | SaaS | Yes | N/A | Yes | Yes | Yes | Freemium | N/A |
 
 ### Recommended Starting Sets
 
