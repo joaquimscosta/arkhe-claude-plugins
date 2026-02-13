@@ -5,6 +5,115 @@ All notable changes to the Arkhe Claude Plugins project will be documented in th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.10.0] - 2026-02-12
+
+### Added
+
+#### Playwright Plugin
+
+- **New plugin: Playwright CLI browser automation** (#25, #27)
+  - Complete skill rewrite with comprehensive command coverage
+  - `/playwright-setup` command for guided CLI configuration
+  - Keyboard/mouse, eval/dialog/resize, and file upload commands
+  - 7 reference docs: storage, network mocking, tracing, video, sessions, test generation, custom code
+  - Config at `.playwright/cli.config.json` with nested structure for browser, timeouts, and network settings
+
+#### Ralph Plugin
+
+- **Verification tiers** for task validation (#27)
+  - `verificationTier` field (build/visual/api/e2e) with cumulative checks and Playwright CLI integration
+  - Question specificity guidance for destructive operations with vague-vs-specific anti-patterns
+  - `tasks.json` enforced as sole tracking source (no TaskCreate/TaskUpdate)
+  - Required final verification task in every task set
+
+#### Core Plugin
+
+- **"Save & Fresh Start" wave checkpoint option** in `sdlc-develop` skill
+  - Third checkpoint option instructing users to start a clean context window before resuming
+
+#### Documentation
+
+- **Playwright CLI practitioner's guide**
+- **`docs/reference/` directory** for auto-synced official Anthropic documentation
+  - Separated synced docs from custom project docs
+  - Added `docs/reference/README.md` explaining the auto-sync system
+
+### Changed
+
+#### Playwright Plugin
+
+- **BREAKING**: Replaced Playwright MCP (`mcp__playwright__*`) with Playwright CLI (#25)
+  - Removed all MCP tool references from agents, commands, and documentation
+  - Replaced with equivalent `playwright-cli` shell commands
+  - Added `skills: playwright:playwright-cli` to `design-reviewer` and `design-review` agents
+  - Simplified SDLC Phase 4 UI verification to reference the skill
+- Restructured config from `playwright-cli.json` to `.playwright/cli.config.json` (#28)
+  - Nested structure for browser, timeouts, and network settings
+  - Default output directory changed to `.playwright-cli`
+
+#### Design Intent Plugin
+
+- **BREAKING**: Removed spec system to focus on UI implementation (#26)
+  - Deleted `/feature` and `/plan` commands
+  - Deleted `templates/specs/` directory (`feature-spec.md`, `implementation-plan.md`)
+  - Plugin now focuses on visual references, lightweight briefs, and persistent pattern memory
+  - Improved command hints and skill trigger descriptions
+
+#### Core Plugin
+
+- Updated skill files to use fully-qualified `/core:develop` command references
+  - Updated across `sdlc-develop` and `workflow-orchestration` skill files
+  - Updated GATES.md wave checkpoint example to match three-option format
+
+#### Git Plugin
+
+- Added `model: haiku` to all git skill frontmatter for faster execution
+
+#### Documentation
+
+- Moved 8 synced docs + update script into `docs/reference/` subdirectory
+- Updated all cross-references across CLAUDE.md, README.md, and docs files
+
+### Removed
+
+#### Design Intent Plugin
+
+- `/feature` and `/plan` commands (overlapped with core `/develop` workflow)
+- `templates/specs/` directory (`feature-spec.md`, `implementation-plan.md`)
+
+### Breaking Changes
+
+#### Playwright Plugin — MCP to CLI Migration (2026-02-10)
+
+All Playwright MCP tool references (`mcp__playwright__*`) have been replaced with Playwright CLI commands.
+
+**Migration**:
+```bash
+# Old (no longer available)
+# mcp__playwright__browser_navigate, mcp__playwright__browser_snapshot, etc.
+
+# New workflow
+/playwright-setup                    # Configure CLI
+playwright-cli navigate <url>        # Navigate
+playwright-cli screenshot            # Capture screenshots
+# playwright:playwright-cli skill auto-invokes for browser automation
+```
+
+#### Design Intent Plugin — Spec System Removal (2026-02-11)
+
+The SDD spec system (`/feature`, `/plan` commands and spec templates) has been removed. Use `/core:develop` for specification work.
+
+**Migration**:
+```bash
+# Old (no longer available)
+/design-intent:feature <name>
+/design-intent:plan <name>
+
+# New workflow
+/core:develop <description>          # Full SDLC pipeline
+/design-intent <description>         # UI implementation focus
+```
+
 ## [1.9.0] - 2026-02-09
 
 ### Added
@@ -836,7 +945,8 @@ The `/specprep:tasks` command has been removed in favor of automatic command cha
 - **Documentation**: See README.md and docs/ directory
 - **Installation**: See INSTALLATION.md
 
-[Unreleased]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.9.0...HEAD
+[Unreleased]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.10.0...HEAD
+[1.10.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.9.0...v1.10.0
 [1.9.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.8.0...v1.9.0
 [1.8.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.7.0...v1.8.0
 [1.7.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.6.0...v1.7.0
