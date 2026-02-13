@@ -214,7 +214,7 @@ Files created:
 - spec.md (requirements)
 - plan.md (architecture)
 
-Run `/develop @{spec_path}/` when ready to implement.
+Run `/core:develop @{spec_path}/` when ready to implement.
 ```
 
 ---

@@ -91,7 +91,7 @@
 To continue from Wave {N+1}:
 
 ```bash
-/develop @{spec_path}/
+/core:develop @{spec_path}/
 ```
 
 The skill will auto-detect this context file and offer to continue from Wave {N+1}.

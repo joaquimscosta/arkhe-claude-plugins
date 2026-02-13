@@ -5,7 +5,7 @@
 ## Full Pipeline (Interactive)
 
 ```bash
-/develop add user authentication
+/core:develop add user authentication
 ```
 
 **What happens:**
@@ -27,7 +27,7 @@ arkhe/specs/01-user-auth/
 ## Plan Only
 
 ```bash
-/develop create plan for dashboard feature --plan-only
+/core:develop create plan for dashboard feature --plan-only
 ```
 
 **What happens:**
@@ -43,7 +43,7 @@ Files created:
 - spec.md (requirements)
 - plan.md (architecture)
 
-Run `/develop @arkhe/specs/02-dashboard/` when ready to implement.
+Run `/core:develop @arkhe/specs/02-dashboard/` when ready to implement.
 ```
 
 ---
@@ -51,7 +51,7 @@ Run `/develop @arkhe/specs/02-dashboard/` when ready to implement.
 ## Resume Existing Spec
 
 ```bash
-/develop @arkhe/specs/01-user-auth/
+/core:develop @arkhe/specs/01-user-auth/
 ```
 
 **What happens:**
@@ -75,7 +75,7 @@ Which phase would you like to continue from?
 ## Autonomous Mode
 
 ```bash
-/develop add logout button --auto
+/core:develop add logout button --auto
 ```
 
 **What happens:**
@@ -94,7 +94,7 @@ Which phase would you like to continue from?
 ## With Deep Validation
 
 ```bash
-/develop refactor payment service --validate
+/core:develop refactor payment service --validate
 ```
 
 **What happens:**
@@ -120,7 +120,7 @@ Deep Validation Results:
 ## Specific Phase Only
 
 ```bash
-/develop @arkhe/specs/01-user-auth/ --phase=4
+/core:develop @arkhe/specs/01-user-auth/ --phase=4
 ```
 
 **What happens:**
@@ -134,7 +134,7 @@ Deep Validation Results:
 ## First Run (Configuration)
 
 ```bash
-/develop add shopping cart
+/core:develop add shopping cart
 ```
 
 **If no `.arkhe.yaml` exists:**

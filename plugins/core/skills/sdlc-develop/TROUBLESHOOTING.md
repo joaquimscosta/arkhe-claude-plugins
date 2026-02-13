@@ -1,6 +1,6 @@
 # SDLC Develop Troubleshooting
 
-Common issues and solutions when using the `/develop` command.
+Common issues and solutions when using the `/core:develop` command.
 
 ---
 
@@ -24,15 +24,15 @@ Common issues and solutions when using the `/develop` command.
 
 ### Resume mode not detecting existing plan
 
-**Symptom:** `/develop @path/to/spec/` starts fresh instead of resuming
+**Symptom:** `/core:develop @path/to/spec/` starts fresh instead of resuming
 
 **Solution:** Ensure path contains `plan.md`. Check exact path - it should point to the spec directory, not the plan file:
 ```bash
 # Correct
-/develop @arkhe/specs/01-feature/
+/core:develop @arkhe/specs/01-feature/
 
 # Incorrect
-/develop @arkhe/specs/01-feature/plan.md
+/core:develop @arkhe/specs/01-feature/plan.md
 ```
 
 ### Plan-only mode ignored
@@ -42,10 +42,10 @@ Common issues and solutions when using the `/develop` command.
 **Solution:** Ensure flag is after the feature description:
 ```bash
 # Correct
-/develop add feature --plan-only
+/core:develop add feature --plan-only
 
 # Incorrect
-/develop --plan-only add feature
+/core:develop --plan-only add feature
 ```
 
 ---
@@ -73,7 +73,7 @@ Common issues and solutions when using the `/develop` command.
 
 **Solution:** `--validate` enables deep validation. Ensure flag is included:
 ```bash
-/develop add feature --validate
+/core:develop add feature --validate
 ```
 
 ---
@@ -107,10 +107,10 @@ Common issues and solutions when using the `/develop` command.
 **Solution:** You're likely in `--auto` mode. Run without the flag for interactive checkpoints:
 ```bash
 # Interactive (with checkpoints)
-/develop add feature
+/core:develop add feature
 
 # Autonomous (no checkpoints)
-/develop add feature --auto
+/core:develop add feature --auto
 ```
 
 ### Checkpoint stuck
