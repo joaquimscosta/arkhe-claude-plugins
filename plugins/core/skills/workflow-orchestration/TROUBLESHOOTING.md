@@ -4,20 +4,20 @@ Common issues and solutions when using orchestration tools.
 
 ## Choosing the Wrong Tool
 
-### Problem: Used `/develop` for a simple task
+### Problem: Used `/core:develop` for a simple task
 **Symptoms:** Excessive overhead, slow execution, unnecessary complexity.
 
 **Solution:** For single-function changes or simple tasks, skip orchestration and provide direct implementation. Orchestration is for multi-component coordination.
 
-### Problem: Used `/think` when `/develop` was needed
+### Problem: Used `/think` when `/core:develop` was needed
 **Symptoms:** Got analysis but no implementation, reasoning without action.
 
-**Solution:** `/think` is for reasoning and decisions. Use `/develop` when you need actual implementation across multiple files/components.
+**Solution:** `/think` is for reasoning and decisions. Use `/core:develop` when you need actual implementation across multiple files/components.
 
 ### Problem: Task is stuck in analysis
 **Symptoms:** Deep thinking but no progress, endless exploration.
 
-**Solution:** Set clear boundaries. If analysis is complete, transition to `/develop` for execution. Ask: "Do we understand the problem enough to act?"
+**Solution:** Set clear boundaries. If analysis is complete, transition to `/core:develop` for execution. Ask: "Do we understand the problem enough to act?"
 
 ---
 
@@ -33,8 +33,8 @@ Common issues and solutions when using orchestration tools.
 
 **Example fix:**
 ```
-Bad:  /develop make it better
-Good: /develop refactor the UserService to use dependency injection
+Bad:  /core:develop make it better
+Good: /core:develop refactor the UserService to use dependency injection
 ```
 
 ### Problem: Context discovery misses relevant files
@@ -141,12 +141,12 @@ Good: /develop refactor the UserService to use dependency injection
 
 ## Integration Issues
 
-### Problem: Conflict between `/develop` and `/think` outputs
+### Problem: Conflict between `/core:develop` and `/think` outputs
 **Symptoms:** Analysis and implementation don't align.
 
 **Solutions:**
 1. Run `/think` first for decisions
-2. Use conclusions to inform `/develop` request
+2. Use conclusions to inform `/core:develop` request
 3. Reference thinking output in develop request
 
 ### Problem: `deep-think-partner` and develop don't coordinate
@@ -155,7 +155,7 @@ Good: /develop refactor the UserService to use dependency injection
 **Solutions:**
 1. Use one or the other for a given phase
 2. `deep-think-partner` for strategic decisions
-3. `/develop` for execution after decisions are made
+3. `/core:develop` for execution after decisions are made
 
 ---
 
@@ -168,9 +168,9 @@ Good: /develop refactor the UserService to use dependency injection
 | Too slow | Skip `--validate` for low-risk changes |
 | No quality check | Add `--validate` flag |
 | Wrong tool | Check decision matrix in EXAMPLES.md |
-| Stuck in analysis | Transition to `/develop` for execution |
+| Stuck in analysis | Transition to `/core:develop` for execution |
 | Over-engineered | Use inline guidance for simple tasks |
-| Resume existing plan | Use `/develop @arkhe/specs/NN-feature/` |
+| Resume existing plan | Use `/core:develop @arkhe/specs/NN-feature/` |
 
 ## Getting Help
 

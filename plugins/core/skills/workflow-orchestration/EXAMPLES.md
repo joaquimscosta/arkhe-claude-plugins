@@ -15,7 +15,7 @@ Real-world scenarios demonstrating when and how to use orchestration tools.
 
 **Recommendation:**
 ```bash
-/develop implement user authentication with JWT tokens --validate
+/core:develop implement user authentication with JWT tokens --validate
 ```
 
 **Why:** This is a multi-agent task with parallel opportunities. The `--validate` flag ensures security is properly reviewed with deep opus-level validation.
@@ -93,7 +93,7 @@ Or for more thorough analysis:
 
 **Recommendation:**
 ```bash
-/develop refactor payment service to use new API client pattern
+/core:develop refactor payment service to use new API client pattern
 ```
 
 **Why:** Multi-file coordination benefits from workflow orchestration. No flags needed for a straightforward refactoring task.
@@ -136,7 +136,7 @@ Inline guidance - no command needed.
 
 **Recommendation:**
 ```bash
-/develop review authentication module --validate
+/core:develop review authentication module --validate
 ```
 
 Or use the dedicated review commands:
@@ -177,7 +177,7 @@ Direct exploration and explanation - no orchestration command needed.
 
 **Recommendation:**
 ```bash
-/develop implement Stripe payment integration --validate
+/core:develop implement Stripe payment integration --validate
 ```
 
 **Why:** The `--validate` flag is essential for high-stakes, security-sensitive implementations. It triggers opus-level deep validation to ensure security is properly reviewed.
@@ -188,30 +188,30 @@ Direct exploration and explanation - no orchestration command needed.
 
 | Scenario | Tool | Flags |
 |----------|------|-------|
-| Multi-component feature | `/develop` | `--validate` if important |
+| Multi-component feature | `/core:develop` | `--validate` if important |
 | Single complex problem | `/think` | - |
 | Multi-faceted analysis | `/think` | - |
 | Strategic decision | `/think` | - |
 | Debugging investigation | `/debug` | - |
 | Quick code change | Inline | - |
-| Security-sensitive work | `/develop` | `--validate` |
-| Plan first, implement later | `/develop` | `--plan-only` |
+| Security-sensitive work | `/core:develop` | `--validate` |
+| Plan first, implement later | `/core:develop` | `--plan-only` |
 | Quality review | `/double-check` | - |
 
 ## Common Patterns
 
 ### "How should I approach X?"
 
-Start with `/think` to reason through the approach, then `/develop` if implementation is needed.
+Start with `/think` to reason through the approach, then `/core:develop` if implementation is needed.
 
 ### "I need to do A, B, and C"
 
-If independent: `/develop` will parallelize them.
-If sequential: `/develop` will sequence them appropriately.
+If independent: `/core:develop` will parallelize them.
+If sequential: `/core:develop` will sequence them appropriately.
 
 ### "This is really complex"
 
-Use `/think` for deep analysis, then `/develop --validate` for implementation.
+Use `/think` for deep analysis, then `/core:develop --validate` for implementation.
 
 ### "Before I merge this..."
 
