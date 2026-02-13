@@ -148,8 +148,8 @@ playwright-cli close-all
 
 Set up a persistent configuration for visual debugging:
 
+`.playwright/cli.config.json`:
 ```json
-// .playwright/cli.config.json
 {
   "browser": {
     "browserName": "chromium",

@@ -176,7 +176,7 @@ playwright-cli snapshot
 # If snapshot shows minimal content, the page may still be loading
 
 # Take a screenshot to visually inspect what the browser sees
-playwright-cli screenshot debug-check.png
+playwright-cli screenshot --filename=.playwright-cli/debug-check.png
 
 # For single-page apps, wait briefly then re-snapshot
 # (the app may need time to hydrate)
