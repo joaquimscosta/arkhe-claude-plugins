@@ -27,6 +27,7 @@ Domain-Driven Design patterns with Spring Boot 4 implementation for complex busi
 | **spring-boot-observability** | Actuator, Micrometer, OpenTelemetry | Health checks, metrics, distributed tracing, Kubernetes probes |
 | **spring-boot-testing** | Slice tests, Testcontainers, @MockitoBean | Unit/integration tests, security testing, Modulith Scenario API |
 | **spring-boot-verify** | Dependency and configuration verification | pom.xml, build.gradle, application.yml, "verify dependencies", "check configuration" |
+| **flyway-consolidate** | Flyway migration analysis and consolidation | User-invoke via `/flyway-consolidate` (not auto-invoked) |
 
 ## Tech Stack
 
@@ -95,6 +96,7 @@ Domain-Driven Design patterns with Spring Boot 4 implementation for complex busi
 - Production observability with Actuator and OpenTelemetry
 - Comprehensive testing with Testcontainers and slice tests
 - Verifying project dependencies and configuration for Spring Boot 4 compatibility
+- Consolidating pre-production Flyway migrations into clean, domain-grouped schemas
 
 ## Installation
 
@@ -139,6 +141,10 @@ Skills auto-invoke based on context:
 # Verification
 "Check my pom.xml for Spring Boot 4 compatibility"
 "Verify this project's dependencies and configuration"
+
+# Flyway consolidation (user-invoke only)
+/flyway-consolidate
+/flyway-consolidate src/main/resources/db/migration
 ```
 
 ## Skill Coverage
@@ -153,6 +159,7 @@ Skills auto-invoke based on context:
 | **spring-boot-observability** | Actuator endpoints, Micrometer Timer/Counter/Gauge, OpenTelemetry spans |
 | **spring-boot-testing** | @WebMvcTest, @DataJpaTest, Testcontainers, @WithMockUser, Scenario API |
 | **spring-boot-verify** | Version matrix, deprecated dependencies, configuration validation, migration readiness |
+| **flyway-consolidate** | Flyway migration analysis, domain grouping, schema consolidation, idempotent seed data |
 
 ## Skill Reference Files
 
@@ -166,6 +173,7 @@ Skills auto-invoke based on context:
 | **spring-boot-observability** | `ACTUATOR.md`, `METRICS.md`, `TRACING.md` |
 | **spring-boot-testing** | `SLICE-TESTS.md`, `TESTCONTAINERS.md`, `SECURITY-TESTING.md`, `MODULITH-TESTING.md` |
 | **spring-boot-verify** | `DEPENDENCIES.md`, `CONFIGURATION.md` |
+| **flyway-consolidate** | `WORKFLOW.md`, `EXAMPLES.md` |
 
 ## Skill Supporting Documentation
 
