@@ -158,8 +158,8 @@ Present wave completion metrics, then use `AskUserQuestion`:
   "question": "Wave 2 complete: 4 tasks done, 8 files changed, 15/15 tests passing. Wave 3 has 3 remaining tasks (T-05, T-06, T-07). How to proceed?",
   "options": [
     { "label": "CONTINUE", "description": "Proceed to Wave 3 in current session" },
-    { "label": "STOP", "description": "Save context and exit (resume later with /core:develop @spec/)" },
-    { "label": "SAVE & FRESH START", "description": "Save context and exit for a clean context window" }
+    { "label": "STOP", "description": "Save context, copy resume command to clipboard, and exit" },
+    { "label": "SAVE & FRESH START", "description": "Save context, copy resume command to clipboard, and exit for a clean context window" }
   ]
 }
 ```

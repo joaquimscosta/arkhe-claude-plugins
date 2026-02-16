@@ -208,26 +208,34 @@ Use `AskUserQuestion`:
 - **question**: "Wave {N} complete: {tasks_done} tasks, {files_changed} files changed, {tests_passing}/{tests_total} tests passing. {next_wave_summary}. How to proceed?"
 - **options**:
   - { label: "CONTINUE (Recommended)", description: "Proceed to Wave {N+1} in current session" }
-  - { label: "STOP", description: "Save context and exit (resume later with /core:develop @{spec_path}/)" }
-  - { label: "SAVE & FRESH START", description: "Save context and exit for a clean context window (recommended for long sessions)" }
+  - { label: "STOP", description: "Save context, copy resume command to clipboard, and exit" }
+  - { label: "SAVE & FRESH START", description: "Save context, copy resume command to clipboard, and exit for a clean context window" }
 
 **Response Handling:**
 - **CONTINUE**: Proceed to Step 4a.1 for Wave {N+1}
-- **STOP**: Display resume instructions and exit Phase 4 (skip Steps 4b-4e)
-  ```
-  Session saved. To resume from Wave {N+1}:
-  /core:develop @{spec_path}/
-  ```
-- **SAVE & FRESH START**: Save wave context, then display fresh start instructions and exit Phase 4:
+- **STOP**: Save wave context, copy resume command to clipboard, display resume instructions, and exit Phase 4 (skip Steps 4b-4e):
+  1. Use `Bash` tool: `printf '/core:develop @{spec_path}/' | pbcopy` (macOS) or equivalent for the current platform
+  2. Display:
   ```
   Wave {N} context saved to {spec_path}/wave-{N}-context.md
+  Resume command copied to clipboard.
 
-  To continue with a clean context window:
-  1. Start a new conversation (or run /clear)
-  2. Run: /core:develop @{spec_path}/
+  To resume from Wave {N+1}:
+  /core:develop @{spec_path}/
+  ```
+- **SAVE & FRESH START**: Save wave context, copy resume command to clipboard, display fresh start instructions, and exit Phase 4:
+  1. Use `Bash` tool: `printf '/core:develop @{spec_path}/' | pbcopy` (macOS) or equivalent for the current platform
+  2. Display:
+  ```
+  Wave {N} context saved to {spec_path}/wave-{N}-context.md
+  Resume command copied to clipboard.
 
-  The skill will auto-detect the wave context and offer to continue from Wave {N+1}.
-  Tip: A fresh context window gives Claude full capacity for the next wave.
+  Fresh start steps:
+  1. Run /clear (or start a new conversation)
+  2. Paste and run: /core:develop @{spec_path}/
+
+  The skill will auto-detect wave context and continue from Wave {N+1}.
+  A fresh context window gives Claude full capacity for the next wave.
   ```
 
 **`--auto` mode**: Auto-continue to next wave without stopping.
