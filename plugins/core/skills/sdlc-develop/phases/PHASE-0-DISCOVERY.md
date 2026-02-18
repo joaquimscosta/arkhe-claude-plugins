@@ -88,12 +88,12 @@ Use `AskUserQuestion`:
 - **header**: "Resume"
 - **question**: "{Wave progress summary}. How would you like to continue?"
 - **options**:
-  - { label: "Continue Wave {N+1} (Recommended)", description: "Jump to Phase 4, Step 4a.1 for the next wave" }
+  - { label: "Continue Wave {N+1} (Recommended)", description: "Jump to Phase 4, re-select tasks, then continue" }
   - { label: "Re-review completed work", description: "Show git diff of previous waves" }
   - { label: "Restart from a phase", description: "Choose which phase to continue from" }
 
 **Response Handling:**
-- **Continue Wave {N+1}**: Load PHASE-4-IMPLEMENTATION.md, jump to Step 4a.1 for Wave {N+1}
+- **Continue Wave {N+1}**: Load PHASE-4-IMPLEMENTATION.md, start at Step 4.0 (Ticket Selection) for remaining waves — this lets users re-select which waves/tasks to implement before continuing
 - **Re-review completed work**: Run `git diff` for previous wave commits, then re-present this checkpoint
 - **Restart from a phase**: Fall through to existing phase selection behavior
 
