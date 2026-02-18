@@ -1,6 +1,7 @@
 ---
 name: jd-docs
-description: Scaffold, validate, and maintain Johnny.Decimal documentation structure
+description: >
+  Scaffold, validate, and maintain Johnny.Decimal documentation structure
   for software projects. Use when user mentions "Johnny Decimal", "J.D docs",
   "docs structure", "organize docs", "documentation layout", "scaffold docs",
   "docs migration", "generate index", "docs index", editing files in numbered

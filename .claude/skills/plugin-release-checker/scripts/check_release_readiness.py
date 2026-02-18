@@ -123,40 +123,62 @@ def parse_frontmatter(content: str) -> Tuple[Optional[Dict], str]:
     fm_text = match.group(1)
     body = content[match.end():]
 
-    # Key-value parsing with support for YAML block scalars (avoids PyYAML dependency)
+    # Key-value parsing with support for YAML block scalars and continuation lines
     fm = {}
     lines = fm_text.split("\n")
     i = 0
+    current_key = None
+    current_value_parts = []
+    block_scalar = None  # '>' (folded) or '|' (literal)
+
+    def _store_current():
+        nonlocal current_key, current_value_parts, block_scalar
+        if current_key is not None:
+            if block_scalar == ">":
+                val = " ".join(p.strip() for p in current_value_parts if p.strip())
+            elif block_scalar == "|":
+                val = "\n".join(current_value_parts)
+            else:
+                val = " ".join(p.strip() for p in current_value_parts if p.strip())
+            val = val.strip().strip("'\"")
+            if val:
+                fm[current_key] = val
+        current_key = None
+        current_value_parts = []
+        block_scalar = None
+
     while i < len(lines):
         line = lines[i]
         stripped = line.strip()
+
+        # Skip blank lines and comments
         if not stripped or stripped.startswith("#"):
             i += 1
             continue
-        if ":" in stripped:
+
+        # Continuation line: starts with whitespace and we have a current key
+        if current_key is not None and line and line[0] in (" ", "\t"):
+            current_value_parts.append(stripped)
+            i += 1
+            continue
+
+        # New key-value pair (only if line starts at column 0 and contains ':')
+        if ":" in stripped and line and not line[0].isspace():
+            _store_current()
             key, _, value = stripped.partition(":")
-            key = key.strip()
-            value = value.strip().strip("'\"")
+            current_key = key.strip()
+            value = value.strip()
 
             # Handle YAML block scalars (> or |)
             if value in (">", "|", ">-", "|-"):
-                separator = " " if value.startswith(">") else "\n"
-                block_lines = []
-                i += 1
-                while i < len(lines):
-                    next_line = lines[i]
-                    if next_line and not next_line[0].isspace():
-                        break
-                    block_lines.append(next_line.strip())
-                    i += 1
-                value = separator.join(bl for bl in block_lines if bl).strip()
-                if value:
-                    fm[key] = value
-                continue
+                block_scalar = value[0]
+                current_value_parts = []
+            else:
+                current_value_parts = [value.strip("'\"")]
 
-            if value:
-                fm[key] = value
         i += 1
+
+    _store_current()
 
     return fm, body
 
