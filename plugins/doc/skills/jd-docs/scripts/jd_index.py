@@ -89,10 +89,10 @@ def load_config(base_path: Path) -> dict:
 
 def is_ignored(name: str, ignore_patterns: list[str]) -> bool:
     """Check if a name matches any ignore pattern."""
-    for pattern in ignore_patterns:
-        if fnmatch.fnmatch(name, pattern) or fnmatch.fnmatch(name.lower(), pattern.lower()):
-            return True
-    return False
+    return any(
+        fnmatch.fnmatch(name, p) or fnmatch.fnmatch(name.lower(), p.lower())
+        for p in ignore_patterns
+    )
 
 
 def parse_doc_title(filepath: Path) -> str:
@@ -160,7 +160,7 @@ def scan_areas(docs_dir: Path, ignore: list[str]) -> list[dict]:
     return areas
 
 
-def generate_table_index(areas: list[dict], docs_dir: Path) -> str:
+def generate_table_index(areas: list[dict]) -> str:
     """Generate a table-format index."""
     lines = [
         "| Prefix | Area | Docs | Description |",
@@ -177,7 +177,7 @@ def generate_table_index(areas: list[dict], docs_dir: Path) -> str:
     return "\n".join(lines)
 
 
-def generate_tree_index(areas: list[dict], docs_dir: Path) -> str:
+def generate_tree_index(areas: list[dict]) -> str:
     """Generate a tree-format index with document listings."""
     lines = []
 
@@ -251,9 +251,9 @@ def update_readme(
         if dry_run:
             print(f"Would update: {readme_path}")
             print()
-            print(f"--- Index content ---")
+            print("--- Index content ---")
             print(index_content)
-            print(f"--- End ---")
+            print("--- End ---")
         else:
             readme_path.write_text(updated)
             print(f"Updated: {readme_path}")
@@ -271,9 +271,9 @@ def update_readme(
             print(f"Would append index to: {readme_path}")
             print("(No markers found — adding markers and index)")
             print()
-            print(f"--- Index content ---")
+            print("--- Index content ---")
             print(index_content)
-            print(f"--- End ---")
+            print("--- End ---")
         else:
             with open(readme_path, "a") as f:
                 f.write(section)
@@ -358,9 +358,9 @@ def main() -> int:
 
     # Generate index
     if fmt == "tree":
-        index_content = generate_tree_index(areas, docs_dir)
+        index_content = generate_tree_index(areas)
     else:
-        index_content = generate_table_index(areas, docs_dir)
+        index_content = generate_table_index(areas)
 
     # Update README
     try:

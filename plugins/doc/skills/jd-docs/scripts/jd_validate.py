@@ -91,10 +91,10 @@ def load_config(base_path: Path) -> dict:
 
 def is_ignored(name: str, ignore_patterns: list[str]) -> bool:
     """Check if a directory or file name matches any ignore pattern."""
-    for pattern in ignore_patterns:
-        if fnmatch.fnmatch(name, pattern) or fnmatch.fnmatch(name.lower(), pattern.lower()):
-            return True
-    return False
+    return any(
+        fnmatch.fnmatch(name, p) or fnmatch.fnmatch(name.lower(), p.lower())
+        for p in ignore_patterns
+    )
 
 
 def find_areas(docs_dir: Path, ignore: list[str]) -> list[Path]:
@@ -306,19 +306,16 @@ def main() -> int:
         print()
 
     # Result
-    has_errors = len(errors) > 0
-    has_warnings = len(warnings) > 0
-
-    if has_errors:
+    if errors:
         result = "FAIL"
-    elif has_warnings and args.strict:
+    elif warnings and args.strict:
         result = "FAIL (strict mode)"
     else:
         result = "PASS"
 
     print(f"Result: {result} ({len(areas)} areas, {len(errors)} errors, {len(warnings)} warnings)")
 
-    if has_errors or (has_warnings and args.strict):
+    if errors or (warnings and args.strict):
         return 1
     return 0
 

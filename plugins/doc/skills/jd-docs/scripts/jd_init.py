@@ -96,15 +96,20 @@ def generate_root_readme(project_name: str, areas: dict[str, str]) -> str:
         "",
         "## Quick Start",
         "",
-        "- [Getting started guide](./00-getting-started/)" if "00" in areas else None,
-        "",
+    ]
+
+    if "00" in areas:
+        lines.append("- [Getting started guide](./00-getting-started/)")
+        lines.append("")
+
+    lines.extend([
         "## Documentation Index",
         "",
         "<!-- JD:INDEX:START -->",
         "",
         "| Prefix | Area | Purpose |",
         "|--------|------|---------|",
-    ]
+    ])
 
     for prefix in sorted(areas.keys()):
         name = areas[prefix]
@@ -132,8 +137,7 @@ def generate_root_readme(project_name: str, areas: dict[str, str]) -> str:
         "",
     ])
 
-    # Filter empty lines from conditional content
-    return "\n".join(line for line in lines if line is not None)
+    return "\n".join(lines)
 
 
 def generate_area_readme(prefix: str, name: str) -> str:
