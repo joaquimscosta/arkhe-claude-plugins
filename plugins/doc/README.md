@@ -18,6 +18,8 @@ Multi-purpose documentation toolkit for generating comprehensive technical docum
 
 - **managing-adrs**: Auto-invoked ADR (Architecture Decision Record) management for creating and maintaining technical decision documentation. Triggers on keywords like "ADR", "architecture decision", or when editing files in `docs/adr/`. Features auto-numbering, template detection (minimal or MADR 4.0), README index updates, and supersession workflow. Includes Python scripts using `uv` for deterministic operations.
 
+- **jd-docs**: Auto-invoked Johnny.Decimal documentation structure management for scaffolding, validating, and maintaining numbered docs areas. Triggers on keywords like "Johnny Decimal", "docs structure", "organize docs", or when editing files in numbered directories (00-*, 10-*, 20-*). Features default area scheme with per-project customization via `.jd-config.json`, structure validation, and README index generation. Includes Python scripts using `uv` for deterministic operations.
+
 ### Commands
 
 - **/code-explain**: Explains code in detail using the code-explanation skill. Generates visual diagrams, step-by-step breakdowns, and identifies patterns and gotchas. Perfect for understanding complex codebases.
@@ -33,6 +35,7 @@ Multi-purpose documentation toolkit for generating comprehensive technical docum
 ✅ API documentation and technical manuals
 ✅ Architecture Decision Records (ADRs)
 ✅ Proposals, specs, and decision documents
+✅ Johnny.Decimal documentation organization
 
 ## Applies To
 
@@ -129,6 +132,21 @@ uv run doc/skills/managing-adrs/scripts/adr_create.py --title "..." --template m
 uv run doc/skills/managing-adrs/scripts/adr_index.py --dir docs/adr
 ```
 
+### Johnny.Decimal Docs
+
+```bash
+# Auto-invoke by mentioning J.D keywords
+"Scaffold a Johnny Decimal docs structure for this project"
+"Validate if my docs follow Johnny Decimal conventions"
+"Generate a docs index for my README"
+"Organize my flat docs into numbered areas"
+
+# Use scripts directly
+uv run doc/skills/jd-docs/scripts/jd_init.py --root docs
+uv run doc/skills/jd-docs/scripts/jd_validate.py --dir docs
+uv run doc/skills/jd-docs/scripts/jd_index.py --dir docs
+```
+
 ## Common Workflows
 
 ### Documentation Workflow
@@ -154,4 +172,4 @@ uv run doc/skills/managing-adrs/scripts/adr_index.py --dir docs/adr
 
 ## Version
 
-1.2.0
+1.3.0

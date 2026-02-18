@@ -1,7 +1,7 @@
 {
   "name": "arkhe-claude-plugins",
   "metadata": {
-    "description": "Supercharge Claude Code with 82 specialized components — from deep reasoning and autonomous dev loops to DDD architecture, design system enforcement, and git workflow automation. 16 agents, 35 commands, 31 skills across 11 modular plugins."
+    "description": "Supercharge Claude Code with 88 specialized components — from deep reasoning and autonomous dev loops to DDD architecture, design system enforcement, and git workflow automation. 19 agents, 33 commands, 36 skills across 12 modular plugins."
   },
   "owner": {
     "name": "Arkhe"
@@ -61,6 +61,11 @@
       "name": "ralph",
       "source": "./plugins/ralph",
       "description": "Autonomous development loop with fresh context per iteration, Hat-lite builder/verifier system, task sets, and persistent memories"
+    },
+    {
+      "name": "roadmap",
+      "source": "./plugins/roadmap",
+      "description": "Product management, roadmap analysis, and solution architecture for any project"
     }
   ]
 }
