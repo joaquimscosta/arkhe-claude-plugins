@@ -12,37 +12,28 @@ description: >
 
 Scaffold, validate, and maintain [Johnny.Decimal](https://johnnydecimal.com/) documentation structure with sensible defaults and per-project customization.
 
-## Auto-Invoke Triggers
+## Quick Start
 
-This skill activates when:
-1. **Keywords**: "Johnny Decimal", "J.D docs", "docs structure", "organize documentation"
-2. **Editing numbered docs**: Files in `NN-name/` directories (00-*, 10-*, 20-*, etc.)
-3. **Discussing doc organization**: Folder layout, area schemes, doc migration
+```bash
+# Scaffold a new structure
+uv run scripts/jd_init.py --dry-run   # Preview first
+uv run scripts/jd_init.py             # Create docs/ with defaults
+
+# Validate existing structure
+uv run scripts/jd_validate.py --dir docs
+
+# Regenerate README index
+uv run scripts/jd_index.py --dir docs
+```
+
+See [WORKFLOW.md](WORKFLOW.md) for the full six-phase methodology.
 
 ## Capabilities
 
-### 1. Scaffolding (jd_init.py)
-- Create J.D directory tree with README templates
-- Default: `00-getting-started`, `10-product`, `20-architecture`, `30-research`, `90-archive`
-- Per-project customization via `.jd-config.json`
-- Product sub-trees for monorepos (e.g., `docs/skrebe/`, `docs/papia-asr/`)
-
-### 2. Validation (jd_validate.py)
-- Check directory names match `NN-kebab-case` convention
-- Detect orphan files outside area directories
-- Verify README.md presence in each area
-- Report compliance score with pass/fail result
-
-### 3. Index Generation (jd_index.py)
-- Generate/update root README.md with documentation index
-- Table or tree format output
-- Preserves custom README content via marker comments
-
-### 4. Migration (Claude-driven)
-- Analyze existing flat docs/ directory
-- Classify files into J.D areas using naming heuristics
-- Suggest and execute reorganization interactively
-- See [WORKFLOW.md](WORKFLOW.md) Phase 6 for details
+- **Scaffolding** (`jd_init.py`) — Create J.D directory tree with README templates; supports `--product` for monorepo sub-trees and `--init-config` to generate `.jd-config.json`
+- **Validation** (`jd_validate.py`) — Check `NN-kebab-case` naming, detect orphan files, verify README presence per area; `--strict` for CI enforcement
+- **Index generation** (`jd_index.py`) — Generate/update root README with table or tree index; preserves custom content via `<!-- JD:INDEX:START/END -->` markers
+- **Migration** (Claude-driven) — Classify flat docs into J.D areas using naming heuristics, present a move plan, execute interactively
 
 ## Default Area Scheme
 
@@ -54,7 +45,7 @@ This skill activates when:
 | `30-` | research | Spikes, investigations, reference material |
 | `90-` | archive | Historical/deprecated docs |
 
-Gap at 40-80 left for per-project customization (e.g., `40-operations`).
+Gap at 40-80 reserved for per-project customization (e.g., `40-operations`).
 
 ## Config File (.jd-config.json)
 
@@ -64,63 +55,27 @@ Optional per-project override at project root:
 {
   "version": 1,
   "root": "docs",
-  "areas": {
-    "00": "getting-started",
-    "10": "product",
-    "20": "architecture",
-    "30": "research",
-    "90": "archive"
-  },
+  "areas": { "00": "getting-started", "10": "product", "20": "architecture", "30": "research", "90": "archive" },
   "products": [],
   "ignore": ["adr", "*.pdf"],
   "readme_format": "table"
 }
 ```
 
-Created with `jd_init.py --init-config`. All fields have sensible defaults.
+Create with `uv run scripts/jd_init.py --init-config`. All fields have sensible defaults.
 
-## Scripts
+## Common Issues
 
-Located in `scripts/` directory, using uv for execution:
+| Issue | Fix |
+|-------|-----|
+| `uv` not found | `curl -LsSf https://astral.sh/uv/install.sh \| sh` or run with `python3 scripts/jd_init.py` |
+| Orphan files in validation | Move to area dir, or add to `"ignore"` in `.jd-config.json` |
+| Index appended at wrong position | Move `<!-- JD:INDEX:START/END -->` markers to desired location after first run |
 
-### jd_init.py
-```bash
-uv run scripts/jd_init.py                          # Create docs/ with defaults
-uv run scripts/jd_init.py --root docs/skrebe       # Product sub-tree
-uv run scripts/jd_init.py --product skrebe         # Same, using --product flag
-uv run scripts/jd_init.py --init-config            # Also create .jd-config.json
-uv run scripts/jd_init.py --dry-run                # Preview only
-```
+See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for all 10 error scenarios.
 
-### jd_validate.py
-```bash
-uv run scripts/jd_validate.py --dir docs
-uv run scripts/jd_validate.py --dir docs/skrebe --strict
-```
+## References
 
-### jd_index.py
-```bash
-uv run scripts/jd_index.py --dir docs
-uv run scripts/jd_index.py --dir docs --format tree --dry-run
-```
-
-## Quick Start
-
-```bash
-# Auto-invoke by saying:
-"Scaffold a Johnny Decimal docs structure for this project"
-"Validate if my docs follow Johnny Decimal conventions"
-"Generate a docs index for my README"
-"Help me organize my flat docs into numbered areas"
-```
-
-## Progressive Disclosure
-
-- **Level 2**: [WORKFLOW.md](WORKFLOW.md) — Step-by-step methodology
-- **Level 3**: [EXAMPLES.md](EXAMPLES.md) — Real-world examples
-- **Level 4**: [TROUBLESHOOTING.md](TROUBLESHOOTING.md) — Error handling
-
-## Related Resources
-
-- Johnny.Decimal: https://johnnydecimal.com/
-- Papia Studio example: Real-world J.D implementation
+- [WORKFLOW.md](WORKFLOW.md) — Six-phase methodology (discovery, config, scaffold, validate, index, migrate)
+- [EXAMPLES.md](EXAMPLES.md) — Real-world examples for all six operations
+- [TROUBLESHOOTING.md](TROUBLESHOOTING.md) — Error handling and debugging tips
