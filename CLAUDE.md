@@ -18,8 +18,8 @@ This repository uses a **marketplace-based plugin system** where each plugin is 
 ```
 arkhe-claude-plugins/
 ├── .claude-plugin/
-│   └── marketplace.json          # Marketplace catalog (11 plugins)
-├── plugins/                       # All 11 plugins
+│   └── marketplace.json          # Marketplace catalog (12 plugins)
+├── plugins/                       # All 12 plugins
 │   ├── core/                      # Quality control and workflow orchestration
 │   ├── ai/                        # AI engineering and LLM development
 │   ├── doc/                       # Documentation generation
@@ -30,7 +30,8 @@ arkhe-claude-plugins/
 │   ├── lang/                      # Language-specific programming skills
 │   ├── playwright/                # Browser automation via Playwright CLI
 │   ├── spring-boot/               # Domain-Driven Design with Spring Boot 4
-│   └── ralph/                     # Autonomous development loop
+│   ├── ralph/                     # Autonomous development loop
+│   └── roadmap/                   # PM, roadmap analysis, solution architecture
 ├── docs/                          # Developer documentation
 ├── templates/                     # Plugin templates
 └── assets/                        # Project assets
@@ -125,6 +126,12 @@ Autonomous development loop with fresh context per iteration and Hat-lite builde
 - **Skills**: `ralph-loop` (command-invoke), `ralph-prd` (command-invoke)
 - **Use**: Greenfield development, POCs, focused features, test coverage campaigns, refactoring tasks
 
+### Roadmap Plugin
+Product management, roadmap analysis, and solution architecture for any project.
+- **Agents**: `product-manager`, `system-architect`, `roadmap-analyst`
+- **Skills**: `pm` (auto-invoke), `roadmap` (auto-invoke), `architect` (auto-invoke)
+- **Use**: User stories, scope assessments, prioritization, project status, gap analysis, risk mapping, module design, API design, boundary analysis
+
 ## Common Development Commands
 
 ### Plugin Management
@@ -145,6 +152,7 @@ Autonomous development loop with fresh context per iteration and Hat-lite builde
 /plugin install playwright@arkhe-claude-plugins
 /plugin install spring-boot@arkhe-claude-plugins
 /plugin install ralph@arkhe-claude-plugins
+/plugin install roadmap@arkhe-claude-plugins
 
 # Verify installation
 /plugin                    # View installed plugins

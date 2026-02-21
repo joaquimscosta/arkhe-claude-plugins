@@ -11,6 +11,7 @@ START
   +-- [RESUME] Load plan.md
   |   +-- Check for wave-*-context.md files
   |   +-- If wave context found -> Offer: Continue next wave / Re-review / Restart
+  |   |   +-- [Continue] -> Step 4.0 (Ticket Selection for remaining waves)
   |   +-- If no wave context -> Ask which phase -> Jump to phase
   |
   +-- [PLAN/FULL] Read PHASE-0-DISCOVERY.md

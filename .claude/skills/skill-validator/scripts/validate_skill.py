@@ -91,6 +91,20 @@ def parse_frontmatter(content: str) -> Tuple[Optional[Dict], str, str]:
         current_value = []
         block_scalar = None  # '>' (folded) or '|' (literal)
 
+        def _yaml_type_convert(text: str):
+            """Convert YAML scalar strings to native Python types."""
+            if text.lower() in ('true', 'yes', 'on'):
+                return True
+            if text.lower() in ('false', 'no', 'off'):
+                return False
+            if text.lower() in ('null', '~', ''):
+                return None
+            try:
+                return int(text)
+            except ValueError:
+                pass
+            return text
+
         def _store_value():
             if block_scalar == '>':
                 # Folded: join continuation lines with spaces
@@ -100,7 +114,12 @@ def parse_frontmatter(content: str) -> Tuple[Optional[Dict], str, str]:
                 text = '\n'.join(current_value)
             else:
                 text = '\n'.join(current_value)
-            frontmatter[current_key] = text.strip()
+            text = text.strip()
+            # Only convert simple (non-block-scalar) single-line values
+            if block_scalar is None and '\n' not in text:
+                frontmatter[current_key] = _yaml_type_convert(text)
+            else:
+                frontmatter[current_key] = text
 
         for line in frontmatter_text.split('\n'):
             if ':' in line and not line.startswith(' ') and not line.startswith('\t'):

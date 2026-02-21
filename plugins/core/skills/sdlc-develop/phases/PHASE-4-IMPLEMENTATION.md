@@ -14,18 +14,20 @@ Before executing any wave, allow the user to select which tasks to implement in 
 
 ### 1. Load and Present Tasks
 
-Read `tasks.md` and present all tasks grouped by wave:
+Read `tasks.md` and present all tasks grouped by wave. Show COMPLETED waves as read-only context:
 
 ```markdown
-## Wave 1 (3 tasks)
-- T-01: [title] (Effort: M) — Status: SELECTED
-- T-02: [title] (Effort: S) — Status: SELECTED
-- T-03: [title] (Effort: S) — Status: SELECTED
+## Wave 1 (3 tasks) — COMPLETED
+- T-01: [title] (Effort: M) — Status: COMPLETED
+- T-02: [title] (Effort: S) — Status: COMPLETED
+- T-03: [title] (Effort: S) — Status: COMPLETED
 
 ## Wave 2 (2 tasks, depends on Wave 1)
 - T-04: [title] (Effort: L) — Status: SELECTED
 - T-05: [title] (Effort: M) — Status: SELECTED
 ```
+
+**Note:** Completed waves are shown for context but are not selectable. Only non-COMPLETED tasks can be selected or deferred.
 
 ### 2. Ask for Selection
 
@@ -57,8 +59,9 @@ For each task, update the `**Status**:` field:
 ### 4. Handle Edge Cases
 
 - **All tasks already COMPLETED**: Skip to Step 4b (validation)
+- **Resume with completed waves**: Show completed waves as read-only context, only allow selection on remaining (non-COMPLETED) waves. Selection options (Select All, Select by Wave, Custom) apply only to non-COMPLETED tasks.
 - **Resume with no Status fields**: Auto-add `Status: SELECTED` to all tasks (backward compatibility)
-- **`--auto` mode**: Auto-select all tasks, skip this step
+- **`--auto` mode**: Auto-select all non-COMPLETED tasks, skip this step
 
 ---
 
@@ -209,7 +212,6 @@ Use `AskUserQuestion`:
 - **options**:
   - { label: "CONTINUE (Recommended)", description: "Proceed to Wave {N+1} in current session" }
   - { label: "STOP", description: "Save context, copy resume command to clipboard, and exit" }
-  - { label: "SAVE & FRESH START", description: "Save context, copy resume command to clipboard, and exit for a clean context window" }
 
 **Response Handling:**
 - **CONTINUE**: Proceed to Step 4a.1 for Wave {N+1}
@@ -220,22 +222,12 @@ Use `AskUserQuestion`:
   Wave {N} context saved to {spec_path}/wave-{N}-context.md
   Resume command copied to clipboard.
 
-  To resume from Wave {N+1}:
+  To resume in this session:
   /core:develop @{spec_path}/
-  ```
-- **SAVE & FRESH START**: Save wave context, copy resume command to clipboard, display fresh start instructions, and exit Phase 4:
-  1. Use `Bash` tool: `printf '/core:develop @{spec_path}/' | pbcopy` (macOS) or equivalent for the current platform
-  2. Display:
-  ```
-  Wave {N} context saved to {spec_path}/wave-{N}-context.md
-  Resume command copied to clipboard.
 
-  Fresh start steps:
+  For a fresh context window (recommended for large features):
   1. Run /clear (or start a new conversation)
   2. Paste and run: /core:develop @{spec_path}/
-
-  The skill will auto-detect wave context and continue from Wave {N+1}.
-  A fresh context window gives Claude full capacity for the next wave.
   ```
 
 **`--auto` mode**: Auto-continue to next wave without stopping.
