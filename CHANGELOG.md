@@ -5,6 +5,52 @@ All notable changes to the Arkhe Claude Plugins project will be documented in th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.11.0] - 2026-02-22
+
+### Added
+
+#### Roadmap Plugin
+
+- **New plugin: Product management and solution architecture** (#29)
+  - 3 agents: `product-manager`, `roadmap-analyst`, `system-architect`
+  - 3 auto-invoke skills: `pm`, `roadmap`, `architect`
+  - User story generation, scope assessment, prioritization, project status analysis
+  - Risk mapping, gap analysis, module design, API design, boundary analysis
+
+#### Doc Plugin
+
+- **jd-docs skill**: Johnny.Decimal documentation structure management (#29)
+  - Scaffold, validate, and maintain numbered docs areas
+  - Per-project customization via `.jd-config.json`
+  - 3 Python scripts: `jd_init.py`, `jd_validate.py`, `jd_index.py`
+
+#### Spring Boot Plugin
+
+- **flyway-consolidate skill**: Flyway migration analysis and consolidation
+  - Analyze incremental migrations and generate consolidated CREATE TABLE migrations
+  - Domain-grouped output for pre-production projects
+
+### Changed
+
+#### Core Plugin
+
+- **SDLC checkpoint UX overhaul** — reduced interaction friction by 44-60% (#30)
+  - Merged Resume Gate + Ticket Selection into single prompt
+  - Collapsed wave confirmation when "Select All" (auto-proceed)
+  - Merged Quality Review + Completion Gate into single "Quality & Completion Gate"
+  - Converted Phase 5 RULE ZERO checklist to audit record
+  - Resume happy path: 5 clicks → 2 clicks; Full "Select All" (3 waves): 9 clicks → 5 clicks
+- Simplified wave stop action: merged STOP and SAVE & FRESH START into single STOP option (#29)
+- Resume now routes through Step 4.0 for full wave re-selection
+
+#### Git Plugin
+
+- Enhanced `pr-issue-resolve` with trust-but-verify approach and research-driven decisions
+
+#### Marketplace
+
+- Updated to 12 plugins, 19 agents, 33 commands, 36 skills (88 total components)
+
 ## [1.10.0] - 2026-02-12
 
 ### Added
