@@ -17,15 +17,15 @@ Human-in-the-Loop gates ensure appropriate oversight at critical decision points
 | Transition | Gate | Tier | Notes |
 |------------|------|------|-------|
 | Phase 0 → 1 | Existing System Findings | ⚠️ Tier 2 | REUSE/ENHANCE/CREATE decisions |
+| Phase 0 (RESUME) | Wave Resume + Task Selection | ⚠️ Tier 2 | Continue next wave; "All remaining tasks" skips Step 4.0 |
 | Phase 1 → 2 | Requirements Summary | ⚠️ Tier 2 | Approval before architecture |
 | Phase 2c | Architecture Decision | ⛔ Tier 1 | Cannot skip, even with `--auto` |
 | Phase 2 → 3 | Plan Saved | ✅ Tier 3 | Auto-proceed, log only |
 | Phase 3 → 4 | Task Breakdown | ⚠️ Tier 2 | Validate before implementation |
-| Phase 4.0 | Ticket Selection | ⚠️ Tier 2 | Select tasks for session |
-| Phase 4a.1 | Wave Confirmation | ⚠️ Tier 2 | Confirm wave plan |
+| Phase 4.0 | Ticket Selection | ⚠️ Tier 2 | Select tasks for session (skipped in RESUME + "All remaining tasks") |
+| Phase 4a.1 | Wave Confirmation | Conditional | Tier 3 auto-proceed when `selection_scope=ALL`; Tier 2 otherwise |
 | Phase 4a.3 | Wave Checkpoint | ⚠️ Tier 2 | Wave complete, continue or stop |
-| Phase 4d | Quality Review | Conditional | Tier 1 if security/DB, else Tier 2 |
-| Phase 4 → 5 | Completion | ⛔ Tier 1 | RULE ZERO verification |
+| Phase 4e | Quality & Completion | ⛔ Tier 1 | Combined RULE ZERO + code review; VERIFY UI option available |
 
 ---
 
@@ -41,6 +41,8 @@ These auto-elevate ANY checkpoint to Tier 1:
 - [ ] Performance-critical algorithm changes
 
 **Detection**: Check plan.md, spec.md, and implementation for keywords.
+
+**Note:** The Quality & Completion Gate (Phase 4e) is always Tier 1 regardless of triggers. The presence of conditional triggers is recorded in the gate log for audit purposes but does not change gate behavior.
 
 ---
 
@@ -116,19 +118,19 @@ Present the trade-offs summary, then use `AskUserQuestion`:
 }
 ```
 
-### Example: Completion Verification (Tier 1)
+### Example: Quality & Completion (Tier 1)
 
-Present RULE ZERO status, then use `AskUserQuestion`:
+Present combined quality review + RULE ZERO status, then use `AskUserQuestion`:
 
 ```json
 {
-  "header": "Completion",
-  "question": "5 files changed, 12/12 tests passing, no TODOs found. Mark implementation complete?",
+  "header": "Quality & Completion",
+  "question": "RULE ZERO: 6/6 checks passed. Validation: PASS. Code review: 0 issues. Mark implementation complete?",
   "options": [
-    { "label": "APPROVE", "description": "Mark complete, proceed to Phase 5" },
-    { "label": "REVIEW", "description": "Show me the git diff" },
-    { "label": "FIX", "description": "I need to address something first" },
-    { "label": "CANCEL", "description": "Keep working" }
+    { "label": "APPROVE — Mark Complete", "description": "All checks pass, proceed to Phase 5 summary" },
+    { "label": "REVIEW — Show diff & details", "description": "Show git diff and full validation report" },
+    { "label": "FIX — Return to implementation", "description": "Address issues, then re-present this gate" },
+    { "label": "VERIFY UI — Test in browser", "description": "Run Playwright verification before approving" }
   ]
 }
 ```

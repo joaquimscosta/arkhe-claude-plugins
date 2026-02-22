@@ -90,25 +90,25 @@ Update `{spec_path}/spec.md` status to "Complete".
 
 ---
 
-## Verification Checklist (RULE ZERO)
+## Verification Record (RULE ZERO)
 
-Before marking complete, verify ALL items:
+RULE ZERO was verified and approved at the Quality & Completion Gate (Step 4e) before entering Phase 5. This section records the confirmed state for audit purposes.
 
-**Required Checks:**
-- [ ] All tasks marked `completed` in TaskList
-- [ ] All FR-XXX requirements have corresponding implementation
-- [ ] Acceptance criteria are testable
-- [ ] Files actually modified (git diff check)
-- [ ] Tests pass (if applicable)
-- [ ] No placeholder code (`TODO`, `UnsupportedOperationException`)
-- [ ] Subagent recommendations were implemented (not just analyzed)
+**Verified at gate approval:**
+- [x] All tasks marked `completed` in TaskList
+- [x] All FR-XXX requirements have corresponding implementation
+- [x] Acceptance criteria are testable
+- [x] Files actually modified (git diff check)
+- [x] Tests pass (if applicable)
+- [x] No placeholder code (`TODO`, `UnsupportedOperationException`)
+- [x] Subagent recommendations were implemented (not just analyzed)
 
-**Evidence Required:**
-- `git diff` output showing actual changes
-- Test results (if tests were written)
-- File read-back confirming modifications persisted
+**Evidence recorded:**
+- `git diff` output reviewed at Quality & Completion gate
+- Test results confirmed
+- File read-back confirmed modifications persisted
 
-**If ANY check fails:** Do NOT mark as complete. Return to Phase 4.
+_If any items were noted as exceptions during gate approval, they are documented in the gate log._
 
 ---
 

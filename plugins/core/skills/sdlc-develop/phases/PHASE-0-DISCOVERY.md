@@ -82,18 +82,20 @@ Read `tasks.md` and check for `**Status**:` fields on each task:
 
 ### 4. Wave Resume Checkpoint
 
-**Gate: Tier 2** ⚠️ (skippable with `--auto` — auto-selects "Continue next wave")
+**Gate: Tier 2** ⚠️ (skippable with `--auto` — auto-selects "All remaining tasks")
 
 Use `AskUserQuestion`:
 - **header**: "Resume"
-- **question**: "{Wave progress summary}. How would you like to continue?"
+- **question**: "{Wave progress summary}. Wave {N+1} has {remaining_count} remaining tasks: {task_id_list}. What would you like to do?"
 - **options**:
-  - { label: "Continue Wave {N+1} (Recommended)", description: "Jump to Phase 4, re-select tasks, then continue" }
+  - { label: "All remaining tasks (Recommended)", description: "Select all remaining tasks and proceed immediately to implementation" }
+  - { label: "Choose tasks first", description: "Review and select specific tasks before starting" }
   - { label: "Re-review completed work", description: "Show git diff of previous waves" }
   - { label: "Restart from a phase", description: "Choose which phase to continue from" }
 
 **Response Handling:**
-- **Continue Wave {N+1}**: Load PHASE-4-IMPLEMENTATION.md, start at Step 4.0 (Ticket Selection) for remaining waves — this lets users re-select which waves/tasks to implement before continuing
+- **All remaining tasks**: Auto-mark all non-COMPLETED tasks as `Status: SELECTED` in `tasks.md`. Set `selection_scope = ALL`. Load PHASE-4-IMPLEMENTATION.md, **skip Step 4.0 entirely**, proceed directly to Step 4a.1 (Wave Confirmation, which auto-proceeds since `selection_scope = ALL`)
+- **Choose tasks first**: Load PHASE-4-IMPLEMENTATION.md, start at Step 4.0 (Ticket Selection) — user reviews and selects tasks manually
 - **Re-review completed work**: Run `git diff` for previous wave commits, then re-present this checkpoint
 - **Restart from a phase**: Fall through to existing phase selection behavior
 
