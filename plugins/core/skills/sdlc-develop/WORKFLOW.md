@@ -10,8 +10,9 @@ START
   |
   +-- [RESUME] Load plan.md
   |   +-- Check for wave-*-context.md files
-  |   +-- If wave context found -> Offer: Continue next wave / Re-review / Restart
-  |   |   +-- [Continue] -> Step 4.0 (Ticket Selection for remaining waves)
+  |   +-- If wave context found -> Offer: All remaining / Choose tasks / Re-review / Restart
+  |   |   +-- [All remaining] -> Skip Step 4.0, proceed to Step 4a.1 (auto-proceeds)
+  |   |   +-- [Choose tasks] -> Step 4.0 (Ticket Selection for remaining waves)
   |   +-- If no wave context -> Ask which phase -> Jump to phase
   |
   +-- [PLAN/FULL] Read PHASE-0-DISCOVERY.md
@@ -27,15 +28,15 @@ START
   |   +-- Execute Phase 3 -> Checkpoint
   |
   +-- Read PHASE-4-IMPLEMENTATION.md
-  |   +-- Step 4.0: Ticket Selection (select/defer tasks)
+  |   +-- Step 4.0: Ticket Selection (select/defer tasks; skipped if RESUME + "All remaining")
   |   +-- For each wave:
-  |       +-- Step 4a.1: Wave Confirmation
+  |       +-- Step 4a.1: Wave Confirmation (auto-proceeds if selection_scope=ALL)
   |       +-- Step 4a.2: Implement wave tasks
   |       +-- Step 4a.3: Wave Checkpoint -> CONTINUE or STOP
   |           +-- [CONTINUE] -> Next wave (4a.1)
   |           +-- [STOP] -> Save context, exit Phase 4
-  |   +-- Step 4b-4d: Validation -> Quality Review
-  |   +-- Step 4e: Completion Gate (Tier 1 - mandatory)
+  |   +-- Step 4b-4d: Validation + Code Review
+  |   +-- Step 4e: Quality & Completion Gate (Tier 1 - mandatory)
   |
   +-- Read PHASE-5-SUMMARY.md
       +-- Execute Phase 5 -> Complete

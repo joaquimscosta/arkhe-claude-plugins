@@ -10,6 +10,8 @@
 
 **Gate: Tier 2** ⚠️ (skippable with `--auto` — auto-selects all tasks)
 
+**Skip if:** RESUME_MODE and user selected "All remaining tasks" at the Resume gate (tasks already marked SELECTED, `selection_scope = ALL`, proceed directly to Step 4a.1).
+
 Before executing any wave, allow the user to select which tasks to implement in this session.
 
 ### 1. Load and Present Tasks
@@ -40,14 +42,14 @@ Use `AskUserQuestion`:
   - { label: "Custom Selection", description: "Provide specific task IDs via text input" }
 
 **Response Handling:**
-- **Select All**: Mark all tasks as `Status: SELECTED`
-- **Select by Wave**: For each wave, use `AskUserQuestion` with yes/no:
+- **Select All**: Mark all tasks as `Status: SELECTED`. **Set `selection_scope = ALL`** (Step 4a.1 will auto-proceed for each wave).
+- **Select by Wave**: **Set `selection_scope = BY_WAVE`**. For each wave, use `AskUserQuestion` with yes/no:
   - **header**: "Wave {N}"
   - **question**: "Wave {N} has {count} tasks ({effort}). Include this wave?"
   - **options**:
     - { label: "Include", description: "Select all tasks in Wave {N}" }
     - { label: "Skip", description: "Defer all tasks in Wave {N}" }
-- **Custom Selection**: User provides task IDs (e.g., "T-01, T-02, T-04") via "Other" text input
+- **Custom Selection**: **Set `selection_scope = CUSTOM`**. User provides task IDs (e.g., "T-01, T-02, T-04") via "Other" text input
 
 ### 3. Update tasks.md
 
@@ -71,7 +73,9 @@ Execute selected tasks wave by wave. Each wave follows sub-steps 4a.1 → 4a.2 �
 
 ### Step 4a.1: Wave Confirmation
 
-**Gate: Tier 2** ⚠️ (skippable with `--auto` — auto-proceeds)
+**Gate: Conditional**
+- **Tier 3 ✅ (auto-proceed, log only)** if `selection_scope = ALL` — log "Wave {N}: auto-proceeded (Select All)" and continue to Step 4a.2
+- **Tier 2 ⚠️ (skippable with `--auto`)** if `selection_scope = BY_WAVE` or `CUSTOM`
 
 **Auto-skip if:** Wave has no SELECTED tasks (all DEFERRED or COMPLETED).
 
@@ -282,7 +286,7 @@ Return: Score, issues found, recommendations.
 
 ---
 
-## Step 4d: Quality Review
+## Step 4d: Code Review (agent launch)
 
 Launch 2-3 `code-reviewer` agents in parallel:
 
@@ -305,43 +309,41 @@ Exclude:
 
 ---
 
-## User Checkpoint (Quality Review)
+## Step 4e: Quality & Completion Gate
 
-**Gate: Conditional** - Tier 1 ⛔ if security/DB changes detected, otherwise Tier 2 ⚠️
+### ⛔ TIER 1 CHECKPOINT - MANDATORY STOP
 
-Check for Tier 1 triggers:
-- [ ] Database schema changes in implementation
-- [ ] Security-related code (auth, encryption, permissions)
-- [ ] Breaking API changes
-- [ ] New service/module creation
+**This checkpoint CANNOT be skipped, even with `--auto`.**
 
-**If Tier 1 triggers detected:** Cannot skip, even with `--auto`
-
-Present validation results:
-1. Quick validation status (PASS/ISSUES)
-2. Deep validation score (if `--validate`)
-3. Code review findings
+Before presenting this gate:
+1. Collect validation results (Step 4b output, Step 4c score if `--validate`)
+2. Collect code review findings (from parallel reviewer agents in Step 4d)
+3. Run RULE ZERO verification:
+   - [ ] All tasks marked `completed` in TaskList
+   - [ ] All FR-XXX requirements have corresponding implementation
+   - [ ] Files actually modified (`git diff --stat` check)
+   - [ ] Tests pass (if applicable)
+   - [ ] No placeholder code (`TODO`, `UnsupportedOperationException`)
+   - [ ] Subagent recommendations were implemented (not just analyzed)
 
 **Ask using AskUserQuestion:**
 
-Present validation results, then use `AskUserQuestion` tool:
-- **header**: "Quality Review"
-- **question**: "[Validation results summary]. How would you like to proceed?"
+Present combined quality review + RULE ZERO status, then use `AskUserQuestion` tool:
+- **header**: "Quality & Completion"
+- **question**: "[RULE ZERO: N/6 checks passed]. [Validation: PASS/score]. [Code review: N issues found]. Mark implementation complete?"
 - **options**:
-  - { label: "APPROVE", description: "Proceed to completion" }
-  - { label: "REVIEW", description: "Show me the code diff" }
-  - { label: "FIX ISSUES", description: "Address the findings first" }
-  - { label: "VERIFY UI", description: "Test UI changes with Playwright" }
-  - { label: "CANCEL", description: "Stop here" }
+  - { label: "APPROVE — Mark Complete", description: "All checks pass, proceed to Phase 5 summary" }
+  - { label: "REVIEW — Show diff & details", description: "Show git diff and full validation report" }
+  - { label: "FIX — Return to implementation", description: "Address issues, then re-present this gate" }
+  - { label: "VERIFY UI — Test in browser", description: "Run Playwright verification before approving" }
 
-**STOP: Unless `--auto` is set AND no Tier 1 triggers, WAIT for user response.**
+**CRITICAL: STOP HERE. DO NOT PROCEED TO PHASE 5 UNTIL USER SELECTS "APPROVE — Mark Complete".**
 
 **Response Handling:**
-- **APPROVE**: Proceed to Step 4e (Completion Gate)
-- **REVIEW**: Show `git diff` output, then re-present this checkpoint
-- **FIX ISSUES**: Address issues, re-run validation, then re-present this checkpoint
-- **VERIFY UI**: Run UI verification workflow (see below), then re-present this checkpoint
-- **CANCEL**: Stop pipeline, remain in Phase 4
+- **APPROVE — Mark Complete**: Proceed to Phase 5 (PHASE-5-SUMMARY.md)
+- **REVIEW — Show diff & details**: Execute `git diff`, display output and full code review findings, then re-present this gate
+- **FIX — Return to implementation**: Return to implementation work. When user indicates work is done, re-run Steps 4b–4d agents, then re-present this gate
+- **VERIFY UI — Test in browser**: Run UI verification workflow (see below), then re-present this gate with updated results
 
 ### UI Verification Workflow (when VERIFY UI selected)
 
@@ -368,40 +370,7 @@ Live UI verification using Playwright CLI. Refer to the `playwright:playwright-c
    - Execute each step using Playwright CLI (open, snapshot, click, type, fill, screenshot)
    - Report pass/fail for each step
 
-3. **After verification:** Return to Quality Review checkpoint with results included
-
----
-
-## Step 4e: Completion Gate
-
-### ⛔ TIER 1 CHECKPOINT - MANDATORY STOP
-
-**This checkpoint CANNOT be skipped, even with `--auto`.**
-
-Before proceeding to Phase 5:
-1. Verify all RULE ZERO items
-2. Present the checkpoint prompt below
-3. **STOP AND WAIT** for user response
-4. Do NOT proceed until user selects APPROVE
-
-**Ask using AskUserQuestion:**
-
-Present RULE ZERO verification status, then use `AskUserQuestion` tool:
-- **header**: "Completion"
-- **question**: "[RULE ZERO checklist status summary]. Mark implementation complete?"
-- **options**:
-  - { label: "APPROVE", description: "Mark complete, proceed to Phase 5" }
-  - { label: "REVIEW", description: "Show me the git diff" }
-  - { label: "FIX", description: "I need to address something first" }
-  - { label: "CANCEL", description: "Keep working, do not mark complete" }
-
-**CRITICAL: STOP HERE. DO NOT PROCEED TO PHASE 5 UNTIL USER RESPONDS.**
-
-**Response Handling:**
-- **APPROVE**: Proceed to Phase 5 (PHASE-5-SUMMARY.md)
-- **REVIEW**: Execute `git diff` and display output, then re-present this checkpoint
-- **FIX**: Return to implementation work, then re-present this checkpoint when ready
-- **CANCEL**: Remain in Phase 4 implementation mode, await instructions
+3. **After verification:** Return to Quality & Completion gate with results included
 
 ---
 
