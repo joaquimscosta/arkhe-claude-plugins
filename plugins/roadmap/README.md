@@ -1,5 +1,9 @@
 # Roadmap Plugin
 
+<div align="center">
+  <img src="../../assets/roadmap-plugin.jpg" alt="Roadmap Plugin" width="100%" />
+</div>
+
 Product management, roadmap analysis, and solution architecture for any project.
 
 ## Overview

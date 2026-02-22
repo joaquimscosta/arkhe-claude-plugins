@@ -1,5 +1,9 @@
 # Design Intent Plugin
 
+<div align="center">
+  <img src="../../assets/design-intent-plugin.jpg" alt="Design Intent Plugin" width="100%" />
+</div>
+
 UI/UX Design Plugin - Visual fidelity from Figma/mockups, design system enforcement, and React UI prototyping with pattern memory. Focused exclusively on frontend visual implementation.
 
 ## Overview

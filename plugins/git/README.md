@@ -1,5 +1,9 @@
 # Git Plugin
 
+<div align="center">
+  <img src="../../assets/git-plugin.jpg" alt="Git Plugin" width="100%" />
+</div>
+
 > Git workflow automation for commit, pull request, and branching operations
 
 ## Overview

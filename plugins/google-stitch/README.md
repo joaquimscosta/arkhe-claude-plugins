@@ -1,5 +1,9 @@
 # Google Stitch Plugin
 
+<div align="center">
+  <img src="../../assets/google-stitch-plugin.jpg" alt="Google Stitch Plugin" width="100%" />
+</div>
+
 > Claude + Google Stitch workflow toolkit with MCP integration for prompt authoring, screen generation, and design extraction.
 
 ---

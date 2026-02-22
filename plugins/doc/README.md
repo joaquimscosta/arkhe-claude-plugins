@@ -1,5 +1,9 @@
 # Doc Plugin
 
+<div align="center">
+  <img src="../../assets/doc-plugin.jpg" alt="Doc Plugin" width="100%" />
+</div>
+
 Multi-purpose documentation toolkit for generating comprehensive technical documentation.
 
 ## Domain

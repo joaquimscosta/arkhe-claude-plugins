@@ -1,5 +1,9 @@
 # Spring Boot Plugin
 
+<div align="center">
+  <img src="../../assets/spring-boot-plugin.jpg" alt="Spring Boot Plugin" width="100%" />
+</div>
+
 Domain-Driven Design patterns with Spring Boot 4 implementation for complex business systems.
 
 ## Components
