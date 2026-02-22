@@ -1,5 +1,9 @@
 # Playwright Plugin
 
+<div align="center">
+  <img src="../../assets/playwright-plugin.jpg" alt="Playwright Plugin" width="100%" />
+</div>
+
 Browser automation via Playwright CLI for testing, screenshots, and interaction workflows.
 
 ## Overview

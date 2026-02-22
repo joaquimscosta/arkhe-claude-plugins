@@ -1,5 +1,9 @@
 # Core Plugin
 
+<div align="center">
+  <img src="../../assets/core-plugin.jpg" alt="Core Plugin" width="100%" />
+</div>
+
 Quality control and workflow orchestration utilities for Claude Code.
 
 ## Components

@@ -1,5 +1,9 @@
 # Ralph Plugin
 
+<div align="center">
+  <img src="../../assets/ralph-plugin.jpg" alt="Ralph Plugin" width="100%" />
+</div>
+
 > "Me fail English? That's unpossible!" - Ralph Wiggum
 
 Autonomous development loop with fresh context per iteration, Hat-lite builder/verifier system, and task set isolation.

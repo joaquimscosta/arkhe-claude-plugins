@@ -1,5 +1,9 @@
 # Review Plugin
 
+<div align="center">
+  <img src="../../assets/review-plugin.jpg" alt="Review Plugin" width="100%" />
+</div>
+
 > Code quality review tools for development teams
 
 ## Overview
