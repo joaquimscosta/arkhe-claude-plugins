@@ -991,7 +991,8 @@ The `/specprep:tasks` command has been removed in favor of automatic command cha
 - **Documentation**: See README.md and docs/ directory
 - **Installation**: See INSTALLATION.md
 
-[Unreleased]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.10.0...HEAD
+[Unreleased]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.11.0...HEAD
+[1.11.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.10.0...v1.11.0
 [1.10.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.9.0...v1.10.0
 [1.9.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.8.0...v1.9.0
 [1.8.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.7.0...v1.8.0
