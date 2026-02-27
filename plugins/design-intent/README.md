@@ -347,6 +347,33 @@ src/components/{feature}/
 - `skills/stitch-to-react/EXAMPLES.md` - Conversion examples
 - `skills/stitch-to-react/TROUBLESHOOTING.md` - Common issues
 
+### Icon Forge
+
+Command-invoke skill for generating brand icons as SVG and producing all required platform assets from a single source.
+
+**Invoked by:** `/icon-forge [brand description]` or `/icon-forge --svg <existing.svg>`
+
+**Capabilities:**
+
+- Interactive brand discovery (name, concept, colors, style)
+- SVG icon generation with design principles for scalability (16px to 1024px)
+- Dark-mode favicon variant with embedded CSS media query
+- Automated asset generation via `rsvg-convert` or ImageMagick:
+  - `favicon.ico` (multi-resolution), `favicon.svg` (dark mode), `apple-touch-icon.png` (180x180)
+  - PWA icons (192x192, 512x512) + maskable variants (80% safe zone)
+  - iOS App Store source (1024x1024)
+  - `manifest.webmanifest` and integration guide
+- Auto-detects Next.js App Router for correct file naming (`icon.svg`, `apple-icon.png`)
+
+**Requires:** `rsvg-convert` (`brew install librsvg`) or `magick` (`brew install imagemagick`)
+
+**Documentation:**
+
+- `skills/icon-forge/SKILL.md` - Quick start and SVG design principles
+- `skills/icon-forge/WORKFLOW.md` - 5-phase detailed process
+- `skills/icon-forge/EXAMPLES.md` - Usage examples
+- `skills/icon-forge/TROUBLESHOOTING.md` - Common issues
+
 ## Project Structure After Setup
 
 ```text
