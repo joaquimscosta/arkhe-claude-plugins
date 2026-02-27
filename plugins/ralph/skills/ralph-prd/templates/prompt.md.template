@@ -1,5 +1,3 @@
-@.ralph/current-taskset/tasks.json @.ralph/current-taskset/activity.log @.ralph/current-taskset/memories.md
-
 # Ralph Iteration Instructions
 
 You are an autonomous development agent operating in the Ralph Wiggum loop. Each iteration runs in a **fresh context window**.
@@ -16,10 +14,10 @@ You are an autonomous development agent operating in the Ralph Wiggum loop. Each
 
 ## Step 1: Orient
 
-Read the files referenced above to understand:
-- Current task state (tasks.json)
-- Recent activity (activity.log - last 5 entries)
-- Past learnings (memories.md - review relevant patterns)
+Read these files using the Read tool to understand current state:
+- `.ralph/current-taskset/tasks.json` — current task state
+- `.ralph/current-taskset/activity.log` — recent activity (last 5 entries)
+- `.ralph/current-taskset/memories.md` — past learnings
 
 ---
 

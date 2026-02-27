@@ -79,8 +79,13 @@ for ((i=1; i<=MAX_ITERATIONS; i++)); do
   echo ""
 
   # Run Claude with fresh context (read prompt file each time)
-  # Using --output-format text for cleaner output
-  result=$(claude -p "$(cat "$PROMPT_FILE")" --output-format text 2>&1) || true
+  # --dangerously-skip-permissions: required for non-interactive tool execution
+  # --disallowedTools: prevent use of session-scoped task tools (Ralph uses tasks.json)
+  result=$(claude -p "$(cat "$PROMPT_FILE")" \
+    --dangerously-skip-permissions \
+    --output-format text \
+    --disallowedTools=TodoWrite,TaskCreate,TaskUpdate,TaskList,TaskGet \
+    2>&1) || true
 
   echo "$result"
   echo ""
