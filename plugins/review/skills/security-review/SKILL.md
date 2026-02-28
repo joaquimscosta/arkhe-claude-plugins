@@ -2,7 +2,7 @@
 name: security-review
 description: >
   Security-focused code review identifying high-confidence exploitable vulnerabilities
-  with false positive filtering and parallel sub-task verification.
+  with two-axis severity/confidence scoring, OWASP 2025 alignment, and false positive filtering.
   Use when user runs /security-review, /review:security-review, requests a "security review",
   "security audit", "vulnerability scan", or mentions "find vulnerabilities", "check for exploits".
 disable-model-invocation: true
@@ -11,7 +11,7 @@ argument-hint: "[output-directory]"
 
 # Security Review
 
-Identify HIGH-CONFIDENCE security vulnerabilities with real exploitation potential. Focus on impact, minimize false positives.
+Identify HIGH-CONFIDENCE security vulnerabilities with real exploitation potential. Two-axis scoring (severity + confidence), OWASP 2025 aligned, false positive filtered.
 
 ## Parse Arguments
 
@@ -49,59 +49,96 @@ Review the complete diff above. Focus ONLY on security implications newly added 
 
 ## Objective
 
-- Only flag issues where you're **>80% confident** of actual exploitability
+- Only flag issues where you have **HIGH confidence** of actual exploitability
 - Skip theoretical issues, style concerns, or low-impact findings
 - Prioritize vulnerabilities leading to unauthorized access, data breaches, or system compromise
-- Do NOT report: DoS vulnerabilities, secrets stored on disk, rate limiting issues
+- Use two-axis scoring: severity (impact) and confidence (accuracy) are independent
 
-## Security Categories
+## Security Categories (OWASP 2025 Aligned)
 
-| Category | Key Checks |
-|----------|------------|
-| Input Validation | SQL injection, command injection, XXE, template injection, path traversal |
-| Auth & Authorization | Authentication bypass, privilege escalation, session flaws, JWT vulns |
-| Crypto & Secrets | Hardcoded keys, weak algorithms, improper key storage, cert validation |
-| Injection & RCE | Deserialization, eval, XSS (reflected/stored/DOM), unsafe dynamic code |
-| Data Exposure | Sensitive data logging, PII handling, API leakage, debug info exposure |
+| Category | Key Checks | OWASP |
+|----------|------------|-------|
+| Access Control | IDOR, privilege escalation, SSRF, CORS, CSRF, path traversal | A01 |
+| Security Misconfiguration | Default credentials, debug endpoints, cloud misconfig, XXE | A02 |
+| Supply Chain | Dependency confusion, unpinned actions, vulnerable deps, CI/CD risks | A03 |
+| Cryptographic Failures | Hardcoded keys, weak algorithms, insecure randomness, cert validation | A04 |
+| Injection | SQLi, command injection, XSS, template injection, NoSQL injection | A05 |
+| Auth & Session | Authentication bypass, JWT vulns, session management, missing MFA | A07 |
+| Deserialization & Integrity | Unsafe deserialization, prototype pollution, unsigned updates | A08 |
+| Error Handling | Fail-open patterns, exception swallowing, verbose error disclosure | A10 |
+| API Security | BOLA, mass assignment, shadow APIs, missing rate limiting | API Top 10 |
+| LLM/AI Security | Prompt injection, unsafe output handling, excessive agency | LLM Top 10 |
 
-See [WORKFLOW.md](WORKFLOW.md) for detailed subcategories.
+See [WORKFLOW.md](WORKFLOW.md) for detailed subcategories and severity assignment reference.
 
 ## Analysis Methodology
 
-**Phase 1 — Repository Context Research**: Identify existing security frameworks, patterns, and sanitization in the codebase.
+**Phase 1 — Repository Context**: Identify existing security frameworks, sanitization patterns, and security model in the codebase.
 
 **Phase 2 — Comparative Analysis**: Compare new code against established secure practices. Flag deviations and new attack surfaces.
 
-**Phase 3 — Vulnerability Assessment**: Trace data flow from user inputs to sensitive operations. Identify injection points and unsafe boundaries.
+**Phase 3 — Vulnerability Assessment**: Trace data flow from user inputs to sensitive operations. Confirm sink reachability and check for sanitizers in the path.
 
-See [WORKFLOW.md](WORKFLOW.md) for detailed methodology and sub-task orchestration pattern.
+See [WORKFLOW.md](WORKFLOW.md) for detailed methodology and sub-task orchestration.
 
-## Severity Guidelines
+## Two-Axis Scoring
 
-| Severity | Criteria |
-|----------|----------|
-| **HIGH** | Directly exploitable: RCE, data breach, authentication bypass |
-| **MEDIUM** | Requires specific conditions but significant impact |
-| **LOW** | Defense-in-depth issues or lower-impact vulnerabilities |
+### Severity (Impact)
 
-## Confidence Scoring
+| Severity | Criteria | Example |
+|----------|----------|---------|
+| **CRITICAL** | RCE, auth bypass, mass data exfiltration | Deserialization RCE, SQLi with shell access |
+| **HIGH** | Significant data access or privilege escalation | SQLi read, stored XSS, SSRF to cloud metadata |
+| **MEDIUM** | Limited impact or requires user interaction | Reflected XSS, CSRF, IDOR on non-sensitive data |
+| **LOW** | Defense-in-depth, minimal direct impact | Missing headers, verbose errors |
 
-- **0.9-1.0**: Certain exploit path identified
-- **0.8-0.9**: Clear vulnerability pattern with known exploitation methods
-- **0.7-0.8**: Suspicious pattern requiring specific conditions
-- **Below 0.7**: Do not report (too speculative)
+### Confidence (Accuracy)
+
+| Confidence | Description | Action |
+|------------|-------------|--------|
+| **HIGH** | Data flow confirmed, clear exploit path | Report — include in findings |
+| **MEDIUM** | Pattern match, context needed to confirm | Report only if severity >= HIGH |
+| **LOW** | Theoretical or framework likely handles | Do not report |
+
+## Confidence & Signal Quality
+
+Before reporting any finding, assess using both axes:
+
+| Severity \ Confidence | HIGH | MEDIUM | LOW |
+|-----------------------|------|--------|-----|
+| CRITICAL | **Report** | **Report** | Suppress |
+| HIGH | **Report** | **Report** | Suppress |
+| MEDIUM | **Report** | Suppress | Suppress |
+| LOW | Suppress | Suppress | Suppress |
+
+**Finding caps**: Max **8 meaningful findings** (Blocker + Improvement + Question) and max **2 Nits** per review. Keep the highest-severity, highest-confidence items.
+
+**Self-reflection**: After generating all candidate findings, re-evaluate each in context. Remove redundant, low-signal, or theoretical items. Apply false positive filtering from [WORKFLOW.md](WORKFLOW.md).
+
+## Triage Matrix
+
+Categorize every finding:
+
+- **[Blocker]**: Must fix before merge — CRITICAL/HIGH severity + HIGH confidence. RCE, auth bypass, injection with confirmed data flow (confidence >= HIGH)
+- **[Improvement]**: Strong recommendation — HIGH severity + MEDIUM confidence, or MEDIUM + HIGH. Clear vulnerability pattern, may need context verification (confidence >= MEDIUM)
+- **[Question]**: Seeks clarification — potential vulnerability depending on context, intent unclear (confidence >= MEDIUM)
+- **[Nit]**: Minor hardening suggestion, optional — max 2 per review
+- **[Praise]**: Acknowledge good security practice — max 1 per review
 
 ## Output Format
 
 For each vulnerability found:
 
 ```markdown
-# Vuln N: {Category}: `{file}:{line}`
+### [Triage] Vuln N: {Category Code}: `{file}:{line}`
 
-* Severity: {HIGH|MEDIUM}
-* Description: {What the vulnerability is and how it can be exploited}
-* Exploit Scenario: {Specific attack path demonstrating exploitability}
-* Recommendation: {Concrete fix with code reference}
+* **Severity**: {CRITICAL|HIGH|MEDIUM}
+* **Confidence**: {HIGH|MEDIUM}
+* **Category**: {OWASP A0X:2025 or API/LLM Top 10}
+* **CWE**: CWE-XXX
+* **Description**: {What the vulnerability is and how it can be exploited}
+* **Exploit Scenario**: {Specific attack path with example payload}
+* **Recommendation**: {Concrete fix with code example}
 ```
 
 ## Output Instructions
@@ -118,12 +155,13 @@ Include this header:
 **Branch**: {current branch name}
 **Commit**: {short commit hash}
 **Reviewer**: Claude Code (security-review)
-**Confidence Threshold**: 8/10 minimum
+**Framework**: OWASP Top 10 2025 + API Top 10 + LLM Top 10
 
 ## Summary
-- **HIGH Severity**: {count} findings
-- **MEDIUM Severity**: {count} findings
-- **Total**: {count} actionable vulnerabilities
+- **Blocker**: {count} findings
+- **Improvement**: {count} findings
+- **Question**: {count} findings
+- **Total**: {count} actionable findings
 
 ---
 ```
@@ -133,9 +171,10 @@ Include this header:
 
 ## False Positive Filtering
 
-Apply the false positive filtering rules from [WORKFLOW.md](WORKFLOW.md) before finalizing. Each finding must pass the signal quality criteria with confidence >= 8/10.
+Apply the false positive filtering rules from [WORKFLOW.md](WORKFLOW.md) before finalizing. Each finding must pass the signal quality matrix above.
 
 ## Resources
 
-- [WORKFLOW.md](WORKFLOW.md) - Detailed analysis methodology, false positive filtering rules, sub-task orchestration
+- [WORKFLOW.md](WORKFLOW.md) - Detailed category taxonomy, analysis methodology, false positive filtering, sub-task orchestration
 - [EXAMPLES.md](EXAMPLES.md) - Sample security review reports
+- [TROUBLESHOOTING.md](TROUBLESHOOTING.md) - Common issues and calibration guidance

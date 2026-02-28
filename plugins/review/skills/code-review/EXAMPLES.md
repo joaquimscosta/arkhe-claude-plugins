@@ -20,39 +20,82 @@
 **Commit**: a1b2c3d
 **Reviewer**: Claude Code (pragmatic-code-review)
 
+## PR Assessment
+
+| Attribute | Value |
+|-----------|-------|
+| **Risk Level** | High |
+| **PR Type** | Feature |
+| **Atomicity** | Atomic |
+| **Breaking Changes** | None |
+
 ---
 
 ## Summary
 
-This PR adds JWT-based user authentication with login/signup endpoints. The overall approach is sound and follows existing patterns well. However, there is a critical security issue with token validation that must be addressed before merge, along with two improvements that would strengthen the implementation.
+This PR adds JWT-based user authentication with login/signup endpoints. The overall approach is sound and follows existing patterns well. However, there is a critical security issue with token validation and a SQL injection vulnerability that must be addressed before merge. Two improvements would strengthen error handling and logging.
 
 ## Findings
 
-### Critical Issues
+### Blockers
 
-- **[Critical]** `src/auth/middleware.ts:45` — JWT secret is read from `process.env.JWT_SECRET` without a fallback check. If the env var is missing, `jwt.verify()` receives `undefined` as the secret and will silently accept any token.
+- **[Blocker]** `src/auth/middleware.ts:45` — JWT secret read from `process.env.JWT_SECRET` without startup validation. If the env var is missing, `jwt.verify()` receives `undefined` and silently accepts any token. (Confidence: 10/10)
   - **Principle**: Defense in depth — fail securely when configuration is missing
-  - **Suggestion**: Add startup validation that throws if `JWT_SECRET` is not set. Consider using a config module that validates all required env vars at boot.
+  - **Current**:
+    ```ts
+    const secret = process.env.JWT_SECRET;
+    const decoded = jwt.verify(token, secret);
+    ```
+  - **Suggested**:
+    ```ts
+    const secret = process.env.JWT_SECRET;
+    if (!secret) throw new Error('JWT_SECRET is required');
+    const decoded = jwt.verify(token, secret);
+    ```
 
-### Suggested Improvements
+- **[Blocker]** `src/auth/repository.ts:15` — SQL injection via string interpolation in user lookup query. (Confidence: 10/10)
+  - **Principle**: OWASP A03 Injection — never construct queries from user input
+  - **Current**:
+    ```ts
+    const result = await db.query(`SELECT * FROM users WHERE email = '${email}'`);
+    ```
+  - **Suggested**:
+    ```ts
+    const result = await db.query('SELECT * FROM users WHERE email = $1', [email]);
+    ```
 
-- **[Improvement]** `src/auth/controller.ts:28` — Password is logged in the error handler at debug level: `logger.debug('Login attempt', { email, password })`. Even at debug level, this creates a risk if debug logging is ever enabled in production.
+### Improvements
+
+- **[Improvement]** `src/auth/controller.ts:28` — Password logged in error handler at debug level. Even at debug level, this creates risk if debug logging is enabled in production. (Confidence: 9/10)
   - **Principle**: Data minimization — never log credentials regardless of log level
-  - **Suggestion**: Remove `password` from the log payload. Log only the email and attempt timestamp.
+  - **Current**:
+    ```ts
+    logger.debug('Login attempt', { email, password });
+    ```
+  - **Suggested**:
+    ```ts
+    logger.debug('Login attempt', { email, timestamp: Date.now() });
+    ```
 
-- **[Improvement]** `src/auth/repository.ts:15-32` — The `findByEmail` query uses string interpolation instead of parameterized queries: `` `SELECT * FROM users WHERE email = '${email}'` ``
-  - **Principle**: Input validation — always use parameterized queries to prevent SQL injection
-  - **Suggestion**: Use `db.query('SELECT * FROM users WHERE email = $1', [email])`
+### Questions
+
+- **[Question]** `src/auth/middleware.ts:62` — The token expiry is set to 7 days. Is this intentional for this app's security requirements, or should it be shorter (e.g., 1 hour with refresh tokens)?
+
+### Praise
+
+- **[Praise]** `src/auth/service.ts:10-35` — Clean separation of auth logic into a dedicated service layer with proper dependency injection. This makes the auth flow testable and follows the existing service pattern well.
 
 ### Nitpicks
 
-- **Nit:** `src/auth/types.ts:8` — `TokenPayload` interface uses `any` for the `metadata` field. Consider using `Record<string, unknown>` for type safety.
+- **[Nit]** `src/auth/types.ts:8` — `TokenPayload` interface uses `any` for the `metadata` field. Consider `Record<string, unknown>` for type safety.
 
 ## Verdict
 
 - **Recommendation**: Request Changes
-- **Critical Issues**: 1
-- **Improvements**: 2
+- **Risk Level**: High
+- **Blockers**: 2
+- **Improvements**: 1
+- **Questions**: 1
 - **Nits**: 1
 ```
 
@@ -66,6 +109,15 @@ This PR adds JWT-based user authentication with login/signup endpoints. The over
 **Commit**: d4e5f6g
 **Reviewer**: Claude Code (pragmatic-code-review)
 
+## PR Assessment
+
+| Attribute | Value |
+|-----------|-------|
+| **Risk Level** | Low |
+| **PR Type** | Bugfix |
+| **Atomicity** | Atomic |
+| **Breaking Changes** | None |
+
 ---
 
 ## Summary
@@ -74,22 +126,32 @@ This PR fixes an off-by-one error in the pagination logic that caused the last i
 
 ## Findings
 
-### Critical Issues
+### Blockers
 
 None.
 
-### Suggested Improvements
+### Improvements
 
 None.
+
+### Questions
+
+None.
+
+### Praise
+
+- **[Praise]** `tests/pagination.test.ts:38-55` — Excellent regression test that specifically targets the page boundary duplication bug with clear assertion messages. This prevents future regressions on the exact scenario.
 
 ### Nitpicks
 
-- **Nit:** `tests/pagination.test.ts:42` — Test name "should work correctly" could be more descriptive. Consider "should not duplicate items across page boundaries".
+- **[Nit]** `tests/pagination.test.ts:42` — Test name "should work correctly" could be more descriptive. Consider "should not duplicate items across page boundaries".
 
 ## Verdict
 
 - **Recommendation**: Approve
-- **Critical Issues**: 0
+- **Risk Level**: Low
+- **Blockers**: 0
 - **Improvements**: 0
+- **Questions**: 0
 - **Nits**: 1
 ```
