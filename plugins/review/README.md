@@ -8,14 +8,14 @@
 
 ## Overview
 
-The Review plugin provides comprehensive code quality tools including code review, security assessment, design review, and codebase documentation. All commands support customizable output paths for flexible integration into any project workflow.
+The Review plugin provides comprehensive code quality tools including code review, security assessment, and design review. All skills support customizable output paths for flexible integration into any project workflow.
 
 ## Components
 
 ### Agents (2)
 
 #### 1. pragmatic-code-review
-Principal Engineer code reviewer implementing the "Pragmatic Quality" framework - balancing rigorous engineering standards with development velocity.
+Principal Engineer code reviewer implementing the "Pragmatic Quality" framework — balancing rigorous engineering standards with development velocity.
 
 **Capabilities**:
 - Architectural design evaluation
@@ -24,6 +24,8 @@ Principal Engineer code reviewer implementing the "Pragmatic Quality" framework 
 - Maintainability and readability review
 - Testing strategy evaluation
 - Performance and scalability analysis
+
+**Preloaded Skills**: `code-review`, `security-review`
 
 **Use via**: `/agents` interface
 
@@ -38,32 +40,39 @@ Elite design review specialist conducting comprehensive UI/UX reviews using Play
 - Visual consistency and polish analysis
 - Browser console error detection
 
+**Preloaded Skills**: `design-review`, `playwright:playwright-cli`
+
 **Use via**: `/agents` interface
 
-### Commands (4)
+### Skills (3)
 
-#### 1. /code
+All skills are command-invoke only (`disable-model-invocation: true`) — they run when you explicitly invoke them, never automatically.
+
+#### 1. code-review
+
 Comprehensive code review analyzing git changes with the Pragmatic Quality framework.
 
 **Features**:
 - Analyzes complete git diff
-- Hierarchical review framework (Architecture → Security → Maintainability)
+- Hierarchical review framework (Architecture > Security > Maintainability)
 - Actionable feedback with engineering principles
 - Triage matrix (Critical/Improvement/Nit)
 - Generates markdown report
 
 **Usage**:
 ```bash
-/code                    # Saves to .claude/reports/
-/code reviews/           # Saves to custom path
-/review:code             # Namespaced invocation
+/review:code-review                    # Saves to ./reviews/code/
+/review:code-review custom/reviews     # Saves to custom path
 ```
 
 **Output**: `{path}/{YYYY-MM-DD}_{HH-MM-SS}_code-review.md`
 
+**Files**: [SKILL.md](skills/code-review/SKILL.md) | [WORKFLOW.md](skills/code-review/WORKFLOW.md) | [EXAMPLES.md](skills/code-review/EXAMPLES.md)
+
 ---
 
-#### 2. /security
+#### 2. security-review
+
 Security-focused code review identifying high-confidence exploitable vulnerabilities.
 
 **Features**:
@@ -82,15 +91,18 @@ Security-focused code review identifying high-confidence exploitable vulnerabili
 
 **Usage**:
 ```bash
-/security                # Saves to .claude/reports/
-/security audits/        # Saves to custom path
+/review:security-review                # Saves to ./reviews/security/
+/review:security-review audits/sec     # Saves to custom path
 ```
 
 **Output**: `{path}/{YYYY-MM-DD}_{HH-MM-SS}_security-review.md`
 
+**Files**: [SKILL.md](skills/security-review/SKILL.md) | [WORKFLOW.md](skills/security-review/WORKFLOW.md) | [EXAMPLES.md](skills/security-review/EXAMPLES.md)
+
 ---
 
-#### 3. /design
+#### 3. design-review
+
 Frontend design review with Playwright CLI for interactive testing.
 
 **Features**:
@@ -113,31 +125,30 @@ Frontend design review with Playwright CLI for interactive testing.
 
 **Usage**:
 ```bash
-/design                  # Interactive review with screenshots
+/review:design-review                  # Saves to ./reviews/design/
+/review:design-review custom/path      # Saves to custom path
 ```
 
-**Output**: Inline markdown report with screenshots
+**Output**: `{path}/{YYYY-MM-DD}_{HH-MM-SS}_design-review.md`
+
+**Files**: [SKILL.md](skills/design-review/SKILL.md) | [WORKFLOW.md](skills/design-review/WORKFLOW.md) | [EXAMPLES.md](skills/design-review/EXAMPLES.md)
 
 ---
 
-#### 4. /codebase
-Complete codebase documentation generator analyzing project structure, architecture, and key files.
+### Scripts (1)
 
-**Features**:
-- Directory structure analysis
-- File categorization and documentation
-- API endpoint discovery
-- Architecture deep dive
-- Technology stack breakdown
-- Visual architecture diagrams
-- Key insights and recommendations
+#### security-scan.sh
+
+Automated security scanning using Trivy (vulnerability scanning) and Gitleaks (secret detection). Auto-detects project structure — works with any repository layout.
 
 **Usage**:
 ```bash
-/codebase                       # Generates codebase_analysis.md in root
+./scripts/security-scan.sh                    # Full scan
+./scripts/security-scan.sh --quick            # Skip git history
+./scripts/security-scan.sh --output-dir DIR   # Custom report directory
 ```
 
-**Output**: `codebase_analysis.md` (root directory)
+**Prerequisites**: `brew install trivy gitleaks jq`
 
 ---
 
@@ -159,41 +170,30 @@ After installation, restart Claude Code.
 
 ## Usage
 
-### Direct Invocation
-
-When no command conflicts exist:
+### Invoking Skills
 
 ```bash
-/code
-/security
-/design
-/codebase
-```
-
-### Namespaced Invocation
-
-When command name conflicts exist with other plugins:
-
-```bash
-/review:code
-/review:security
-/review:design
-/review:codebase
+/review:code-review
+/review:security-review
+/review:design-review
 ```
 
 ### Custom Output Paths
 
-Commands support optional custom output paths:
+Skills support optional custom output paths:
 
 ```bash
 # Code review
-/code                    # Default: .claude/reports/
-/code reviews/code       # Custom: reviews/code/
-/code ../shared-reviews  # Relative paths supported
+/review:code-review                    # Default: ./reviews/code/
+/review:code-review reviews/custom     # Custom: reviews/custom/
 
 # Security review
-/security                # Default: .claude/reports/
-/security audits/sec     # Custom: audits/sec/
+/review:security-review                # Default: ./reviews/security/
+/review:security-review audits/sec     # Custom: audits/sec/
+
+# Design review
+/review:design-review                  # Default: ./reviews/design/
+/review:design-review custom/path      # Custom: custom/path/
 ```
 
 ### Accessing Agents
@@ -205,25 +205,18 @@ Browse and select agents through the `/agents` interface:
 ```
 
 This will show both:
-- **pragmatic-code-review** - Principal Engineer code reviewer
-- **design-review** - Elite design review specialist
+- **pragmatic-code-review** — Principal Engineer code reviewer
+- **design-review** — Elite design review specialist
 
 ## Browser Automation
 
-### Playwright CLI (design-review command)
+### Playwright CLI (design-review skill)
 
-The `/design` command uses Playwright CLI for automated browser testing via Bash.
+The design review uses Playwright CLI for automated browser testing via Bash.
 
 **Setup**:
 1. Install Playwright CLI: `npm install -g @playwright/cli@latest`
 2. Verify: `playwright-cli --help`
-
-**Playwright CLI Commands Used**:
-- `playwright-cli open <url>` - Navigate to preview URLs
-- `playwright-cli click <ref>` / `playwright-cli type <text>` / `playwright-cli select <ref> <values>` - Interactive testing
-- `playwright-cli screenshot [filename]` - Visual evidence capture
-- `playwright-cli snapshot` - Accessibility tree / DOM analysis
-- `playwright-cli press <key>` - Keyboard interaction
 
 For detailed Playwright CLI usage, see [Playwright CLI Guide](../../docs/PLAYWRIGHT_CLI.md).
 
@@ -231,23 +224,21 @@ For detailed Playwright CLI usage, see [Playwright CLI Guide](../../docs/PLAYWRI
 
 ### Default Paths
 
-The plugin uses the following default paths:
-
-| Command | Default Path | Customizable |
-|---------|--------------|--------------|
-| code | `.claude/reports/` | ✅ Yes (via `$ARGUMENTS`) |
-| security | `.claude/reports/` | ✅ Yes (via `$ARGUMENTS`) |
-| design | N/A (inline output) | ❌ No |
-| codebase | `./` (root) | ❌ No (fixed filename) |
+| Skill | Default Path | Customizable |
+|-------|-------------|--------------|
+| code-review | `./reviews/code/` | Yes (via `$ARGUMENTS`) |
+| security-review | `./reviews/security/` | Yes (via `$ARGUMENTS`) |
+| design-review | `./reviews/design/` | Yes (via `$ARGUMENTS`) |
 
 ### Project Integration
 
 The plugin automatically creates output directories if they don't exist:
 
 ```bash
-# This directory is created automatically:
-.claude/
-└── reports/           # Code and security reviews
+reviews/
+├── code/         # Code review reports
+├── security/     # Security review reports
+└── design/       # Design review reports
 ```
 
 ## Examples
@@ -256,48 +247,32 @@ The plugin automatically creates output directories if they don't exist:
 
 ```bash
 # 1. Review current changes
-/code
+/review:code-review
 
 # 2. Address critical issues
 # ... make fixes ...
 
 # 3. Run security review
-/security
+/review:security-review
 
 # 4. Review UI changes (if applicable)
-/design
-```
-
-### Codebase Documentation
-
-```bash
-# Generate comprehensive docs
-/codebase
-
-# Review the generated codebase_analysis.md
+/review:design-review
 ```
 
 ## Troubleshooting
 
-### Command Not Found
+### Skills Not Found
 
-If commands aren't recognized after installation:
+If skills aren't recognized after installation:
 1. Restart Claude Code
 2. Verify plugin is enabled: `/plugin`
 3. Check marketplace is added: `/plugin marketplace list`
 
-### Command Conflicts
-
-If another plugin provides the same command name:
-- Use namespaced invocation: `/review:command-name`
-
 ### Playwright CLI Issues
 
-If `/design` fails with browser automation:
+If design review fails with browser automation:
 1. Verify Playwright CLI is installed: `playwright-cli --help`
-2. Check active sessions: `playwright-cli list`
-3. Ensure preview environment is accessible
-4. Force-kill stuck sessions: `playwright-cli kill-all`
+2. Ensure preview environment is accessible
 
 ### Output Path Issues
 
@@ -316,4 +291,4 @@ MIT License
 
 ## Version
 
-1.0.0
+1.1.0
