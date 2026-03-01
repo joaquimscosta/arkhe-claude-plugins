@@ -75,7 +75,9 @@ See [WORKFLOW.md](WORKFLOW.md) for detailed subcategories and severity assignmen
 
 **Phase 1 — Repository Context**: Identify existing security frameworks, sanitization patterns, and security model in the codebase.
 
-**Phase 2 — Comparative Analysis**: Compare new code against established secure practices. Flag deviations and new attack surfaces.
+**Phase 1.5 — Automated Security Scan (Optional)**: Run Trivy (vulnerability/IaC scanning) and Gitleaks (secret detection) if available. Locate the scan script via Glob for `**/review/scripts/security-scan.sh`, then execute: `bash {script_path} --quick --output-dir {output-directory}`. If tools are not installed, skip gracefully — this phase is informational only. See [WORKFLOW.md](WORKFLOW.md) for details.
+
+**Phase 2 — Comparative Analysis**: Compare new code against established secure practices. Flag deviations and new attack surfaces. Cross-reference with automated scan results if available.
 
 **Phase 3 — Vulnerability Assessment**: Trace data flow from user inputs to sensitive operations. Confirm sink reachability and check for sanitizers in the path.
 
@@ -162,6 +164,7 @@ Include this header:
 - **Improvement**: {count} findings
 - **Question**: {count} findings
 - **Total**: {count} actionable findings
+- **Automated Scan**: {Passed | X issues found | Skipped — tools not installed}
 
 ---
 ```

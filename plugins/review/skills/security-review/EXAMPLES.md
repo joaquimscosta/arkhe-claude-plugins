@@ -151,6 +151,88 @@ variables through the existing config module.
 ---
 ```
 
+## Sample Report — With Automated Scan Results
+
+```markdown
+# Security Review Report
+
+**Date**: 2026-03-01T10:15:00Z
+**Branch**: feat/payment-service
+**Commit**: a1b2c3d
+**Reviewer**: Claude Code (security-review)
+**Framework**: OWASP Top 10 2025 + API Top 10 + LLM Top 10
+
+## Summary
+- **Blocker**: 1 finding
+- **Improvement**: 1 finding
+- **Question**: 0 findings
+- **Total**: 2 actionable findings
+- **Automated Scan**: 3 issues found (2 Trivy vulnerabilities, 1 Gitleaks secret)
+
+---
+
+### [Blocker] Vuln 1: CRYPTO-SECRET: `src/config/stripe.ts:14`
+
+* **Severity**: HIGH
+* **Confidence**: HIGH (corroborated by Gitleaks automated scan)
+* **Category**: OWASP A04:2025 — Cryptographic Failures
+* **CWE**: CWE-798
+* **Description**: Stripe secret key is hardcoded in the configuration file. Gitleaks
+  also detected this secret in git history (commit a1b2c3d), confirming the key has
+  been committed to the repository.
+* **Exploit Scenario**: Any developer or attacker with repository access can extract
+  the production Stripe secret key and process fraudulent charges.
+* **Recommendation**: Move the key to an environment variable and rotate the
+  compromised key immediately. Run `gitleaks detect` to verify no other secrets
+  remain in git history.
+
+---
+
+### [Improvement] Vuln 2: SC-DEP: `package.json`
+
+* **Severity**: HIGH
+* **Confidence**: MEDIUM (identified by Trivy automated scan)
+* **Category**: OWASP A03:2025 — Software Supply Chain Failures
+* **CWE**: CWE-1395
+* **Description**: Trivy detected 2 HIGH severity vulnerabilities in transitive
+  dependencies: CVE-2026-1234 in `lodash@4.17.20` (prototype pollution) and
+  CVE-2026-5678 in `express@4.18.1` (path traversal). These are in the dependency
+  tree of the payment service.
+* **Recommendation**: Update affected dependencies: `pnpm update lodash express`.
+  Review Trivy report at `reviews/security/trivy-payment-service.json` for full details.
+
+---
+```
+
+## Sample Report — Automated Scan Skipped
+
+```markdown
+# Security Review Report
+
+**Date**: 2026-03-01T14:00:00Z
+**Branch**: fix/input-validation
+**Commit**: e5f6g7h
+**Reviewer**: Claude Code (security-review)
+**Framework**: OWASP Top 10 2025 + API Top 10 + LLM Top 10
+
+## Summary
+- **Blocker**: 0 findings
+- **Improvement**: 0 findings
+- **Question**: 0 findings
+- **Total**: 0 actionable findings
+- **Automated Scan**: Skipped — tools not installed
+
+---
+
+No high-confidence security vulnerabilities were identified in this change set.
+
+Note: Automated scanning (Trivy, Gitleaks) was skipped because the tools are not
+installed. Install with `brew install trivy gitleaks jq` for dependency vulnerability
+and secret detection coverage.
+
+---
+```
+
 ## Sample Report — LLM/AI Integration Review
 
 ```markdown

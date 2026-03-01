@@ -78,10 +78,10 @@ print_status() {
 
 check_command() {
     if ! command -v "$1" &> /dev/null; then
-        echo -e "${RED}Error: $1 is not installed.${NC}"
-        echo "Install with: brew install $1"
-        exit 1
+        print_status "skip" "$1 not installed (brew install $1)"
+        return 1
     fi
+    return 0
 }
 
 # =============================================================================
@@ -271,10 +271,27 @@ echo -e "  ${BOLD}Severity:${NC} $SEVERITY"
 
 # Check prerequisites
 print_header "Checking Prerequisites"
-check_command trivy
-print_status "pass" "trivy installed ($(trivy --version 2>&1 | head -1))"
-check_command gitleaks
-print_status "pass" "gitleaks installed ($(gitleaks version 2>&1))"
+HAS_TRIVY=false
+HAS_GITLEAKS=false
+
+if check_command trivy; then
+    HAS_TRIVY=true
+    print_status "pass" "trivy installed ($(trivy --version 2>&1 | head -1))"
+fi
+
+if check_command gitleaks; then
+    HAS_GITLEAKS=true
+    print_status "pass" "gitleaks installed ($(gitleaks version 2>&1))"
+fi
+
+if [ "$HAS_TRIVY" = false ] && [ "$HAS_GITLEAKS" = false ]; then
+    print_header "Summary"
+    echo ""
+    echo -e "  ${YELLOW}No scanning tools installed. Install with:${NC}"
+    echo "    brew install trivy gitleaks jq"
+    echo ""
+    exit 0
+fi
 
 # Create reports directory
 mkdir -p "$REPORTS_DIR"
@@ -284,27 +301,32 @@ print_status "info" "Reports directory: $REPORTS_DIR"
 # Auto-Detect and Scan Application Directories
 # =============================================================================
 
-print_header "Trivy Vulnerability Scans"
+if [ "$HAS_TRIVY" = true ]; then
+    print_header "Trivy Vulnerability Scans"
 
-APP_DIRS=$(discover_app_dirs)
-if [ -z "$APP_DIRS" ]; then
-    print_status "skip" "No application directories found (no dependency manifests detected)"
+    APP_DIRS=$(discover_app_dirs)
+    if [ -z "$APP_DIRS" ]; then
+        print_status "skip" "No application directories found (no dependency manifests detected)"
+    else
+        while IFS= read -r dir; do
+            scan_app_dir "$dir"
+        done <<< "$APP_DIRS"
+    fi
+
+    # =============================================================================
+    # Auto-Detect and Scan IaC Directories
+    # =============================================================================
+
+    IAC_DIRS=$(discover_iac_dirs)
+    if [ -n "$IAC_DIRS" ]; then
+        print_header "Trivy IaC Scans"
+        while IFS= read -r dir; do
+            scan_iac_dir "$dir"
+        done <<< "$IAC_DIRS"
+    fi
 else
-    while IFS= read -r dir; do
-        scan_app_dir "$dir"
-    done <<< "$APP_DIRS"
-fi
-
-# =============================================================================
-# Auto-Detect and Scan IaC Directories
-# =============================================================================
-
-IAC_DIRS=$(discover_iac_dirs)
-if [ -n "$IAC_DIRS" ]; then
-    print_header "Trivy IaC Scans"
-    while IFS= read -r dir; do
-        scan_iac_dir "$dir"
-    done <<< "$IAC_DIRS"
+    print_header "Trivy Vulnerability Scans"
+    print_status "skip" "Trivy not installed"
 fi
 
 # =============================================================================
@@ -313,7 +335,9 @@ fi
 
 print_header "Gitleaks Secret Detection"
 
-if [ "$QUICK_MODE" = true ]; then
+if [ "$HAS_GITLEAKS" = false ]; then
+    print_status "skip" "Gitleaks not installed"
+elif [ "$QUICK_MODE" = true ]; then
     print_status "skip" "Git history scan (--quick mode)"
 else
     echo ""

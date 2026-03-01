@@ -136,6 +136,36 @@ Use file search tools to:
 - Examine the project's security model and authentication architecture
 - Check for existing security annotations or suppression comments
 
+### Phase 1.5: Automated Security Scan (Optional)
+
+Run the automated scan script to complement manual analysis with tool-based vulnerability and secret detection.
+
+**Prerequisites**: `trivy`, `gitleaks`, `jq` (install via `brew install trivy gitleaks jq`).
+
+**Script Discovery**:
+```bash
+# Locate the scan script
+Glob for **/review/scripts/security-scan.sh
+```
+
+**Execution**:
+```bash
+# Run with --quick (skip git history for faster results) and output to the review directory
+bash {script_path} --quick --output-dir {output-directory}
+```
+
+**Graceful Skip**: If the script reports tools are not installed (exit code 0 with skip messages), note "Automated Scan: Skipped — tools not installed" in the report summary and continue to Phase 2. Do not block the review.
+
+**Parsing Results**: When scans complete, read the JSON reports from `{output-directory}/`:
+- `trivy-*.json` — Dependency vulnerabilities and IaC misconfigurations. Cross-reference with A03 (Supply Chain) and A02 (Security Misconfiguration) findings.
+- `gitleaks.json` — Detected secrets in git history. Cross-reference with A04 (Cryptographic Failures) findings.
+
+**Cross-Referencing with Manual Analysis**:
+- Trivy findings that overlap with manual supply-chain findings increase confidence to HIGH
+- Gitleaks findings that overlap with manual hardcoded secret findings increase confidence to HIGH
+- Automated findings that have no manual counterpart should be noted in the report but do not replace manual analysis
+- Include automated scan summary (pass/fail/skip counts) in the report Summary section
+
 ### Phase 2: Comparative Analysis
 
 - Compare new code changes against existing security patterns
@@ -268,6 +298,7 @@ If any answer is "no", suppress the finding.
 - **Improvement**: {count} findings
 - **Question**: {count} findings
 - **Total**: {count} actionable findings
+- **Automated Scan**: {Passed | X issues found | Skipped — tools not installed}
 
 ---
 

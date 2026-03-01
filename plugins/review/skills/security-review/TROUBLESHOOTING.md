@@ -30,6 +30,58 @@ git diff --merge-base origin/main
 
 ---
 
+## Automated Scan Issues
+
+### Scan tools not installed
+
+**Symptoms**: Automated scan phase reports "Skipped — tools not installed".
+
+**Fix**: Install the required tools:
+```bash
+brew install trivy gitleaks jq
+```
+
+The security review works without these tools — automated scanning is optional. Manual code analysis runs regardless.
+
+### Trivy database update fails
+
+**Symptoms**: Trivy reports "failed to download vulnerability DB" or times out.
+
+**Causes**:
+- Network connectivity issues
+- Trivy cache corrupted
+
+**Fixes**:
+```bash
+# Clear Trivy cache and retry
+trivy clean --all
+trivy fs . --download-db-only
+
+# Or skip DB update and use cached data
+trivy fs . --skip-db-update
+```
+
+### Gitleaks false positives on test fixtures
+
+**Symptoms**: Gitleaks flags secrets in test files, fixtures, or example configurations.
+
+**Fixes**:
+- Create a `.gitleaksignore` file in the project root with SHA hashes of known false positives
+- Use `--config` flag with a custom Gitleaks config that excludes test directories:
+```toml
+# .gitleaks.toml
+[allowlist]
+  paths = ["test/", "tests/", "fixtures/", "**/*.test.*"]
+```
+
+### Trivy reports vulnerabilities in lock files
+
+**Symptoms**: Trivy flags vulnerabilities in `package-lock.json` or `pnpm-lock.yaml` transitive dependencies.
+
+**Context**: These are real findings — transitive vulnerabilities can be exploitable. Triage by checking if the vulnerable package is reachable from your application code. Update with `pnpm update` or `npm audit fix`.
+
+---
+
 ## Finding Quality Issues
 
 ### Too many findings (noisy report)
