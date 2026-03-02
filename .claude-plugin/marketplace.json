@@ -1,7 +1,7 @@
 {
   "name": "arkhe-claude-plugins",
   "metadata": {
-    "description": "Supercharge Claude Code with 88 specialized components — from deep reasoning and autonomous dev loops to DDD architecture, design system enforcement, and git workflow automation. 19 agents, 33 commands, 36 skills across 12 modular plugins."
+    "description": "Supercharge Claude Code with 88 specialized components — from deep reasoning and autonomous dev loops to DDD architecture, design system enforcement, and git workflow automation. 19 agents, 30 commands, 39 skills across 12 modular plugins."
   },
   "owner": {
     "name": "Arkhe"

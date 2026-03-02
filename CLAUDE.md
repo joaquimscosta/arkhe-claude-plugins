@@ -80,8 +80,8 @@ Multi-purpose documentation toolkit.
 
 ### Review Plugin
 Code quality review tools for development teams.
-- **Agents**: `pragmatic-code-review`, `design-review`
-- **Commands**: `/code`, `/security`, `/design`, `/codebase`
+- **Agents**: `pragmatic-code-review`, `design-review`, `false-positive-verifier`
+- **Skills**: `code-review` (command-invoke), `security-review` (command-invoke), `verify-findings` (auto-invoke, context: fork), `design-review` (command-invoke)
 
 ### Google Stitch Plugin
 Claude + Google Stitch workflow toolkit with MCP integration.
