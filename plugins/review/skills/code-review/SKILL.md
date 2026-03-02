@@ -141,6 +141,17 @@ Include this header in the saved file:
 3. **Display the full report** to the user in the chat
 4. **Confirm the save**: Report saved to: {output-directory}/{filename}
 
+## Automatic Verification
+
+After saving the report and confirming the save to the user, invoke the false-positive verifier:
+
+1. Use the Skill tool to invoke `review:verify-findings` with the saved report path as the argument
+2. The verifier runs in an isolated forked context and produces a `.verified.md` report
+3. After verification completes, inform the user of both report locations
+
+If the Skill tool is not available (e.g., running inside a subagent), inform the user:
+> Run verification manually: `/review:verify-findings {report-path}`
+
 ## Content Guidelines
 
 - Provide specific, actionable feedback with file paths and line numbers

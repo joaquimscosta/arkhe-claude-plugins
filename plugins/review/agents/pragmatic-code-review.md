@@ -1,7 +1,7 @@
 ---
 name: pragmatic-code-review
 description: Thorough code review balancing engineering excellence with development velocity. Use after completing a feature, implementing a logical chunk of code, or before merging a pull request. Focuses on architecture, security, maintainability, testing, and performance using the Pragmatic Quality framework.
-tools: Bash, Glob, Grep, Read, Edit, MultiEdit, Write, WebFetch, WebSearch, ListMcpResourcesTool, ReadMcpResourceTool
+tools: Bash, Glob, Grep, Read, Edit, MultiEdit, Write, WebFetch, WebSearch, ListMcpResourcesTool, ReadMcpResourceTool, Skill
 skills:
   - code-review
   - security-review

@@ -12,7 +12,7 @@ The Review plugin provides comprehensive code quality tools including code revie
 
 ## Components
 
-### Agents (2)
+### Agents (3)
 
 #### 1. pragmatic-code-review
 Principal Engineer code reviewer implementing the "Pragmatic Quality" framework — balancing rigorous engineering standards with development velocity.
@@ -44,9 +44,21 @@ Elite design review specialist conducting comprehensive UI/UX reviews using Play
 
 **Use via**: `/agents` interface
 
-### Skills (3)
+#### 3. false-positive-verifier
+Skeptical verification specialist that independently re-examines code and security review findings to eliminate false positives through deep codebase tracing, framework-aware analysis, and web research.
 
-All skills are command-invoke only (`disable-model-invocation: true`) — they run when you explicitly invoke them, never automatically.
+**Capabilities**:
+- Independent re-examination of each finding from scratch
+- Data flow tracing from source to sink
+- Framework protection detection (React, Spring, Django, etc.)
+- CWE/CVE web research for false positive patterns
+- Verdict assignment: CONFIRMED, DISMISSED, DOWNGRADED
+
+**Use via**: `/agents` interface or auto-invoked after code/security reviews
+
+### Skills (4)
+
+Skills 1-2 and 4 are command-invoke only (`disable-model-invocation: true`). Skill 3 (verify-findings) is auto-invoked after code and security reviews via `context: fork`.
 
 #### 1. code-review
 
@@ -101,7 +113,34 @@ Security-focused code review identifying high-confidence exploitable vulnerabili
 
 ---
 
-#### 3. design-review
+#### 3. verify-findings
+
+Independent false-positive verification for code and security review reports.
+
+**Features**:
+- Auto-invoked after code-review and security-review complete
+- Runs in isolated forked context (independent from original review)
+- Deep codebase tracing and framework-aware analysis
+- Web research for CWE/CVE false positive patterns
+- Produces a `.verified.md` report alongside the original
+
+**Verdicts**:
+- **CONFIRMED** — evidence supports the finding
+- **DISMISSED** — finding is a false positive with documented reason
+- **DOWNGRADED** — valid but lower severity/confidence
+
+**Usage**:
+```bash
+/review:verify-findings path/to/review-report.md    # Manual verification
+```
+
+**Output**: `{original-stem}.verified.md`
+
+**Files**: [SKILL.md](skills/verify-findings/SKILL.md) | [WORKFLOW.md](skills/verify-findings/WORKFLOW.md) | [EXAMPLES.md](skills/verify-findings/EXAMPLES.md)
+
+---
+
+#### 4. design-review
 
 Frontend design review with Playwright CLI for interactive testing.
 
@@ -175,6 +214,7 @@ After installation, restart Claude Code.
 ```bash
 /review:code-review
 /review:security-review
+/review:verify-findings <report-path>
 /review:design-review
 ```
 
@@ -204,9 +244,10 @@ Browse and select agents through the `/agents` interface:
 /agents
 ```
 
-This will show both:
+This will show:
 - **pragmatic-code-review** — Principal Engineer code reviewer
 - **design-review** — Elite design review specialist
+- **false-positive-verifier** — Skeptical verification specialist
 
 ## Browser Automation
 
@@ -228,6 +269,7 @@ For detailed Playwright CLI usage, see [Playwright CLI Guide](../../docs/PLAYWRI
 |-------|-------------|--------------|
 | code-review | `./reviews/code/` | Yes (via `$ARGUMENTS`) |
 | security-review | `./reviews/security/` | Yes (via `$ARGUMENTS`) |
+| verify-findings | Alongside original report | Yes (via report path argument) |
 | design-review | `./reviews/design/` | Yes (via `$ARGUMENTS`) |
 
 ### Project Integration
@@ -246,16 +288,19 @@ reviews/
 ### Code Review Workflow
 
 ```bash
-# 1. Review current changes
+# 1. Review current changes (auto-verification runs after)
 /review:code-review
 
-# 2. Address critical issues
+# 2. Address critical issues from the verified report
 # ... make fixes ...
 
-# 3. Run security review
+# 3. Run security review (auto-verification runs after)
 /review:security-review
 
-# 4. Review UI changes (if applicable)
+# 4. Re-verify an existing report manually
+/review:verify-findings reviews/code/2026-03-01_14-30-00_code-review.md
+
+# 5. Review UI changes (if applicable)
 /review:design-review
 ```
 
@@ -291,4 +336,4 @@ MIT License
 
 ## Version
 
-1.1.0
+1.2.0
