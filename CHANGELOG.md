@@ -5,6 +5,72 @@ All notable changes to the Arkhe Claude Plugins project will be documented in th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.12.0] - 2026-03-03
+
+### Added
+
+#### Git Plugin
+
+- **`releasing` skill** for semantic versioning releases
+  - Release mode: validate version, prepare CHANGELOG, commit, trigger GitHub Actions workflow
+  - Setup mode: scaffold `release.sh`, `release.yml`, and helper scripts
+  - Complete documentation: SKILL.md, WORKFLOW.md, EXAMPLES.md, TROUBLESHOOTING.md
+  - `/release` command with two modes (release and setup)
+
+#### Review Plugin
+
+- **Skills-based architecture** replacing command-based approach (#34)
+  - 3 new skills: `code-review`, `security-review`, `design-review`
+  - Progressive disclosure (SKILL.md + WORKFLOW.md + EXAMPLES.md + TROUBLESHOOTING.md per skill)
+- **Confidence-based filtering** with finding caps (max 8 findings + 2 nits per review)
+  - PR-level risk assessment and false positive filtering
+  - Confidence scoring with clear meaningful vs. nit classification
+- **`false-positive-verifier` agent** and `verify-findings` skill (#34)
+  - Independent verification layer running in forked context after code/security reviews
+  - Verdict system: CONFIRMED, DISMISSED, DOWNGRADED
+  - Deep procedures: data flow tracing, framework protection detection, CWE research
+- **Optional automated security scanning** in `security-review` skill (#34)
+  - Trivy (vulnerability/IaC) and Gitleaks (secrets detection) integration
+  - Graceful tool handling with skip-on-missing logic
+  - Moved `security-scan.sh` → `scripts/security-scan.sh` with auto-detect project structure
+
+#### Design Intent Plugin
+
+- **Next.js App Router support** in `icon-forge` skill (#33)
+  - Auto-detects Next.js App Router projects (next.config.* + app/layout.*)
+  - Generates framework-specific file names (icon.svg, apple-icon.png)
+  - `--framework` CLI argument for `generate_assets.py`
+  - `_nextjs-guide.txt` with placement instructions for Next.js projects
+
+### Changed
+
+#### Review Plugin
+
+- Restructured from commands to skills-based architecture (#34)
+  - Trimmed agent descriptions, removed hardcoded MCP tools
+  - Added `skills:` field to agents for knowledge injection
+  - Generified `security-scan.sh` for any project structure
+  - **Plugin version**: 1.0.0 → 1.2.0
+
+#### Documentation
+
+- Added plugin banner images to all README files (#31)
+- Refreshed main README with updated counts, descriptions, and plugin stack recommendations
+- Updated marketplace component counts (30 commands, 39 skills)
+
+### Fixed
+
+#### Ralph Plugin
+
+- Configure autonomous non-interactive execution (#32)
+  - Added `--dangerously-skip-permissions` flag for autonomous contexts
+  - Added `--disallowedTools` to prevent task tool conflicts
+  - Updated SKILL.md to enforce mandatory template usage
+
+#### Project
+
+- Updated .gitignore to include `socialmedia` directory with proper newline formatting
+
 ## [1.11.0] - 2026-02-22
 
 ### Added
@@ -991,7 +1057,8 @@ The `/specprep:tasks` command has been removed in favor of automatic command cha
 - **Documentation**: See README.md and docs/ directory
 - **Installation**: See INSTALLATION.md
 
-[Unreleased]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.11.0...HEAD
+[Unreleased]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.12.0...HEAD
+[1.12.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.11.0...v1.12.0
 [1.11.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.10.0...v1.11.0
 [1.10.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.9.0...v1.10.0
 [1.9.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.8.0...v1.9.0
