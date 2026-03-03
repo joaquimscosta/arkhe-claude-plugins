@@ -90,10 +90,10 @@ Claude + Google Stitch workflow toolkit with MCP integration.
 - **Use**: Generate Stitch-ready prompts, automate screen generation via MCP
 
 ### Git Plugin
-Git workflow automation for commits, pull requests, branching, and changelog generation.
-- **Commands**: `/commit`, `/create-pr`, `/create-branch`, `/changelog`, `/pr-issue-resolve`
-- **Skills**: 4 skills (1 auto-invoke: `generating-changelog`, 3 command-invoke)
-- **Scripts**: 4 shell scripts for git workflow automation
+Git workflow automation for commits, pull requests, branching, changelog generation, and releases.
+- **Commands**: `/commit`, `/create-pr`, `/create-branch`, `/changelog`, `/release`, `/pr-issue-resolve`
+- **Skills**: 7 skills (3 auto-invoke: `generating-changelog`, `listing-stale-branches`, `cleaning-up-branches`; 4 command-invoke)
+- **Use**: Git commits, PRs, branches, changelogs, semantic versioning releases, release pipeline scaffolding
 
 ### Design Intent Plugin
 Design Intent for UI development that combines AI-assisted implementation with persistent pattern memory.
