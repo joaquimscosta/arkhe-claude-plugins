@@ -12,7 +12,7 @@ The Git plugin provides intelligent Git workflow automation with context-aware r
 
 ## Components
 
-### Commands (7)
+### Commands (8)
 
 #### 1. /commit
 Context-aware Git commit assistant with smart pre-commit checks and submodule support.
@@ -237,7 +237,31 @@ Delete merged branches and flag stale unmerged branches for cleanup.
 
 ---
 
-### Skills (6)
+#### 8. /release
+Automate semantic versioning releases or scaffold release infrastructure.
+
+**Features**:
+- Validate version format and CHANGELOG entry
+- Add comparison links to CHANGELOG.md automatically
+- Trigger GitHub Actions release workflow
+- Monitor workflow and report result
+- Scaffold full release pipeline for new projects (`--setup`)
+
+**Usage**:
+```bash
+/release 1.6.0                    # Execute release
+/release v2.0.0                   # Works with 'v' prefix
+/release --setup                  # Scaffold release infrastructure
+/release 1.6.0 --skip-monitor    # Trigger without monitoring
+```
+
+**Prerequisites**: GitHub CLI (`gh`) installed and authenticated, CHANGELOG.md entry exists
+
+**Skill**: `git/skills/releasing/` (releasing)
+
+---
+
+### Skills (7)
 
 All commands are implemented as **Skills** - slash commands delegate to skills that contain inline Bash workflows executed by Claude.
 
@@ -323,6 +347,21 @@ Deletes merged branches (local and remote) with explicit confirmation, and flags
 
 **Documentation**: See `skills/cleaning-up-branches/` directory for WORKFLOW, EXAMPLES, and TROUBLESHOOTING guides.
 
+#### 7. releasing
+
+Automates semantic versioning releases and scaffolds release infrastructure for new projects.
+
+**Location**: `skills/releasing/`
+**Invoked by**: `/release` command
+
+**Two Modes**:
+1. **Release mode** (`/release <version>`) — Validate, prepare CHANGELOG links, commit, trigger workflow, monitor
+2. **Setup mode** (`/release --setup`) — Scaffold `release.sh`, `release.yml`, and 3 helper scripts into the target project
+
+**Scaffold Templates**: Includes reusable bash scripts and GitHub Actions workflow template in `scripts/` and `templates/` directories.
+
+**Documentation**: See `skills/releasing/` directory for WORKFLOW, EXAMPLES, and TROUBLESHOOTING guides.
+
 ---
 
 ## Installation
@@ -352,6 +391,7 @@ When no command conflicts exist:
 /create-pr
 /create-branch add authentication
 /changelog
+/release 1.6.0
 /stale-branches
 /cleanup-branches
 ```
@@ -365,6 +405,7 @@ When command name conflicts exist with other plugins:
 /git:create-pr
 /git:create-branch add authentication
 /git:changelog
+/git:release 1.6.0
 /git:stale-branches
 /git:cleanup-branches
 ```
@@ -444,6 +485,12 @@ Each skill contains workflow documentation and inline Bash:
 **skills/cleaning-up-branches/**
 - `SKILL.md` - Complete inline Bash workflow for branch cleanup
 - `WORKFLOW.md`, `EXAMPLES.md`, `TROUBLESHOOTING.md`
+
+**skills/releasing/**
+- `SKILL.md` - Inline Bash workflow + scaffolding instructions
+- `WORKFLOW.md`, `EXAMPLES.md`, `TROUBLESHOOTING.md`
+- `scripts/` - Scaffold templates (release.sh, helper scripts)
+- `templates/` - GitHub Actions workflow template
 
 ### Key Features
 

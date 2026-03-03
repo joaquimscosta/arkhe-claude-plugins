@@ -54,7 +54,8 @@ git/
 │   ├── create-branch.md   # /create-branch command
 │   ├── changelog.md       # /changelog command
 │   ├── stale-branches.md      # /stale-branches command
-│   └── cleanup-branches.md   # /cleanup-branches command
+│   ├── cleanup-branches.md   # /cleanup-branches command
+│   └── release.md            # /release command
 ├── skills/                # Skills with inline Bash workflows
 │   ├── creating-commit/
 │   │   ├── SKILL.md           # Inline Bash workflow (414 lines)
@@ -81,11 +82,23 @@ git/
 │   │   ├── WORKFLOW.md
 │   │   ├── EXAMPLES.md
 │   │   └── TROUBLESHOOTING.md
-│   └── cleaning-up-branches/
-│       ├── SKILL.md           # Inline Bash workflow for branch cleanup
+│   ├── cleaning-up-branches/
+│   │   ├── SKILL.md           # Inline Bash workflow for branch cleanup
+│   │   ├── WORKFLOW.md
+│   │   ├── EXAMPLES.md
+│   │   └── TROUBLESHOOTING.md
+│   └── releasing/
+│       ├── SKILL.md           # Inline Bash workflow + scaffolding instructions
 │       ├── WORKFLOW.md
 │       ├── EXAMPLES.md
-│       └── TROUBLESHOOTING.md
+│       ├── TROUBLESHOOTING.md
+│       ├── scripts/           # Scaffold templates (copied to target projects)
+│       │   ├── release.sh
+│       │   ├── validate-changelog.sh
+│       │   ├── extract-release-notes.sh
+│       │   └── create-github-release.sh
+│       └── templates/
+│           └── release.yml    # GitHub Actions workflow template
 └── README.md
 ```
 
