@@ -116,12 +116,31 @@ sources:
 
 ### 3. Cache the Results
 
-After research, save to Tier 1 cache using the scripts:
+**CRITICAL:** NEVER write files directly into the cache entry directory. ALWAYS use `cache_manager.py put --content-file` to store content. Writing directly creates orphaned files that the cache system cannot read.
 
-1. Write the structured content to a temp file (e.g., `/tmp/research-{slug}.md`)
-2. Run `cache_manager.py put` with the slug, title, content file, aliases, and tags
-3. Parse the JSON output to confirm success
-4. Clean up the temp file
+Follow this exact sequence:
+
+```bash
+# Step 1: Write content to a TEMP file (NOT inside the cache directory)
+# Use Write tool to create /tmp/research-{slug}.md with the structured content
+
+# Step 2: Cache via the script (this creates content.md in the right place)
+python3 {scripts_dir}/cache_manager.py put "{slug}" \
+  --title "{Title}" \
+  --content-file /tmp/research-{slug}.md \
+  --aliases "alias1,alias2" \
+  --tags "tag1,tag2"
+
+# Step 3: Verify the JSON output shows "status": "cached"
+
+# Step 4: Clean up the temp file
+rm /tmp/research-{slug}.md
+```
+
+**Do NOT:**
+- Write `research.md` or any file directly into `~/.claude/plugins/research/entries/{slug}/`
+- Call `put` without `--content-file` (this reads from stdin and may hang or produce empty content)
+- Skip the temp file step
 
 ### 4. Handle Refresh Requests
 

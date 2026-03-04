@@ -213,7 +213,21 @@ def cmd_put(args) -> int:
             print(f"Error: Permission denied: {args.content_file}", file=sys.stderr)
             return 1
     else:
+        if sys.stdin.isatty():
+            print(
+                "Error: No --content-file provided and stdin is a terminal.\n"
+                "Usage: cache_manager.py put <slug> --title 'Title' --content-file content.md",
+                file=sys.stderr,
+            )
+            return 1
         content = sys.stdin.read()
+
+    if not content.strip():
+        print(
+            f"Warning: Empty content for slug '{slug}'. "
+            "The cache entry will have no content.",
+            file=sys.stderr,
+        )
 
     aliases = args.aliases.split(",") if args.aliases else []
     tags = args.tags.split(",") if args.tags else []

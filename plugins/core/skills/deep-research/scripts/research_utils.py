@@ -195,27 +195,62 @@ def find_by_alias(topic: str) -> Optional[str]:
 # Cache entry read
 # ---------------------------------------------------------------------------
 
+def _strip_yaml_frontmatter(text: str) -> str:
+    """Strip YAML frontmatter (--- ... ---) from markdown content."""
+    if not text.startswith("---"):
+        return text
+    end = text.find("---", 3)
+    if end == -1:
+        return text
+    return text[end + 3:].lstrip("\n")
+
+
 def get_entry(slug: str) -> Optional[dict]:
     """
     Get a cache entry by slug.
 
     Returns dict with 'metadata' and 'content' keys, or None if not found.
+
+    Falls back to reading ``research.md`` (with YAML frontmatter stripped)
+    when ``content.md`` is missing or empty — a resilience measure against
+    agent misbehavior where content is written to the wrong file.
     """
     cache_dir = get_cache_dir()
     entry_dir = cache_dir / "entries" / slug
 
     metadata_file = entry_dir / "metadata.json"
     content_file = entry_dir / "content.md"
+    research_file = entry_dir / "research.md"
 
-    if not metadata_file.exists() or not content_file.exists():
+    if not metadata_file.exists():
         return None
 
     try:
         metadata = json.loads(metadata_file.read_text())
-        content = content_file.read_text()
-        return {"metadata": metadata, "content": content}
     except (json.JSONDecodeError, IOError):
         return None
+
+    # Primary: read content.md
+    content = ""
+    if content_file.exists():
+        try:
+            content = content_file.read_text()
+        except IOError:
+            pass
+
+    # Fallback: if content.md is empty/missing, try research.md
+    if not content.strip() and research_file.exists():
+        try:
+            raw = research_file.read_text()
+            if raw.strip():
+                content = _strip_yaml_frontmatter(raw)
+        except IOError:
+            pass
+
+    if not content_file.exists() and not content.strip():
+        return None
+
+    return {"metadata": metadata, "content": content}
 
 
 # ---------------------------------------------------------------------------
