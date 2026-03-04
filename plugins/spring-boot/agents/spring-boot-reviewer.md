@@ -1,7 +1,7 @@
 ---
 name: spring-boot-reviewer
 description: Reviews Spring Boot codebases against all spring-boot skills for correctness, best practices, and Spring Boot 4 compatibility. Use when reviewing Spring Boot projects or validating implementations.
-tools: Glob, Grep, Read, Edit, Write, Task, WebFetch, WebSearch, TodoWrite, AskUserQuestion
+tools: Glob, Grep, Read, Edit, Write, Agent, WebFetch, WebSearch, TodoWrite, AskUserQuestion
 model: sonnet
 color: green
 ---

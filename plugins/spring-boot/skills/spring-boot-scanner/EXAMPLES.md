@@ -365,7 +365,7 @@ For a comprehensive review, I'll delegate to the spring-boot-reviewer agent whic
 2. **Parallel Review** - Launch specialized reviewers for each detected area
 3. **Report** - Consolidate findings with severity levels
 
-[Task tool invocation]
+[Agent tool invocation]
 Launching spring-boot-reviewer agent with scope: "all"
 
 The reviewer will check:

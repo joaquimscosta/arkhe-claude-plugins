@@ -56,7 +56,7 @@ If arguments don't start with `promote`, `refresh`, or `list`:
    - **Do NOT spawn the agent.** Return stale content with the warning.
 
 5. **If cache miss (exists=false):**
-   - Spawn the `deep-researcher` agent using the Task tool (subagent_type: `core:deep-researcher`).
+   - Spawn the `deep-researcher` agent using the Agent tool (subagent_type: `core:deep-researcher`).
    - Pass the topic and the resolved `scripts_dir` path so the agent can use `cache_manager.py put` to cache results.
    - The agent will conduct research via EXA tools, cache the results, and report findings.
 
@@ -75,7 +75,7 @@ If arguments start with `promote <slug>`:
 ### Operation: Refresh
 If arguments start with `refresh <slug>`:
 
-1. Spawn the `deep-researcher` agent using the Task tool (subagent_type: `core:deep-researcher`).
+1. Spawn the `deep-researcher` agent using the Agent tool (subagent_type: `core:deep-researcher`).
 2. Instruct it to:
    - Bypass cache and conduct fresh research via EXA
    - Use `cache_manager.py put` to save results (replacing existing cache entry)

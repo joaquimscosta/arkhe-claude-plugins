@@ -151,7 +151,7 @@ Detailed step-by-step detection and routing workflow.
 │  ────────────────────────────                                   │
 │  → Delegate to spring-boot-reviewer agent                       │
 │  → Format: "This requires comprehensive review. Launching..."   │
-│  → Use Task tool to invoke agent                                │
+│  → Use Agent tool to invoke agent                               │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -308,5 +308,5 @@ This analysis requires reviewing multiple files. I'll delegate to the spring-boo
 
 Launching review...
 
-[Task tool to invoke spring-boot-reviewer agent]
+[Agent tool to invoke spring-boot-reviewer agent]
 ```

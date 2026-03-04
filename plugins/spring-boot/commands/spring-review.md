@@ -13,7 +13,7 @@ $ARGUMENTS
 
 ## Instructions
 
-Use the Task tool to invoke the `spring-boot-reviewer` agent with the scope above.
+Use the Agent tool to invoke the `spring-boot-reviewer` agent with the scope above.
 
 The agent orchestrates a 3-phase review:
 
