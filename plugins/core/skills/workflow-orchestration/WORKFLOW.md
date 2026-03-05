@@ -77,7 +77,7 @@ You are assigned to: [task description]
 Complete your task and report results.
 ```
 
-**Key principle:** Maximize parallelism with multiple Task tool calls in a single response.
+**Key principle:** Maximize parallelism with multiple Agent tool calls in a single response.
 
 ### Step 5: Validation (Optional)
 

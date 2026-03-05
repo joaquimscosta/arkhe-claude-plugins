@@ -1023,10 +1023,9 @@ VALID_HOOK_EVENTS = {
     'SessionStart', 'UserPromptSubmit', 'PermissionRequest',
     'PostToolUseFailure', 'Notification', 'SubagentStart',
     'SubagentStop', 'TeammateIdle', 'TaskCompleted',
-    'PreCompact', 'SessionEnd',
+    'PreCompact', 'SessionEnd', 'ConfigChange',
+    'WorktreeCreate', 'WorktreeRemove',
 }
-
-SKILL_HOOK_EVENTS = {'PreToolUse', 'PostToolUse', 'Stop'}
 
 
 def validate_hooks(skill_path: Path, frontmatter: Dict) -> List[Issue]:
@@ -1056,7 +1055,7 @@ def validate_hooks(skill_path: Path, frontmatter: Dict) -> List[Issue]:
                 message=f"Unknown hook event: {event_name}",
                 location="SKILL.md frontmatter",
                 current_value=event_name,
-                fix_suggestion=f"Valid skill events: {', '.join(sorted(SKILL_HOOK_EVENTS))}"
+                fix_suggestion=f"Valid hook events: {', '.join(sorted(VALID_HOOK_EVENTS))}"
             ))
 
         # HK002: handler format validation
@@ -1126,13 +1125,13 @@ def validate_hooks(skill_path: Path, frontmatter: Dict) -> List[Issue]:
                     continue
 
                 hook_type = hook_def.get('type')
-                if hook_type not in ('command', 'prompt'):
+                if hook_type not in ('command', 'prompt', 'http'):
                     issues.append(Issue(
                         rule_id="HK002",
                         severity=Severity.ERROR,
-                        message=f"Hook type must be 'command' or 'prompt', got '{hook_type}'",
+                        message=f"Hook type must be 'command', 'prompt', or 'http', got '{hook_type}'",
                         location=f"SKILL.md frontmatter -> {event_name}[{idx}].hooks[{h_idx}]",
-                        fix_suggestion="Use 'type: command' with 'command' field, or 'type: prompt' with 'prompt' field"
+                        fix_suggestion="Use 'type: command' with 'command' field, 'type: prompt' with 'prompt' field, or 'type: http' with 'url' field"
                     ))
                 elif hook_type == 'command' and 'command' not in hook_def:
                     issues.append(Issue(
@@ -1149,6 +1148,14 @@ def validate_hooks(skill_path: Path, frontmatter: Dict) -> List[Issue]:
                         message="Prompt hook missing 'prompt' field",
                         location=f"SKILL.md frontmatter -> {event_name}[{idx}].hooks[{h_idx}]",
                         fix_suggestion="Add 'prompt: Your prompt text here'"
+                    ))
+                elif hook_type == 'http' and 'url' not in hook_def:
+                    issues.append(Issue(
+                        rule_id="HK002",
+                        severity=Severity.ERROR,
+                        message="HTTP hook missing 'url' field",
+                        location=f"SKILL.md frontmatter -> {event_name}[{idx}].hooks[{h_idx}]",
+                        fix_suggestion="Add 'url: https://example.com/hook'"
                     ))
 
     return issues

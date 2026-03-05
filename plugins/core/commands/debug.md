@@ -21,7 +21,7 @@ argument-hint: "[error message or issue description]"
 
 ## Instructions
 
-Use the Task tool to spawn the `deep-think-partner` agent (subagent_type: "core:deep-think-partner") to systematically debug either:
+Use the Agent tool to spawn the `deep-think-partner` agent (subagent_type: "core:deep-think-partner") to systematically debug either:
 
 1. The explicit error/issue provided in arguments, OR
 2. The implicit problem inferred from the current conversation context

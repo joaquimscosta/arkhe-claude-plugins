@@ -251,12 +251,12 @@
 ### HK001: Hook Structure [ERROR/WARNING]
 **Check**: `hooks` field is a proper mapping of event names to handler arrays.
 **Valid Skill Events**: `PreToolUse`, `PostToolUse`, `Stop`
-**All Valid Events**: `PreToolUse`, `PostToolUse`, `Stop`, `SessionStart`, `UserPromptSubmit`, `PermissionRequest`, `PostToolUseFailure`, `Notification`, `SubagentStart`, `SubagentStop`, `TeammateIdle`, `TaskCompleted`, `PreCompact`, `SessionEnd`
+**All Valid Events**: `PreToolUse`, `PostToolUse`, `Stop`, `SessionStart`, `UserPromptSubmit`, `PermissionRequest`, `PostToolUseFailure`, `Notification`, `SubagentStart`, `SubagentStop`, `TeammateIdle`, `TaskCompleted`, `PreCompact`, `SessionEnd`, `ConfigChange`, `WorktreeCreate`, `WorktreeRemove`
 **Fix**: Use proper hook structure with event names as keys.
 
 ### HK002: Hook Handler Format [ERROR]
-**Check**: Each hook handler has `type` (command/prompt) and corresponding field.
-**Fix**: Add `type: command` with `command` field, or `type: prompt` with `prompt` field.
+**Check**: Each hook handler has `type` (command/prompt/http) and corresponding required field.
+**Fix**: Add `type: command` with `command` field, `type: prompt` with `prompt` field, or `type: http` with `url` field.
 
 ### HK003: Hook Matcher Format [WARNING]
 **Check**: Hook matchers are strings (e.g., `"Bash"`, `"Edit|Write"`).

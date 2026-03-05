@@ -4,17 +4,31 @@
 
 # Extend Claude with skills
 
-> Create, manage, and share skills to extend Claude's capabilities in Claude Code. Includes custom slash commands.
+> Create, manage, and share skills to extend Claude's capabilities in Claude Code. Includes custom commands and bundled skills.
 
 Skills extend what Claude can do. Create a `SKILL.md` file with instructions, and Claude adds it to its toolkit. Claude uses skills when relevant, or you can invoke one directly with `/skill-name`.
 
 <Note>
   For built-in commands like `/help` and `/compact`, see [interactive mode](/en/interactive-mode#built-in-commands).
 
-  **Custom slash commands have been merged into skills.** A file at `.claude/commands/review.md` and a skill at `.claude/skills/review/SKILL.md` both create `/review` and work the same way. Your existing `.claude/commands/` files keep working. Skills add optional features: a directory for supporting files, frontmatter to [control whether you or Claude invokes them](#control-who-invokes-a-skill), and the ability for Claude to load them automatically when relevant.
+  **Custom commands have been merged into skills.** A file at `.claude/commands/review.md` and a skill at `.claude/skills/review/SKILL.md` both create `/review` and work the same way. Your existing `.claude/commands/` files keep working. Skills add optional features: a directory for supporting files, frontmatter to [control whether you or Claude invokes them](#control-who-invokes-a-skill), and the ability for Claude to load them automatically when relevant.
 </Note>
 
 Claude Code skills follow the [Agent Skills](https://agentskills.io) open standard, which works across multiple AI tools. Claude Code extends the standard with additional features like [invocation control](#control-who-invokes-a-skill), [subagent execution](#run-skills-in-a-subagent), and [dynamic context injection](#inject-dynamic-context).
+
+## Bundled skills
+
+Bundled skills ship with Claude Code and are available in every session. Unlike [built-in commands](/en/interactive-mode#built-in-commands), which execute fixed logic directly, bundled skills are prompt-based: they give Claude a detailed playbook and let it orchestrate the work using its tools. This means bundled skills can spawn parallel agents, read files, and adapt to your codebase.
+
+You invoke bundled skills the same way as any other skill: type `/` followed by the skill name.
+
+* **`/simplify`**: reviews your recently changed files for code reuse, quality, and efficiency issues, then fixes them. Run it after implementing a feature or bug fix to clean up your work. It spawns three review agents in parallel (code reuse, code quality, efficiency), aggregates their findings, and applies fixes. Pass optional text to focus on specific concerns: `/simplify focus on memory efficiency`.
+
+* **`/batch <instruction>`**: orchestrates large-scale changes across a codebase in parallel. Provide a description of the change and `/batch` researches the codebase, decomposes the work into 5 to 30 independent units, and presents a plan for your approval. Once approved, it spawns one background agent per unit, each in an isolated [git worktree](/en/common-workflows#run-parallel-claude-code-sessions-with-git-worktrees). Each agent implements its unit, runs tests, and opens a pull request. Requires a git repository. Example: `/batch migrate src/ from Solid to React`.
+
+* **`/debug [description]`**: troubleshoots your current Claude Code session by reading the session debug log. Optionally describe the issue to focus the analysis.
+
+Claude Code also includes a bundled developer platform skill that activates automatically when your code imports the Anthropic SDK. You don't need to invoke it manually.
 
 ## Getting started
 
@@ -58,13 +72,13 @@ This example creates a skill that teaches Claude to explain code using visual di
 
     **Let Claude invoke it automatically** by asking something that matches the description:
 
-    ```
+    ```text  theme={null}
     How does this code work?
     ```
 
     **Or invoke it directly** with the skill name:
 
-    ```
+    ```text  theme={null}
     /explain-code src/auth/login.ts
     ```
 
@@ -76,12 +90,12 @@ This example creates a skill that teaches Claude to explain code using visual di
 
 Where you store a skill determines who can use it:
 
-| Location   | Path                                                     | Applies to                     |
-| :--------- | :------------------------------------------------------- | :----------------------------- |
-| Enterprise | See [managed settings](/en/permissions#managed-settings) | All users in your organization |
-| Personal   | `~/.claude/skills/<skill-name>/SKILL.md`                 | All your projects              |
-| Project    | `.claude/skills/<skill-name>/SKILL.md`                   | This project only              |
-| Plugin     | `<plugin>/skills/<skill-name>/SKILL.md`                  | Where plugin is enabled        |
+| Location   | Path                                                | Applies to                     |
+| :--------- | :-------------------------------------------------- | :----------------------------- |
+| Enterprise | See [managed settings](/en/settings#settings-files) | All users in your organization |
+| Personal   | `~/.claude/skills/<skill-name>/SKILL.md`            | All your projects              |
+| Project    | `.claude/skills/<skill-name>/SKILL.md`              | This project only              |
+| Plugin     | `<plugin>/skills/<skill-name>/SKILL.md`             | Where plugin is enabled        |
 
 When skills share the same name across levels, higher-priority locations win: enterprise > personal > project. Plugin skills use a `plugin-name:skill-name` namespace, so they cannot conflict with other levels. If you have files in `.claude/commands/`, those work the same way, but if a skill and a command share the same name, the skill takes precedence.
 
@@ -91,7 +105,7 @@ When you work with files in subdirectories, Claude Code automatically discovers 
 
 Each skill is a directory with `SKILL.md` as the entrypoint:
 
-```
+```text  theme={null}
 my-skill/
 ├── SKILL.md           # Main instructions (required)
 ├── template.md        # Template for Claude to fill in
@@ -112,7 +126,7 @@ The `SKILL.md` contains the main instructions and is required. Other files are o
 Skills defined in `.claude/skills/` within directories added via `--add-dir` are loaded automatically and picked up by live change detection, so you can edit them during a session without restarting.
 
 <Note>
-  CLAUDE.md files from `--add-dir` directories are not loaded by default. To load them, set `CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1`. See [Load memory from additional directories](/en/memory#load-memory-from-additional-directories).
+  CLAUDE.md files from `--add-dir` directories are not loaded by default. To load them, set `CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1`. See [Load from additional directories](/en/memory#load-from-additional-directories).
 </Note>
 
 ## Configure skills
@@ -213,7 +227,7 @@ $ARGUMENTS
 
 Skills can include multiple files in their directory. This keeps `SKILL.md` focused on the essentials while letting Claude access detailed reference material only when needed. Large reference docs, API specifications, or example collections don't need to load into context every time the skill runs.
 
-```
+```text  theme={null}
 my-skill/
 ├── SKILL.md (required - overview and navigation)
 ├── reference.md (detailed API docs - loaded when needed)
@@ -423,14 +437,14 @@ Three ways to control which skills Claude can invoke:
 
 **Disable all skills** by denying the Skill tool in `/permissions`:
 
-```
+```text  theme={null}
 # Add to deny rules:
 Skill
 ```
 
 **Allow or deny specific skills** using [permission rules](/en/permissions):
 
-```
+```text  theme={null}
 # Allow only specific skills
 Skill(commit)
 Skill(review-pr *)
@@ -453,7 +467,7 @@ Skills can be distributed at different scopes depending on your audience:
 
 * **Project skills**: Commit `.claude/skills/` to version control
 * **Plugins**: Create a `skills/` directory in your [plugin](/en/plugins)
-* **Managed**: Deploy organization-wide through [managed settings](/en/permissions#managed-settings)
+* **Managed**: Deploy organization-wide through [managed settings](/en/settings#settings-files)
 
 ### Generate visual output
 
@@ -486,7 +500,7 @@ Run the visualization script from your project root:
 
 ```bash
 python ~/.claude/skills/codebase-visualizer/scripts/visualize.py .
-```
+```text
 
 This creates `codebase-map.html` in the current directory and opens it in your default browser.
 

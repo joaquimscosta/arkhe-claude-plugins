@@ -84,7 +84,7 @@ This walkthrough guides you through creating a user-level subagent with the `/ag
   <Step title="Open the subagents interface">
     In Claude Code, run:
 
-    ```
+    ```text  theme={null}
     /agents
     ```
   </Step>
@@ -96,7 +96,7 @@ This walkthrough guides you through creating a user-level subagent with the `/ag
   <Step title="Generate with Claude">
     Select **Generate with Claude**. When prompted, describe the subagent:
 
-    ```
+    ```text  theme={null}
     A code improvement agent that scans files and suggests improvements
     for readability, performance, and best practices. It should explain
     each issue, show the current code, and provide an improved version.
@@ -120,7 +120,7 @@ This walkthrough guides you through creating a user-level subagent with the `/ag
   <Step title="Save and try it out">
     Save the subagent. It's available immediately (no restart needed). Try it:
 
-    ```
+    ```text  theme={null}
     Use the code-improver agent to suggest improvements in this project
     ```
 
@@ -145,6 +145,8 @@ The `/agents` command provides an interactive interface for managing subagents. 
 * See which subagents are active when duplicates exist
 
 This is the recommended way to create and manage subagents. For manual creation or automation, you can also add subagent files directly.
+
+To list all configured subagents from the command line without starting an interactive session, run `claude agents`. This shows agents grouped by source and indicates which are overridden by higher-priority definitions.
 
 ### Choose the subagent scope
 
@@ -211,12 +213,14 @@ The following fields can be used in the YAML frontmatter. Only `name` and `descr
 | `tools`           | No       | [Tools](#available-tools) the subagent can use. Inherits all tools if omitted                                                                                                                                                                                               |
 | `disallowedTools` | No       | Tools to deny, removed from inherited or specified list                                                                                                                                                                                                                     |
 | `model`           | No       | [Model](#choose-a-model) to use: `sonnet`, `opus`, `haiku`, or `inherit`. Defaults to `inherit`                                                                                                                                                                             |
-| `permissionMode`  | No       | [Permission mode](#permission-modes): `default`, `acceptEdits`, `delegate`, `dontAsk`, `bypassPermissions`, or `plan`                                                                                                                                                       |
+| `permissionMode`  | No       | [Permission mode](#permission-modes): `default`, `acceptEdits`, `dontAsk`, `bypassPermissions`, or `plan`                                                                                                                                                                   |
 | `maxTurns`        | No       | Maximum number of agentic turns before the subagent stops                                                                                                                                                                                                                   |
 | `skills`          | No       | [Skills](/en/skills) to load into the subagent's context at startup. The full skill content is injected, not just made available for invocation. Subagents don't inherit skills from the parent conversation                                                                |
 | `mcpServers`      | No       | [MCP servers](/en/mcp) available to this subagent. Each entry is either a server name referencing an already-configured server (e.g., `"slack"`) or an inline definition with the server name as key and a full [MCP server config](/en/mcp#configure-mcp-servers) as value |
 | `hooks`           | No       | [Lifecycle hooks](#define-hooks-for-subagents) scoped to this subagent                                                                                                                                                                                                      |
 | `memory`          | No       | [Persistent memory scope](#enable-persistent-memory): `user`, `project`, or `local`. Enables cross-session learning                                                                                                                                                         |
+| `background`      | No       | Set to `true` to always run this subagent as a [background task](#run-subagents-in-foreground-or-background). Default: `false`                                                                                                                                              |
+| `isolation`       | No       | Set to `worktree` to run the subagent in a temporary [git worktree](/en/common-workflows#run-parallel-claude-code-sessions-with-git-worktrees), giving it an isolated copy of the repository. The worktree is automatically cleaned up if the subagent makes no changes     |
 
 ### Choose a model
 
@@ -247,38 +251,39 @@ disallowedTools: Write, Edit
 
 #### Restrict which subagents can be spawned
 
-When an agent runs as the main thread with `claude --agent`, it can spawn subagents using the Task tool. To restrict which subagent types it can spawn, use `Task(agent_type)` syntax in the `tools` field:
+When an agent runs as the main thread with `claude --agent`, it can spawn subagents using the Agent tool. To restrict which subagent types it can spawn, use `Agent(agent_type)` syntax in the `tools` field.
+
+<Note>In version 2.1.63, the Task tool was renamed to Agent. Existing `Task(...)` references in settings and agent definitions still work as aliases.</Note>
 
 ```yaml  theme={null}
 ---
 name: coordinator
 description: Coordinates work across specialized agents
-tools: Task(worker, researcher), Read, Bash
+tools: Agent(worker, researcher), Read, Bash
 ---
 ```
 
 This is an allowlist: only the `worker` and `researcher` subagents can be spawned. If the agent tries to spawn any other type, the request fails and the agent sees only the allowed types in its prompt. To block specific agents while allowing all others, use [`permissions.deny`](#disable-specific-subagents) instead.
 
-To allow spawning any subagent without restrictions, use `Task` without parentheses:
+To allow spawning any subagent without restrictions, use `Agent` without parentheses:
 
 ```yaml  theme={null}
-tools: Task, Read, Bash
+tools: Agent, Read, Bash
 ```
 
-If `Task` is omitted from the `tools` list entirely, the agent cannot spawn any subagents. This restriction only applies to agents running as the main thread with `claude --agent`. Subagents cannot spawn other subagents, so `Task(agent_type)` has no effect in subagent definitions.
+If `Agent` is omitted from the `tools` list entirely, the agent cannot spawn any subagents. This restriction only applies to agents running as the main thread with `claude --agent`. Subagents cannot spawn other subagents, so `Agent(agent_type)` has no effect in subagent definitions.
 
 #### Permission modes
 
 The `permissionMode` field controls how the subagent handles permission prompts. Subagents inherit the permission context from the main conversation but can override the mode.
 
-| Mode                | Behavior                                                                                                             |
-| :------------------ | :------------------------------------------------------------------------------------------------------------------- |
-| `default`           | Standard permission checking with prompts                                                                            |
-| `acceptEdits`       | Auto-accept file edits                                                                                               |
-| `dontAsk`           | Auto-deny permission prompts (explicitly allowed tools still work)                                                   |
-| `delegate`          | Coordination-only mode for [agent team](/en/agent-teams#use-delegate-mode) leads. Restricts to team management tools |
-| `bypassPermissions` | Skip all permission checks                                                                                           |
-| `plan`              | Plan mode (read-only exploration)                                                                                    |
+| Mode                | Behavior                                                           |
+| :------------------ | :----------------------------------------------------------------- |
+| `default`           | Standard permission checking with prompts                          |
+| `acceptEdits`       | Auto-accept file edits                                             |
+| `dontAsk`           | Auto-deny permission prompts (explicitly allowed tools still work) |
+| `bypassPermissions` | Skip all permission checks                                         |
+| `plan`              | Plan mode (read-only exploration)                                  |
 
 <Warning>
   Use `bypassPermissions` with caution. It skips all permission checks, allowing the subagent to execute any operation without approval.
@@ -393,12 +398,12 @@ See [Hook input](/en/hooks#pretooluse-input) for the complete input schema and [
 
 #### Disable specific subagents
 
-You can prevent Claude from using specific subagents by adding them to the `deny` array in your [settings](/en/settings#permission-settings). Use the format `Task(subagent-name)` where `subagent-name` matches the subagent's name field.
+You can prevent Claude from using specific subagents by adding them to the `deny` array in your [settings](/en/settings#permission-settings). Use the format `Agent(subagent-name)` where `subagent-name` matches the subagent's name field.
 
 ```json  theme={null}
 {
   "permissions": {
-    "deny": ["Task(Explore)", "Task(my-custom-agent)"]
+    "deny": ["Agent(Explore)", "Agent(my-custom-agent)"]
   }
 }
 ```
@@ -406,7 +411,7 @@ You can prevent Claude from using specific subagents by adding them to the `deny
 This works for both built-in and custom subagents. You can also use the `--disallowedTools` CLI flag:
 
 ```bash  theme={null}
-claude --disallowedTools "Task(Explore)"
+claude --disallowedTools "Agent(Explore)"
 ```
 
 See [Permissions documentation](/en/permissions#tool-specific-permission-rules) for more details on permission rules.
@@ -495,7 +500,7 @@ Claude automatically delegates tasks based on the task description in your reque
 
 You can also request a specific subagent explicitly:
 
-```
+```text  theme={null}
 Use the test-runner subagent to fix failing tests
 Have the code-reviewer subagent look at my recent changes
 ```
@@ -505,7 +510,7 @@ Have the code-reviewer subagent look at my recent changes
 Subagents can run in the foreground (blocking) or background (concurrent):
 
 * **Foreground subagents** block the main conversation until complete. Permission prompts and clarifying questions (like [`AskUserQuestion`](/en/settings#tools-available-to-claude)) are passed through to you.
-* **Background subagents** run concurrently while you continue working. Before launching, Claude Code prompts for any tool permissions the subagent will need, ensuring it has the necessary approvals upfront. Once running, the subagent inherits these permissions and auto-denies anything not pre-approved. If a background subagent needs to ask clarifying questions, that tool call fails but the subagent continues. MCP tools are not available in background subagents.
+* **Background subagents** run concurrently while you continue working. Before launching, Claude Code prompts for any tool permissions the subagent will need, ensuring it has the necessary approvals upfront. Once running, the subagent inherits these permissions and auto-denies anything not pre-approved. If a background subagent needs to ask clarifying questions, that tool call fails but the subagent continues.
 
 If a background subagent fails due to missing permissions, you can [resume it](#resume-subagents) in the foreground to retry with interactive prompts.
 
@@ -522,7 +527,7 @@ To disable all background task functionality, set the `CLAUDE_CODE_DISABLE_BACKG
 
 One of the most effective uses for subagents is isolating operations that produce large amounts of output. Running tests, fetching documentation, or processing log files can consume significant context. By delegating these to a subagent, the verbose output stays in the subagent's context while only the relevant summary returns to your main conversation.
 
-```
+```text  theme={null}
 Use a subagent to run the test suite and report only the failing tests with their error messages
 ```
 
@@ -530,7 +535,7 @@ Use a subagent to run the test suite and report only the failing tests with thei
 
 For independent investigations, spawn multiple subagents to work simultaneously:
 
-```
+```text  theme={null}
 Research the authentication, database, and API modules in parallel using separate subagents
 ```
 
@@ -546,7 +551,7 @@ For tasks that need sustained parallelism or exceed your context window, [agent 
 
 For multi-step workflows, ask Claude to use subagents in sequence. Each subagent completes its task and returns results to Claude, which then passes relevant context to the next subagent.
 
-```
+```text  theme={null}
 Use the code-reviewer subagent to find performance issues, then use the optimizer subagent to fix them
 ```
 
@@ -581,7 +586,7 @@ Resumed subagents retain their full conversation history, including all previous
 
 When a subagent completes, Claude receives its agent ID. To resume a subagent, ask Claude to continue the previous work:
 
-```
+```text  theme={null}
 Use the code-reviewer subagent to review the authentication module
 [Agent completes]
 

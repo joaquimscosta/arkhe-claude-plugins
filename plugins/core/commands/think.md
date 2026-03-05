@@ -21,7 +21,7 @@ argument-hint: "[problem or question to think through]"
 
 ## Instructions
 
-Use the Task tool to spawn the `deep-think-partner` agent (subagent_type: "core:deep-think-partner") to collaboratively reason through either:
+Use the Agent tool to spawn the `deep-think-partner` agent (subagent_type: "core:deep-think-partner") to collaboratively reason through either:
 
 1. The explicit problem provided in arguments, OR
 2. The implicit problem inferred from the current conversation context
