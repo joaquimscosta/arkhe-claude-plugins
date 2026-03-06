@@ -47,19 +47,14 @@ Desktop.ini
 .claude/*.local.md
 .gemini/
 
-design-intent-for-sdd
 .playwright-mcp
 .scratch
 docs/stitch
 GIT_HISTORY_REWRITE_GUIDE.md
-claude-code
-anthropics-skills
-claude-plugins-official
 skola-claude-plugins
 nosilha
 docs/drafts
-spec-kit
 arkhe
-ralph-orchestrator
-ralph-loop-quickstart
 socialmedia
+external-repos/
+internal-repos
