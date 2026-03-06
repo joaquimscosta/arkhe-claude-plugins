@@ -42,10 +42,16 @@ def build_promoted_content(
 ) -> str:
     """Build the full promoted file content."""
     now = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+    created_date = metadata.get('researched_at', now)[:10]
+    title = metadata.get('title', '')
 
     frontmatter = f"""---
+title: "{title}"
+version: "1.0.0"
+status: Published
+created: {created_date}
+last_updated: {created_date}
 slug: {metadata.get('slug', '')}
-title: {metadata.get('title', '')}
 aliases: {json.dumps(metadata.get('aliases', []))}
 tags: {json.dumps(metadata.get('tags', []))}
 promoted_at: {now}
@@ -69,29 +75,33 @@ sources: {json.dumps(metadata.get('sources', []))}
     return content
 
 
-def update_readme_index(docs_dir: Path, slug: str, title: str) -> None:
+def update_readme_index(docs_dir: Path, slug: str, title: str, metadata: Optional[dict] = None) -> None:
     """Update the README.md index in the docs directory."""
     readme_path = docs_dir / "README.md"
-    now = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    created_date = metadata.get('researched_at', '')[:10] if metadata else datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    version = "1.0.0"
+    status = "Published"
 
     if readme_path.exists():
         readme_content = readme_path.read_text()
     else:
         readme_content = """# Research Index
 
-Curated technical research for this project.
+Curated technical research for this project. Each file includes YAML frontmatter with `version`, `status`, `created`, and `last_updated` fields — GitHub renders these as a table at the top of each document.
 
-| Topic | Promoted | Last Refreshed | Team Notes |
-|-------|----------|----------------|------------|
+See [TEMPLATE.md](TEMPLATE.md) for the standard format when creating new research documents.
+
+| Topic | Version | Status | Created | Last Updated |
+|-------|---------|--------|---------|--------------|
 """
 
     slug_pattern = re.compile(rf"\|\s*\[.*?\]\({re.escape(slug)}\.md\)")
 
     if slug_pattern.search(readme_content):
         entry_pattern = re.compile(
-            rf"\|\s*\[.*?\]\({re.escape(slug)}\.md\)\s*\|[^|]*\|[^|]*\|[^|]*\|"
+            rf"\|\s*\[.*?\]\({re.escape(slug)}\.md\)\s*\|[^\n]*"
         )
-        new_entry = f"| [{title}]({slug}.md) | {now} | {now} | No |"
+        new_entry = f"| [{title}]({slug}.md) | {version} | {status} | {created_date} | {created_date} |"
         readme_content = entry_pattern.sub(new_entry, readme_content)
     else:
         table_end = readme_content.rfind("|")
@@ -100,7 +110,7 @@ Curated technical research for this project.
             if line_end == -1:
                 line_end = len(readme_content)
 
-            new_entry = f"\n| [{title}]({slug}.md) | {now} | {now} | No |"
+            new_entry = f"\n| [{title}]({slug}.md) | {version} | {status} | {created_date} | {created_date} |"
             readme_content = (
                 readme_content[:line_end]
                 + new_entry
@@ -147,6 +157,7 @@ def promote(
         docs_dir,
         slug,
         entry["metadata"].get("title", slug),
+        metadata=entry["metadata"],
     )
 
     action = "Updated" if refresh else "Promoted"

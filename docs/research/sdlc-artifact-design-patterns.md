@@ -1,10 +1,12 @@
-# AI-Ready SDLC Design Patterns
-
-**Version:** 2.0.0
-**Status:** Living Document
-**Purpose:** Design patterns for structuring SDLC artifacts that AI coding assistants can navigate efficiently
-
 ---
+title: AI-Ready SDLC Design Patterns
+version: "2.0.0"
+status: Living Document
+created: 2026-02-13
+last_updated: 2026-02-13
+---
+
+# AI-Ready SDLC Design Patterns
 
 ## Quick Reference
 

@@ -1,6 +1,10 @@
 ---
-slug: cross-platform-llm-cli-plugin-portability
 title: Cross-platform LLM CLI Plugin Portability
+version: "1.0.0"
+status: Published
+created: 2026-03-04
+last_updated: 2026-03-04
+slug: cross-platform-llm-cli-plugin-portability
 aliases: []
 tags: ["gemini-cli", "codex-cli", "mcp", "plugin-portability", "cross-platform", "agent-skills", "SKILL.md"]
 promoted_at: 2026-03-04T14:10:39.107263Z
