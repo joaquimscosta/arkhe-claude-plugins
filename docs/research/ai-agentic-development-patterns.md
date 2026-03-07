@@ -1,7 +1,7 @@
 ---
 title: "LLM Agentic Development: Evidence-Based Pattern Catalog"
 version: "2.0.0"
-status: Publised
+status: Published
 created: 2026-02-13
 last_updated: 2026-02-13
 ---
