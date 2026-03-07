@@ -4,16 +4,21 @@
 
 ### No build file found
 
-**Symptom**: `"build_tool": "unknown"` in output
+**Symptom**: `"error": "no_build_file"` in output
 
 **Causes**:
 - Running from wrong directory (not project root)
-- Multi-module project where build file is in a parent directory
+- Monorepo where the Spring Boot app is nested
 - Non-standard build file location
 
-**Fix**: Pass the correct project root path:
+**Fix**: Check `nearby_build_files` in the error output for hints, or pass the correct path:
 ```bash
 python3 scan_tooling.py /absolute/path/to/project-root
+```
+
+For monorepos, use `--recursive`:
+```bash
+python3 scan_tooling.py --recursive /path/to/monorepo
 ```
 
 ### Tools configured but not detected
@@ -22,7 +27,7 @@ python3 scan_tooling.py /absolute/path/to/project-root
 
 **Common causes**:
 
-1. **Convention plugin / buildSrc**: Tool configured in `buildSrc/src/main/kotlin/` or a Gradle convention plugin rather than directly in `build.gradle.kts`. The scanner only reads `build.gradle.kts`, `build.gradle`, and `pom.xml` at the root and direct submodule level.
+1. **Convention plugin / buildSrc**: Tool configured in `buildSrc/src/main/kotlin/` or a Gradle convention plugin rather than directly in `build.gradle.kts`. The scanner only reads `build.gradle.kts`, `build.gradle`, and `pom.xml`.
 
    **Workaround**: Check `buildSrc/` manually:
    ```bash
@@ -62,21 +67,57 @@ cat gradle/libs.versions.toml | head -30
 grep -A2 "<version>" pom.xml | head -20
 ```
 
-## Multi-Module Projects
+## Monorepo Scanning
 
-**Symptom**: Scanner only finds tools from root build file, missing submodule-specific tools
+**Symptom**: Scanner finds tools only in root, misses subproject configurations
 
-**How it works**: The scanner reads:
+**Default behavior**: The scanner reads:
 1. Root `build.gradle.kts` / `build.gradle`
 2. `settings.gradle.kts` for `include()` declarations
 3. Each included module's build file
 
-**Limitation**: It does not recursively walk all directories. Only modules declared in `settings.gradle.kts` are checked.
-
-**Workaround for deep nesting**: Run scanner on specific submodule:
+**For monorepos with deeply nested projects**, use `--recursive`:
 ```bash
-python3 scan_tooling.py /path/to/project/apps/backend
+python3 scan_tooling.py --recursive /path/to/monorepo
 ```
+
+This walks all directories (skipping `build/`, `.gradle/`, `node_modules/`, `.git/`, `target/`, `out/`, `.idea/`) and reports a `modules` section listing each discovered module with its tools.
+
+**Alternative**: Run scanner directly on the subproject:
+```bash
+python3 scan_tooling.py /path/to/monorepo/services/order-service
+```
+
+## Tool Status Interpretation
+
+The scanner reports a `status` field for each detected tool:
+
+| Status | Meaning |
+|--------|---------|
+| `active` | Found in build file, not commented out |
+| `disabled` | Found in build file but inside a comment block |
+| `config-only` | Config file exists (e.g., `detekt.yml`) but no build-file plugin reference |
+| `version-unknown` | Detected but version could not be extracted |
+
+### Tool Reported as "disabled" Incorrectly
+
+**Symptom**: Scanner reports status `disabled` for a tool that is active
+
+**Causes**:
+- Tool reference appears in a comment on a different line than the actual declaration (scanner found the comment first)
+- Nested block comments (`/* /* */ */`) — scanner counts open/close markers but doesn't handle nesting
+
+**Resolution**: Check the build file manually and verify the tool's actual status. The scanner picks up the first regex match — if a comment mentions the tool before the actual declaration, it may report `disabled`.
+
+### Tool Reported as "config-only"
+
+**Symptom**: Scanner reports `config-only` for a tool that has a build plugin
+
+**Causes**:
+- Plugin configured in `buildSrc/` or a convention plugin (not scanned)
+- Plugin name uses a non-standard alias in the version catalog
+
+**Resolution**: See "Tools configured but not detected" above.
 
 ## False Positives
 
@@ -87,7 +128,7 @@ python3 scan_tooling.py /path/to/project/apps/backend
 - Transitive dependency brings in the tool (e.g., Hamcrest via JUnit 4 compat)
 - Old configuration that was commented out but not removed
 
-**Resolution**: The recommendation report will note these. During Phase 2 setup, verify the tool's actual status before making changes.
+**Resolution**: Check the `status` field — `disabled` indicates the scanner detected it was commented out. For transitive dependencies, verify the build file directly.
 
 ## Python Execution Issues
 
@@ -108,18 +149,17 @@ python3 --version
 
 Build file contains non-UTF-8 characters. The scanner uses `encoding="utf-8"`. If the project uses a different encoding, convert the file or report the issue.
 
-## Research Documents Not Found
+## Research Documents Not Fetchable
 
-**Symptom**: Claude reports it cannot read the research documents
+**Symptom**: WebFetch returns 404 or network error for research docs
+
+**URLs to verify**:
+- `https://raw.githubusercontent.com/joaquimscosta/arkhe-claude-plugins/main/docs/research/jvm-quality-tools-evaluation.md`
+- `https://raw.githubusercontent.com/joaquimscosta/arkhe-claude-plugins/main/docs/research/kotlin-spring-boot-testing-ecosystem.md`
 
 **Causes**:
-- Research documents haven't been promoted to `docs/research/` yet
-- File was renamed or moved
+- Network connectivity issue
+- Files were moved or renamed in the repository
+- Repository is private (raw.githubusercontent.com requires public repo or auth token)
 
-**Check**:
-```bash
-ls docs/research/jvm-quality-tools-evaluation.md
-ls docs/research/kotlin-spring-boot-testing-ecosystem.md
-```
-
-If missing, use `/research promote <slug>` to promote from cache, or `/research <topic>` to generate fresh research.
+**Fallback**: Proceed with scanner results + LLM knowledge. The research docs enrich recommendations with specific versions and sourced rationale but are not required for the audit to work.

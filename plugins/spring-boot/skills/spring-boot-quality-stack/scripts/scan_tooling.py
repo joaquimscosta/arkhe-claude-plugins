@@ -10,12 +10,16 @@ Uses only standard library (no external dependencies).
 
 Usage:
     python3 scan_tooling.py <project_root>
+    python3 scan_tooling.py --recursive <project_root>
 
 Output:
-    JSON with project profile, detected tools, config files, and versions.
+    JSON with project profile, detected tools (with status), config files,
+    versions, and tool configuration details.
 """
 
+import argparse
 import json
+import os
 import re
 import sys
 from pathlib import Path
@@ -23,7 +27,7 @@ from typing import Dict, List, Optional, Tuple
 
 
 # ---------------------------------------------------------------------------
-# Detection patterns: tool name → list of regex patterns to search in build files
+# Detection patterns: tool name -> list of regex patterns to search in build files
 # ---------------------------------------------------------------------------
 
 GRADLE_PLUGIN_PATTERNS: Dict[str, List[str]] = {
@@ -87,7 +91,7 @@ TEST_DEPENDENCY_PATTERNS: Dict[str, List[str]] = {
     "spring-modulith-test": [r"spring-modulith-starter-test", r"spring-modulith-test"],
 }
 
-# Config files → what they indicate
+# Config files -> what they indicate
 CONFIG_FILE_INDICATORS: Dict[str, str] = {
     "detekt.yml": "detekt",
     "detekt-config.yml": "detekt",
@@ -114,6 +118,79 @@ CI_FILE_INDICATORS: Dict[str, str] = {
     "azure-pipelines.yml": "azure-devops",
 }
 
+SKIP_DIRS = {"build", ".gradle", "node_modules", ".git", "target", "out", ".idea"}
+
+
+# ---------------------------------------------------------------------------
+# Detection result helpers
+# ---------------------------------------------------------------------------
+
+
+def make_detection(name: str, status: str = "active", source: str = "build-file") -> dict:
+    """Create a tool detection result dict."""
+    return {"name": name, "status": status, "source": source}
+
+
+# ---------------------------------------------------------------------------
+# Comment detection
+# ---------------------------------------------------------------------------
+
+
+def is_commented_out_gradle(content: str, match_pos: int) -> bool:
+    """Check if a match position in Gradle content is inside a comment."""
+    # Check single-line comment
+    line_start = content.rfind("\n", 0, match_pos) + 1
+    line_prefix = content[line_start:match_pos].lstrip()
+    if line_prefix.startswith("//"):
+        return True
+    # Check block comment balance
+    opens = len(re.findall(r"/\*", content[:match_pos]))
+    closes = len(re.findall(r"\*/", content[:match_pos]))
+    return opens > closes
+
+
+def is_commented_out_maven(content: str, match_pos: int) -> bool:
+    """Check if a match position in Maven POM is inside an XML comment."""
+    last_open = content.rfind("<!--", 0, match_pos)
+    if last_open == -1:
+        return False
+    last_close = content.rfind("-->", 0, match_pos)
+    return last_close < last_open
+
+
+# ---------------------------------------------------------------------------
+# Tool config extraction
+# ---------------------------------------------------------------------------
+
+
+def extract_jacoco_threshold(content: str) -> Optional[str]:
+    """Extract JaCoCo minimum coverage threshold from violationRules block."""
+    match = re.search(
+        r"violationRules\s*\{[^}]*minimum\.set\s*\(\s*([0-9.]+)\s*\)",
+        content,
+        re.DOTALL,
+    )
+    if not match:
+        match = re.search(
+            r"violationRules\s*\{[^}]*minimum\s*=\s*([0-9.]+)",
+            content,
+            re.DOTALL,
+        )
+    if not match:
+        # Maven style
+        match = re.search(
+            r"<minimum>([0-9.]+)</minimum>",
+            content,
+        )
+    return match.group(1) if match else None
+
+
+def detect_ktlint_sarif(content: str) -> bool:
+    """Check if ktlint is configured with SARIF reporter."""
+    return bool(
+        re.search(r"reporter.*sarif|sarif.*reporter|outputToSarif", content, re.IGNORECASE)
+    )
+
 
 # ---------------------------------------------------------------------------
 # Build tool detection
@@ -132,7 +209,7 @@ def detect_build_tool(root: Path) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Gradle scanning
+# Build file discovery
 # ---------------------------------------------------------------------------
 
 
@@ -166,13 +243,60 @@ def find_gradle_build_files(root: Path) -> List[Path]:
     return files
 
 
-def scan_gradle_builds(root: Path) -> Tuple[List[str], List[str], Dict[str, str]]:
-    """Scan Gradle build files for plugins, dependencies, and versions."""
-    detected_plugins = []
-    detected_deps = []
-    versions: Dict[str, str] = {}
+def find_build_files_recursive(root: Path) -> List[Path]:
+    """Walk directories to find all build files, skipping build output dirs."""
+    build_files = []
+    for dirpath, dirs, files in os.walk(str(root), topdown=True):
+        dirs[:] = [d for d in dirs if d not in SKIP_DIRS]
+        for name in ["build.gradle.kts", "build.gradle", "pom.xml"]:
+            if name in files:
+                build_files.append(Path(dirpath) / name)
+    return build_files
 
-    build_files = find_gradle_build_files(root)
+
+# ---------------------------------------------------------------------------
+# Gradle scanning
+# ---------------------------------------------------------------------------
+
+
+def _detect_tools_with_status(
+    content: str,
+    patterns: Dict[str, List[str]],
+    comment_checker,
+) -> List[dict]:
+    """Detect tools in content with comment-aware status."""
+    detected = []
+    seen = set()
+    for tool, tool_patterns in patterns.items():
+        for pattern in tool_patterns:
+            match = re.search(pattern, content)
+            if match and tool not in seen:
+                seen.add(tool)
+                commented = comment_checker(content, match.start())
+                status = "disabled" if commented else "active"
+                detected.append(make_detection(tool, status, "build-file"))
+                break
+    return detected
+
+
+def scan_gradle_builds(
+    root: Path, recursive: bool = False
+) -> Tuple[List[dict], List[dict], Dict[str, str], Dict[str, object]]:
+    """Scan Gradle build files for plugins, dependencies, versions, and config."""
+    detected_plugins: List[dict] = []
+    detected_deps: List[dict] = []
+    versions: Dict[str, str] = {}
+    tool_config: Dict[str, object] = {}
+
+    if recursive:
+        build_files = [
+            f
+            for f in find_build_files_recursive(root)
+            if f.name.startswith("build.gradle")
+        ]
+    else:
+        build_files = find_gradle_build_files(root)
+
     combined_content = ""
     for bf in build_files:
         try:
@@ -181,27 +305,22 @@ def scan_gradle_builds(root: Path) -> Tuple[List[str], List[str], Dict[str, str]
             pass
 
     if not combined_content:
-        return detected_plugins, detected_deps, versions
+        return detected_plugins, detected_deps, versions, tool_config
 
-    # Detect plugins
-    for tool, patterns in GRADLE_PLUGIN_PATTERNS.items():
-        for pattern in patterns:
-            if re.search(pattern, combined_content):
-                if tool not in detected_plugins:
-                    detected_plugins.append(tool)
-                break
+    # Detect plugins with status
+    detected_plugins = _detect_tools_with_status(
+        combined_content, GRADLE_PLUGIN_PATTERNS, is_commented_out_gradle
+    )
 
-    # Detect test dependencies
-    for lib, patterns in TEST_DEPENDENCY_PATTERNS.items():
-        for pattern in patterns:
-            if re.search(pattern, combined_content):
-                if lib not in detected_deps:
-                    detected_deps.append(lib)
-                break
+    # Detect test dependencies with status
+    detected_deps = _detect_tools_with_status(
+        combined_content, TEST_DEPENDENCY_PATTERNS, is_commented_out_gradle
+    )
 
     # Extract Spring Boot version
     sb_match = re.search(
-        r'org\.springframework\.boot["\')]\s*version\s*["\']([^"\']+)', combined_content
+        r'org\.springframework\.boot["\')]\s*version\s*["\']([^"\']+)',
+        combined_content,
     )
     if not sb_match:
         sb_match = re.search(
@@ -212,7 +331,9 @@ def scan_gradle_builds(root: Path) -> Tuple[List[str], List[str], Dict[str, str]
         versions["spring-boot"] = sb_match.group(1)
 
     # Extract Kotlin version
-    kt_match = re.search(r'kotlin\s*\(\s*"jvm"\s*\)\s*version\s*"([^"]+)"', combined_content)
+    kt_match = re.search(
+        r'kotlin\s*\(\s*"jvm"\s*\)\s*version\s*"([^"]+)"', combined_content
+    )
     if not kt_match:
         kt_match = re.search(
             r'org\.jetbrains\.kotlin\.jvm["\')]\s*version\s*["\']([^"\']+)',
@@ -225,30 +346,48 @@ def scan_gradle_builds(root: Path) -> Tuple[List[str], List[str], Dict[str, str]
     java_match = re.search(r"jvmToolchain\s*\(\s*(\d+)\s*\)", combined_content)
     if not java_match:
         java_match = re.search(
-            r'sourceCompatibility\s*=\s*JavaVersion\.VERSION_(\d+)', combined_content
+            r"sourceCompatibility\s*=\s*JavaVersion\.VERSION_(\d+)",
+            combined_content,
         )
     if not java_match:
-        java_match = re.search(r"java\.sourceCompatibility\s*=\s*.*?(\d+)", combined_content)
+        java_match = re.search(
+            r"java\.sourceCompatibility\s*=\s*.*?(\d+)", combined_content
+        )
     if java_match:
         versions["java"] = java_match.group(1)
 
     # Extract tool versions where visible
+    plugin_names = {d["name"] for d in detected_plugins}
     version_extractions = {
         "detekt": [r'detekt["\')]\s*version\s*["\']([^"\']+)'],
-        "ktlint": [r'ktlint["\')]\s*version\s*["\']([^"\']+)', r'version\.set\s*\(\s*"([^"]+)"'],
+        "ktlint": [
+            r'ktlint["\')]\s*version\s*["\']([^"\']+)',
+            r'version\.set\s*\(\s*"([^"]+)"',
+        ],
         "kover": [r'kover["\')]\s*version\s*["\']([^"\']+)'],
-        "pitest": [r'pitest["\')]\s*version\s*["\']([^"\']+)', r'pitestVersion\.set\s*\(\s*"([^"]+)"'],
+        "pitest": [
+            r'pitest["\')]\s*version\s*["\']([^"\']+)',
+            r'pitestVersion\.set\s*\(\s*"([^"]+)"',
+        ],
         "jacoco": [r'toolVersion\s*=\s*"([^"]+)"'],
     }
     for tool, regexes in version_extractions.items():
-        if tool in detected_plugins:
+        if tool in plugin_names:
             for regex in regexes:
                 match = re.search(regex, combined_content)
                 if match:
                     versions[tool] = match.group(1)
                     break
 
-    return detected_plugins, detected_deps, versions
+    # Extract tool config details
+    threshold = extract_jacoco_threshold(combined_content)
+    if threshold is not None:
+        tool_config["jacoco_threshold"] = threshold
+
+    if "ktlint" in plugin_names:
+        tool_config["ktlint_sarif_enabled"] = detect_ktlint_sarif(combined_content)
+
+    return detected_plugins, detected_deps, versions, tool_config
 
 
 # ---------------------------------------------------------------------------
@@ -256,58 +395,78 @@ def scan_gradle_builds(root: Path) -> Tuple[List[str], List[str], Dict[str, str]
 # ---------------------------------------------------------------------------
 
 
-def scan_maven_build(root: Path) -> Tuple[List[str], List[str], Dict[str, str]]:
-    """Scan pom.xml for plugins, dependencies, and versions."""
-    detected_plugins = []
-    detected_deps = []
+def scan_maven_build(
+    root: Path, recursive: bool = False
+) -> Tuple[List[dict], List[dict], Dict[str, str], Dict[str, object]]:
+    """Scan pom.xml for plugins, dependencies, versions, and config."""
+    detected_plugins: List[dict] = []
+    detected_deps: List[dict] = []
     versions: Dict[str, str] = {}
+    tool_config: Dict[str, object] = {}
 
-    pom_file = root / "pom.xml"
-    if not pom_file.exists():
-        return detected_plugins, detected_deps, versions
+    if recursive:
+        pom_files = [
+            f for f in find_build_files_recursive(root) if f.name == "pom.xml"
+        ]
+    else:
+        pom_file = root / "pom.xml"
+        pom_files = [pom_file] if pom_file.exists() else []
 
-    try:
-        content = pom_file.read_text(encoding="utf-8")
-    except Exception:
-        return detected_plugins, detected_deps, versions
+    combined_content = ""
+    for pf in pom_files:
+        try:
+            combined_content += pf.read_text(encoding="utf-8") + "\n"
+        except Exception:
+            pass
 
-    # Detect plugins
-    for tool, patterns in MAVEN_PLUGIN_PATTERNS.items():
-        for pattern in patterns:
-            if re.search(pattern, content):
-                if tool not in detected_plugins:
-                    detected_plugins.append(tool)
-                break
+    if not combined_content:
+        return detected_plugins, detected_deps, versions, tool_config
 
-    # Detect test dependencies
-    for lib, patterns in TEST_DEPENDENCY_PATTERNS.items():
-        for pattern in patterns:
-            if re.search(pattern, content):
-                if lib not in detected_deps:
-                    detected_deps.append(lib)
-                break
+    # Detect plugins with status
+    detected_plugins = _detect_tools_with_status(
+        combined_content, MAVEN_PLUGIN_PATTERNS, is_commented_out_maven
+    )
+
+    # Detect test dependencies with status
+    detected_deps = _detect_tools_with_status(
+        combined_content, TEST_DEPENDENCY_PATTERNS, is_commented_out_maven
+    )
 
     # Extract Spring Boot version
     sb_match = re.search(
         r"<artifactId>spring-boot-starter-parent</artifactId>\s*<version>([^<]+)</version>",
-        content,
+        combined_content,
     )
     if sb_match:
         versions["spring-boot"] = sb_match.group(1)
 
     # Extract Java version
-    java_match = re.search(r"<java\.version>(\d+)</java\.version>", content)
+    java_match = re.search(r"<java\.version>(\d+)</java\.version>", combined_content)
     if not java_match:
-        java_match = re.search(r"<maven\.compiler\.source>(\d+)</maven\.compiler\.source>", content)
+        java_match = re.search(
+            r"<maven\.compiler\.source>(\d+)</maven\.compiler\.source>",
+            combined_content,
+        )
     if java_match:
         versions["java"] = java_match.group(1)
 
     # Extract Kotlin version
-    kt_match = re.search(r"<kotlin\.version>([^<]+)</kotlin\.version>", content)
+    kt_match = re.search(
+        r"<kotlin\.version>([^<]+)</kotlin\.version>", combined_content
+    )
     if kt_match:
         versions["kotlin"] = kt_match.group(1)
 
-    return detected_plugins, detected_deps, versions
+    # Extract tool config details
+    threshold = extract_jacoco_threshold(combined_content)
+    if threshold is not None:
+        tool_config["jacoco_threshold"] = threshold
+
+    plugin_names = {d["name"] for d in detected_plugins}
+    if "ktlint" in plugin_names:
+        tool_config["ktlint_sarif_enabled"] = detect_ktlint_sarif(combined_content)
+
+    return detected_plugins, detected_deps, versions, tool_config
 
 
 # ---------------------------------------------------------------------------
@@ -315,10 +474,10 @@ def scan_maven_build(root: Path) -> Tuple[List[str], List[str], Dict[str, str]]:
 # ---------------------------------------------------------------------------
 
 
-def scan_version_catalog(root: Path) -> Tuple[List[str], List[str], Dict[str, str]]:
+def scan_version_catalog(root: Path) -> Tuple[List[dict], List[dict], Dict[str, str]]:
     """Scan gradle/libs.versions.toml for tool references and versions."""
-    detected_plugins = []
-    detected_deps = []
+    detected_plugins: List[dict] = []
+    detected_deps: List[dict] = []
     versions: Dict[str, str] = {}
 
     catalog_path = root / "gradle" / "libs.versions.toml"
@@ -330,18 +489,23 @@ def scan_version_catalog(root: Path) -> Tuple[List[str], List[str], Dict[str, st
     except Exception:
         return detected_plugins, detected_deps, versions
 
-    # Check for plugin/library references
-    all_patterns = {}
-    all_patterns.update(GRADLE_PLUGIN_PATTERNS)
-    all_patterns.update(TEST_DEPENDENCY_PATTERNS)
+    # Check for plugin/library references (version catalogs don't have comments
+    # in the same way, so we treat all as active)
+    seen_plugins = set()
+    seen_deps = set()
 
-    for tool, patterns in all_patterns.items():
+    for tool, patterns in GRADLE_PLUGIN_PATTERNS.items():
         for pattern in patterns:
-            if re.search(pattern, content):
-                if tool in GRADLE_PLUGIN_PATTERNS and tool not in detected_plugins:
-                    detected_plugins.append(tool)
-                elif tool in TEST_DEPENDENCY_PATTERNS and tool not in detected_deps:
-                    detected_deps.append(tool)
+            if re.search(pattern, content) and tool not in seen_plugins:
+                seen_plugins.add(tool)
+                detected_plugins.append(make_detection(tool, "active", "version-catalog"))
+                break
+
+    for tool, patterns in TEST_DEPENDENCY_PATTERNS.items():
+        for pattern in patterns:
+            if re.search(pattern, content) and tool not in seen_deps:
+                seen_deps.add(tool)
+                detected_deps.append(make_detection(tool, "active", "version-catalog"))
                 break
 
     # Extract versions from [versions] section
@@ -358,7 +522,6 @@ def scan_version_catalog(root: Path) -> Tuple[List[str], List[str], Dict[str, st
             key, _, val = stripped.partition("=")
             key = key.strip().strip('"').strip("'")
             val = val.strip().strip('"').strip("'")
-            # Map common version catalog keys to tool names
             version_key_map = {
                 "spring-boot": "spring-boot",
                 "springBoot": "spring-boot",
@@ -405,9 +568,10 @@ def scan_ci_files(root: Path) -> List[str]:
     for path, ci_system in CI_FILE_INDICATORS.items():
         full_path = root / path
         if full_path.exists() or full_path.is_dir():
-            # For directories like .github/workflows, check if it has files
             if full_path.is_dir():
-                yml_files = list(full_path.glob("*.yml")) + list(full_path.glob("*.yaml"))
+                yml_files = list(full_path.glob("*.yml")) + list(
+                    full_path.glob("*.yaml")
+                )
                 if yml_files:
                     detected.append(ci_system)
             else:
@@ -430,7 +594,6 @@ def analyze_project_structure(root: Path) -> Dict:
         "has_jmh_dir": False,
     }
 
-    # Count source files
     java_main = list(root.glob("**/src/main/**/*.java"))
     kotlin_main = list(root.glob("**/src/main/**/*.kt"))
     java_test = list(root.glob("**/src/test/**/*.java"))
@@ -441,7 +604,6 @@ def analyze_project_structure(root: Path) -> Dict:
     result["has_test_dir"] = (root / "src" / "test").exists()
     result["has_jmh_dir"] = (root / "src" / "jmh").exists()
 
-    # Determine language
     java_count = len(java_main) + len(java_test)
     kotlin_count = len(kotlin_main) + len(kotlin_test)
 
@@ -459,12 +621,68 @@ def analyze_project_structure(root: Path) -> Dict:
 # Tool classification into categories
 # ---------------------------------------------------------------------------
 
+PLUGIN_CATEGORY_MAP = {
+    "error-prone": "static_analysis",
+    "spotbugs": "static_analysis",
+    "detekt": "static_analysis",
+    "ktlint": "static_analysis",
+    "sonarqube": "static_analysis",
+    "jacoco": "coverage",
+    "kover": "coverage",
+    "pitest": "mutation_testing",
+    "owasp-dependency-check": "security",
+    "openrewrite": "migrations",
+}
+
+DEP_CATEGORY_MAP = {
+    "assertj": "testing_libraries",
+    "kotest-assertions": "testing_libraries",
+    "kotest-runner": "testing_libraries",
+    "strikt": "testing_libraries",
+    "hamcrest": "testing_libraries",
+    "mockk": "testing_libraries",
+    "mockito": "testing_libraries",
+    "instancio": "testing_libraries",
+    "kotlin-faker": "testing_libraries",
+    "fixture-monkey": "testing_libraries",
+    "testcontainers": "testing_libraries",
+    "spring-modulith-test": "testing_libraries",
+    "archunit": "architecture",
+    "pact": "contract_testing",
+    "spring-cloud-contract": "contract_testing",
+    "jqwik": "property_testing",
+    "rest-assured": "api_testing",
+    "jmh": "benchmarking",
+}
+
+# Config files that indicate a tool when no build-file reference exists
+CONFIG_ONLY_MAP = {
+    "detekt.yml": ("detekt", "static_analysis"),
+    "detekt-config.yml": ("detekt", "static_analysis"),
+    "config/detekt.yml": ("detekt", "static_analysis"),
+    "spotbugs-exclude.xml": ("spotbugs", "static_analysis"),
+    "sonar-project.properties": ("sonarqube", "static_analysis"),
+}
+
+# Config files that always indicate a standalone tool
+CONFIG_TOOL_MAP = {
+    ".trivyignore": ("trivy", "security"),
+    "renovate.json": ("renovate", "dependency_management"),
+    "renovate.json5": ("renovate", "dependency_management"),
+    ".renovaterc": ("renovate", "dependency_management"),
+    ".renovaterc.json": ("renovate", "dependency_management"),
+    ".github/dependabot.yml": ("dependabot", "dependency_management"),
+}
+
 
 def classify_tools(
-    plugins: List[str], deps: List[str], ci: List[str], config: Dict[str, bool]
-) -> Dict[str, List[str]]:
-    """Organize detected tools into categories."""
-    categories: Dict[str, List[str]] = {
+    plugins: List[dict],
+    deps: List[dict],
+    ci: List[str],
+    config: Dict[str, bool],
+) -> Dict[str, List[dict]]:
+    """Organize detected tools into categories with status info."""
+    categories: Dict[str, List[dict]] = {
         "static_analysis": [],
         "testing_libraries": [],
         "coverage": [],
@@ -480,70 +698,84 @@ def classify_tools(
         "migrations": [],
     }
 
-    # Plugins → categories
-    plugin_category_map = {
-        "error-prone": "static_analysis",
-        "spotbugs": "static_analysis",
-        "detekt": "static_analysis",
-        "ktlint": "static_analysis",
-        "sonarqube": "static_analysis",
-        "jacoco": "coverage",
-        "kover": "coverage",
-        "pitest": "mutation_testing",
-        "owasp-dependency-check": "security",
-        "openrewrite": "migrations",
-    }
+    # Track tool names already classified (for config-only detection)
+    classified_names = set()
 
-    for plugin in plugins:
-        cat = plugin_category_map.get(plugin)
-        if cat and plugin not in categories[cat]:
-            categories[cat].append(plugin)
+    # Plugins -> categories
+    for detection in plugins:
+        cat = PLUGIN_CATEGORY_MAP.get(detection["name"])
+        if cat:
+            categories[cat].append(detection)
+            classified_names.add(detection["name"])
 
-    # Dependencies → categories
-    dep_category_map = {
-        "assertj": "testing_libraries",
-        "kotest-assertions": "testing_libraries",
-        "kotest-runner": "testing_libraries",
-        "strikt": "testing_libraries",
-        "hamcrest": "testing_libraries",
-        "mockk": "testing_libraries",
-        "mockito": "testing_libraries",
-        "instancio": "testing_libraries",
-        "kotlin-faker": "testing_libraries",
-        "fixture-monkey": "testing_libraries",
-        "testcontainers": "testing_libraries",
-        "spring-modulith-test": "testing_libraries",
-        "archunit": "architecture",
-        "pact": "contract_testing",
-        "spring-cloud-contract": "contract_testing",
-        "jqwik": "property_testing",
-        "rest-assured": "api_testing",
-        "jmh": "benchmarking",
-    }
-
-    for dep in deps:
-        cat = dep_category_map.get(dep)
-        if cat and dep not in categories[cat]:
-            categories[cat].append(dep)
+    # Dependencies -> categories
+    for detection in deps:
+        cat = DEP_CATEGORY_MAP.get(detection["name"])
+        if cat:
+            categories[cat].append(detection)
+            classified_names.add(detection["name"])
 
     # CI systems
-    categories["ci_cd"] = ci
+    categories["ci_cd"] = [make_detection(ci_sys, "active", "ci-file") for ci_sys in ci]
 
-    # Config-based detections (tools detected only via config files)
-    config_tool_map = {
-        ".trivyignore": ("trivy", "security"),
-        "renovate.json": ("renovate", "dependency_management"),
-        "renovate.json5": ("renovate", "dependency_management"),
-        ".renovaterc": ("renovate", "dependency_management"),
-        ".renovaterc.json": ("renovate", "dependency_management"),
-        ".github/dependabot.yml": ("dependabot", "dependency_management"),
-    }
+    # Standalone config-based tools (trivy, renovate, dependabot)
+    for config_file, (tool, cat) in CONFIG_TOOL_MAP.items():
+        if config.get(config_file, False) and tool not in classified_names:
+            categories[cat].append(make_detection(tool, "active", "config-file"))
+            classified_names.add(tool)
 
-    for config_file, (tool, cat) in config_tool_map.items():
-        if config.get(config_file, False) and tool not in categories[cat]:
-            categories[cat].append(tool)
+    # Config-only detection: config file exists but no build-file reference
+    for config_file, (tool, cat) in CONFIG_ONLY_MAP.items():
+        if config.get(config_file, False) and tool not in classified_names:
+            categories[cat].append(make_detection(tool, "config-only", "config-file"))
+            classified_names.add(tool)
 
     return categories
+
+
+# ---------------------------------------------------------------------------
+# Module discovery (for --recursive)
+# ---------------------------------------------------------------------------
+
+
+def discover_modules(root: Path) -> List[dict]:
+    """Discover modules in a monorepo and report tools per module."""
+    modules = []
+    build_files = find_build_files_recursive(root)
+
+    for bf in build_files:
+        module_dir = bf.parent
+        rel_path = str(module_dir.relative_to(root))
+        if rel_path == ".":
+            rel_path = "(root)"
+
+        build_tool = detect_build_tool(module_dir)
+        # Quick tool scan for this module
+        content = ""
+        try:
+            content = bf.read_text(encoding="utf-8")
+        except Exception:
+            pass
+
+        tool_names = []
+        all_patterns = {}
+        all_patterns.update(GRADLE_PLUGIN_PATTERNS)
+        all_patterns.update(TEST_DEPENDENCY_PATTERNS)
+        for tool, patterns in all_patterns.items():
+            for pattern in patterns:
+                if re.search(pattern, content):
+                    tool_names.append(tool)
+                    break
+
+        modules.append(
+            {
+                "path": rel_path,
+                "build_tool": build_tool,
+                "tools": tool_names,
+            }
+        )
+
+    return modules
 
 
 # ---------------------------------------------------------------------------
@@ -553,16 +785,18 @@ def classify_tools(
 
 def main():
     """Main entry point."""
-    if len(sys.argv) < 2:
-        print(
-            json.dumps(
-                {"error": "Usage: python3 scan_tooling.py <project_root>"},
-                indent=2,
-            )
-        )
-        sys.exit(1)
+    parser = argparse.ArgumentParser(
+        description="JVM Project Tooling Scanner — detects quality and testing tools"
+    )
+    parser.add_argument("project_root", help="Path to the project root directory")
+    parser.add_argument(
+        "--recursive",
+        action="store_true",
+        help="Recursively discover build files (for monorepos)",
+    )
+    args = parser.parse_args()
 
-    root = Path(sys.argv[1]).resolve()
+    root = Path(args.project_root).resolve()
     if not root.is_dir():
         print(json.dumps({"error": f"Not a directory: {root}"}, indent=2))
         sys.exit(1)
@@ -570,22 +804,44 @@ def main():
     # Detect build tool
     build_tool = detect_build_tool(root)
 
+    # Pre-flight check: no build file found
+    if build_tool == "unknown":
+        hint_files = []
+        for name in ["build.gradle.kts", "build.gradle", "pom.xml"]:
+            found = list(root.glob(f"*/{name}"))[:5]
+            hint_files.extend(str(f.relative_to(root)) for f in found)
+
+        output = {
+            "error": "no_build_file",
+            "message": f"No build file found at project root: {root}",
+            "hint": "Try --recursive flag or pass a subproject path directly",
+            "nearby_build_files": hint_files,
+        }
+        print(json.dumps(output, indent=2))
+        sys.exit(1)
+
     # Scan build files
     if build_tool.startswith("gradle"):
-        plugins, deps, versions = scan_gradle_builds(root)
+        plugins, deps, versions, tool_config = scan_gradle_builds(
+            root, recursive=args.recursive
+        )
     elif build_tool == "maven":
-        plugins, deps, versions = scan_maven_build(root)
+        plugins, deps, versions, tool_config = scan_maven_build(
+            root, recursive=args.recursive
+        )
     else:
-        plugins, deps, versions = [], [], {}
+        plugins, deps, versions, tool_config = [], [], {}, {}
 
     # Scan version catalog (Gradle only)
     if build_tool.startswith("gradle"):
         cat_plugins, cat_deps, cat_versions = scan_version_catalog(root)
+        existing_plugin_names = {d["name"] for d in plugins}
+        existing_dep_names = {d["name"] for d in deps}
         for p in cat_plugins:
-            if p not in plugins:
+            if p["name"] not in existing_plugin_names:
                 plugins.append(p)
         for d in cat_deps:
-            if d not in deps:
+            if d["name"] not in existing_dep_names:
                 deps.append(d)
         for k, v in cat_versions.items():
             if k not in versions:
@@ -619,7 +875,12 @@ def main():
         "detected_tools": categories,
         "config_files": config_files,
         "versions": versions,
+        "tool_config": tool_config,
     }
+
+    # Add modules info for recursive mode
+    if args.recursive:
+        output["modules"] = discover_modules(root)
 
     print(json.dumps(output, indent=2))
 

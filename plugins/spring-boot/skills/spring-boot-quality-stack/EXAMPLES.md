@@ -18,15 +18,23 @@
   },
   "detected_tools": {
     "static_analysis": [],
-    "testing_libraries": ["assertj", "mockk", "testcontainers"],
-    "coverage": ["jacoco"],
+    "testing_libraries": [
+      {"name": "assertj", "status": "active", "source": "build-file"},
+      {"name": "mockk", "status": "active", "source": "build-file"},
+      {"name": "testcontainers", "status": "active", "source": "build-file"}
+    ],
+    "coverage": [
+      {"name": "jacoco", "status": "active", "source": "build-file"}
+    ],
     "mutation_testing": [],
     "architecture": [],
     "contract_testing": [],
     "property_testing": [],
     "api_testing": [],
     "benchmarking": [],
-    "ci_cd": ["github-actions"],
+    "ci_cd": [
+      {"name": "github-actions", "status": "active", "source": "ci-file"}
+    ],
     "dependency_management": [],
     "security": [],
     "migrations": []
@@ -45,6 +53,10 @@
     "kotlin": "2.2.0",
     "java": "21",
     "jacoco": "0.8.14"
+  },
+  "tool_config": {
+    "jacoco_threshold": "0.05",
+    "ktlint_sarif_enabled": false
   }
 }
 ```
@@ -60,9 +72,14 @@
 ### Current Stack
 | Category | Tools | Status |
 |----------|-------|--------|
-| Testing | AssertJ, MockK, Testcontainers | Configured |
-| Coverage | JaCoCo | Configured |
-| CI/CD | GitHub Actions | Configured |
+| Testing | AssertJ, MockK, Testcontainers | active |
+| Coverage | JaCoCo | active |
+| CI/CD | GitHub Actions | active |
+
+### Tool Configuration
+| Setting | Value | Assessment |
+|---------|-------|------------|
+| JaCoCo threshold | 5% | Too low — recommend 70%+ for meaningful coverage gates |
 
 ### Recommendations
 | Priority | Tool | Category | Why |
@@ -71,6 +88,7 @@
 | NOW | ktlint 1.8.0 | Static Analysis | Zero-config Kotlin formatter with auto-fix; pre-commit hooks |
 | NOW | Kover 0.9.7 | Coverage | Kotlin-native coverage; handles inline functions, data classes correctly (JaCoCo doesn't) |
 | NOW | Hamcrest | Testing | EXCLUDE from spring-boot-starter-test — superseded by AssertJ |
+| NOW | JaCoCo threshold | Coverage | Raise threshold from 5% to at least 70% |
 | SOON | Instancio 5.4.1 | Test Data | Auto-generate complex object graphs; complement manual fixtures |
 | SOON | Kotest assertions 6.1.4 | Testing | Kotlin DSL assertions (`shouldBe`, `shouldContain`); no runner needed |
 | SOON | Trivy | Security | Free, comprehensive vulnerability + secret scanning |
@@ -105,18 +123,40 @@ Tell me which tools you'd like to configure and I'll add the necessary plugins, 
     "main_file_count": 200
   },
   "detected_tools": {
-    "static_analysis": ["error-prone", "spotbugs", "sonarqube"],
-    "testing_libraries": ["assertj", "mockito", "testcontainers"],
-    "coverage": ["jacoco"],
-    "mutation_testing": ["pitest"],
-    "architecture": ["archunit"],
-    "contract_testing": ["spring-cloud-contract"],
+    "static_analysis": [
+      {"name": "error-prone", "status": "active", "source": "build-file"},
+      {"name": "spotbugs", "status": "active", "source": "build-file"},
+      {"name": "sonarqube", "status": "active", "source": "build-file"}
+    ],
+    "testing_libraries": [
+      {"name": "assertj", "status": "active", "source": "build-file"},
+      {"name": "mockito", "status": "active", "source": "build-file"},
+      {"name": "testcontainers", "status": "active", "source": "build-file"}
+    ],
+    "coverage": [
+      {"name": "jacoco", "status": "active", "source": "build-file"}
+    ],
+    "mutation_testing": [
+      {"name": "pitest", "status": "active", "source": "build-file"}
+    ],
+    "architecture": [
+      {"name": "archunit", "status": "active", "source": "build-file"}
+    ],
+    "contract_testing": [
+      {"name": "spring-cloud-contract", "status": "active", "source": "build-file"}
+    ],
     "property_testing": [],
     "api_testing": [],
     "benchmarking": [],
-    "ci_cd": ["github-actions"],
-    "dependency_management": ["dependabot"],
-    "security": ["owasp-dependency-check"],
+    "ci_cd": [
+      {"name": "github-actions", "status": "active", "source": "ci-file"}
+    ],
+    "dependency_management": [
+      {"name": "dependabot", "status": "active", "source": "config-file"}
+    ],
+    "security": [
+      {"name": "owasp-dependency-check", "status": "active", "source": "build-file"}
+    ],
     "migrations": []
   },
   "config_files": {
@@ -127,6 +167,9 @@ Tell me which tools you'd like to configure and I'll add the necessary plugins, 
   "versions": {
     "spring-boot": "3.4.2",
     "java": "21"
+  },
+  "tool_config": {
+    "jacoco_threshold": "0.80"
   }
 }
 ```
@@ -142,22 +185,22 @@ Tell me which tools you'd like to configure and I'll add the necessary plugins, 
 ### Current Stack
 | Category | Tools | Status |
 |----------|-------|--------|
-| Static Analysis | Error Prone, SpotBugs, SonarQube | Configured |
-| Testing | AssertJ, Mockito, Testcontainers | Configured |
-| Coverage | JaCoCo | Configured |
-| Mutation Testing | PIT | Configured |
-| Architecture | ArchUnit | Configured |
-| Contract Testing | Spring Cloud Contract | Configured |
-| CI/CD | GitHub Actions | Configured |
-| Dependencies | Dependabot | Configured |
-| Security | OWASP Dependency-Check | Configured |
+| Static Analysis | Error Prone, SpotBugs, SonarQube | active |
+| Testing | AssertJ, Mockito, Testcontainers | active |
+| Coverage | JaCoCo (threshold: 80%) | active |
+| Mutation Testing | PIT | active |
+| Architecture | ArchUnit | active |
+| Contract Testing | Spring Cloud Contract | active |
+| CI/CD | GitHub Actions | active |
+| Dependencies | Dependabot | active |
+| Security | OWASP Dependency-Check | active |
 
 ### Recommendations
 | Priority | Tool | Category | Why |
 |----------|------|----------|-----|
 | NOW | MockMvcTester | API Testing | Built into Spring Boot 3.4+; full AssertJ integration for controller tests |
 | SOON | Trivy | Security | Complement OWASP DC with container + secret scanning; lower false positives |
-| SOON | OpenRewrite | Migrations | Prepare for Spring Boot 4.0 migration (javax→jakarta automated) |
+| SOON | OpenRewrite | Migrations | Prepare for Spring Boot 4.0 migration (javax->jakarta automated) |
 | SOON | Renovate | Dependencies | More capable than Dependabot for Maven (auto-merge, stability days) |
 | LATER | JMH 1.37 | Benchmarking | Performance regression detection for critical paths |
 | SKIP | Detekt, ktlint, Kover, MockK | Various | Java-only project; Kotlin tools not applicable |
@@ -167,7 +210,36 @@ Tell me which tools you'd like to configure and I'll add the necessary plugins, 
 
 ---
 
-## Example 3: Phase 2 Setup Walkthrough
+## Example 3: Disabled Tools Detected
+
+### Scanner Output (partial)
+
+```json
+{
+  "detected_tools": {
+    "static_analysis": [
+      {"name": "detekt", "status": "disabled", "source": "build-file"},
+      {"name": "ktlint", "status": "active", "source": "build-file"}
+    ],
+    "coverage": [
+      {"name": "jacoco", "status": "config-only", "source": "config-file"}
+    ]
+  },
+  "tool_config": {
+    "ktlint_sarif_enabled": false
+  }
+}
+```
+
+### Interpretation
+
+- **Detekt**: `disabled` — plugin is commented out in the build file. Recommendation: re-enable or remove the commented-out block.
+- **JaCoCo**: `config-only` — a JaCoCo config exists but the plugin isn't declared in the build file. Likely configured via `buildSrc/` or a convention plugin. Verify manually.
+- **ktlint SARIF**: not enabled. Recommendation: enable SARIF output for GitHub Security tab integration.
+
+---
+
+## Example 4: Phase 2 Setup Walkthrough
 
 User selects **Detekt** and **Trivy** from Example 1 recommendations.
 
@@ -249,4 +321,7 @@ Re-run the scanner to confirm:
 python3 scan_tooling.py /path/to/project
 ```
 
-Expected: `detected_tools.static_analysis` now includes `"detekt"`, and `config_files[".trivyignore"]` is `true`.
+Expected changes in output:
+- `detected_tools.static_analysis` includes `{"name": "detekt", "status": "active", "source": "build-file"}`
+- `config_files[".trivyignore"]` is `true`
+- `detected_tools.security` includes `{"name": "trivy", "status": "active", "source": "config-file"}`
