@@ -120,6 +120,26 @@ CI_FILE_INDICATORS: Dict[str, str] = {
 
 SKIP_DIRS = {"build", ".gradle", "node_modules", ".git", "target", "out", ".idea"}
 
+# Maps version catalog keys to normalized tool names
+VERSION_CATALOG_KEY_MAP = {
+    "spring-boot": "spring-boot",
+    "springboot": "spring-boot",
+    "kotlin": "kotlin",
+    "detekt": "detekt",
+    "ktlint": "ktlint",
+    "kover": "kover",
+    "jacoco": "jacoco",
+    "pitest": "pitest",
+    "kotest": "kotest",
+    "mockk": "mockk",
+    "assertj": "assertj",
+    "testcontainers": "testcontainers",
+    "archunit": "archunit",
+    "jqwik": "jqwik",
+    "instancio": "instancio",
+    "java": "java",
+}
+
 
 # ---------------------------------------------------------------------------
 # Detection result helpers
@@ -522,28 +542,9 @@ def scan_version_catalog(root: Path) -> Tuple[List[dict], List[dict], Dict[str, 
             key, _, val = stripped.partition("=")
             key = key.strip().strip('"').strip("'")
             val = val.strip().strip('"').strip("'")
-            version_key_map = {
-                "spring-boot": "spring-boot",
-                "springBoot": "spring-boot",
-                "kotlin": "kotlin",
-                "detekt": "detekt",
-                "ktlint": "ktlint",
-                "kover": "kover",
-                "jacoco": "jacoco",
-                "pitest": "pitest",
-                "kotest": "kotest",
-                "mockk": "mockk",
-                "assertj": "assertj",
-                "testcontainers": "testcontainers",
-                "archunit": "archunit",
-                "jqwik": "jqwik",
-                "instancio": "instancio",
-                "java": "java",
-            }
-            for catalog_key, tool_name in version_key_map.items():
-                if key.lower() == catalog_key.lower():
-                    versions[tool_name] = val
-                    break
+            tool_name = VERSION_CATALOG_KEY_MAP.get(key.lower())
+            if tool_name:
+                versions[tool_name] = val
 
     return detected_plugins, detected_deps, versions
 
@@ -567,21 +568,23 @@ def scan_ci_files(root: Path) -> List[str]:
     detected = []
     for path, ci_system in CI_FILE_INDICATORS.items():
         full_path = root / path
-        if full_path.exists() or full_path.is_dir():
-            if full_path.is_dir():
-                yml_files = list(full_path.glob("*.yml")) + list(
-                    full_path.glob("*.yaml")
-                )
-                if yml_files:
-                    detected.append(ci_system)
-            else:
+        if full_path.is_dir():
+            has_workflows = list(full_path.glob("*.yml")) or list(full_path.glob("*.yaml"))
+            if has_workflows:
                 detected.append(ci_system)
+        elif full_path.exists():
+            detected.append(ci_system)
     return detected
 
 
 # ---------------------------------------------------------------------------
 # Project structure analysis
 # ---------------------------------------------------------------------------
+
+
+def _exclude_build_dirs(paths: List[Path]) -> List[Path]:
+    """Filter out paths that pass through build output directories."""
+    return [p for p in paths if not (SKIP_DIRS & set(p.parts))]
 
 
 def analyze_project_structure(root: Path) -> Dict:
@@ -594,10 +597,10 @@ def analyze_project_structure(root: Path) -> Dict:
         "has_jmh_dir": False,
     }
 
-    java_main = list(root.glob("**/src/main/**/*.java"))
-    kotlin_main = list(root.glob("**/src/main/**/*.kt"))
-    java_test = list(root.glob("**/src/test/**/*.java"))
-    kotlin_test = list(root.glob("**/src/test/**/*.kt"))
+    java_main = _exclude_build_dirs(list(root.glob("**/src/main/**/*.java")))
+    kotlin_main = _exclude_build_dirs(list(root.glob("**/src/main/**/*.kt")))
+    java_test = _exclude_build_dirs(list(root.glob("**/src/test/**/*.java")))
+    kotlin_test = _exclude_build_dirs(list(root.glob("**/src/test/**/*.kt")))
 
     result["main_file_count"] = len(java_main) + len(kotlin_main)
     result["test_file_count"] = len(java_test) + len(kotlin_test)
@@ -760,6 +763,7 @@ def discover_modules(root: Path) -> List[dict]:
         tool_names = []
         all_patterns = {}
         all_patterns.update(GRADLE_PLUGIN_PATTERNS)
+        all_patterns.update(MAVEN_PLUGIN_PATTERNS)
         all_patterns.update(TEST_DEPENDENCY_PATTERNS)
         for tool, patterns in all_patterns.items():
             for pattern in patterns:
