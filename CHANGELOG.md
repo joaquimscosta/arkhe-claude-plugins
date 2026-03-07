@@ -5,6 +5,36 @@ All notable changes to the Arkhe Claude Plugins project will be documented in th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.13.0] - 2026-03-07
+
+### Added
+
+#### Spring Boot Plugin
+
+- **`spring-boot-quality-stack` skill** for project quality tool recommendations (#37)
+  - Scans JVM projects to detect configured quality and testing tools
+  - Cross-references detected tools against research-backed recommendations
+  - Two-phase workflow: Phase 1 audits tooling and recommends gaps, Phase 2 assists with configuration
+  - Scanner script (`scan_tooling.py`) detects build system, language, versions, plugins, test dependencies, config files, CI systems
+  - Runtime research loading so updates are automatically reflected
+  - Language and version-aware: skips tools based on project profile
+  - Comprehensive documentation: WORKFLOW.md, EXAMPLES.md, TROUBLESHOOTING.md
+- Improved cross-references and validator compliance across all 11 Spring Boot skills
+
+### Fixed
+
+#### Core Plugin
+
+- **Deep-research cache content resilience** with validation and fallback
+  - Add empty content warning and TTY check to prevent silent failures in `cache_manager.py`
+  - Add `research.md` fallback when `content.md` is empty (graceful degradation)
+  - Reinforce critical caching workflow rules in `deep-researcher` agent
+
+### Changed
+
+- Sync official Anthropic reference documentation and update plugin references (#36)
+- Clean up project root directory
+
 ## [1.12.0] - 2026-03-03
 
 ### Added
@@ -1057,7 +1087,8 @@ The `/specprep:tasks` command has been removed in favor of automatic command cha
 - **Documentation**: See README.md and docs/ directory
 - **Installation**: See INSTALLATION.md
 
-[Unreleased]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.12.0...HEAD
+[Unreleased]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.13.0...HEAD
+[1.13.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.12.0...v1.13.0
 [1.12.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.11.0...v1.12.0
 [1.11.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.10.0...v1.11.0
 [1.10.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.9.0...v1.10.0
