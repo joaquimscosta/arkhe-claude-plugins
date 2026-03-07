@@ -1,12 +1,13 @@
+---
+title: "LLM Agentic Development: Evidence-Based Pattern Catalog"
+version: "2.0.0"
+status: Published
+created: 2026-02-13
+last_updated: 2026-02-13
+---
+
 # LLM Agentic Development: Evidence-Based Pattern Catalog
 ## Practices for LLM-Driven Software Development (2025-2026)
-
-**Version:** 2.0.0
-**Date:** 2026-02-13
-**Status:** Living Document
-**Purpose:** Research-backed pattern catalog for LLM-driven agentic development workflows
-
----
 
 ## Executive Summary
 

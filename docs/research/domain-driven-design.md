@@ -1,3 +1,11 @@
+---
+title: "Domain-Driven Design: A Practical Guide to Strategic and Tactical Patterns"
+version: "1.0.0"
+status: Published
+created: 2025-12-18
+last_updated: 2025-12-18
+---
+
 # Domain-Driven Design: A practical guide to strategic and tactical patterns
 
 Domain-Driven Design is fundamentally about **managing complexity through alignment between software and business reality**—not about implementing specific patterns. Eric Evans' 2003 book introduced a vocabulary for domain modeling that transformed how teams tackle complex software, yet **95% of projects may not need full tactical DDD**. Strategic DDD concepts—understanding domains, bounded contexts, and ubiquitous language—provide value even without implementing aggregates or repositories. The most critical insight from two decades of DDD practice: start with strategic design to understand your domain boundaries before reaching for tactical patterns, and apply tactical patterns selectively only where genuine complexity demands them.

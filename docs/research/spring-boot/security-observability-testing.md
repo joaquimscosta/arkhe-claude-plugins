@@ -1,3 +1,11 @@
+---
+title: "Spring Boot 4: Security, Observability, and Testing"
+version: "1.0.0"
+status: Published
+created: 2025-12-20
+last_updated: 2025-12-20
+---
+
 # Spring Boot 4 implementation skills: Security, Observability, and Testing
 
 **Spring Boot 4.0** introduces significant breaking changes alongside powerful new capabilities across its security, observability, and testing stacks. The **Lambda DSL is now mandatory** for Spring Security 7, `@MockitoBean` replaces the deprecated `@MockBean`, and OpenTelemetry becomes the default tracing solution. This report provides implementation-ready guidance with Java and Kotlin code examples for building production-grade applications.

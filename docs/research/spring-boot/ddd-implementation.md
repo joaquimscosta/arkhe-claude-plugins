@@ -1,3 +1,11 @@
+---
+title: "Spring Boot 4 DDD Implementation: Technical Reference"
+version: "1.0.0"
+status: Published
+created: 2025-12-20
+last_updated: 2025-12-20
+---
+
 # Spring Boot 4 DDD implementation: A complete technical reference
 
 Spring Boot 4.0.0, released November 20, 2025, fundamentally reshapes enterprise Java development with complete codebase modularization, Jakarta EE 11 alignment, and first-class JSpecify null safety. This report provides expert-level guidance for implementing Domain-Driven Design across the data access layer, web layer, and modular architecture—with production-ready code examples in both Java and Kotlin.

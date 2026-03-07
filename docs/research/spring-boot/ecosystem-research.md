@@ -1,3 +1,11 @@
+---
+title: "Spring Boot 4 and Spring Framework 7: Ecosystem Research"
+version: "1.0.0"
+status: Published
+created: 2025-12-20
+last_updated: 2026-02-13
+---
+
 # **Spring Boot 4 and Spring Framework 7: A Comprehensive Ecosystem Research Dossier**
 
 ## **Executive Summary**

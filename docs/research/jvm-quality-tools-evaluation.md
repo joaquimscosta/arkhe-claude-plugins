@@ -1,8 +1,16 @@
+---
+title: "Java/Kotlin Quality Tools Evaluation"
+version: "1.0.0"
+status: Published
+created: 2026-02-13
+last_updated: 2026-02-13
+---
+
 # Java/Kotlin Quality Tools Evaluation
 
 ## A Practitioner's Guide for Modern JVM Projects
 
-> **Last updated**: February 2026 | **Java baseline**: 21+ | **Build tools**: Gradle 9.x / Maven 3.9+
+> **Java baseline**: 21+ | **Build tools**: Gradle 9.x / Maven 3.9+
 >
 > This guide evaluates 19 tools across four categories for Java and Kotlin teams building
 > production systems with Spring Boot. Every tool listed is free or has a meaningful free tier.

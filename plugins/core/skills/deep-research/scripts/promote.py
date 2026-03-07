@@ -29,6 +29,7 @@ from research_utils import (
     TEAM_END,
     TEAM_NOTES_TEMPLATE,
     TEAM_START,
+    extract_frontmatter,
     extract_team_notes,
     get_docs_dir,
     get_entry,
@@ -39,13 +40,21 @@ def build_promoted_content(
     metadata: dict,
     auto_content: str,
     team_notes: Optional[str] = None,
+    version: str = "1.0.0",
+    status: str = "Published",
 ) -> str:
     """Build the full promoted file content."""
     now = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+    created_date = metadata.get('researched_at', now)[:10]
+    title = metadata.get('title', '')
 
     frontmatter = f"""---
+title: "{title}"
+version: "{version}"
+status: {status}
+created: {created_date}
+last_updated: {created_date}
 slug: {metadata.get('slug', '')}
-title: {metadata.get('title', '')}
 aliases: {json.dumps(metadata.get('aliases', []))}
 tags: {json.dumps(metadata.get('tags', []))}
 promoted_at: {now}
@@ -69,29 +78,38 @@ sources: {json.dumps(metadata.get('sources', []))}
     return content
 
 
-def update_readme_index(docs_dir: Path, slug: str, title: str) -> None:
+def update_readme_index(
+    docs_dir: Path,
+    slug: str,
+    title: str,
+    metadata: Optional[dict] = None,
+    version: str = "1.0.0",
+    status: str = "Published",
+) -> None:
     """Update the README.md index in the docs directory."""
     readme_path = docs_dir / "README.md"
-    now = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    created_date = metadata.get('researched_at', '')[:10] if metadata else datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
     if readme_path.exists():
         readme_content = readme_path.read_text()
     else:
         readme_content = """# Research Index
 
-Curated technical research for this project.
+Curated technical research for this project. Each file includes YAML frontmatter with `version`, `status`, `created`, and `last_updated` fields — GitHub renders these as a table at the top of each document.
 
-| Topic | Promoted | Last Refreshed | Team Notes |
-|-------|----------|----------------|------------|
+See [TEMPLATE.md](TEMPLATE.md) for the standard format when creating new research documents.
+
+| Topic | Version | Status | Created | Last Updated |
+|-------|---------|--------|---------|--------------|
 """
 
     slug_pattern = re.compile(rf"\|\s*\[.*?\]\({re.escape(slug)}\.md\)")
 
     if slug_pattern.search(readme_content):
         entry_pattern = re.compile(
-            rf"\|\s*\[.*?\]\({re.escape(slug)}\.md\)\s*\|[^|]*\|[^|]*\|[^|]*\|"
+            rf"\|\s*\[.*?\]\({re.escape(slug)}\.md\)\s*\|[^\n]*"
         )
-        new_entry = f"| [{title}]({slug}.md) | {now} | {now} | No |"
+        new_entry = f"| [{title}]({slug}.md) | {version} | {status} | {created_date} | {created_date} |"
         readme_content = entry_pattern.sub(new_entry, readme_content)
     else:
         table_end = readme_content.rfind("|")
@@ -100,7 +118,7 @@ Curated technical research for this project.
             if line_end == -1:
                 line_end = len(readme_content)
 
-            new_entry = f"\n| [{title}]({slug}.md) | {now} | {now} | No |"
+            new_entry = f"\n| [{title}]({slug}.md) | {version} | {status} | {created_date} | {created_date} |"
             readme_content = (
                 readme_content[:line_end]
                 + new_entry
@@ -131,14 +149,21 @@ def promote(
     output_file = docs_dir / f"{slug}.md"
 
     team_notes = None
+    version = "1.0.0"
+    status = "Published"
     if output_file.exists() and refresh:
         existing_content = output_file.read_text()
         team_notes = extract_team_notes(existing_content)
+        existing_fm = extract_frontmatter(existing_content)
+        version = existing_fm.get("version", version).strip('"')
+        status = existing_fm.get("status", status)
 
     content = build_promoted_content(
         metadata=entry["metadata"],
         auto_content=entry["content"],
         team_notes=team_notes,
+        version=version,
+        status=status,
     )
 
     output_file.write_text(content)
@@ -147,6 +172,9 @@ def promote(
         docs_dir,
         slug,
         entry["metadata"].get("title", slug),
+        metadata=entry["metadata"],
+        version=version,
+        status=status,
     )
 
     action = "Updated" if refresh else "Promoted"
