@@ -1,7 +1,7 @@
 {
   "name": "design-intent",
   "description": "UI/UX Design Plugin - Visual fidelity from Figma/mockups, design system enforcement, React UI prototyping with pattern memory, and brand icon asset generation.",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "author": {
     "name": "Arkhe"
   }

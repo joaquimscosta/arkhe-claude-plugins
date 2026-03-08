@@ -225,6 +225,7 @@ flowchart TD
 | `/setup` | Initialize design intent structure | Starting a new project |
 | `/save-patterns` | Extract and document UI patterns | After successful implementation |
 | `/diary` | Create session handoff doc | End of work session |
+| `/prototype [desc]` | Rapid UI prototyping (3 variations) | Quick HTML/CSS mockups from a text prompt |
 
 ## Agents
 
@@ -373,6 +374,30 @@ Command-invoke skill for generating brand icons as SVG and producing all require
 - `skills/icon-forge/WORKFLOW.md` - 5-phase detailed process
 - `skills/icon-forge/EXAMPLES.md` - Usage examples
 - `skills/icon-forge/TROUBLESHOOTING.md` - Common issues
+
+### Prototype
+
+Command-invoke skill for rapid UI prototyping — generates 3 visually distinct HTML/CSS components from a single text prompt.
+
+**Invoked by:** `/prototype <component description>` or `/prototype --vary <1|2|3>`
+
+**Capabilities:**
+
+- Generates 3 design direction names using physical/material metaphors (e.g., "Tactile Risograph Press", "Kinetic Wireframe Suspension")
+- Creates 3 complete, self-contained HTML pages — each driven by a different design metaphor
+- Writes files to disk with a comparison `index.html` for side-by-side browser preview
+- Supports `--vary N` to generate 3 radical variations of any artifact
+- Supports `--dir <path>` for custom output directory (default: `.prototype/`)
+- IP-safe: uses material/physical metaphors instead of artist or brand references
+
+**Pipeline integration:** Pick a favorite prototype, then run `/design-intent` to implement it with your actual component library and design system.
+
+**Documentation:**
+
+- `skills/prototype/SKILL.md` - Quick start and workflow
+- `skills/prototype/WORKFLOW.md` - Detailed prompt templates and index page template
+- `skills/prototype/EXAMPLES.md` - Usage examples
+- `skills/prototype/TROUBLESHOOTING.md` - Common issues
 
 ## Project Structure After Setup
 
