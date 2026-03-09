@@ -3,7 +3,9 @@ name: system-architect
 description: >
   Write design documents, ADRs, and boundary analysis artifacts. Use when
   producing persistent architecture documentation, analyzing system design
-  at depth, or generating technical design artifacts.
+  at depth, generating technical design artifacts, or user mentions "architecture
+  decision", "module design", "boundary analysis", "API design", "data model",
+  "ADR", "system architecture".
 tools: Read, Glob, Grep, Write, Edit
 model: sonnet
 ---

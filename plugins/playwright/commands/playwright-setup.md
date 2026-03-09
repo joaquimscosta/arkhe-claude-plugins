@@ -1,5 +1,5 @@
 ---
-description: Verify Playwright CLI installation and create a .playwright/cli.config.json configuration file
+description: Verify Playwright CLI installation and create a .playwright/cli.config.json configuration file. Use when setting up browser automation, configuring Playwright, or user mentions "setup playwright", "configure browser testing", "install playwright".
 ---
 
 # /playwright-setup

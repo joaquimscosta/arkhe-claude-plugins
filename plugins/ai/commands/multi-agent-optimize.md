@@ -1,5 +1,5 @@
 ---
-description: AI-powered multi-agent coordination for system performance optimization
+description: AI-powered multi-agent coordination for system performance optimization. Use when user wants to optimize multi-agent workflows, reduce latency across agents, improve agent coordination, or mentions "multi-agent", "agent orchestration", "parallel agents", "agent cost optimization".
 ---
 
 # Multi-Agent Optimization Toolkit

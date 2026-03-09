@@ -3,7 +3,8 @@ name: product-manager
 description: >
   Write user stories, scope assessments, and prioritization artifacts. Use when
   producing persistent requirement documents, analyzing product needs at depth,
-  or generating backlog artifacts.
+  generating backlog artifacts, or user mentions "user story", "scope assessment",
+  "prioritize features", "product requirements", "backlog", "acceptance criteria".
 tools: Read, Glob, Grep, Write, Edit
 model: sonnet
 ---

@@ -3,7 +3,9 @@ name: roadmap-analyst
 description: >
   Comprehensive project health analysis. Reads all planning documents,
   cross-references against codebase, maps gaps to risks, and models
-  timeline scenarios. Use for deep project health evaluation.
+  timeline scenarios. Use for deep project health evaluation, or when user
+  mentions "project health", "roadmap status", "gap analysis", "risk assessment",
+  "timeline review", "project trajectory".
 tools: Read, Glob, Grep, TodoWrite
 model: sonnet
 ---
