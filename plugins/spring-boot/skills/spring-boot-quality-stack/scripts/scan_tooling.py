@@ -114,6 +114,37 @@ CONFIG_FILE_INDICATORS: Dict[str, str] = {
     ".pre-commit-config.yaml": "pre-commit",
 }
 
+FRONTEND_CONFIG_FILES: Dict[str, str] = {
+    "eslint.config.mjs": "eslint",
+    "eslint.config.js": "eslint",
+    "eslint.config.cjs": "eslint",
+    ".eslintrc.js": "eslint",
+    ".eslintrc.cjs": "eslint",
+    ".eslintrc.json": "eslint",
+    ".eslintrc.yml": "eslint",
+    ".eslintrc.yaml": "eslint",
+    ".prettierrc": "prettier",
+    ".prettierrc.json": "prettier",
+    ".prettierrc.yml": "prettier",
+    ".prettierrc.yaml": "prettier",
+    ".prettierrc.js": "prettier",
+    ".prettierrc.cjs": "prettier",
+    "prettier.config.js": "prettier",
+    "prettier.config.cjs": "prettier",
+    "prettier.config.mjs": "prettier",
+    "tailwind.config.js": "tailwindcss",
+    "tailwind.config.ts": "tailwindcss",
+    "tailwind.config.cjs": "tailwindcss",
+    "tailwind.config.mjs": "tailwindcss",
+}
+
+FRONTEND_PACKAGE_NAMES: Dict[str, str] = {
+    "eslint": "eslint",
+    "prettier": "prettier",
+    "tailwindcss": "tailwindcss",
+    "prettier-plugin-tailwindcss": "prettier-plugin-tailwindcss",
+}
+
 CI_FILE_INDICATORS: Dict[str, str] = {
     ".github/workflows": "github-actions",
     "Jenkinsfile": "jenkins",
@@ -294,6 +325,106 @@ def scan_package_json_hooks(root: Path) -> List[str]:
         detected.append("husky")
 
     return detected
+
+
+# ---------------------------------------------------------------------------
+# Frontend tool detection (for Lefthook wiring)
+# ---------------------------------------------------------------------------
+
+
+def scan_frontend_tools(directory: Path, root: Path) -> Optional[dict]:
+    """Scan a directory for frontend tools (ESLint, Prettier, Tailwind CSS).
+
+    Used only for Lefthook wiring in Phase 2 — not for recommendation phase.
+    Returns None if no frontend tools are detected.
+    """
+    tools: Dict[str, dict] = {}
+
+    # Initialize all tools as not detected
+    for pkg_name in FRONTEND_PACKAGE_NAMES:
+        tools[pkg_name] = {
+            "detected": False,
+            "version": None,
+            "source": None,
+            "config_file": None,
+        }
+
+    # Scan package.json for dependencies
+    pkg_path = directory / "package.json"
+    if pkg_path.exists():
+        try:
+            content = pkg_path.read_text(encoding="utf-8")
+            data = json.loads(content)
+            all_deps: Dict[str, str] = {}
+            for key in ("devDependencies", "dependencies"):
+                if key in data and isinstance(data[key], dict):
+                    all_deps.update(data[key])
+
+            for pkg_name, tool_name in FRONTEND_PACKAGE_NAMES.items():
+                if pkg_name in all_deps:
+                    tools[tool_name]["detected"] = True
+                    tools[tool_name]["version"] = all_deps[pkg_name]
+                    tools[tool_name]["source"] = "package-json"
+        except Exception:
+            pass
+
+    # Scan for config files
+    for config_file, tool_name in FRONTEND_CONFIG_FILES.items():
+        if (directory / config_file).exists():
+            if tool_name in tools:
+                tools[tool_name]["config_file"] = config_file
+                # Detect via config file if not already found in package.json
+                if not tools[tool_name]["detected"]:
+                    tools[tool_name]["detected"] = True
+                    tools[tool_name]["source"] = "config-file"
+
+    # Filter: return None if nothing detected
+    if not any(t["detected"] for t in tools.values()):
+        return None
+
+    rel_path = str(directory.relative_to(root)) if directory != root else "(root)"
+    return {"path": rel_path, "tools": tools}
+
+
+def discover_frontend_directories(root: Path) -> List[Path]:
+    """Find directories containing package.json for frontend tool scanning.
+
+    Checks the project root and common monorepo patterns (apps/*, packages/*,
+    frontend/*, web/*, client/*). Skips build output directories.
+    """
+    dirs: List[Path] = []
+    seen: set = set()
+
+    def _add(d: Path) -> None:
+        resolved = d.resolve()
+        if resolved not in seen and (d / "package.json").exists():
+            seen.add(resolved)
+            dirs.append(d)
+
+    # Check root
+    _add(root)
+
+    # Check immediate subdirectories
+    try:
+        for entry in root.iterdir():
+            if entry.is_dir() and entry.name not in SKIP_DIRS:
+                _add(entry)
+    except Exception:
+        pass
+
+    # Check common monorepo patterns (two levels deep)
+    monorepo_prefixes = ["apps", "packages", "frontend", "web", "client"]
+    for prefix in monorepo_prefixes:
+        prefix_dir = root / prefix
+        if prefix_dir.is_dir():
+            try:
+                for entry in prefix_dir.iterdir():
+                    if entry.is_dir() and entry.name not in SKIP_DIRS:
+                        _add(entry)
+            except Exception:
+                pass
+
+    return dirs
 
 
 def detect_build_tool(root: Path) -> str:
@@ -977,6 +1108,17 @@ def main():
         "versions": versions,
         "tool_config": tool_config,
     }
+
+    # Detect frontend tools for Lefthook wiring (not for recommendation phase)
+    frontend_dirs = discover_frontend_directories(root)
+    frontend_tools = []
+    for fdir in frontend_dirs:
+        result = scan_frontend_tools(fdir, root)
+        if result is not None:
+            frontend_tools.append(result)
+
+    if frontend_tools:
+        output["frontend_tools"] = frontend_tools
 
     # Add modules info for recursive mode
     if args.recursive:

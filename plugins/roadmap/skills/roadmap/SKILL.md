@@ -29,6 +29,18 @@ roadmap:
   status_file: docs/PROJECT-STATUS.md
 ```
 
+### Priority 1b: Johnny Decimal Detection
+
+Check if the project uses Johnny Decimal documentation structure:
+1. Read `.jd-config.json` at project root — if present, use its `root` (default: `docs`) and `areas` map
+2. If no config, glob for `docs/[0-9][0-9]-*/` — if 2+ matches exist, J.D structure is present
+
+If J.D detected, supplement Priority 4 (Documentation Scan) globs:
+- Glob `{jd_root}/[0-9][0-9]-*/**/*.md` to capture all area docs
+- Read ALL areas — roadmap analysis requires comprehensive coverage
+- Deprioritize `90-*` (archive) — read last, note content may be outdated
+- Keep existing non-J.D paths as fallback
+
 ### Priority 2: Rich Context
 
 If `{context_dir}` exists, read all `.md` files — especially `documents.md` for the document map and `architecture.md` for module structure.

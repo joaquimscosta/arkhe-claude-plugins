@@ -28,6 +28,19 @@ If `{context_dir}` exists, read all `.md` files — especially:
 - `architecture.md` — Tech stack, modules, patterns, boundaries
 - `documents.md` — Document map (key docs and their roles)
 
+### 2b. Johnny Decimal Detection
+
+Check if the project uses Johnny Decimal documentation structure:
+1. Read `.jd-config.json` at project root — if present, use its `root` (default: `docs`) and `areas` map
+2. If no config, glob for `docs/[0-9][0-9]-*/` — if 2+ matches exist, J.D structure is present
+
+If J.D detected, adjust Step 4 architecture document discovery:
+- Prioritize `20-architecture/` (or equivalent from config) — ADRs, system design, tech decisions
+- Also scan `30-research/` — technical spikes and investigation documents
+- When J.D is present, `{jd_root}/20-*/**/*.md` replaces `docs/adr/**/*.md`, `docs/architecture/**/*.md`, `docs/design/**/*.md` (those subdirectories are consolidated under the architecture area)
+- Deprioritize `90-*` (archive) — skip unless tracing historical decisions
+- Keep `plan/decisions/**/*.md` as fallback
+
 ### 3. Read Project Identity
 
 Read `CLAUDE.md` and `README.md` for architecture overview, conventions, and constraints.
