@@ -1,6 +1,6 @@
 ---
 name: spring-boot-upgrade-verifier
-description: Verifies Spring Boot upgrade readiness using parallel multi-skill analysis. Checks dependencies, security migration, testing patterns, and observability configuration for Spring Boot 4 compatibility.
+description: Verifies Spring Boot upgrade readiness using parallel multi-skill analysis. Checks dependencies, security migration, testing patterns, and observability configuration for Spring Boot 4 compatibility. Use when user mentions "upgrade Spring Boot", "migrate to Spring Boot 4", "Spring Boot migration", "check upgrade readiness", "Spring Boot compatibility".
 tools: Glob, Grep, Read, Edit, Write, Agent, WebFetch, WebSearch, TodoWrite, AskUserQuestion
 model: sonnet
 color: yellow

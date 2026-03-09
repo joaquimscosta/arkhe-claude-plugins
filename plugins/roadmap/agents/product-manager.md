@@ -3,7 +3,8 @@ name: product-manager
 description: >
   Write user stories, scope assessments, and prioritization artifacts. Use when
   producing persistent requirement documents, analyzing product needs at depth,
-  or generating backlog artifacts.
+  generating backlog artifacts, or user mentions "user story", "scope assessment",
+  "prioritize features", "product requirements", "backlog", "acceptance criteria".
 tools: Read, Glob, Grep, Write, Edit
 model: sonnet
 ---
@@ -27,6 +28,19 @@ Read `.arkhe.yaml` from the project root. Extract:
 If `{context_dir}` exists, read all `.md` files — especially:
 - `project.md` — Project overview, personas, domain, constraints, phases
 - `documents.md` — Document map (key docs and their roles)
+
+### 2b. Johnny Decimal Detection
+
+Check if the project uses Johnny Decimal documentation structure:
+1. Read `.jd-config.json` at project root — if present, use its `root` (default: `docs`) and `areas` map
+2. If no config, glob for `docs/[0-9][0-9]-*/` — if 2+ matches exist, J.D structure is present
+
+If J.D detected, supplement Step 4 globs:
+- Prioritize `10-product/` (or equivalent from config) — specs, features, roadmap, design
+- Also scan `00-getting-started/` — planning docs, requirements, MVP scope
+- Also scan `30-research/` — user research, investigations relevant to product decisions
+- Deprioritize `90-*` (archive) — skip unless searching historical context
+- Keep existing non-J.D paths (`plan/**/*.md`, `specs/**/*.md`) as fallback
 
 ### 3. Read Project Identity
 

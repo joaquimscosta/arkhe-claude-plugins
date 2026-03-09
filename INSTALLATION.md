@@ -116,8 +116,8 @@ Design Intent for UI development that combines AI-assisted implementation with d
 **Install**: `/plugin install design-intent@arkhe-claude-plugins`
 
 **Components**:
-- 4 commands: `/setup`, `/design-intent`, `/save-patterns`, `/diary`
-- 1 skill: `design-intent-specialist` (auto-invoked when implementing from visual references)
+- 5 commands: `/setup`, `/design-intent`, `/save-patterns`, `/diary`, `/prototype`
+- 4 skills: `design-intent-specialist` (auto-invoked), `stitch-to-react` (auto-invoked), `icon-forge` (command-invoke), `prototype` (command-invoke)
 
 **Use for:** Capturing team-specific design intent, translating Figma/screenshots into React implementations, and keeping pattern memory plus diaries synchronized.
 

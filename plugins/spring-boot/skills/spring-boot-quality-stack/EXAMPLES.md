@@ -37,7 +37,8 @@
     ],
     "dependency_management": [],
     "security": [],
-    "migrations": []
+    "migrations": [],
+    "git_hooks": []
   },
   "config_files": {
     "detekt.yml": false,
@@ -46,7 +47,10 @@
     ".trivyignore": false,
     "renovate.json": false,
     ".github/dependabot.yml": false,
-    "sonar-project.properties": false
+    "sonar-project.properties": false,
+    "lefthook.yml": false,
+    ".husky/_/husky.sh": false,
+    ".pre-commit-config.yaml": false
   },
   "versions": {
     "spring-boot": "4.0.1",
@@ -102,7 +106,14 @@
 | SKIP | REST Assured | API Testing | spring-mock-mvc broken with jakarta (Spring Boot 4) |
 
 ### Ready to set up?
-Tell me which tools you'd like to configure and I'll add the necessary plugins, dependencies, and configuration files.
+
+[AskUserQuestion — multiSelect: true]
+Question: "Which tools would you like me to configure?"
+Options:
+1. "Detekt 1.23.8 — native Kotlin static analysis"
+2. "ktlint 1.8.0 — zero-config Kotlin formatter"
+3. "Kover 0.9.7 — Kotlin-native coverage (replaces JaCoCo)"
+4. "Skip setup — I'll configure manually"
 
 ---
 
@@ -157,12 +168,16 @@ Tell me which tools you'd like to configure and I'll add the necessary plugins, 
     "security": [
       {"name": "owasp-dependency-check", "status": "active", "source": "build-file"}
     ],
-    "migrations": []
+    "migrations": [],
+    "git_hooks": []
   },
   "config_files": {
     "spotbugs-exclude.xml": true,
     "sonar-project.properties": true,
-    ".github/dependabot.yml": true
+    ".github/dependabot.yml": true,
+    "lefthook.yml": false,
+    ".husky/_/husky.sh": false,
+    ".pre-commit-config.yaml": false
   },
   "versions": {
     "spring-boot": "3.4.2",
@@ -206,7 +221,14 @@ Tell me which tools you'd like to configure and I'll add the necessary plugins, 
 | SKIP | Detekt, ktlint, Kover, MockK | Various | Java-only project; Kotlin tools not applicable |
 
 ### Ready to set up?
-Tell me which tools you'd like to configure and I'll add the necessary plugins, dependencies, and configuration files.
+
+[AskUserQuestion — multiSelect: true]
+Question: "Which tools would you like me to configure?"
+Options:
+1. "MockMvcTester — built-in AssertJ API testing for Spring Boot 3.4+"
+2. "Trivy — comprehensive vulnerability + secret scanning"
+3. "OpenRewrite — automated Spring Boot 4.0 migration"
+4. "Skip setup — I'll configure manually"
 
 ---
 
@@ -241,7 +263,7 @@ Tell me which tools you'd like to configure and I'll add the necessary plugins, 
 
 ## Example 4: Phase 2 Setup Walkthrough
 
-User selects **Detekt** and **Trivy** from Example 1 recommendations.
+User selects **Detekt** and **Trivy** via AskUserQuestion from Example 1 recommendations.
 
 ### Detekt Setup
 
@@ -325,3 +347,216 @@ Expected changes in output:
 - `detected_tools.static_analysis` includes `{"name": "detekt", "status": "active", "source": "build-file"}`
 - `config_files[".trivyignore"]` is `true`
 - `detected_tools.security` includes `{"name": "trivy", "status": "active", "source": "config-file"}`
+
+---
+
+## Example 5: Kotlin Project with Linters but No Git Hooks
+
+### Scanner Output (partial)
+
+```json
+{
+  "project": {
+    "build_tool": "gradle-kotlin",
+    "spring_boot_version": "4.0.1",
+    "language": "kotlin",
+    "java_version": "21",
+    "kotlin_version": "2.2.0"
+  },
+  "detected_tools": {
+    "static_analysis": [
+      {"name": "detekt", "status": "active", "source": "build-file"},
+      {"name": "ktlint", "status": "active", "source": "build-file"}
+    ],
+    "git_hooks": [],
+    "ci_cd": [
+      {"name": "github-actions", "status": "active", "source": "ci-file"}
+    ]
+  },
+  "config_files": {
+    "lefthook.yml": false,
+    ".husky/_/husky.sh": false,
+    ".pre-commit-config.yaml": false
+  }
+}
+```
+
+### Interpretation
+
+The project has Detekt and ktlint configured in the build, but no git hook manager enforces them locally. Developers can commit without running linters — CI catches violations late.
+
+### Recommendation
+
+| Priority | Tool | Category | Why |
+|----------|------|----------|-----|
+| SOON | Lefthook | Git Hooks | Enforce ktlint + Detekt on every commit; catch violations before CI |
+
+### Phase 2: Lefthook Setup
+
+**1. Install lefthook:**
+```bash
+pnpm add -D lefthook    # if package.json exists
+# OR
+brew install lefthook    # system binary
+```
+
+**2. Generate `lefthook.yml`:**
+```yaml
+# Lefthook — Git hooks for the project
+# Install: pnpm add -D lefthook && npx lefthook install
+
+pre-commit:
+  parallel: true
+  commands:
+    gitleaks:
+      run: gitleaks protect --staged --verbose
+      skip:
+        - merge
+        - rebase
+
+    ktlint:
+      glob: "**/*.{kt,kts}"
+      run: ./gradlew ktlintCheck
+
+    detekt:
+      glob: "**/*.{kt,kts}"
+      run: ./gradlew detekt
+```
+
+**3. Install and verify:**
+```bash
+npx lefthook install
+npx lefthook run pre-commit
+# All hooks should show "(skip) no files for inspection"
+```
+
+**4. Re-run scanner:**
+```bash
+python3 scan_tooling.py /path/to/project
+```
+
+Expected: `detected_tools.git_hooks` now includes `{"name": "lefthook", "status": "active", "source": "config-file"}`
+
+---
+
+## Example 6: Project with Existing Husky (Conflict)
+
+### Scanner Output (partial)
+
+```json
+{
+  "detected_tools": {
+    "static_analysis": [
+      {"name": "ktlint", "status": "active", "source": "build-file"}
+    ],
+    "git_hooks": [
+      {"name": "husky", "status": "active", "source": "config-file"}
+    ]
+  },
+  "config_files": {
+    "lefthook.yml": false,
+    ".husky/_/husky.sh": true
+  }
+}
+```
+
+### Interpretation
+
+Husky is already managing git hooks. Adding lefthook would conflict. Recommendation: SKIP lefthook or migrate from Husky first.
+
+### Recommendation
+
+| Priority | Tool | Category | Why |
+|----------|------|----------|-----|
+| SKIP | Lefthook | Git Hooks | Husky already present — migration needed first (remove `.husky/`, reset `git config core.hooksPath`) |
+
+---
+
+## Example 7: Monorepo with Frontend + Backend (Lefthook Wiring)
+
+### Scanner Output (partial — showing frontend_tools)
+
+```json
+{
+  "project": {
+    "build_tool": "gradle-kotlin",
+    "spring_boot_version": "4.0.1",
+    "language": "kotlin"
+  },
+  "detected_tools": {
+    "static_analysis": [
+      {"name": "detekt", "status": "active", "source": "build-file"},
+      {"name": "ktlint", "status": "active", "source": "build-file"}
+    ],
+    "git_hooks": []
+  },
+  "frontend_tools": [
+    {
+      "path": "apps/web",
+      "tools": {
+        "eslint": {"detected": true, "version": "^9.17.0", "source": "package-json", "config_file": "eslint.config.mjs"},
+        "prettier": {"detected": true, "version": "^3.4.2", "source": "package-json", "config_file": ".prettierrc"},
+        "tailwindcss": {"detected": true, "version": "^4.0.0", "source": "package-json", "config_file": null},
+        "prettier-plugin-tailwindcss": {"detected": true, "version": "^0.6.11", "source": "package-json", "config_file": null}
+      }
+    }
+  ]
+}
+```
+
+### Interpretation
+
+The monorepo has a Kotlin Spring Boot backend (`apps/api/`) with Detekt and ktlint, plus a frontend app (`apps/web/`) with ESLint, Prettier, and Tailwind CSS. No git hook manager is configured.
+
+### Phase 2: Lefthook Setup with Frontend Hooks
+
+**Generated `lefthook.yml`:**
+```yaml
+# Lefthook — Git hooks for the monorepo
+# Install: pnpm add -D lefthook && npx lefthook install
+
+pre-commit:
+  parallel: true
+  commands:
+    gitleaks:
+      run: gitleaks protect --staged --verbose
+      skip:
+        - merge
+        - rebase
+
+    # JVM hooks (from detected_tools.static_analysis)
+    ktlint:
+      glob: "apps/api/**/*.{kt,kts}"
+      root: "apps/api/"
+      run: ./gradlew ktlintCheck
+
+    detekt:
+      glob: "apps/api/**/*.{kt,kts}"
+      root: "apps/api/"
+      run: ./gradlew detekt
+
+    # Frontend hooks (from frontend_tools, path: apps/web)
+    eslint:
+      glob: "apps/web/**/*.{ts,tsx,js,jsx}"
+      root: "apps/web/"
+      run: npx eslint --fix {staged_files}
+      stage_fixed: true
+
+    prettier-code:
+      glob: "apps/web/**/*.{ts,tsx,js,jsx}"
+      root: "apps/web/"
+      run: npx prettier --write {staged_files}
+      stage_fixed: true
+
+    prettier-assets:
+      glob: "apps/web/**/*.{json,css,md,yml,yaml}"
+      root: "apps/web/"
+      run: npx prettier --write {staged_files}
+      stage_fixed: true
+```
+
+**Key decisions:**
+- Globs use full paths from repo root (`apps/web/**/*`) even though `root:` is set
+- Frontend hooks use `stage_fixed: true` (lefthook v2 best practice) so formatted files are auto-restaged
+- Tailwind CSS class sorting happens automatically through `prettier-plugin-tailwindcss` — no separate hook needed
+- Since Tailwind CSS v4 is detected, remind user to verify `tailwindStylesheet` in `.prettierrc` points to the correct CSS entry file

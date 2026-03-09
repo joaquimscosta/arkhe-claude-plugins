@@ -46,7 +46,7 @@ Scan a project's build configuration, cross-reference against curated research d
 
 ### Phase 2: Setup
 
-After the user selects tools to configure:
+After presenting the report, use `AskUserQuestion` (multiSelect: true) with the top NOW/SOON recommendations as options. After the user selects tools:
 
 1. Read the relevant section from the research document for setup instructions
 2. For each selected tool, apply changes:
@@ -72,6 +72,18 @@ Classify each recommendation based on project context:
 - Pure Java: SKIP Detekt, ktlint, Kover, MockK, kotlin-faker
 - Spring Boot 4+: SKIP REST Assured spring-mock-mvc (broken with jakarta)
 - Spring Boot 4+: NOW MockMvcTester (built-in replacement)
+
+### Category: Git Hooks
+
+| Tool | When to Recommend | Priority |
+|------|------------------|----------|
+| Lefthook | No git hook manager + has linters (ktlint/detekt) | SOON |
+| Lefthook | Husky or pre-commit already present | SKIP (note: migration possible) |
+
+**Note:** When setting up Lefthook (Phase 2), the scanner also detects frontend tools
+(ESLint, Prettier, Tailwind CSS) in `package.json` files at the project root and in
+monorepo sibling directories. These are wired into `lefthook.yml` alongside JVM hooks
+but do not appear in the recommendation phase.
 
 ## Research Documents
 

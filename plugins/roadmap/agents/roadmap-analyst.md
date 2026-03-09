@@ -3,7 +3,9 @@ name: roadmap-analyst
 description: >
   Comprehensive project health analysis. Reads all planning documents,
   cross-references against codebase, maps gaps to risks, and models
-  timeline scenarios. Use for deep project health evaluation.
+  timeline scenarios. Use for deep project health evaluation, or when user
+  mentions "project health", "roadmap status", "gap analysis", "risk assessment",
+  "timeline review", "project trajectory".
 tools: Read, Glob, Grep, TodoWrite
 model: sonnet
 ---
@@ -26,6 +28,18 @@ If `{context_dir}` exists (default: `.arkhe/roadmap`), read ALL `.md` files:
 - `project.md` — Project overview, personas, domain, constraints, phases
 - `architecture.md` — Tech stack, modules, patterns, boundaries
 - `documents.md` — Document map (key docs and their roles)
+
+### 2b. Johnny Decimal Detection
+
+Check if the project uses Johnny Decimal documentation structure:
+1. Read `.jd-config.json` at project root — if present, use its `root` (default: `docs`) and `areas` map
+2. If no config, glob for `docs/[0-9][0-9]-*/` — if 2+ matches exist, J.D structure is present
+
+If J.D detected, supplement Step 4 globs:
+- Glob `{jd_root}/[0-9][0-9]-*/**/*.md` to capture all area docs
+- Read ALL areas — this agent is thorough and must not miss anything
+- Deprioritize `90-*` (archive) — read last, flag content as potentially outdated
+- Keep existing non-J.D paths (`plan/**/*.md`, `specs/**/*.md`) as fallback
 
 ### 3. Read Project Identity
 

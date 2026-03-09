@@ -1,5 +1,5 @@
 ---
-description: Systematic agent improvement through performance analysis and prompt engineering
+description: Systematic agent improvement through performance analysis and prompt engineering. Use when user wants to optimize an agent, improve agent accuracy, reduce hallucinations, tune prompts, or mentions "agent performance", "improve my agent", "optimize agent", "agent quality".
 ---
 
 # Agent Performance Optimization Workflow
