@@ -261,7 +261,7 @@ def extract_lefthook_config(root: Path) -> Dict[str, object]:
 
     config: Dict[str, object] = {}
 
-    # Extract configured hook command names (under pre-commit.commands)
+    # Extract configured hook command names (under any hook's commands: block)
     hooks: List[str] = []
     in_commands = False
     commands_indent = -1
@@ -886,6 +886,7 @@ CONFIG_TOOL_MAP = {
     ".renovaterc.json": ("renovate", "dependency_management"),
     ".github/dependabot.yml": ("dependabot", "dependency_management"),
     "lefthook.yml": ("lefthook", "git_hooks"),
+    "lefthook-local.yml": ("lefthook", "git_hooks"),
     ".husky/_/husky.sh": ("husky", "git_hooks"),
     ".pre-commit-config.yaml": ("pre-commit", "git_hooks"),
 }

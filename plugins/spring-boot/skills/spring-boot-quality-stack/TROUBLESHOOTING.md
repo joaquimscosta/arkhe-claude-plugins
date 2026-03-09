@@ -224,7 +224,7 @@ ktlint:
   root: "apps/api/"
   run: ./gradlew ktlintCheck
 
-# WRONG — relative to root, will match nothing
+# WRONG — glob is too broad, matches files outside apps/api/
 ktlint:
   glob: "**/*.{kt,kts}"  # matches ALL .kt files, not just api
   root: "apps/api/"

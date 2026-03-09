@@ -132,15 +132,18 @@ flowchart TD
 
     Q2 -->|"Yes, thorough work"| DESIGN_INTENT["/design-intent"]
     Q2 -->|"Quick change"| DESIGN_INTENT_QUICK["/design-intent --quick"]
+    Q2 -->|"Quick mockup"| PROTOTYPE["/prototype"]
 
     DESIGN_INTENT --> Q3{"Done implementing?"}
     DESIGN_INTENT_QUICK --> Q3
+    PROTOTYPE --> Q3
     Q3 -->|"Want to save patterns"| SAVE["/save-patterns"]
     Q3 -->|"End of session"| DIARY["/diary"]
 
     SETUP:::init
     DESIGN_INTENT:::main
     DESIGN_INTENT_QUICK:::main
+    PROTOTYPE:::main
     SAVE:::capture
     DIARY:::capture
 
