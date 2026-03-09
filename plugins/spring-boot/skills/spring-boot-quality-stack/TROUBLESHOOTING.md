@@ -149,6 +149,87 @@ python3 --version
 
 Build file contains non-UTF-8 characters. The scanner uses `encoding="utf-8"`. If the project uses a different encoding, convert the file or report the issue.
 
+## Lefthook Issues
+
+### `lefthook: command not found`
+
+**Causes**:
+- Lefthook not installed
+
+**Fix**: Install as npm devDep or system binary:
+```bash
+pnpm add -D lefthook    # npm devDep (recommended for monorepos)
+brew install lefthook    # system binary (alternative)
+```
+
+### Hooks not running on commit
+
+**Symptom**: Commit succeeds without triggering any hooks
+
+**Causes**:
+- `npx lefthook install` was not run after setup or clone
+- Another hook manager (Husky) overriding `core.hooksPath`
+
+**Fix**:
+```bash
+# Install hooks into .git/hooks/
+npx lefthook install
+
+# Check if Husky set a custom hooks path
+git config core.hooksPath
+# If set to .husky, reset it:
+git config --unset core.hooksPath
+```
+
+### Husky/pre-commit conflict
+
+**Symptom**: Scanner detects Husky or pre-commit alongside lefthook
+
+**Fix**: Remove the old hook manager before installing lefthook:
+```bash
+# Remove Husky
+rm -rf .husky
+git config --unset core.hooksPath
+npm uninstall husky
+
+# Remove pre-commit
+rm .pre-commit-config.yaml
+pre-commit uninstall
+
+# Then install lefthook
+npx lefthook install
+```
+
+### Gitleaks not installed
+
+**Symptom**: `gitleaks: command not found` when hooks run
+
+**Fix**: Gitleaks is a system binary, not an npm package:
+```bash
+brew install gitleaks
+gitleaks version  # verify
+```
+
+### Lefthook glob not matching files
+
+**Symptom**: Hook shows "(skip) no files for inspection" even with staged Kotlin files
+
+**Cause**: Globs in `lefthook.yml` are resolved from the **git repo root**, not from the `root:` directive.
+
+**Fix**: Use full paths from repo root:
+```yaml
+# CORRECT — full path from repo root
+ktlint:
+  glob: "apps/api/**/*.{kt,kts}"
+  root: "apps/api/"
+  run: ./gradlew ktlintCheck
+
+# WRONG — relative to root, will match nothing
+ktlint:
+  glob: "**/*.{kt,kts}"  # matches ALL .kt files, not just api
+  root: "apps/api/"
+```
+
 ## Research Documents Not Fetchable
 
 **Symptom**: WebFetch returns 404 or network error for research docs

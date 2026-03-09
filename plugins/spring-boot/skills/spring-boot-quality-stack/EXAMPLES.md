@@ -37,7 +37,8 @@
     ],
     "dependency_management": [],
     "security": [],
-    "migrations": []
+    "migrations": [],
+    "git_hooks": []
   },
   "config_files": {
     "detekt.yml": false,
@@ -46,7 +47,10 @@
     ".trivyignore": false,
     "renovate.json": false,
     ".github/dependabot.yml": false,
-    "sonar-project.properties": false
+    "sonar-project.properties": false,
+    "lefthook.yml": false,
+    ".husky/_/husky.sh": false,
+    ".pre-commit-config.yaml": false
   },
   "versions": {
     "spring-boot": "4.0.1",
@@ -157,12 +161,16 @@ Tell me which tools you'd like to configure and I'll add the necessary plugins, 
     "security": [
       {"name": "owasp-dependency-check", "status": "active", "source": "build-file"}
     ],
-    "migrations": []
+    "migrations": [],
+    "git_hooks": []
   },
   "config_files": {
     "spotbugs-exclude.xml": true,
     "sonar-project.properties": true,
-    ".github/dependabot.yml": true
+    ".github/dependabot.yml": true,
+    "lefthook.yml": false,
+    ".husky/_/husky.sh": false,
+    ".pre-commit-config.yaml": false
   },
   "versions": {
     "spring-boot": "3.4.2",
@@ -325,3 +333,125 @@ Expected changes in output:
 - `detected_tools.static_analysis` includes `{"name": "detekt", "status": "active", "source": "build-file"}`
 - `config_files[".trivyignore"]` is `true`
 - `detected_tools.security` includes `{"name": "trivy", "status": "active", "source": "config-file"}`
+
+---
+
+## Example 5: Kotlin Project with Linters but No Git Hooks
+
+### Scanner Output (partial)
+
+```json
+{
+  "project": {
+    "build_tool": "gradle-kotlin",
+    "spring_boot_version": "4.0.1",
+    "language": "kotlin",
+    "java_version": "21",
+    "kotlin_version": "2.2.0"
+  },
+  "detected_tools": {
+    "static_analysis": [
+      {"name": "detekt", "status": "active", "source": "build-file"},
+      {"name": "ktlint", "status": "active", "source": "build-file"}
+    ],
+    "git_hooks": [],
+    "ci_cd": [
+      {"name": "github-actions", "status": "active", "source": "ci-file"}
+    ]
+  },
+  "config_files": {
+    "lefthook.yml": false,
+    ".husky/_/husky.sh": false,
+    ".pre-commit-config.yaml": false
+  }
+}
+```
+
+### Interpretation
+
+The project has Detekt and ktlint configured in the build, but no git hook manager enforces them locally. Developers can commit without running linters — CI catches violations late.
+
+### Recommendation
+
+| Priority | Tool | Category | Why |
+|----------|------|----------|-----|
+| SOON | Lefthook | Git Hooks | Enforce ktlint + Detekt on every commit; catch violations before CI |
+
+### Phase 2: Lefthook Setup
+
+**1. Install lefthook:**
+```bash
+pnpm add -D lefthook    # if package.json exists
+# OR
+brew install lefthook    # system binary
+```
+
+**2. Generate `lefthook.yml`:**
+```yaml
+# Lefthook — Git hooks for the project
+# Install: pnpm add -D lefthook && npx lefthook install
+
+pre-commit:
+  parallel: true
+  commands:
+    gitleaks:
+      run: gitleaks protect --staged --verbose
+      skip:
+        - merge
+        - rebase
+
+    ktlint:
+      glob: "**/*.{kt,kts}"
+      run: ./gradlew ktlintCheck
+
+    detekt:
+      glob: "**/*.{kt,kts}"
+      run: ./gradlew detekt
+```
+
+**3. Install and verify:**
+```bash
+npx lefthook install
+npx lefthook run pre-commit
+# All hooks should show "(skip) no files for inspection"
+```
+
+**4. Re-run scanner:**
+```bash
+python3 scan_tooling.py /path/to/project
+```
+
+Expected: `detected_tools.git_hooks` now includes `{"name": "lefthook", "status": "active", "source": "config-file"}`
+
+---
+
+## Example 6: Project with Existing Husky (Conflict)
+
+### Scanner Output (partial)
+
+```json
+{
+  "detected_tools": {
+    "static_analysis": [
+      {"name": "ktlint", "status": "active", "source": "build-file"}
+    ],
+    "git_hooks": [
+      {"name": "husky", "status": "active", "source": "config-file"}
+    ]
+  },
+  "config_files": {
+    "lefthook.yml": false,
+    ".husky/_/husky.sh": true
+  }
+}
+```
+
+### Interpretation
+
+Husky is already managing git hooks. Adding lefthook would conflict. Recommendation: SKIP lefthook or migrate from Husky first.
+
+### Recommendation
+
+| Priority | Tool | Category | Why |
+|----------|------|----------|-----|
+| SKIP | Lefthook | Git Hooks | Husky already present — migration needed first (remove `.husky/`, reset `git config core.hooksPath`) |

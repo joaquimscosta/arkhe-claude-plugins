@@ -98,6 +98,8 @@ When the project root contains no build file or is a monorepo:
 |---------|-------|------------|
 | JaCoCo threshold | {value} | {e.g., "5% — too low, recommend 70%+"} |
 | ktlint SARIF | {enabled/disabled} | {e.g., "Enable for GitHub Security tab"} |
+| Lefthook hooks | {list or "none"} | {e.g., "ktlint, gitleaks — add detekt"} |
+| Lefthook stage_fixed | {yes/no} | {e.g., "Enable for v2 best practice"} |
 
 ### Recommendations
 | Priority | Tool | Category | Why |
@@ -186,6 +188,13 @@ plugins, dependencies, and configuration files.
 | Trivy | No security scanner present | SOON |
 | OWASP DC | No security scanner present | SOON |
 
+### Category: Git Hooks
+
+| Tool | When to Recommend | Priority |
+|------|------------------|----------|
+| Lefthook | No git hook manager + has linters (ktlint/detekt) | SOON |
+| Lefthook | Husky or pre-commit already present | SKIP (note: migration possible) |
+
 ### Category: CI/CD & Build
 
 | Tool | When to Recommend | Priority |
@@ -244,3 +253,68 @@ With `--recursive`, a sixth key is added:
 7. `tool_config.ktlint_sarif_enabled` -> recommend enabling for GitHub Security integration
 8. `config_files` -> missing configs for detected tools suggest incomplete setup
 9. `versions` -> outdated versions compared to research doc recommendations
+10. `git_hooks` -> check for lefthook/husky/pre-commit; empty means no local enforcement
+11. `tool_config.lefthook_hooks` -> list of configured hook commands (if lefthook detected)
+12. `tool_config.lefthook_has_stage_fixed` -> whether v2 best practice is used
+
+## Lefthook Setup Flow (Phase 2)
+
+When user selects Lefthook from recommendations:
+
+### 1. Determine Installation Method
+
+- **Has `package.json`**: Install as npm devDep (`pnpm add -D lefthook` or `npm i -D lefthook`)
+- **No `package.json`**: Install as system binary (`brew install lefthook`)
+
+### 2. Generate `lefthook.yml`
+
+Tailor the config based on detected tools in `detected_tools.static_analysis`:
+
+```yaml
+# Lefthook — Git hooks for {project_name}
+# Install: pnpm add -D lefthook && npx lefthook install
+
+pre-commit:
+  parallel: true
+  commands:
+    gitleaks:
+      run: gitleaks protect --staged --verbose
+      skip:
+        - merge
+        - rebase
+
+    # Include if ktlint detected in static_analysis
+    ktlint:
+      glob: "**/*.{kt,kts}"
+      run: ./gradlew ktlintCheck
+
+    # Include if detekt detected in static_analysis
+    detekt:
+      glob: "**/*.{kt,kts}"
+      run: ./gradlew detekt
+```
+
+**Monorepo adjustment**: If `--recursive` was used or project has modules, narrow `glob:` patterns to specific module paths (e.g., `apps/api/**/*.{kt,kts}`) and set `root:` accordingly. Remember: **globs are always resolved from the git repo root**, regardless of `root:`.
+
+### 3. Install and Verify
+
+```bash
+# Install hooks into .git/hooks/
+npx lefthook install
+# Output: sync hooks: ✔️ (pre-commit)
+
+# Dry run — verify hooks skip cleanly with no staged files
+npx lefthook run pre-commit
+```
+
+### 4. Recommend gitleaks
+
+If `which gitleaks` fails, recommend installation:
+```bash
+brew install gitleaks
+gitleaks version  # verify
+```
+
+### 5. Re-run Scanner
+
+Re-run `scan_tooling.py` to confirm `git_hooks` category now shows lefthook as `active`.

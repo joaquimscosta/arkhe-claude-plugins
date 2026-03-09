@@ -107,6 +107,11 @@ CONFIG_FILE_INDICATORS: Dict[str, str] = {
     "sonar-project.properties": "sonarqube",
     "dependency-suppression.xml": "owasp-dependency-check",
     "config/dependency-suppression.xml": "owasp-dependency-check",
+    # Git hooks
+    "lefthook.yml": "lefthook",
+    "lefthook-local.yml": "lefthook-local",
+    ".husky/_/husky.sh": "husky",
+    ".pre-commit-config.yaml": "pre-commit",
 }
 
 CI_FILE_INDICATORS: Dict[str, str] = {
@@ -212,9 +217,83 @@ def detect_ktlint_sarif(content: str) -> bool:
     )
 
 
+def extract_lefthook_config(root: Path) -> Dict[str, object]:
+    """Extract lefthook configuration details from lefthook.yml."""
+    lefthook_file = root / "lefthook.yml"
+    if not lefthook_file.exists():
+        return {}
+
+    try:
+        content = lefthook_file.read_text(encoding="utf-8")
+    except Exception:
+        return {}
+
+    config: Dict[str, object] = {}
+
+    # Extract configured hook command names (under pre-commit.commands)
+    hooks: List[str] = []
+    in_commands = False
+    commands_indent = -1
+    child_indent = -1  # set by first child key encountered
+    for line in content.splitlines():
+        stripped = line.strip()
+        if stripped == "commands:":
+            in_commands = True
+            commands_indent = len(line) - len(line.lstrip())
+            child_indent = -1
+            continue
+        if in_commands:
+            if not stripped:
+                continue
+            line_indent = len(line) - len(line.lstrip())
+            if line_indent <= commands_indent:
+                in_commands = False
+                continue
+            match = re.match(r"^\s+(\w[\w-]*):", line)
+            if match:
+                if child_indent == -1:
+                    child_indent = line_indent  # first key sets the level
+                if line_indent == child_indent:
+                    hooks.append(match.group(1))
+    config["lefthook_hooks"] = hooks
+
+    # Check for stage_fixed usage (lefthook v2 best practice)
+    config["lefthook_has_stage_fixed"] = bool(
+        re.search(r"stage_fixed:\s*true", content)
+    )
+
+    return config
+
+
 # ---------------------------------------------------------------------------
 # Build tool detection
 # ---------------------------------------------------------------------------
+
+
+def scan_package_json_hooks(root: Path) -> List[str]:
+    """Check package.json for git hook manager dependencies (lefthook, husky)."""
+    pkg_path = root / "package.json"
+    if not pkg_path.exists():
+        return []
+
+    try:
+        content = pkg_path.read_text(encoding="utf-8")
+        data = json.loads(content)
+    except Exception:
+        return []
+
+    detected = []
+    all_deps = {}
+    for key in ("devDependencies", "dependencies"):
+        if key in data and isinstance(data[key], dict):
+            all_deps.update(data[key])
+
+    if "lefthook" in all_deps:
+        detected.append("lefthook")
+    if "husky" in all_deps:
+        detected.append("husky")
+
+    return detected
 
 
 def detect_build_tool(root: Path) -> str:
@@ -675,6 +754,9 @@ CONFIG_TOOL_MAP = {
     ".renovaterc": ("renovate", "dependency_management"),
     ".renovaterc.json": ("renovate", "dependency_management"),
     ".github/dependabot.yml": ("dependabot", "dependency_management"),
+    "lefthook.yml": ("lefthook", "git_hooks"),
+    ".husky/_/husky.sh": ("husky", "git_hooks"),
+    ".pre-commit-config.yaml": ("pre-commit", "git_hooks"),
 }
 
 
@@ -699,6 +781,7 @@ def classify_tools(
         "dependency_management": [],
         "security": [],
         "migrations": [],
+        "git_hooks": [],
     }
 
     # Track tool names already classified (for config-only detection)
@@ -855,11 +938,24 @@ def main():
     config_files = scan_config_files(root)
     ci_systems = scan_ci_files(root)
 
+    # Extract lefthook config details (if lefthook.yml exists)
+    lefthook_config = extract_lefthook_config(root)
+    tool_config.update(lefthook_config)
+
     # Analyze project structure
     structure = analyze_project_structure(root)
 
     # Classify tools into categories
     categories = classify_tools(plugins, deps, ci_systems, config_files)
+
+    # Detect git hook managers from package.json (supplements config-file detection)
+    npm_hooks = scan_package_json_hooks(root)
+    existing_hook_names = {d["name"] for d in categories["git_hooks"]}
+    for hook_tool in npm_hooks:
+        if hook_tool not in existing_hook_names:
+            categories["git_hooks"].append(
+                make_detection(hook_tool, "active", "package-json")
+            )
 
     # Check version catalog existence
     has_version_catalog = (root / "gradle" / "libs.versions.toml").exists()

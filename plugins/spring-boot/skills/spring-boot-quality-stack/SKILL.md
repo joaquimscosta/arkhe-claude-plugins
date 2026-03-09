@@ -73,6 +73,13 @@ Classify each recommendation based on project context:
 - Spring Boot 4+: SKIP REST Assured spring-mock-mvc (broken with jakarta)
 - Spring Boot 4+: NOW MockMvcTester (built-in replacement)
 
+### Category: Git Hooks
+
+| Tool | When to Recommend | Priority |
+|------|------------------|----------|
+| Lefthook | No git hook manager + has linters (ktlint/detekt) | SOON |
+| Lefthook | Husky or pre-commit already present | SKIP (note: migration possible) |
+
 ## Research Documents
 
 Fetch these via WebFetch at runtime — do not cache or embed their content:
