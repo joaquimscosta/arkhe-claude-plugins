@@ -24,6 +24,12 @@ Multi-purpose documentation toolkit for generating comprehensive technical docum
 
 - **jd-docs**: Auto-invoked Johnny.Decimal documentation structure management for scaffolding, validating, and maintaining numbered docs areas. Triggers on keywords like "Johnny Decimal", "docs structure", "organize docs", or when editing files in numbered directories (00-*, 10-*, 20-*). Features default area scheme with per-project customization via `.jd-config.json`, structure validation, and README index generation. Includes Python scripts using `uv` for deterministic operations.
 
+- **create-rfc**: Drafts a populated RFC from conversation context, research artifacts, and codebase analysis. Use when a topic has been discussed or researched and needs to be captured as a formal technical proposal. Gathers context from research docs, memory, ADRs, and codebase before writing a real first draft.
+
+- **review-rfc**: Reviews an architecture RFC against project architecture standards and best practices. User-invoked only. Evaluates across 7 dimensions: problem definition, architecture quality, scalability, data architecture, infrastructure, security, and project fit. Discovers architecture standards from arkhe, jd-docs, or generic conventions.
+
+- **list-rfcs**: Lists all architecture RFCs and their status. User-invoked only. Searches multiple convention paths (`docs/rfcs/`, `docs/20-architecture/rfcs/`, `.arkhe/rfcs/`).
+
 ### Commands
 
 - **/code-explain**: Explains code in detail using the code-explanation skill. Generates visual diagrams, step-by-step breakdowns, and identifies patterns and gotchas. Perfect for understanding complex codebases.
@@ -40,6 +46,7 @@ Multi-purpose documentation toolkit for generating comprehensive technical docum
 ✅ Architecture Decision Records (ADRs)
 ✅ Proposals, specs, and decision documents
 ✅ Johnny.Decimal documentation organization
+✅ RFC lifecycle management (create, review, list)
 
 ## Applies To
 
@@ -176,4 +183,4 @@ uv run doc/skills/jd-docs/scripts/jd_index.py --dir docs
 
 ## Version
 
-1.3.0
+1.2.0

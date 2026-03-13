@@ -74,9 +74,10 @@ AI engineering toolkit for production-ready LLM applications.
 - **Skills**: `lyra` (auto-invoked for AI prompt engineering)
 
 ### Doc Plugin
-Multi-purpose documentation toolkit.
-- **Skills**: `doc-coauthoring`, `diagramming`, `code-explanation`, `managing-adrs`
+Multi-purpose documentation toolkit with RFC management.
+- **Skills**: `doc-coauthoring`, `diagramming`, `code-explanation`, `managing-adrs`, `create-rfc`, `review-rfc`, `list-rfcs`
 - **Commands**: `/code-explain`, `/diagram`
+- **Use**: Documentation generation, code explanation, Mermaid diagrams, ADR management, RFC lifecycle (create, review, list)
 
 ### Review Plugin
 Code quality review tools for development teams.
