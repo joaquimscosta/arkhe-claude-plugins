@@ -116,10 +116,10 @@ Read `.arkhe.yaml` from project root:
 ### 2. Determine Spec Path
 
 If `numbering: true`:
-- Use `Glob` to find existing `{specs_dir}/NNN-*/` directories (handles 2 or 3 digit prefixes)
-- Detect highest numeric prefix
-- Increment and zero-pad to 3 digits: NNN+1
-- Full path: `{specs_dir}/{NNN+1}-{feature_slug}/`
+1. **Resolve script path**: Glob for `**/sdlc-develop/scripts/next_spec_number.py`
+2. **Run script**: `python3 {script_path} --specs-dir {specs_dir}`
+3. **Parse JSON output**: Extract `prefix` field (e.g., `"005"`)
+4. **Full path**: `{specs_dir}/{prefix}-{feature_slug}/`
 
 If `numbering: false`:
 - Full path: `{specs_dir}/{feature_slug}/`
