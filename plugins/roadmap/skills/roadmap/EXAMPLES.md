@@ -177,6 +177,76 @@ _Comparing PROJECT-STATUS.md (2026-02-10) vs current codebase_
 - **No Spec:** 1 feature mentioned in roadmap but not specified
 ```
 
+## Example 7: Update with Git History (Phase A + B)
+
+**Input:** `/roadmap update`
+
+**Output (Phase A — What Shipped):**
+
+```
+## What Shipped Since Last Update
+_Last update: 2026-03-09 (da3c514), 10 commits ago_
+
+1. **Glossary Management + Dictionary Browser** (PR #32)
+   - Specs: 022, 023, 024, 025
+   - 6 new components, 2 hooks, 5 test files
+   - New route: /dictionary
+
+2. **App Header Unification** (PR #33)
+   - Refactored: AppHeader.tsx, NavLinks.tsx
+
+3. **skrebe.app Redirect** (1aff903)
+   - New ADR: 0010-skrebe-app-domain-redirect.md
+
+⚠️  CHANGELOG.md [Unreleased] is missing entries for 3 features.
+
+Running full codebase scan...
+```
+
+**Output (Phase B — Proposed Updates):**
+
+```
+## Proposed Updates to docs/PROJECT-STATUS.md
+
+  ~ Last updated: 2026-03-09 → 2026-03-15
+  ~ Branch: da3c514 → 1aff903
+  ~ Velocity: 129 → 139 commits
+  ~ skrebe-web: 4 routes → 5 routes, ~54 → ~63 components, 12 → 18 hooks
+  ~ text-core: 8 → 10 test files
+  + Phase 3e: Glossary Management + Dictionary Browser → Done
+  + Phase 3f: ALUPEC Phonology Rule → Done
+  + Spec 022: Glossary Management UX → Complete
+  + Spec 023: Glossary UX Polish → Complete
+  + Spec 024: Glossary Gap Detection → Complete
+  + Spec 025: Dictionary Browser → Complete
+  + ADR 0010: skrebe.app → papia.studio redirect → Active
+  + Test row: Glossary (4 files) + Dictionary (3 files)
+
+Apply updates to PROJECT-STATUS.md? (y/N)
+```
+
+**After approval, if CHANGELOG gaps exist:**
+
+```
+Add CHANGELOG entries for 3 shipped features under [Unreleased]? (y/N)
+```
+
+## Example 8: Status with Drift Warning
+
+**Input:** `/roadmap status`
+
+**Output (end of dashboard):**
+
+```
+### Recommended Next Actions
+1. Translation Memory + Eval Harness (Phase 4) — next on Track A
+2. Expand LLM golden pairs — 5 → 10-15
+
+---
+⚠️  Documentation may be stale: 4 feature/fix commits since last status update (2026-03-09).
+Run `/roadmap update` to sync.
+```
+
 ## Zero-Config Example
 
 The skill adapts to any project structure:

@@ -98,6 +98,23 @@ Common issues and fixes for the Roadmap Analyst skill.
    - `planning/features/*/requirements.md` — Feature specs
    ```
 
+## Update Phase A Shows "No Commits Since Last Update" But Docs Seem Wrong
+
+**Symptom:** Phase A (git history scan) reports no drift, but the status doc has incorrect or outdated content.
+
+**Cause:** The status file was recently committed (perhaps with errors or incomplete data), so git history shows no gap.
+
+**Fix:** Phase B (full codebase scan) still runs regardless of Phase A results. Phase A is additive context that helps Phase B be more targeted — but Phase B catches discrepancies whether or not git shows drift. If the content is wrong despite a recent commit, Phase B will propose corrections based on the actual codebase state.
+
+## When to Use `update` vs `delta`
+
+| Mode | What it does | Writes files? |
+|------|-------------|---------------|
+| `update` | Phase A (git history) + Phase B (full codebase scan) → writes updated status doc | Yes (with confirmation) |
+| `delta` | Compares status doc against codebase state → read-only report | No (chat output only) |
+
+Use `delta` when you want to **see** what's stale without changing anything. Use `update` when you want to **fix** the staleness.
+
 ## Risk Scores Seem Arbitrary
 
 **Symptom:** Risk likelihood/impact ratings don't match project context.

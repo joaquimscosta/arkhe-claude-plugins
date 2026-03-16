@@ -29,10 +29,10 @@ Common issues and solutions when using the `/core:develop` command.
 **Solution:** Ensure path contains `plan.md`. Check exact path - it should point to the spec directory, not the plan file:
 ```bash
 # Correct
-/core:develop @arkhe/specs/01-feature/
+/core:develop @arkhe/specs/001-feature/
 
 # Incorrect
-/core:develop @arkhe/specs/01-feature/plan.md
+/core:develop @arkhe/specs/001-feature/plan.md
 ```
 
 ### Plan-only mode ignored
@@ -90,11 +90,15 @@ Common issues and solutions when using the `/core:develop` command.
 /plugin install core@arkhe-claude-plugins
 ```
 
-### Wrong NN prefix generated
+### Wrong NNN prefix generated
 
 **Symptom:** Spec directory has unexpected number prefix
 
-**Solution:** The skill auto-increments based on highest existing prefix in the configured spec directory. Check for gaps in numbering or manual directories.
+**Solution:** The skill uses `scripts/next_spec_number.py` to deterministically compute the next number. Debug manually:
+```bash
+python3 scripts/next_spec_number.py --specs-dir arkhe/specs
+```
+Check `highest_existing` in the output. If wrong, look for directories with non-standard naming in your specs directory.
 
 ---
 

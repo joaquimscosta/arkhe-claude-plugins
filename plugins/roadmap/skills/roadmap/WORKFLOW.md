@@ -121,6 +121,14 @@ Evidence checklist:
    - What's working (evidence-backed)
    - What's planned (doc-backed)
    - What's missing (no docs, no code)
+5. **Drift detection** — after producing the dashboard:
+   - Get last `{status_file}` commit: `git log -1 --format="%H %ai" -- {status_file}`
+   - Count `feat:`/`fix:` commits since that hash: `git log {hash}..HEAD --oneline --no-merges | grep -cE "^[a-f0-9]+ (feat|fix):"`
+   - If >= 3, append a notice at the end of the output:
+     ```
+     ⚠️  Documentation may be stale: {N} feature/fix commits since last status update ({date}).
+     Run `/roadmap update` to sync.
+     ```
 
 ### `gaps`
 
@@ -182,17 +190,50 @@ Evidence checklist:
 
 ### `update`
 
-1. Run full context discovery + full codebase scan
+#### Phase A: Git History Scan
+
+1. Read `.arkhe.yaml` for `status_file` path (default: `docs/PROJECT-STATUS.md`)
+2. Get last status doc commit:
+   ```
+   git log -1 --format="%H %ai" -- {status_file}
+   ```
+3. If no previous commit found, skip Phase A (first-time setup — Phase B handles it)
+4. List commits since last doc update:
+   ```
+   git log {last_hash}..HEAD --oneline --no-merges
+   ```
+5. Categorize commits:
+   - `feat:` → new features (group by PR number if `(#NN)` present in message)
+   - `fix:` → bug fixes
+   - `docs(adr):` or new files in `docs/adr/` → ADR additions
+   - Changes to `arkhe/specs/*/spec.md` → spec completions
+   - New `*.test.*` or `*.spec.*` files → test count changes
+6. For each feature group, check the diff for scope:
+   ```
+   git diff --stat {last_hash}..{feature_commit} -- packages/ src/
+   ```
+7. Present **"What Shipped"** summary to the user before proceeding
+8. Also check CHANGELOG.md — flag if `[Unreleased]` is missing entries for any feature groups
+
+#### Phase B: Full Codebase Scan + Write
+
+1. Run full context discovery + full codebase scan (existing behavior)
 2. Read existing status document
 3. Preserve format and structure
-4. Update all data points:
+4. Update all data points — now informed by Phase A findings:
    - Module maturity ratings
-   - Completion percentages
-   - Gap closure status
-   - New developments
+   - Phase completion entries (add rows for shipped phases identified in Phase A)
+   - Spec pipeline entries (add rows for completed specs identified in Phase A)
+   - ADR table entries (add new ADRs discovered in Phase A)
+   - Test coverage section (update counts)
+   - Header: commit count, date, branch hash
+   - Risk register: close risks addressed by shipped features
+   - Recommended next actions: refresh based on current state
 5. Show diff preview to user and ask for confirmation
 6. Write updated file to `{status_file}`
-7. Report changes made
+7. If CHANGELOG gaps were found in Phase A, suggest: "CHANGELOG.md is missing entries for {N} features. Add them? (y/N)"
+   - On confirmation, add entries under `[Unreleased]` with appropriate categories
+8. Report changes made
 
 ### `specs`
 

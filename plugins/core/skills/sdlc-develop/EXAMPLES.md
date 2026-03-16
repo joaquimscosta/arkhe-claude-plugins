@@ -10,13 +10,13 @@
 
 **What happens:**
 1. Executes all 6 phases with user checkpoints
-2. Creates: `arkhe/specs/01-user-auth/` with spec.md, plan.md, tasks.md
+2. Creates: `arkhe/specs/001-user-auth/` with spec.md, plan.md, tasks.md
 3. Implements the feature
 4. Validates and summarizes
 
 **Output:**
 ```
-arkhe/specs/01-user-auth/
+arkhe/specs/001-user-auth/
 ├── spec.md       # Requirements & acceptance criteria
 ├── plan.md       # Architecture & design decisions
 └── tasks.md      # Full ticket breakdown
@@ -32,18 +32,18 @@ arkhe/specs/01-user-auth/
 
 **What happens:**
 1. Executes Phases 0-2 only
-2. Saves spec.md and plan.md to `arkhe/specs/02-dashboard/`
+2. Saves spec.md and plan.md to `arkhe/specs/002-dashboard/`
 3. Stops without implementing
 
 **Output:**
 ```
-Spec saved to `arkhe/specs/02-dashboard/`
+Spec saved to `arkhe/specs/002-dashboard/`
 
 Files created:
 - spec.md (requirements)
 - plan.md (architecture)
 
-Run `/core:develop @arkhe/specs/02-dashboard/` when ready to implement.
+Run `/core:develop @arkhe/specs/002-dashboard/` when ready to implement.
 ```
 
 ---
@@ -51,7 +51,7 @@ Run `/core:develop @arkhe/specs/02-dashboard/` when ready to implement.
 ## Resume Existing Spec
 
 ```bash
-/core:develop @arkhe/specs/01-user-auth/
+/core:develop @arkhe/specs/001-user-auth/
 ```
 
 **What happens:**
@@ -61,7 +61,7 @@ Run `/core:develop @arkhe/specs/02-dashboard/` when ready to implement.
 
 **Interaction:**
 ```
-Found existing spec: 01-user-auth
+Found existing spec: 001-user-auth
 Status: Architecture complete (Phase 2)
 
 Which phase would you like to continue from?
@@ -82,7 +82,7 @@ Which phase would you like to continue from?
 1. Executes all phases without checkpoints
 2. Makes reasonable default decisions
 3. Reports everything at the end
-4. Creates: `arkhe/specs/03-logout-button/`
+4. Creates: `arkhe/specs/003-logout-button/`
 
 **Use when:**
 - Simple, well-understood features
@@ -120,7 +120,7 @@ Deep Validation Results:
 ## Specific Phase Only
 
 ```bash
-/core:develop @arkhe/specs/01-user-auth/ --phase=4
+/core:develop @arkhe/specs/001-user-auth/ --phase=4
 ```
 
 **What happens:**
