@@ -378,7 +378,7 @@ Automates semantic versioning releases and scaffolds release infrastructure for 
 /plugin install git@arkhe-claude-plugins
 ```
 
-After installation, restart Claude Code.
+After installation, run `/reload-plugins` to load the plugin.
 
 ## Usage
 

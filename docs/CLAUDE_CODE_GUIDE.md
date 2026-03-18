@@ -43,7 +43,7 @@ This guide covers Claude Code configuration, extensibility, and V4-specific feat
 
 ### 1. Global CLAUDE.md as Security Gatekeeper
 
-The global `~/.claude/CLAUDE.md` file sits at the top of a four-level memory hierarchy and serves as the primary security gatekeeper across all projects.
+The global `~/.claude/CLAUDE.md` file sits at the top of a three-level memory hierarchy and serves as the primary security gatekeeper across all projects.
 
 #### Memory Hierarchy
 
@@ -52,7 +52,6 @@ The global `~/.claude/CLAUDE.md` file sits at the top of a four-level memory hie
 | Enterprise | `/etc/claude-code/CLAUDE.md` | Org-wide policies |
 | Global User | `~/.claude/CLAUDE.md` | Standards for ALL projects |
 | Project | `./CLAUDE.md` | Team-shared instructions |
-| Project Local | `./CLAUDE.local.md` | Personal overrides |
 
 > **Official Reference**: For the complete settings specification, see [SETTINGS.md](./reference/SETTINGS.md).
 

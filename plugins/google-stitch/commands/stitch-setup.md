@@ -327,7 +327,7 @@ Solution:
 CLOUDSDK_CONFIG="$HOME/.stitch-mcp/config" gcloud auth application-default login
 ```
 
-Then restart Claude Code or run `/mcp` to reconnect.
+Then run `/reload-plugins` or `/mcp` to reconnect.
 
 Note: The `CLOUDSDK_CONFIG` variable only applies to that single command. It stores
 the refreshed credentials in the isolated config directory, which the stitch-mcp

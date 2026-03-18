@@ -96,7 +96,7 @@ You can install all plugins at once:
 
 ### 3. Usage
 
-After installation, restart Claude Code and use:
+After installation, run `/reload-plugins` and use:
 
 - **Agents:** Type `/agents` to see and select available agents.
 - **Commands:** Type `/help` to see all available commands.

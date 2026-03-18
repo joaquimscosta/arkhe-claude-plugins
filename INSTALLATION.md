@@ -42,9 +42,9 @@ git clone https://github.com/joaquimscosta/arkhe-claude-plugins.git
 /plugin install spring-boot@arkhe-claude-plugins
 ```
 
-### 3. Restart Claude Code
+### 3. Reload Plugins
 
-After installation, restart Claude Code for all plugins to take effect.
+After installation, run `/reload-plugins` for all plugins to take effect.
 
 ---
 

@@ -213,7 +213,7 @@ Automated security scanning using Trivy (vulnerability scanning) and Gitleaks (s
 /plugin install review@arkhe-claude-plugins
 ```
 
-After installation, restart Claude Code.
+After installation, run `/reload-plugins` to load the plugin.
 
 ## Usage
 

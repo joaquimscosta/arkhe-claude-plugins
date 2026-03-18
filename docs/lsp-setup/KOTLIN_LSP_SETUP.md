@@ -491,7 +491,7 @@ Remember that Kotlin LSP is in experimental phase. Some features may not work:
    claude --debug
    ```
 
-4. Clear the LSP cache and restart Claude Code
+4. Clear the LSP cache and run `/reload-plugins`
 
 ---
 

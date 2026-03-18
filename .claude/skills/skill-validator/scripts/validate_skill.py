@@ -1023,8 +1023,9 @@ VALID_HOOK_EVENTS = {
     'SessionStart', 'UserPromptSubmit', 'PermissionRequest',
     'PostToolUseFailure', 'Notification', 'SubagentStart',
     'SubagentStop', 'TeammateIdle', 'TaskCompleted',
-    'PreCompact', 'SessionEnd', 'ConfigChange',
+    'PreCompact', 'PostCompact', 'SessionEnd', 'ConfigChange',
     'WorktreeCreate', 'WorktreeRemove',
+    'Elicitation', 'ElicitationResult', 'InstructionsLoaded',
 }
 
 
