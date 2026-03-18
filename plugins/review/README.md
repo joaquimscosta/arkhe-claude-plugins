@@ -15,7 +15,7 @@ The Review plugin provides comprehensive code quality tools including code revie
 ### Agents (3)
 
 #### 1. pragmatic-code-review
-Principal Engineer code reviewer implementing the "Pragmatic Quality" framework — balancing rigorous engineering standards with development velocity.
+Single-pass code reviewer for delegation by other workflows. Implements the "Pragmatic Quality" framework — balancing rigorous engineering standards with development velocity.
 
 **Capabilities**:
 - Architectural design evaluation
@@ -25,9 +25,9 @@ Principal Engineer code reviewer implementing the "Pragmatic Quality" framework 
 - Testing strategy evaluation
 - Performance and scalability analysis
 
-**Preloaded Skills**: `code-review`, `security-review`
+**Use via**: `/agents` interface or spawned by other workflows as a subtask
 
-**Use via**: `/agents` interface
+**Note**: For full multi-agent orchestrated reviews, use `/review:code-review` instead.
 
 #### 2. design-review
 Elite design review specialist conducting comprehensive UI/UX reviews using Playwright CLI for automated browser testing.
@@ -62,19 +62,22 @@ Skills 1-2 and 4 are command-invoke only (`disable-model-invocation: true`). Ski
 
 #### 1. code-review
 
-Comprehensive code review analyzing git changes with the Pragmatic Quality framework.
+Multi-agent code review orchestrating parallel specialized reviewers with independent confidence scoring.
 
 **Features**:
-- Analyzes complete git diff
-- Hierarchical review framework (Architecture > Security > Maintainability)
-- Actionable feedback with engineering principles
-- Triage matrix (Critical/Improvement/Nit)
-- Generates markdown report
+- Multi-agent pipeline: 4-5 parallel Sonnet reviewers (CLAUDE.md compliance, bug scanner, git history, security, code comments)
+- Independent confidence scoring (0-100) via Haiku agents — threshold 80 filters false positives
+- Context gathering: auto-discovers CLAUDE.md files and summarizes changes
+- Optional GitHub PR posting via `--post-to-pr` flag
+- Automatic false-positive verification via `verify-findings`
+- Graceful degradation: partial results if agents fail, single-agent fallback if all fail
 
 **Usage**:
 ```bash
-/review:code-review                    # Saves to ./reviews/code/
-/review:code-review custom/reviews     # Saves to custom path
+/review:code-review                           # Local report to ./reviews/code/
+/review:code-review custom/reviews            # Custom output path
+/review:code-review --post-to-pr              # Local report + post to GitHub PR
+/review:code-review custom/reviews --post-to-pr  # Both
 ```
 
 **Output**: `{path}/{YYYY-MM-DD}_{HH-MM-SS}_code-review.md`
@@ -89,8 +92,11 @@ Security-focused code review identifying high-confidence exploitable vulnerabili
 
 **Features**:
 - Focuses on HIGH and MEDIUM severity issues
-- Minimizes false positives (>80% confidence threshold)
-- Comprehensive vulnerability categories
+- Per-finding Haiku verification agents (KEEP/DISMISS/DOWNGRADE verdicts)
+- Minimizes false positives (two-axis scoring + Haiku verification + verify-findings)
+- Comprehensive vulnerability categories (OWASP 2025 + API + LLM Top 10)
+- Automated scanning integration (Trivy + Gitleaks)
+- Optional GitHub PR posting via `--post-to-pr` flag
 - Exploit scenario documentation
 - Fix recommendations
 
@@ -103,8 +109,10 @@ Security-focused code review identifying high-confidence exploitable vulnerabili
 
 **Usage**:
 ```bash
-/review:security-review                # Saves to ./reviews/security/
-/review:security-review audits/sec     # Saves to custom path
+/review:security-review                       # Saves to ./reviews/security/
+/review:security-review audits/sec            # Saves to custom path
+/review:security-review --post-to-pr          # Local report + post to GitHub PR
+/review:security-review audits/sec --post-to-pr  # Both
 ```
 
 **Output**: `{path}/{YYYY-MM-DD}_{HH-MM-SS}_security-review.md`
@@ -212,7 +220,8 @@ After installation, restart Claude Code.
 ### Invoking Skills
 
 ```bash
-/review:code-review
+/review:code-review                        # Multi-agent code review
+/review:code-review --post-to-pr           # Review + post to GitHub PR
 /review:security-review
 /review:verify-findings <report-path>
 /review:design-review
@@ -288,8 +297,11 @@ reviews/
 ### Code Review Workflow
 
 ```bash
-# 1. Review current changes (auto-verification runs after)
+# 1. Review current changes (multi-agent, auto-verification runs after)
 /review:code-review
+
+# 1b. Or review + post to GitHub PR
+/review:code-review --post-to-pr
 
 # 2. Address critical issues from the verified report
 # ... make fixes ...
@@ -336,4 +348,4 @@ MIT License
 
 ## Version
 
-1.2.0
+2.0.0

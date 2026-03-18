@@ -8,6 +8,73 @@
 
 # Custom output path
 /review:security-review audits/security/
+
+# With GitHub PR posting
+/review:security-review --post-to-pr
+
+# Custom path + PR posting
+/review:security-review audits/security/ --post-to-pr
+```
+
+## Orchestration Flow
+
+What the user sees during a typical security review with Haiku verification:
+
+```
+/review:security-review
+
+Phase 1: Researching repository security context...
+  - Detected: Express.js + helmet.js, Knex ORM, JWT auth
+  - Security patterns: parameterized queries in most files
+
+Phase 1.5: Running automated scan...
+  - Trivy: 2 vulnerabilities found
+  - Gitleaks: 0 secrets detected
+
+Phase 2: Comparative analysis against established patterns...
+Phase 3: Vulnerability assessment with data flow tracing...
+  - 5 candidate findings identified
+
+Phase 4: Haiku verification (5 parallel agents)...
+  - Vuln 1 (INJ-SQL): KEEP — data flow confirmed, no parameterization
+  - Vuln 2 (AC-SSRF): KEEP — user-controlled URL, no host validation
+  - Vuln 3 (INJ-XSS): DISMISS — React auto-escapes JSX, no unsafe APIs
+  - Vuln 4 (SC-CICD): KEEP — unpinned GitHub Action with secrets access
+  - Vuln 5 (ERR-FAILOPEN): DOWNGRADE — only reachable by authenticated admins
+
+Phase 5: Generating report... 4 findings (2 Blockers, 1 Improvement, 1 Question)
+Report saved to: ./reviews/security/2026-03-18_14-30-00_security-review.md
+
+Phase 7: Running verification...
+Verified report saved to: ./reviews/security/2026-03-18_14-30-00_security-review.verified.md
+```
+
+## Orchestration Flow — With PR Posting
+
+```
+/review:security-review --post-to-pr
+
+Phase 1-5: (same as above)
+Report saved to: ./reviews/security/2026-03-18_16-00-00_security-review.md
+
+Phase 6: Posting to GitHub PR...
+  - PR #42 on feat/user-api — open, eligible
+  - Posted security review comment with 4 findings
+
+Phase 7: Running verification...
+```
+
+## Orchestration Flow — PR Posting Skipped
+
+```
+/review:security-review --post-to-pr
+
+Phase 1-5: (same as above)
+Report saved to: ./reviews/security/2026-03-18_16-00-00_security-review.md
+
+Phase 6: No open PR found for this branch. Skipping GitHub posting.
+
+Phase 7: Running verification...
 ```
 
 ## Sample Report — Multiple Vulnerabilities
@@ -26,6 +93,7 @@
 - **Improvement**: 1 finding
 - **Question**: 1 finding
 - **Total**: 4 actionable findings
+- **Haiku Verification**: 5 findings verified — 4 kept, 1 dismissed, 0 downgraded
 
 ---
 
@@ -139,6 +207,7 @@ bindings, preventing SQL injection across all user data operations.
 - **Improvement**: 0 findings
 - **Question**: 0 findings
 - **Total**: 0 actionable findings
+- **Haiku Verification**: 0 findings verified (no candidates)
 
 ---
 
@@ -168,6 +237,7 @@ variables through the existing config module.
 - **Question**: 0 findings
 - **Total**: 2 actionable findings
 - **Automated Scan**: 3 issues found (2 Trivy vulnerabilities, 1 Gitleaks secret)
+- **Haiku Verification**: 2 findings verified — 2 kept, 0 dismissed, 0 downgraded
 
 ---
 
@@ -221,6 +291,7 @@ variables through the existing config module.
 - **Question**: 0 findings
 - **Total**: 0 actionable findings
 - **Automated Scan**: Skipped — tools not installed
+- **Haiku Verification**: 0 findings verified (no candidates)
 
 ---
 
@@ -249,6 +320,7 @@ and secret detection coverage.
 - **Improvement**: 1 finding
 - **Question**: 0 findings
 - **Total**: 2 actionable findings
+- **Haiku Verification**: 2 findings verified — 2 kept, 0 dismissed, 0 downgraded
 
 ---
 
@@ -284,4 +356,36 @@ and secret detection coverage.
   or external API calls initiated by the AI agent.
 
 ---
+```
+
+## Sample GitHub PR Comment
+
+When using `--post-to-pr`, the posted comment looks like:
+
+```markdown
+### Security review
+
+Found 4 security issues:
+
+1. **[CRITICAL]** INJ-SQL — SQL injection via string concatenation in search query (CWE-89)
+
+https://github.com/owner/repo/blob/a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0/src/api/search.ts#L27-L30
+
+2. **[HIGH]** AC-SSRF — Server-side request forgery via user-supplied webhook URL (CWE-918)
+
+https://github.com/owner/repo/blob/a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0/src/services/webhook.ts#L44-L48
+
+3. **[HIGH]** SC-CICD — Unpinned GitHub Action with secrets access (CWE-829)
+
+https://github.com/owner/repo/blob/a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0/.github/workflows/deploy.yml#L11-L13
+
+4. **[MEDIUM]** ERR-FAILOPEN — Auth middleware fails open on unexpected errors (CWE-636)
+
+https://github.com/owner/repo/blob/a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6q7r8s9t0/src/middleware/auth.ts#L66-L70
+
+---
+
+Generated with [Claude Code](https://claude.ai/code)
+
+<sub>If this review was useful, react with :+1:. Otherwise, react with :-1:.</sub>
 ```

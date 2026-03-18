@@ -282,6 +282,60 @@ If any answer is "no", suppress the finding.
 
 ---
 
+## Per-Finding Haiku Verification
+
+### Haiku Agent Prompt Template
+
+Each Phase 4 verification agent receives this prompt:
+
+```
+You are independently verifying a security finding. Your job is to determine if this finding is real, a false positive, or overstated.
+
+FINDING:
+{finding description, severity, confidence, category, CWE}
+
+CODE CONTEXT:
+{relevant diff section around the flagged code, ~50 lines}
+
+FRAMEWORK/SANITIZER CONTEXT:
+{security frameworks and sanitization patterns discovered in Phase 1}
+
+FALSE POSITIVE RULES:
+{hard exclusions and framework-aware suppression rules from this skill}
+
+Verify by checking:
+1. Can user input actually reach the vulnerable sink? Trace the data flow.
+2. Are there sanitizers, validators, or parameterization in the path?
+3. Does the framework's security model prevent this exploit?
+4. Does this match any hard exclusion rule or known false positive pattern?
+5. What is the actual exploitability — internet-facing? auth required? admin-only?
+
+Return ONE verdict:
+- KEEP: Finding confirmed. {brief evidence — e.g., "Data flow traced from req.body.email through to db.raw() with no parameterization"}
+- DISMISS: False positive. {specific reason — e.g., "React auto-escapes JSX expressions, no unsafe HTML APIs used"}
+- DOWNGRADE: Valid but adjust. {what to change — e.g., "Downgrade severity to MEDIUM: only reachable by authenticated admins behind feature flag"}
+```
+
+### Verdict Criteria
+
+| Verdict | When to Apply |
+|---------|--------------|
+| **KEEP** | Data flow confirmed, no sanitizers in path, exploit scenario is plausible |
+| **DISMISS** | Framework handles it automatically, sanitizer found in path, matches hard exclusion, exploit requires controlling trusted inputs (env vars, CLI flags) |
+| **DOWNGRADE** | Finding is real but exploitability modifiers apply (admin-only, behind feature flag, mitigating control exists, requires chained bugs) |
+
+### Integration with Existing Filtering
+
+Haiku verification runs AFTER the main analysis but BEFORE report generation. It complements (not replaces) the existing false positive filtering:
+
+1. Main analysis applies hard exclusions and framework suppression → candidate findings
+2. Haiku agents independently verify each candidate → KEEP/DISMISS/DOWNGRADE
+3. Report includes only KEEP and DOWNGRADED findings
+
+If ALL findings are dismissed by Haiku verification, generate a clean report.
+
+---
+
 ## Report Template
 
 ```markdown
@@ -299,6 +353,7 @@ If any answer is "no", suppress the finding.
 - **Question**: {count} findings
 - **Total**: {count} actionable findings
 - **Automated Scan**: {Passed | X issues found | Skipped — tools not installed}
+- **Haiku Verification**: {N} findings verified — {kept} kept, {dismissed} dismissed, {downgraded} downgraded
 
 ---
 
@@ -318,3 +373,54 @@ If any answer is "no", suppress the finding.
 
 Focus on Blocker and Improvement findings. Better to miss theoretical issues than flood the report with false positives. Each finding should be something a security engineer would confidently raise in a PR review.
 ```
+
+---
+
+## GitHub PR Comment Format
+
+Used in Phase 6 when `--post-to-pr` is enabled. Keep comments brief. Include OWASP codes, CWE refs, and severity.
+
+### Comment Template
+
+```markdown
+### Security review
+
+Found {N} security issues:
+
+1. **[{SEVERITY}]** {Category Code} — {brief description} (CWE-{XXX})
+
+{link to file with full SHA and line range}
+
+2. **[{SEVERITY}]** {Category Code} — {brief description} (CWE-{XXX})
+
+{link to file with full SHA and line range}
+
+---
+
+Generated with [Claude Code](https://claude.ai/code)
+
+<sub>If this review was useful, react with :+1:. Otherwise, react with :-1:.</sub>
+```
+
+### Clean Review Comment
+
+```markdown
+### Security review
+
+No high-confidence security vulnerabilities found. Checked against OWASP Top 10 2025, API Top 10, and LLM Top 10.
+
+---
+
+Generated with [Claude Code](https://claude.ai/code)
+```
+
+### Code Link Format
+
+Links MUST use full SHA and line range:
+```
+https://github.com/{owner}/{repo}/blob/{full-sha}/{path/to/file}#L{start}-L{end}
+```
+
+- Use full 40-character SHA (not abbreviated)
+- Include at least 1 line of context before and after
+- Get the full SHA via: `git rev-parse HEAD`

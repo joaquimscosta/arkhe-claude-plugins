@@ -153,7 +153,7 @@ For each claimed exploit scenario:
 
 ### Blockers
 
-- **[Blocker]** `{file}:{line}` — {Description} (Confidence: {N}/10)
+- **[Blocker]** `{file}:{line}` — {Description} (Confidence: {N}/100)
   - **Principle**: {principle}
   - **Current**: `{code snippet}`
   - **Suggested**: `{fix snippet}`
@@ -161,7 +161,7 @@ For each claimed exploit scenario:
 
 ### Improvements
 
-- **[Improvement]** `{file}:{line}` — {Description} (Confidence: {N}/10)
+- **[Improvement]** `{file}:{line}` — {Description} (Confidence: {N}/100)
   - **Principle**: {principle}
   - **Current**: `{code snippet}`
   - **Suggested**: `{fix snippet}`
@@ -169,7 +169,7 @@ For each claimed exploit scenario:
 
 {For DOWNGRADED findings, show the adjusted confidence/severity with note}
 
-- **[Improvement]** `{file}:{line}` — {Description} (Confidence: {adjusted}/10, was {original}/10)
+- **[Improvement]** `{file}:{line}` — {Description} (Confidence: {adjusted}/100, was {original}/100)
   - > **Verification**: DOWNGRADED — {reason for adjustment}
 
 ### Questions

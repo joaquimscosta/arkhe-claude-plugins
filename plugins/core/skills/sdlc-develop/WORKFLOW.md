@@ -22,7 +22,14 @@ START
   |   +-- Execute Phase 1 -> Checkpoint
   |
   +-- Read PHASE-2-ARCHITECTURE.md
-  |   +-- Execute Phase 2 -> Save plan -> [PLAN stops here]
+  |   +-- Step 2a-pre: Design Asset Generation (if UI work)
+  |   +-- Step 2a: Codebase Exploration (2-3 code-explorer agents)
+  |   +-- Step 2a-res: Domain Research (Tier 2 gate) [NEW]
+  |   +-- Step 2b: Architecture Design (2-3 code-architect agents)
+  |   +-- Step 2c: Architecture Decision (Tier 1 - mandatory)
+  |   +-- Step 2c-post: Save Architecture + research refs to plan.md
+  |   +-- Step 2d: Save Artifacts (ADR, API, data models, conditional RFC)
+  |   +-- Save plan -> [PLAN stops here]
   |
   +-- [FULL] Read PHASE-3-WORKSTREAMS.md
   |   +-- Execute Phase 3 -> Checkpoint

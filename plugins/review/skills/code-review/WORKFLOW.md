@@ -1,44 +1,166 @@
 # Code Review Workflow
 
-Detailed checklists, false positive filtering, diff-context probes, and confidence scoring guide.
+Detailed review checklists, agent prompt templates, scoring rubric, report template, and GitHub comment format.
 
 ---
 
-## Phase 0: PR Assessment
+## Multi-Agent Pipeline Details
 
-Perform this assessment before any line-by-line analysis.
+### Agent Prompt Templates
 
-### Risk Stratification
+Each Phase 2 reviewer agent receives this shared context preamble:
 
-| Change Type | Risk | Primary Focus |
-|-------------|------|---------------|
-| New files (feature code) | Medium | Architecture, error handling, test coverage |
-| Modified core logic | High | Correctness, regressions, breaking changes |
-| Deleted code | Medium-High | Orphaned callers, unused imports, broken references |
-| Config / dependencies | High | Security, compatibility, environment impact |
-| Database migrations | Critical | Rollback strategy, data integrity, performance |
-| Test-only changes | Low | Coverage adequacy, test isolation |
-| Docs / comments only | Low | Accuracy, completeness |
+```
+You are reviewing code changes. Here is your context:
 
-### Atomicity Check
+CLAUDE.md FILES:
+{claude_md_summaries from Phase 1 Agent A}
 
-- Does this PR serve a single, cohesive purpose?
-- Are there unrelated changes bundled together (e.g., feature + refactor + config)?
-- If mixed, note in the PR Assessment: "Mixed — consider splitting"
+CHANGE SUMMARY:
+{summary from Phase 1 Agent B}
 
-### Breaking Change Detection
+DIFF CONTENT:
+{full diff}
 
-Check for these signals in the diff:
+FALSE POSITIVES TO SKIP:
+- Pre-existing issues not introduced in the changes
+- Issues that linters, typecheckers, or compilers would catch
+- Pedantic nitpicks a senior engineer wouldn't flag
+- Framework-handled concerns
+- General quality issues unless explicitly required in CLAUDE.md
+- Style preferences matching existing codebase conventions
+- Real issues on lines the author did not modify
+- Something that looks like a bug but is not actually a bug
+- Changes in functionality that are likely intentional
+- Issues explicitly silenced in code (lint-ignore comments)
 
-1. **Public function/method signature changed** — search for callers outside the diff
-2. **Database migration added** — verify rollback strategy exists
-3. **API response structure changed** — check for downstream consumers
-4. **Environment variable added/renamed/removed** — check deployment docs and config
-5. **Exports removed or renamed** — search for all importers across the codebase
+Return findings in this format (one per finding):
+
+Finding: {description}
+File: {path}:{line}
+Category: {your category}
+Reason: {why this was flagged, cite evidence}
+Suggested fix: {code snippet, if applicable}
+
+If no issues found, return: "No issues found."
+```
+
+#### Reviewer 1 — CLAUDE.md Compliance
+
+```
+Your role: Audit code changes for compliance with the project's CLAUDE.md guidelines.
+
+Rules:
+- Only flag items SPECIFICALLY called out in a CLAUDE.md file
+- Double-check that the CLAUDE.md actually requires what you are flagging
+- CLAUDE.md is guidance for Claude as it writes code — not all instructions are applicable during code review
+- If an issue is silenced in code (lint-ignore comment), do not flag it
+- Use Category: CLAUDE.md
+
+Focus on: naming conventions, architecture patterns, forbidden patterns, required practices, testing requirements, and any explicit "NEVER" or "ALWAYS" rules in the CLAUDE.md files.
+```
+
+#### Reviewer 2 — Bug Scanner
+
+```
+Your role: Shallow scan for obvious bugs in the code changes ONLY.
+
+Rules:
+- Focus on LARGE bugs — ignore small issues and nitpicks
+- Only look at the diff content — do NOT read extra context beyond the changes
+- Ignore issues that a linter, typechecker, or compiler would catch (missing imports, type errors, formatting)
+- Ignore pre-existing issues on unchanged lines
+- Use Category: Bug
+
+Focus on: null/undefined errors, off-by-one errors, logic inversions, missing error handling on critical paths, incorrect API usage, broken control flow, data loss scenarios.
+```
+
+#### Reviewer 3 — Git Blame/History Analyzer
+
+```
+Your role: Analyze git blame and history of modified files to identify issues in historical context.
+
+Rules:
+- Read git blame for each modified file to understand the history
+- Read recent commits touching these files for context
+- Use Category: History
+
+Focus on: reverted changes being re-introduced, recently-fixed bugs in the same area, breaking patterns established by previous authors, ignoring guidance from previous PR comments, modifying areas that were specifically stabilized.
+
+Commands to use:
+- git blame {file} — for each modified file
+- git log --oneline -10 -- {file} — recent history per file
+- git log --all --oneline --grep="fix" -- {file} — find previous fixes
+```
+
+#### Reviewer 4 — Security Reviewer
+
+```
+Your role: Security-focused scan of code changes.
+
+Rules:
+- Only report HIGH confidence exploitable findings
+- Do not flag theoretical or speculative security issues
+- Use Category: Security
+
+Focus on:
+- Input validation: SQL injection, XSS, command injection, path traversal
+- Authentication/authorization: bypasses, missing checks, privilege escalation
+- Secrets: hardcoded API keys, tokens, passwords, credentials in code
+- Data exposure: PII in logs, verbose error messages, sensitive data in responses
+- Cryptographic issues: weak algorithms, improper key management
+- SSRF, open redirects, insecure deserialization
+```
+
+#### Reviewer 5 — Code Comments Compliance (conditional)
+
+```
+Your role: Ensure code changes comply with guidance in code comments.
+
+Rules:
+- Only launch if modified files contain substantive comments: // NOTE:, // IMPORTANT:, // INVARIANT:, // SAFETY:, // TODO:, // HACK:, // WARNING:
+- Check that changes respect the intent documented in those comments
+- Use Category: Comments
+
+Focus on: violated invariants, ignored safety notes, broken assumptions documented in comments, TODO items that are now relevant to the change.
+```
+
+### Agent Output Format
+
+Each reviewer returns structured findings. Example:
+
+```
+Finding: JWT secret read from environment without validation — if missing, jwt.verify() silently accepts any token
+File: src/auth/middleware.ts:45
+Category: Security
+Reason: process.env.JWT_SECRET used directly without null check. jwt.verify(token, undefined) is a known bypass.
+Suggested fix:
+const secret = process.env.JWT_SECRET;
+if (!secret) throw new Error('JWT_SECRET environment variable is required');
+const decoded = jwt.verify(token, secret);
+```
+
+### Phase Transition Logic
+
+- **Phase 1 → Phase 2**: Wait for both Haiku agents to complete. If Agent A finds no CLAUDE.md files, skip Reviewer 1 (CLAUDE.md compliance). If Agent B indicates Low risk + test-only/docs-only change, consider running fewer reviewers.
+- **Phase 2 → Phase 3**: Collect all findings from all reviewers. Deduplicate: if two reviewers flag the same file:line, keep the more detailed finding. If no findings from any reviewer, skip Phase 3 and generate a clean report.
+- **Phase 3 → Phase 4**: Filter findings below 80. If all filtered, generate clean report.
+- **Phase 4 → Phase 5**: Report always generated. Phase 5 only runs if `--post-to-pr` flag was set.
+- **Phase 5 → Phase 6**: Phase 6 always runs (unless Skill tool unavailable).
+
+### Error Handling
+
+- If a reviewer agent fails (timeout, error): continue with results from successful agents. Add note to report: "Note: {reviewer-name} did not complete. Partial review."
+- If ALL reviewers fail: fall back to single-agent review — analyze the diff directly using the Hierarchical Review Framework below.
+- If a scoring agent fails for a finding: default that finding's score to 75 (conservative — just below threshold).
 
 ---
 
-## 1. Architectural Design & Integrity (Critical)
+## Hierarchical Review Framework
+
+Reference material for review agents and single-agent fallback.
+
+### 1. Architectural Design & Integrity (Critical)
 
 - Evaluate if the design aligns with existing architectural patterns and system boundaries
 - Assess modularity and adherence to Single Responsibility Principle
@@ -46,7 +168,7 @@ Check for these signals in the diff:
 - Verify the change is atomic (single, cohesive purpose) not bundling unrelated changes
 - Check for appropriate abstraction levels and separation of concerns
 
-## 2. Functionality & Correctness (Critical)
+### 2. Functionality & Correctness (Critical)
 
 - Verify the code correctly implements the intended business logic
 - Identify handling of edge cases, error conditions, and unexpected inputs
@@ -54,7 +176,7 @@ Check for these signals in the diff:
 - Validate state management and data flow correctness
 - Ensure idempotency where appropriate
 
-## 3. Security (Non-Negotiable)
+### 3. Security (Non-Negotiable)
 
 - Verify all user input is validated, sanitized, and escaped (XSS, SQLi, command injection prevention)
 - Confirm authentication and authorization checks on all protected resources
@@ -63,7 +185,7 @@ Check for these signals in the diff:
 - Validate CORS, CSP, and other security headers where applicable
 - Review cryptographic implementations for standard library usage
 
-## 4. Maintainability & Readability (High Priority)
+### 4. Maintainability & Readability (High Priority)
 
 - Assess code clarity for future developers
 - Evaluate naming conventions for descriptiveness and consistency
@@ -72,7 +194,7 @@ Check for these signals in the diff:
 - Check for appropriate error messages that aid debugging
 - Identify code duplication that should be refactored
 
-## 5. Testing Strategy & Robustness (High Priority)
+### 5. Testing Strategy & Robustness (High Priority)
 
 - Evaluate test coverage relative to code complexity and criticality
 - Verify tests cover failure modes, security edge cases, and error paths
@@ -80,7 +202,7 @@ Check for these signals in the diff:
 - Check for appropriate test isolation and mock usage
 - Identify missing integration or end-to-end tests for critical paths
 
-## 6. Performance & Scalability (Important)
+### 6. Performance & Scalability (Important)
 
 - **Backend**: Identify N+1 queries, missing indexes, inefficient algorithms
 - **Frontend**: Assess bundle size impact, rendering performance, Core Web Vitals
@@ -88,7 +210,7 @@ Check for these signals in the diff:
 - Review caching strategies and cache invalidation logic
 - Identify potential memory leaks or resource exhaustion
 
-## 7. Dependencies & Documentation (Important)
+### 7. Dependencies & Documentation (Important)
 
 - Question necessity of new third-party dependencies
 - Assess dependency security, maintenance status, and license compatibility
@@ -130,8 +252,8 @@ Apply these rules before finalizing findings. Discard any finding that matches a
 2. **Theoretical performance** — do not flag without measurable impact or Big-O degradation
 3. **Subjective preferences** — discard if you cannot cite a named engineering principle
 4. **Test-only file issues** — do not flag patterns in test files that don't affect production code
-5. **Framework-handled concerns** — do not flag XSS in React/Angular unless using unsafe HTML injection APIs
-6. **Missing features not in scope** — do not flag features the PR didn't intend to add
+5. **Framework-handled concerns** — do not flag concerns handled by the framework's security model
+6. **Missing features not in scope** — do not flag features the changes didn't intend to add
 7. **Consistent naming** — do not nitpick naming that matches the existing codebase convention
 8. **Established patterns** — do not flag code patterns used elsewhere in the codebase as issues
 9. **Code outside the diff** — do not report on unchanged code unless directly impacted by the change
@@ -149,35 +271,32 @@ If any answer is "no," suppress the finding.
 
 ---
 
-## Confidence Scoring Guide
+## Confidence Scoring (0-100 Scale)
 
 ### Scoring Rubric
 
 | Score | Meaning | Examples |
 |-------|---------|----------|
-| 9-10 | Certain — clear bug, vulnerability, or architectural violation | SQL injection via string interpolation; missing null check causing crash; SRP violation creating circular dependency |
-| 7-8 | Strong evidence — likely issue, may depend on context | Missing error handling on API call; potential race condition in concurrent path; N+1 query pattern |
-| 5-6 | Moderate — plausible concern but speculative | "This could be slow at scale" without metrics; naming that's unclear but functional |
-| 1-4 | Weak — personal preference or theoretical | Style preference not in style guide; micro-optimization; "I would have done it differently" |
+| 90-100 | Certain — clear bug, vulnerability, or violation with evidence | SQL injection via string interpolation; missing null check causing crash; explicit CLAUDE.md violation |
+| 75-89 | Strong evidence — very likely real, important and impactful | Missing error handling on critical API call; potential race condition in concurrent path; N+1 query |
+| 50-74 | Moderate — verified but minor or nitpick | Naming that's unclear but functional; could be slow at scale without metrics |
+| 25-49 | Weak — might be real, unable to verify | Speculative concern; pattern that "seems wrong" without evidence |
+| 0-24 | False positive — doesn't hold up to scrutiny | Pre-existing issue; framework-handled concern; linter territory |
 
-### Decision Matrix
+### Threshold & Triage Mapping
 
-| Confidence | Allowed Triage Levels |
-|------------|----------------------|
-| 9-10 | Blocker, Improvement |
-| 7-8 | Improvement, Question |
-| 5-6 | Suppress (do not report) |
-| Below 5 | Discard |
+| Score | Action | Triage Level |
+|-------|--------|--------------|
+| 90-100 | Report | Blocker (if severity warrants) or Improvement |
+| 80-89 | Report | Improvement or Question |
+| Below 80 | Filter out | Do not include in report |
 
-### Self-Reflection Pass
+### Deduplication
 
-After generating all candidate findings:
-
-1. Review all findings together as a set — are there redundant or overlapping items?
-2. Re-score each finding with full context of the others
-3. Remove any finding that dropped below threshold after re-evaluation
-4. Enforce caps: keep top 8 meaningful findings + top 2 Nits by confidence
-5. If exceeding caps, drop the lowest-confidence items and note: "Additional observations available on request"
+If two reviewers flag the same issue (same file:line or overlapping concern):
+- Keep the higher-confidence version
+- Merge context from both if complementary
+- Do not report the same issue twice
 
 ---
 
@@ -217,14 +336,15 @@ Maintain objectivity and assume good intent. The goal is net improvement, not pe
 **Date**: {ISO 8601 date}
 **Branch**: {current branch name}
 **Commit**: {short commit hash}
-**Reviewer**: Claude Code (pragmatic-code-review)
+**Reviewer**: Claude Code (multi-agent code review)
+**Review Mode**: Multi-Agent Orchestration ({N} reviewers, confidence threshold: 80)
 
 ## PR Assessment
 
 | Attribute | Value |
 |-----------|-------|
 | **Risk Level** | {Low / Medium / High / Critical} |
-| **PR Type** | {Feature / Bugfix / Refactor / Config / Test-only / Docs} |
+| **Change Type** | {Feature / Bugfix / Refactor / Config / Test-only / Docs} |
 | **Atomicity** | {Atomic / Mixed — consider splitting} |
 | **Breaking Changes** | {None / Yes — description} |
 
@@ -238,21 +358,21 @@ Maintain objectivity and assume good intent. The goal is net improvement, not pe
 
 ### Blockers
 
-- **[Blocker]** `{file}:{line}` — {Description} (Confidence: {N}/10)
+- **[Blocker]** `{file}:{line}` — {Description} (Confidence: {N}/100, Source: {category})
   - **Principle**: {Named engineering principle}
   - **Current**: `{code snippet}`
   - **Suggested**: `{fix snippet}`
 
 ### Improvements
 
-- **[Improvement]** `{file}:{line}` — {Suggestion and rationale} (Confidence: {N}/10)
+- **[Improvement]** `{file}:{line}` — {Suggestion and rationale} (Confidence: {N}/100, Source: {category})
   - **Principle**: {Named engineering principle}
   - **Current**: `{code snippet}`
   - **Suggested**: `{fix snippet}`
 
 ### Questions
 
-- **[Question]** `{file}:{line}` — {Clarification needed}
+- **[Question]** `{file}:{line}` — {Clarification needed} (Source: {category})
 
 ### Praise
 
@@ -271,3 +391,55 @@ Maintain objectivity and assume good intent. The goal is net improvement, not pe
 - **Questions**: {count}
 - **Nits**: {count}
 ```
+
+---
+
+## GitHub PR Comment Format
+
+Used in Phase 5 when `--post-to-pr` is enabled. Keep comments brief and link to code with full SHA.
+
+### Comment Template
+
+```markdown
+### Code review
+
+Found {N} issues:
+
+1. {brief description} ({source}: "{evidence or CLAUDE.md quote}")
+
+{link to file with full SHA and line range}
+
+2. {brief description} ({source}: "{evidence}")
+
+{link to file with full SHA and line range}
+
+---
+
+Generated with [Claude Code](https://claude.ai/code)
+
+<sub>If this review was useful, react with :+1:. Otherwise, react with :-1:.</sub>
+```
+
+### Clean Review Comment
+
+```markdown
+### Code review
+
+No issues found. Checked for bugs, security issues, and CLAUDE.md compliance.
+
+---
+
+Generated with [Claude Code](https://claude.ai/code)
+```
+
+### Code Link Format
+
+Links MUST use full SHA and line range:
+```
+https://github.com/{owner}/{repo}/blob/{full-sha}/{path/to/file}#L{start}-L{end}
+```
+
+- Use full 40-character SHA (not abbreviated)
+- Include at least 1 line of context before and after
+- Repo name must match the repo being reviewed
+- Get the full SHA via: `git rev-parse HEAD`

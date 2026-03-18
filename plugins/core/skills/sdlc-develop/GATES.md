@@ -19,6 +19,7 @@ Human-in-the-Loop gates ensure appropriate oversight at critical decision points
 | Phase 0 → 1 | Existing System Findings | ⚠️ Tier 2 | REUSE/ENHANCE/CREATE decisions |
 | Phase 0 (RESUME) | Wave Resume + Task Selection | ⚠️ Tier 2 | Continue next wave; "All remaining tasks" skips Step 4.0 |
 | Phase 1 → 2 | Requirements Summary | ⚠️ Tier 2 | Approval before architecture |
+| Phase 2a-res | Domain Research | ⚠️ Tier 2 | Research best practices before architecture design |
 | Phase 2c | Architecture Decision | ⛔ Tier 1 | Cannot skip, even with `--auto` |
 | Phase 2 → 3 | Plan Saved | ✅ Tier 3 | Auto-proceed, log only |
 | Phase 3 → 4 | Task Breakdown | ⚠️ Tier 2 | Validate before implementation |
@@ -63,6 +64,7 @@ Review recommended but can skip with `--auto`:
 
 - Requirements gathering complete
 - Existing system analysis complete
+- Domain research before architecture design
 - Task breakdown complete
 - Refactoring >100 LOC
 - New third-party dependencies
@@ -190,6 +192,7 @@ All gate decisions should be logged:
 |------|------|------|----------|------|
 | 10:15 | Existing System | Tier 2 | APPROVED | interactive |
 | 10:22 | Requirements | Tier 2 | APPROVED | interactive |
+| 10:30 | Domain Research | Tier 2 | Research | interactive |
 | 10:45 | Architecture | Tier 1 | Option A | interactive |
 | 10:46 | Plan Saved | Tier 3 | AUTO | auto |
 ```

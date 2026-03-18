@@ -81,6 +81,56 @@ Return:
 
 ---
 
+## Step 2a-res: Domain Research
+
+**Gate: Tier 2** ⚠️ (RECOMMENDED - skippable with `--auto`)
+
+Synthesize a targeted research query from Phase 1 spec and Step 2a codebase findings, then offer domain research before architecture design.
+
+### 1. Derive Research Topic
+
+From the available context, identify the primary domain topic to research:
+
+- **Phase 1 spec**: Feature domain, functional requirements, constraints
+- **Step 2a findings**: Tech stack, existing patterns, architecture style, frameworks in use
+
+Synthesize a focused research query, e.g.:
+- "Best practices for implementing event sourcing with PostgreSQL"
+- "React Server Components data fetching patterns"
+- "OAuth2 + JWT token refresh strategies for SPAs"
+
+### 2. Present Research Gate
+
+Use `AskUserQuestion`:
+- **header**: "Architecture Research"
+- **question**: "Codebase analysis complete. Research industry best practices for {inferred_topic} before architecture design?"
+- **options**:
+  - { label: "Research (Recommended)", description: "Investigate best practices and patterns via deep-research" }
+  - { label: "Skip research", description: "Proceed directly to architecture design" }
+
+**If `--auto`:** Skip research, set `research_findings = null`, proceed to Step 2b.
+
+### 3. Execute Research (if accepted)
+
+1. Invoke `Skill` tool with `skill: "deep-research"`, passing the synthesized research query as argument
+2. The deep-research skill handles caching (fast on cache hit) and EXA-based research (on cache miss)
+3. Capture the structured research output
+4. Set `research_findings = [structured brief of key findings]`
+
+**Key findings to extract for Step 2b:**
+- Recommended patterns and architectural approaches
+- Common pitfalls and anti-patterns to avoid
+- Industry-standard solutions for the problem domain
+- Relevant trade-offs observed in real-world implementations
+
+### 4. Skip Handling
+
+If user selects "Skip research" or `--auto` mode:
+1. Set `research_findings = null`
+2. Proceed directly to Step 2b
+
+---
+
 ## Step 2b: Architecture Design
 
 Launch 2-3 `code-architect` agents with different approaches:
@@ -91,11 +141,14 @@ Design an implementation approach for this feature:
 **Feature:** [user request]
 **Requirements:** [from Phase 1]
 **Codebase Findings:** [from Step 2a]
+**Research Findings:** [from Step 2a-res, or "No research conducted" if skipped]
 
 Your approach focus: [assign one per agent]
 - Minimal changes (smallest change, maximum reuse)
 - Clean architecture (maintainability, elegant abstractions)
 - Pragmatic balance (speed + quality)
+
+If research findings are available, incorporate relevant patterns and avoid documented anti-patterns.
 
 Return:
 - Overview of approach
@@ -127,6 +180,7 @@ After user approves architecture decision, persist to plan.md immediately:
    - Technical architecture (components, data flow)
    - Implementation phases
    - Design assets section (if UI work)
+   - Research references (if Step 2a-res conducted): topic, key findings summary, cache path
 3. **Write updated plan.md** using [plan.md.template](../templates/plan.md.template)
 4. **Log:** "Architecture saved to `{spec_path}/plan.md`"
 
@@ -141,6 +195,35 @@ Generate additional files when applicable:
 1. **adr-{NNN}.md** - For significant architectural decisions (use [adr.md.template](../templates/adr.md.template))
 2. **api-contract.md** - When feature includes API endpoints (use [api-contract.md.template](../templates/api-contract.md.template))
 3. **data-models.md** - When feature involves database changes (use [data-models.md.template](../templates/data-models.md.template))
+
+4. **RFC (conditional)** - When conditional Tier 1 triggers are detected
+
+   Check if any escalation triggers from [GATES.md](../GATES.md) are present in the architecture:
+   - Database schema changes (CREATE TABLE, ALTER TABLE, migrations)
+   - Security implementation (JWT, OAuth2, encryption, permissions)
+   - Breaking API changes (removed endpoints, changed contracts)
+   - New service/module creation
+   - Architecture decisions affecting multiple services
+   - Performance-critical algorithm changes
+
+   **If triggers detected**, use `AskUserQuestion`:
+   - **header**: "RFC Creation"
+   - **question**: "This feature involves {trigger_type}. Create a formal RFC for team review?"
+   - **options**:
+     - { label: "Create RFC (Recommended)", description: "Draft RFC from spec and architecture context" }
+     - { label: "Skip RFC", description: "Proceed without formal RFC" }
+
+   **If `--auto`:** Skip RFC creation.
+
+   **If user accepts:**
+   1. Invoke `Skill` tool with `skill: "create-rfc"`, passing the feature name as argument
+   2. The create-rfc skill gathers context from conversation (spec.md, plan.md, research findings) and writes a populated RFC
+   3. Log: "RFC created — review with `/doc:review-rfc <path>`"
+
+   **If user skips:**
+   1. Log: "RFC skipped. Conditional triggers noted in gate log."
+
+   **Note:** Requires `doc` plugin. Skip RFC offer if plugin is not installed.
 
 ### First-Run Behavior
 
@@ -223,8 +306,10 @@ Run `/core:develop @{spec_path}/` when ready to implement.
 
 Phase 2 produces:
 - Codebase exploration findings
+- Domain research findings (if conducted)
 - Architecture design options
 - Selected approach with rationale
 - Saved spec.md and plan.md files
+- RFC draft (if conditional triggers detected and user accepted)
 
 **Next:** Proceed to [PHASE-3-WORKSTREAMS.md](PHASE-3-WORKSTREAMS.md)
