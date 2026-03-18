@@ -152,7 +152,7 @@ const decoded = jwt.verify(token, secret);
 
 - If a reviewer agent fails (timeout, error): continue with results from successful agents. Add note to report: "Note: {reviewer-name} did not complete. Partial review."
 - If ALL reviewers fail: fall back to single-agent review — analyze the diff directly using the Hierarchical Review Framework below.
-- If a scoring agent fails for a finding: default that finding's score to 75 (conservative — just below threshold).
+- If a scoring agent fails for a finding: default that finding's score to 80 (conservative — finding stays in the report). Better to surface a potential false positive than silently drop a real issue.
 
 ---
 

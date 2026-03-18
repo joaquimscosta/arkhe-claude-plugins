@@ -83,6 +83,12 @@ If you believe issues were missed, check the reviewer outputs before scoring was
 
 **Fix**: If many findings score 80+, it indicates genuine issues in the code. The pipeline does not impose an arbitrary cap — all high-confidence findings are reported. Address the highest-confidence ones first. If the report feels overwhelming, focus on Blockers before Improvements.
 
+### Scoring agent fails for a finding
+
+**Symptoms**: A finding appears in the report without a confidence score justification, or the report notes a scoring agent failure.
+
+**Fix**: When a scoring agent fails, the finding defaults to a score of 80 (at threshold) and stays in the report. This is the expected safe behavior — it prevents real issues from being silently dropped. If the finding is a false positive, run `/review:verify-findings` on the report for additional verification.
+
 ---
 
 ## GitHub PR Posting Issues
