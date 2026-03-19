@@ -1,12 +1,12 @@
 ---
 name: adr
 description: >-
-  Create and manage Architecture Decision Records (ADRs) with auto-numbering,
-  template detection, and index maintenance. Use when user mentions "ADR",
-  "architecture decision", "document this decision", "create ADR", editing
-  ADR files (docs/adr/, doc/adr/, .adr/), or discussing architectural choices
-  and tradeoffs.
-argument-hint: "<action> [args]  (create <title> | list | supersede <old> <new> | index)"
+  Create, review, and manage Architecture Decision Records (ADRs) with
+  auto-numbering, template detection, quality review, and index maintenance.
+  Use when user mentions "ADR", "architecture decision", "document this
+  decision", "create ADR", "review ADR", editing ADR files (docs/adr/,
+  doc/adr/, .adr/), or discussing architectural choices and tradeoffs.
+argument-hint: "<action> [args]  (create <title> | review <path> | list | supersede <old> <new> | index)"
 ---
 
 # ADR Manager
@@ -20,6 +20,7 @@ When invoked explicitly with `/adr <action>`, parse the first word:
 | First word | Remaining args | Operation |
 |------------|---------------|-----------|
 | `create` | `<title>` | Create a new ADR with the given title |
+| `review` | `<path>` | Lightweight quality review of an ADR |
 | `list` | (none) | List all ADRs (same as running `adr_index.py --dry-run`) |
 | `supersede` | `<old-number> <new-number>` | Supersede an old ADR with a new one |
 | `index` | (none) | Regenerate the README.md index |
@@ -38,11 +39,15 @@ This skill automatically activates when:
 
 ## What This Skill Delivers
 
-### 1. ADR Creation
-- Auto-detect project's ADR directory
+### 1. ADR Creation (Enhanced)
+- Gather context from conversation, codebase, and existing ADRs
+- Confirm decision topic with user before drafting
+- Auto-detect project's ADR directory and template style
 - Auto-number ADRs (scan existing, increment)
-- Adapt to project's existing template style
+- Draft populated ADR with real content (not blank template)
+- Always append Author's Notes section (2-5 items)
 - Offer MADR 4.0 enhancements as optional additions
+- Suggest `/adr review <path>` after creation
 
 ### 2. Directory Discovery
 Search order for ADR directories:
@@ -69,6 +74,27 @@ When replacing an ADR:
 - Link new ADR with "Supersedes [ADR-NNNN]"
 - Update README.md index
 
+### 6. ADR Review
+Lightweight quality check using the `adr-critic` agent:
+1. Read ADR at given path (if empty, ask — suggest globbing ADR dirs)
+2. Spawn adr-critic agent (`subagent_type: "doc:adr-critic"`)
+   - Pass: full ADR content
+   - Instruct: "Read Author's Notes first as prioritized review targets"
+3. Agent evaluates 4 dimensions, returns score + verdict + 3-5 findings
+4. Present review to user
+5. Verdicts: **Approve** | **Needs improvement** | **Needs rethink**
+6. Suggest next steps based on verdict
+
+### 7. Author's Notes (Confession)
+Every ADR gets an `## Author's Notes` section after Consequences:
+- **Shortcuts**: What was simplified or hand-waved?
+- **Assumptions**: What was believed but not verified?
+- **Uncertainties**: Which parts had least information?
+
+Target: 2-5 items. Be specific, reference ADR sections.
+
+**Lifecycle**: Added on create (always) | Read by adr-critic as review targets | Stripped when Status → Accepted | Preserved on Superseded | Refreshed on major rewrites.
+
 ## Core Template Sections
 
 ### Required (Minimal)
@@ -77,6 +103,7 @@ When replacing an ADR:
 - **Context and Problem Statement**: 2-3 sentences describing the situation
 - **Decision**: What was decided and why
 - **Consequences**: Positive and negative impacts
+- **Author's Notes**: Shortcuts, assumptions, uncertainties (stripped on Accepted)
 
 ### Optional Enhancements (MADR 4.0)
 - **Technical Story**: Link to issue/spec (e.g., `#123`)
@@ -100,6 +127,16 @@ When replacing an ADR:
 "Document the decision to use PostgreSQL over MongoDB"
 "Create an ADR for our authentication approach"
 "I need to record why we chose React Query"
+```
+
+### Review an ADR
+```bash
+# Explicit subcommand:
+/adr review docs/adr/0005-use-postgresql-for-persistence.md
+
+# Auto-invoke:
+"Review ADR-0005 for decision quality"
+"Check if our caching ADR has solid reasoning"
 ```
 
 ### Supersede Existing ADR
@@ -139,13 +176,14 @@ uv run ${CLAUDE_SKILL_DIR}/scripts/adr_index.py --dir docs/adr --dry-run
 uv run ${CLAUDE_SKILL_DIR}/scripts/adr_supersede.py --old 5 --new 12 --dir docs/adr
 ```
 
-## Output Example
+## Output Examples
 
+### Proposed ADR (with Author's Notes)
 ```markdown
 # ADR-0012: Use PostgreSQL for Data Persistence
 
 ## Status
-Accepted
+Proposed
 
 ## Date
 2026-01-10
@@ -165,6 +203,24 @@ ACID compliance, query flexibility, and team familiarity.
 
 **Negative:**
 - Horizontal scaling requires more setup
+
+## Author's Notes
+- **Shortcut**: Did not benchmark PostgreSQL vs CockroachDB under our expected write load; relied on team experience instead
+- **Assumption**: Assumed read replicas will handle 5x current read traffic based on similar projects, not our actual query patterns
+- **Uncertainty**: License compatibility of pgvector extension with our Apache 2.0 project not verified
+```
+
+### Accepted ADR (Author's Notes stripped)
+```markdown
+# ADR-0012: Use PostgreSQL for Data Persistence
+
+## Status
+Accepted
+
+## Date
+2026-01-10
+
+(same content, but ## Author's Notes section removed entirely)
 ```
 
 ## Progressive Disclosure

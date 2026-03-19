@@ -20,7 +20,7 @@ Multi-purpose documentation toolkit for generating comprehensive technical docum
 
 - **code-explanation**: Auto-invoked code explanation skill that provides clear narratives, visual diagrams, and step-by-step breakdowns for complex code. Triggers on "explain this code", "how does this work", or when using `/code-explain`. Supports algorithm visualization, design pattern explanation, and progressive complexity levels.
 
-- **adr**: ADR (Architecture Decision Record) management for creating and maintaining technical decision documentation. Supports explicit subcommands (`/adr create`, `/adr list`, `/adr supersede`, `/adr index`) and auto-invokes on keywords like "ADR", "architecture decision", or when editing files in `docs/adr/`. Features auto-numbering, template detection (minimal or MADR 4.0), README index updates, and supersession workflow. Includes Python scripts using `uv` for deterministic operations.
+- **adr**: ADR (Architecture Decision Record) management with quality review. Supports explicit subcommands (`/adr create`, `/adr review`, `/adr list`, `/adr supersede`, `/adr index`) and auto-invokes on keywords like "ADR", "architecture decision", or when editing files in `docs/adr/`. Features context-driven creation, Author's Notes (confession pattern for self-assessment), lightweight quality review via `adr-critic` agent, auto-numbering, template detection (minimal or MADR 4.0), README index updates, and supersession workflow. Includes Python scripts using `uv` for deterministic operations.
 
 - **jd-docs**: Auto-invoked Johnny.Decimal documentation structure management for scaffolding, validating, and maintaining numbered docs areas. Triggers on keywords like "Johnny Decimal", "docs structure", "organize docs", or when editing files in numbered directories (00-*, 10-*, 20-*). Features default area scheme with per-project customization via `.jd-config.json`, structure validation, and README index generation. Includes Python scripts using `uv` for deterministic operations.
 
@@ -129,9 +129,15 @@ After installation, all commands and skills will be available:
 ```bash
 # Explicit subcommands
 /adr create Use Redis for caching
+/adr review docs/adr/0005-use-postgresql-for-persistence.md
 /adr list
 /adr supersede 5 12
 /adr index
+
+# Typical workflow: create → review → accept
+/adr create Use Redis for session storage
+/adr review docs/adr/0014-use-redis-for-session-storage.md
+# Address findings, then accept (strips Author's Notes)
 
 # Auto-invoke by mentioning ADR keywords
 "Create an ADR for using PostgreSQL"
@@ -187,4 +193,4 @@ uv run doc/skills/jd-docs/scripts/jd_index.py --dir docs
 
 ## Version
 
-1.4.0
+1.6.0
