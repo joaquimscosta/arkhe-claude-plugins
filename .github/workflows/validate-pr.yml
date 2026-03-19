@@ -1,0 +1,32 @@
+name: Validate PR
+
+on:
+  pull_request:
+    paths:
+      - 'plugins/**'
+      - '.claude-plugin/marketplace.json'
+      - '.claude/skills/**'
+
+permissions:
+  contents: read
+
+jobs:
+  validate-plugins:
+    name: Plugin Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install PyYAML
+        run: pip install pyyaml
+
+      - name: Run plugin validation
+        run: |
+          python3 .claude/skills/plugin-release-checker/scripts/check_release_readiness.py \
+            --all --format text
