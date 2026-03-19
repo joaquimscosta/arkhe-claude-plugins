@@ -6,7 +6,7 @@ Detailed per-operation workflows for the RFC skill.
 
 ### Search Algorithm
 
-Check all paths and merge results (deduplicate by filename):
+Check all paths and merge results (deduplicate by filename). Exclude `*.spec.md` companion files from results:
 
 1. `docs/rfcs/*.md`
 2. `docs/20-architecture/rfcs/*.md` — jd-docs convention
@@ -54,11 +54,37 @@ Search for existing information before writing:
 
 Present a brief summary of findings and proposed RFC scope. Ask the user to confirm or adjust. Use `AskUserQuestion` with key scoping choices if there are meaningful alternatives.
 
-### Step 4: Read Template
+### Step 4: Resolve Number and Slug
+
+Compute the auto-number and slug early — both the spec and RFC files share the same `NNNN-<slug>`:
+
+1. Discover the write directory (see Write Directory Resolution above)
+2. Glob all convention paths for the highest existing RFC number
+3. Assign the next sequential number (zero-padded to 4 digits)
+4. Ask user to confirm the title, then generate a kebab-case filename slug
+5. Both files will use this: `<dir>/NNNN-<slug>.spec.md` and `<dir>/NNNN-<slug>.md`
+
+### Step 5: Write Spec File
+
+Draft a lightweight spec to anchor the full RFC:
+
+1. Read the spec template at `${CLAUDE_SKILL_DIR}/templates/rfc-spec-template.md`
+2. Fill in all four sections with concrete content:
+   - **Problem Statement**: 2-3 sentences describing the problem in terms of user/business impact. Include the cost of inaction.
+   - **Key Constraints**: Technical, organizational, or timeline constraints that bound the solution space. Be specific — "must support Postgres" not "database compatibility".
+   - **Success Criteria**: Measurable outcomes that indicate the RFC succeeded. Each criterion must be testable (e.g., "latency under 200ms at p99", "zero downtime migration").
+   - **Scope Boundaries**: What is explicitly in scope and out of scope. Out-of-scope items must include a reason.
+3. Write to `<dir>/NNNN-<slug>.spec.md` using the resolved number and slug
+4. Present the spec to the user. Use `AskUserQuestion` to confirm or adjust.
+5. Only proceed to the full RFC draft after user confirms the spec.
+
+**Completeness test**: Could someone who hasn't seen the original conversation draft a correct RFC from this spec alone? If not, add more detail.
+
+### Step 6: Read Template
 
 Read `${CLAUDE_SKILL_DIR}/templates/rfc-template.md` for section structure.
 
-### Step 5: Draft RFC
+### Step 7: Draft RFC
 
 Fill every section with substantive content:
 
@@ -80,20 +106,28 @@ Fill every section with substantive content:
 
 Set **Author** to the git user name, **Status** to `Draft`, **Date** to today.
 
-### Step 6: Discover Directory
+### Step 8: Append Author's Notes (Confession)
 
-Use the Write Directory Resolution algorithm above.
+After completing all standard RFC sections, append `## Author's Notes` below Open Questions:
 
-### Step 7: Auto-Number and Write
+- **Shortcuts**: What was simplified or hand-waved? (e.g., "Assumed Redis cluster mode works with our VPC setup without testing")
+- **Assumptions**: What did the author believe but not confirm from the codebase or documentation? (e.g., "Assuming the payment API returns sorted results")
+- **Uncertainties**: Which sections had the least information available?
+- **Low-confidence sections**: Which sections does the author consider weakest?
 
-1. Glob all convention paths to find the highest existing RFC number
-2. Assign the next sequential number (zero-padded to 4 digits)
-3. Ask user to confirm the title — generate a kebab-case filename slug
-4. Write to `<resolved-dir>/NNNN-<slug>.md`
+**Guidelines**:
+- Be specific and honest. Vague confessions like "some parts may need more thought" are useless.
+- Reference specific RFC sections (e.g., "The Scalability section assumes linear scaling — not verified").
+- Aim for 3-8 confession items. Fewer suggests overconfidence; more suggests the RFC is not ready.
+- These notes feed the adversarial review — they are features, not bugs.
 
-### Step 8: Suggest Next Steps
+### Step 9: Write RFC
 
-- `/rfc review <path-to-new-rfc>` — to get a design review
+Use the resolved number and slug from Step 4. Write to `<dir>/NNNN-<slug>.md`.
+
+### Step 10: Suggest Next Steps
+
+- `/rfc review <path-to-new-rfc>` — for adversarial design review (uses rfc-critic agent)
 - Manual review by team members
 
 ---
@@ -103,43 +137,32 @@ Use the Write Directory Resolution algorithm above.
 ### Context Loading
 
 1. Read the RFC document at the given path
-2. Discover architecture standards (check in order, use first found):
+2. Check for a companion spec file: replace `.md` with `.spec.md` in the filename (e.g., `0003-event-driven.md` → `0003-event-driven.spec.md`). If found, read it.
+3. Discover architecture standards (check in order, use first found):
    - `.arkhe/roadmap/architecture.md` (arkhe convention)
    - `docs/20-architecture/` directory (jd-docs convention)
    - `docs/architecture.md` or `docs/architecture/` (generic)
-   - If none found, review against general architecture best practices
-3. Scan referenced modules/packages in the RFC to verify feasibility
+   - If none found, the agent reviews against general architecture best practices
+4. Scan referenced modules/packages in the RFC to verify feasibility
 
-### Review Dimensions
+### Agent Delegation
 
-Evaluate each dimension, noting concerns with severity (Critical/Major/Minor):
+Spawn the `rfc-critic` agent (subagent_type: `doc:rfc-critic`) via the Agent tool. Provide in the prompt:
 
-#### 1. Problem Definition
-Is the problem clearly stated? Are goals and non-goals explicit? Is the motivation compelling?
+1. The full RFC content
+2. The spec file content (if found), with instruction: "Check RFC-vs-spec alignment for each success criterion and scope boundary"
+3. Architecture standards content (if found)
+4. Instruction: "Read the Author's Notes section first and use confessions as prioritized attack vectors"
 
-#### 2. Architecture Quality
-Does the design respect module boundaries? Is dependency direction correct? Does it follow established patterns from `architecture.md`?
-
-#### 3. Scalability
-Will this scale with user growth? Are there bottlenecks? Does it handle multi-tenant scenarios?
-
-#### 4. Data Architecture
-Is the data model sound? Are migrations safe? Are queries efficient? Does it maintain data integrity?
-
-#### 5. Infrastructure
-Is the deployment strategy clear? Are there new infrastructure requirements? Is rollback possible?
-
-#### 6. Security
-Are auth flows correct? Is input validated? Are there data privacy implications? Does it follow OWASP guidelines?
-
-#### 7. Project Fit
-Does it align with the project's domain and existing patterns? Does it integrate well with the current architecture?
+The agent independently evaluates all 7 dimensions with adversarial framing and returns a structured review. It has read-only codebase access (Read, Grep, Glob, Bash) to verify claims made in the RFC.
 
 ### Output Format
 
+The agent produces output in this format:
+
 ```markdown
 # RFC Review: [RFC Title]
-**Reviewer**: Claude | **Date**: [date] | **RFC**: [path]
+**Reviewer**: rfc-critic | **Date**: [date] | **RFC**: [path] | **Confidence**: [0-100]
 
 ## Verdict: [Approve | Approve with changes | Needs redesign]
 
@@ -152,13 +175,13 @@ Does it align with the project's domain and existing patterns? Does it integrate
 ## Concerns
 
 ### Critical
-- [concern] — Section: [ref] | Impact: [description]
+- [concern] — Section: [ref] | Evidence: [citation] | Impact: [description]
 
 ### Major
-- [concern] — Section: [ref] | Impact: [description]
+- [concern] — Section: [ref] | Evidence: [citation] | Impact: [description]
 
 ### Minor
-- [concern] — Section: [ref] | Suggestion: [fix]
+- [concern] — Section: [ref] | Evidence: [citation] | Suggestion: [fix]
 
 ## Suggested Improvements
 1. [improvement with rationale]
@@ -256,3 +279,18 @@ After updating, output a summary:
 - Keep Status unchanged by default
 - If user explicitly requests a status change (e.g., "move to Review"), update the `**Status**:` field
 - Valid transitions: Draft → Review → Approved/Rejected, any → Superseded
+
+### Author's Notes Handling
+
+- **Status transition to Approved**: Remove the `## Author's Notes` section and all its content entirely.
+- **User requests "refresh confessions"**: Regenerate the Author's Notes based on the current RFC state, replacing the old section.
+- **Major sections re-drafted**: After re-drafting, review the existing Author's Notes. If confessions reference sections that were substantially changed, update or remove those specific confession items.
+- **Otherwise**: Preserve Author's Notes as-is, like any other section.
+
+### Spec Alignment on Update
+
+If a companion `.spec.md` file exists and the update touches Goals, Non-Goals, Architecture Overview, or Scope-related content:
+
+1. Re-read the spec file
+2. Verify the updated RFC still aligns with the spec's Problem Statement, Key Constraints, Success Criteria, and Scope Boundaries
+3. If drift is detected, flag it to the user and suggest updating either the spec or the RFC to restore alignment

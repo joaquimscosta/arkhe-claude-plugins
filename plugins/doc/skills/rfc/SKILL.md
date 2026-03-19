@@ -28,7 +28,7 @@ If the first word does not match any action, treat the entire `$ARGUMENTS` as a 
 
 ## RFC Directory Discovery
 
-Used by all operations. Search for RFC files across all convention paths:
+Used by all operations. Search for RFC files across all convention paths (exclude `*.spec.md` companion files):
 
 1. `docs/rfcs/*.md`
 2. `docs/20-architecture/rfcs/*.md` (jd-docs — detected via `.jd-config.json` or `docs/20-architecture/` directory)
@@ -42,30 +42,32 @@ For **create** and **update**, resolve a write directory:
 
 ## Operation: create
 
-Draft a populated RFC — NOT a blank template. Gather context and write a real first draft.
+Draft a populated RFC — NOT a blank template. Gather context, write a spec, then write a real first draft with honest self-assessment.
 
 1. **Determine topic** from args after `create` (or ask if empty)
 2. **Gather context** — search conversation, research artifacts (`docs/30-research/`, `docs/50-research/`, `docs/research/`), memory files, relevant source code, and ADRs (`docs/20-architecture/22-adr/`, `docs/20-architecture/adr/`, `docs/adr/`). See [WORKFLOW.md](WORKFLOW.md) for detail.
 3. **Confirm scope** with user before drafting — present what you found and proposed scope. Use `AskUserQuestion` for meaningful alternatives.
-4. **Read template** at `${CLAUDE_SKILL_DIR}/templates/rfc-template.md` for section structure
-5. **Draft populated RFC** filling every section with substantive content. See [WORKFLOW.md](WORKFLOW.md) for per-section guidance. Set Author to git user name, Status to `Draft`, Date to today.
-6. **Discover directory** using RFC Directory Discovery above
-7. **Auto-number** — glob all convention paths for highest existing number, assign next (zero-padded 4 digits). Confirm title with user, generate kebab-case slug. Write to `<dir>/NNNN-<slug>.md`
-8. **Suggest next steps**: `/rfc review <path>` for design review
+4. **Resolve number and slug** — discover write directory, glob all convention paths for highest existing number, assign next (zero-padded 4 digits). Confirm title with user, generate kebab-case slug. Both spec and RFC will use `NNNN-<slug>`.
+5. **Write spec file** — read spec template at `${CLAUDE_SKILL_DIR}/templates/rfc-spec-template.md`. Fill Problem Statement, Key Constraints, Success Criteria, and Scope Boundaries with concrete content. Write to `<dir>/NNNN-<slug>.spec.md`. Present to user for confirmation via `AskUserQuestion`. See [WORKFLOW.md](WORKFLOW.md) for spec guidance.
+6. **Read RFC template** at `${CLAUDE_SKILL_DIR}/templates/rfc-template.md` for section structure
+7. **Draft populated RFC** filling every section with substantive content. See [WORKFLOW.md](WORKFLOW.md) for per-section guidance. Set Author to git user name, Status to `Draft`, Date to today.
+8. **Append Author's Notes** — below Open Questions, record: shortcuts taken, unverified assumptions, areas of uncertainty, low-confidence sections. Aim for 3-8 items. Be specific — these feed the adversarial review. See [WORKFLOW.md](WORKFLOW.md) for confession guidelines.
+9. **Write RFC** to `<dir>/NNNN-<slug>.md`
+10. **Suggest next steps**: `/rfc review <path>` for adversarial design review (uses rfc-critic agent)
 
 ## Operation: review
 
-Review the RFC against architecture standards and best practices.
+Adversarial review of the RFC using the `rfc-critic` agent — a dedicated red-team reviewer that reads the Author's Notes as attack vectors and checks spec alignment.
 
 1. **Read RFC** at the given path (if empty, ask — suggest globbing `docs/rfcs/*.md` and `docs/20-architecture/rfcs/*.md`)
-2. **Discover architecture standards** (check in order, use first found):
+2. **Load spec file** — check for a companion `NNNN-<slug>.spec.md` alongside the RFC. If found, read it.
+3. **Discover architecture standards** (check in order, use first found):
    - `.arkhe/roadmap/architecture.md` (arkhe convention)
    - `docs/20-architecture/` directory (jd-docs convention)
    - `docs/architecture.md` or `docs/architecture/` (generic)
    - Fall back to general best practices
-3. **Scan referenced modules** in the RFC to verify feasibility
-4. **Evaluate 7 dimensions** (Critical/Major/Minor severity): Problem Definition, Architecture Quality, Scalability, Data Architecture, Infrastructure, Security, Project Fit. See [WORKFLOW.md](WORKFLOW.md) for dimension details.
-5. **Output** using the review format in [WORKFLOW.md](WORKFLOW.md): verdict, summary, strengths, concerns by severity, improvements, rationale
+4. **Spawn rfc-critic agent** — use the Agent tool (subagent_type: `doc:rfc-critic`). Pass: the RFC content, spec content (if found), architecture standards (if found). See [WORKFLOW.md](WORKFLOW.md) for delegation details.
+5. **Present review output** — the agent returns a structured review with confidence score, verdict, concerns by severity (each with evidence citations), and improvements. Display to user.
 6. **Verdict criteria**:
    - **Approve**: No critical concerns, minor issues only
    - **Approve with changes**: No critical concerns, has major concerns with clear fixes
@@ -104,8 +106,10 @@ Re-draft specific sections of an existing RFC based on new context or feedback.
 3. **Gather fresh context** from conversation, research, and codebase for the sections being updated
 4. **Re-draft sections** — rewrite identified sections with improved content. Preserve all unchanged sections exactly as-is.
 5. **Update Date** to today. Keep Status unchanged unless user requests a transition.
-6. **Show diff summary** — list which sections were changed and a brief description of each change
-7. **Suggest next steps**: `/rfc review <path>` to verify the updates
+6. **Handle Author's Notes** — if status transitions to Approved, strip the Author's Notes section entirely. If major sections were re-drafted, refresh the confessions. See [WORKFLOW.md](WORKFLOW.md) for lifecycle rules.
+7. **Check spec alignment** — if a companion `.spec.md` file exists and the update touches Goals, Non-Goals, or Architecture Overview, verify the RFC still aligns with the spec. Flag drift to the user.
+8. **Show diff summary** — list which sections were changed and a brief description of each change
+9. **Suggest next steps**: `/rfc review <path>` to verify the updates
 
 ## Quality Standards
 

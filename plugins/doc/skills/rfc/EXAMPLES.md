@@ -13,7 +13,7 @@
 /rfc create
 ```
 
-**What happens**: Gathers context from conversation history, research artifacts, ADRs, and codebase. Confirms scope with you, then writes a fully populated RFC with auto-numbering.
+**What happens**: Gathers context from conversation history, research artifacts, ADRs, and codebase. Confirms scope with you. Writes a lightweight spec file (`NNNN-<slug>.spec.md`) for your approval. Then drafts a fully populated RFC with auto-numbering, including an Author's Notes section recording shortcuts, assumptions, and areas of uncertainty.
 
 ## Review
 
@@ -25,7 +25,7 @@
 /rfc review
 ```
 
-**What happens**: Loads the RFC and discovers architecture standards from the project. Evaluates across 7 dimensions (Problem Definition, Architecture Quality, Scalability, Data Architecture, Infrastructure, Security, Project Fit) and produces a verdict: Approve, Approve with changes, or Needs redesign.
+**What happens**: Loads the RFC and its companion spec file (if present). Discovers architecture standards from the project. Spawns the `rfc-critic` agent for an adversarial review — the critic reads the Author's Notes as prioritized attack vectors, evaluates 7 dimensions with a red-team mindset, checks RFC-vs-spec alignment, and produces a verdict with confidence score: Approve, Approve with changes, or Needs redesign. Every concern must cite evidence.
 
 ## List
 
@@ -59,7 +59,7 @@
 # 2. You specify which sections to update in conversation
 ```
 
-**What happens**: Reads the existing RFC, identifies which sections to update (from your instructions, review findings, or asks you), re-drafts those sections with fresh context while preserving everything else, and shows a diff summary.
+**What happens**: Reads the existing RFC, identifies which sections to update (from your instructions, review findings, or asks you), re-drafts those sections with fresh context while preserving everything else. Handles Author's Notes lifecycle — strips them on Approved status, refreshes after major re-drafts. Checks spec alignment if scope-related sections were changed. Shows a diff summary.
 
 ## Typical Workflow
 
@@ -67,15 +67,18 @@
 # 1. Research and discuss a topic in conversation
 "Let's discuss how to handle notifications in the system..."
 
-# 2. Capture the discussion as an RFC
+# 2. Capture the discussion as an RFC (writes spec first, then full RFC)
 /rfc create event-driven notifications
 
-# 3. Review the draft
+# 3. Adversarial review (uses rfc-critic agent)
 /rfc review docs/rfcs/0003-event-driven-notifications.md
 
 # 4. Address review findings
 /rfc update docs/rfcs/0003-event-driven-notifications.md
 
-# 5. Check the pipeline
+# 5. Re-review after updates
+/rfc review docs/rfcs/0003-event-driven-notifications.md
+
+# 6. Check the pipeline
 /rfc list
 ```

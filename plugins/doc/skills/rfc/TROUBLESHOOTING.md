@@ -50,3 +50,27 @@
 **Cause**: The `**Status**:` field is missing or uses a non-standard value.
 
 **Fix**: Ensure the RFC header includes `**Status**: Draft` (or Review, Approved, Rejected, Superseded). The field must match exactly: `**Status**:` followed by one of the valid values.
+
+## Spec File Not Found During Review
+
+**Symptom**: Review does not check RFC-vs-spec alignment.
+
+**Cause**: The spec file `NNNN-<slug>.spec.md` does not exist alongside the RFC. This is normal for RFCs created before the spec step was added, or for quick drafts.
+
+**Fix**: The review proceeds without spec alignment checking — this is expected. To add a spec retroactively, create the file manually following the spec template at `${CLAUDE_SKILL_DIR}/templates/rfc-spec-template.md`.
+
+## Author's Notes Not Stripped on Approval
+
+**Symptom**: The Author's Notes section persists after status changes to Approved.
+
+**Cause**: The status was changed by manually editing the file rather than through `/rfc update`.
+
+**Fix**: Use `/rfc update <path>` and request the status transition to Approved. The update operation automatically strips the Author's Notes section.
+
+## rfc-critic Agent Not Found
+
+**Symptom**: Review operation fails to spawn the rfc-critic agent.
+
+**Cause**: The doc plugin was not reinstalled after the update that added the agent.
+
+**Fix**: Reinstall the plugin: `/plugin uninstall doc@arkhe-claude-plugins` then `/plugin install doc@arkhe-claude-plugins`.
