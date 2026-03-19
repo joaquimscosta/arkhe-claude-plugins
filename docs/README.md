@@ -154,7 +154,7 @@ The Arkhe Claude Plugins marketplace demonstrates all plugin component types acr
 
 **Skills** (model-invoked capabilities):
 - **core**: 3 skills - `sdlc-develop` (command-invoke), `deep-research` (auto-invoke), `workflow-orchestration` (auto-invoke)
-- **doc**: 4 skills - `doc-coauthoring` (auto-activates on documentation keywords), `diagramming` (auto-activates on diagram/flowchart keywords), `code-explanation`, `managing-adrs`
+- **doc**: 4 skills - `doc-coauthoring` (auto-activates on documentation keywords), `diagramming` (auto-activates on diagram/flowchart keywords), `code-explanation`, `adr`
 - **git**: 4 skills - `generating-changelog` (auto-invoke) + 3 command-invoke skills
 - **google-stitch**: 2 skills - `authoring-stitch-prompts`, `generating-stitch-screens`
 - **design-intent**: 1 skill - `design-intent-specialist` (auto-activates for visual implementation work)

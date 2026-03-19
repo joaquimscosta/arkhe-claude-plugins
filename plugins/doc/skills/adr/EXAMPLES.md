@@ -436,6 +436,36 @@ JavaScript/TypeScript AND JVM projects through its plugin architecture.
 
 ---
 
+## Command Usage
+
+### `/adr create`
+```bash
+/adr create Use PostgreSQL for persistence
+/adr create Migrate from Redux to React Query
+/adr create Use URL path versioning for REST API
+```
+
+### `/adr list`
+```bash
+/adr list
+# Output: table of all ADRs with number, title, status, and date
+```
+
+### `/adr supersede`
+```bash
+/adr supersede 5 12
+# Marks ADR-0005 as "Superseded by ADR-0012"
+# Adds "Supersedes ADR-0005" to ADR-0012
+```
+
+### `/adr index`
+```bash
+/adr index
+# Regenerates the README.md index table in the ADR directory
+```
+
+---
+
 ## Related Resources
 
 - [SKILL.md](SKILL.md) - Quick reference

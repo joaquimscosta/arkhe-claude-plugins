@@ -20,21 +20,19 @@ Multi-purpose documentation toolkit for generating comprehensive technical docum
 
 - **code-explanation**: Auto-invoked code explanation skill that provides clear narratives, visual diagrams, and step-by-step breakdowns for complex code. Triggers on "explain this code", "how does this work", or when using `/code-explain`. Supports algorithm visualization, design pattern explanation, and progressive complexity levels.
 
-- **managing-adrs**: Auto-invoked ADR (Architecture Decision Record) management for creating and maintaining technical decision documentation. Triggers on keywords like "ADR", "architecture decision", or when editing files in `docs/adr/`. Features auto-numbering, template detection (minimal or MADR 4.0), README index updates, and supersession workflow. Includes Python scripts using `uv` for deterministic operations.
+- **adr**: ADR (Architecture Decision Record) management for creating and maintaining technical decision documentation. Supports explicit subcommands (`/adr create`, `/adr list`, `/adr supersede`, `/adr index`) and auto-invokes on keywords like "ADR", "architecture decision", or when editing files in `docs/adr/`. Features auto-numbering, template detection (minimal or MADR 4.0), README index updates, and supersession workflow. Includes Python scripts using `uv` for deterministic operations.
 
 - **jd-docs**: Auto-invoked Johnny.Decimal documentation structure management for scaffolding, validating, and maintaining numbered docs areas. Triggers on keywords like "Johnny Decimal", "docs structure", "organize docs", or when editing files in numbered directories (00-*, 10-*, 20-*). Features default area scheme with per-project customization via `.jd-config.json`, structure validation, and README index generation. Includes Python scripts using `uv` for deterministic operations.
 
-- **create-rfc**: Drafts a populated RFC from conversation context, research artifacts, and codebase analysis. Use when a topic has been discussed or researched and needs to be captured as a formal technical proposal. Gathers context from research docs, memory, ADRs, and codebase before writing a real first draft.
-
-- **review-rfc**: Reviews an architecture RFC against project architecture standards and best practices. User-invoked only. Evaluates across 7 dimensions: problem definition, architecture quality, scalability, data architecture, infrastructure, security, and project fit. Discovers architecture standards from arkhe, jd-docs, or generic conventions.
-
-- **list-rfcs**: Lists all architecture RFCs and their status. User-invoked only. Searches multiple convention paths (`docs/rfcs/`, `docs/20-architecture/rfcs/`, `.arkhe/rfcs/`).
+- **rfc**: Unified RFC management with 4 operations: create, review, list, and update. Use `/rfc create <topic>` to draft a populated RFC from conversation context and codebase analysis; `/rfc review <path>` to evaluate against 7 architecture dimensions; `/rfc list` to show all RFCs with status; `/rfc update <path>` to re-draft specific sections. User-invoked only.
 
 ### Commands
 
 - **/code-explain**: Explains code in detail using the code-explanation skill. Generates visual diagrams, step-by-step breakdowns, and identifies patterns and gotchas. Perfect for understanding complex codebases.
 
 - **/diagram**: Create or edit Mermaid diagrams with manual control. Supports all diagram types: flowcharts, sequence diagrams, ERDs, state diagrams, Gantt charts, pie charts, git graphs, user journeys, quadrant charts, and timelines.
+
+- **/rfc**: Manage architecture RFCs. Supports `create <topic>`, `review <path>`, `list`, and `update <path>` operations.
 
 ## Use Cases
 
@@ -46,7 +44,7 @@ Multi-purpose documentation toolkit for generating comprehensive technical docum
 ✅ Architecture Decision Records (ADRs)
 ✅ Proposals, specs, and decision documents
 ✅ Johnny.Decimal documentation organization
-✅ RFC lifecycle management (create, review, list)
+✅ RFC lifecycle management (create, review, list, update)
 
 ## Applies To
 
@@ -129,6 +127,12 @@ After installation, all commands and skills will be available:
 ### ADR Management
 
 ```bash
+# Explicit subcommands
+/adr create Use Redis for caching
+/adr list
+/adr supersede 5 12
+/adr index
+
 # Auto-invoke by mentioning ADR keywords
 "Create an ADR for using PostgreSQL"
 "Document this architecture decision about authentication"
@@ -138,9 +142,9 @@ After installation, all commands and skills will be available:
 "Supersede ADR-0005 with a new caching strategy"
 
 # Use scripts directly
-uv run doc/skills/managing-adrs/scripts/adr_create.py --title "Use Redis for caching"
-uv run doc/skills/managing-adrs/scripts/adr_create.py --title "..." --template madr
-uv run doc/skills/managing-adrs/scripts/adr_index.py --dir docs/adr
+uv run doc/skills/adr/scripts/adr_create.py --title "Use Redis for caching"
+uv run doc/skills/adr/scripts/adr_create.py --title "..." --template madr
+uv run doc/skills/adr/scripts/adr_index.py --dir docs/adr
 ```
 
 ### Johnny.Decimal Docs
@@ -183,4 +187,4 @@ uv run doc/skills/jd-docs/scripts/jd_index.py --dir docs
 
 ## Version
 
-1.2.0
+1.4.0

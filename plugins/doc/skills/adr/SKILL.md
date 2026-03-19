@@ -1,11 +1,33 @@
 ---
-name: managing-adrs
-description: Create and manage Architecture Decision Records (ADRs) with auto-numbering, template detection, and index maintenance. Use when user mentions "ADR", "architecture decision", "document this decision", "create ADR", editing ADR files (docs/adr/, doc/adr/, .adr/), or discussing architectural choices and tradeoffs.
+name: adr
+description: >-
+  Create and manage Architecture Decision Records (ADRs) with auto-numbering,
+  template detection, and index maintenance. Use when user mentions "ADR",
+  "architecture decision", "document this decision", "create ADR", editing
+  ADR files (docs/adr/, doc/adr/, .adr/), or discussing architectural choices
+  and tradeoffs.
+argument-hint: "<action> [args]  (create <title> | list | supersede <old> <new> | index)"
 ---
 
-# Architecture Decision Records
+# ADR Manager
 
 Create and manage Architecture Decision Records following project conventions with automatic numbering and index maintenance.
+
+## Argument Parsing
+
+When invoked explicitly with `/adr <action>`, parse the first word:
+
+| First word | Remaining args | Operation |
+|------------|---------------|-----------|
+| `create` | `<title>` | Create a new ADR with the given title |
+| `list` | (none) | List all ADRs (same as running `adr_index.py --dry-run`) |
+| `supersede` | `<old-number> <new-number>` | Supersede an old ADR with a new one |
+| `index` | (none) | Regenerate the README.md index |
+| (empty) | | Auto-detect from conversation context |
+
+If the first word doesn't match an action, treat the entire `$ARGUMENTS` as a title and default to `create`.
+
+When auto-invoked (no explicit `/adr` command), detect the operation from conversation context as before.
 
 ## Auto-Invoke Triggers
 
@@ -70,6 +92,10 @@ When replacing an ADR:
 
 ### Create New ADR
 ```bash
+# Explicit subcommands:
+/adr create Use PostgreSQL over MongoDB
+/adr create Authentication approach for mobile apps
+
 # Auto-invoke by saying:
 "Document the decision to use PostgreSQL over MongoDB"
 "Create an ADR for our authentication approach"
@@ -78,29 +104,39 @@ When replacing an ADR:
 
 ### Supersede Existing ADR
 ```bash
+# Explicit subcommand:
+/adr supersede 5 12
+
+# Auto-invoke:
 "Supersede ADR-0005 with a new caching strategy"
 "Replace our database decision ADR with the new approach"
 ```
 
+### List and Index
+```bash
+/adr list
+/adr index
+```
+
 ## Scripts
 
-Located in `scripts/` directory, using uv for execution:
+Located in `${CLAUDE_SKILL_DIR}/scripts/` directory, using uv for execution:
 
 ### adr_create.py
 ```bash
-uv run scripts/adr_create.py --title "Use PostgreSQL for persistence"
-uv run scripts/adr_create.py --title "..." --template madr --create-dir
+uv run ${CLAUDE_SKILL_DIR}/scripts/adr_create.py --title "Use PostgreSQL for persistence"
+uv run ${CLAUDE_SKILL_DIR}/scripts/adr_create.py --title "..." --template madr --create-dir
 ```
 
 ### adr_index.py
 ```bash
-uv run scripts/adr_index.py --dir docs/adr
-uv run scripts/adr_index.py --dir docs/adr --dry-run
+uv run ${CLAUDE_SKILL_DIR}/scripts/adr_index.py --dir docs/adr
+uv run ${CLAUDE_SKILL_DIR}/scripts/adr_index.py --dir docs/adr --dry-run
 ```
 
 ### adr_supersede.py
 ```bash
-uv run scripts/adr_supersede.py --old 5 --new 12 --dir docs/adr
+uv run ${CLAUDE_SKILL_DIR}/scripts/adr_supersede.py --old 5 --new 12 --dir docs/adr
 ```
 
 ## Output Example

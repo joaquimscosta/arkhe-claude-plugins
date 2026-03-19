@@ -75,9 +75,9 @@ AI engineering toolkit for production-ready LLM applications.
 
 ### Doc Plugin
 Multi-purpose documentation toolkit with RFC management.
-- **Skills**: `doc-coauthoring`, `diagramming`, `code-explanation`, `managing-adrs`, `create-rfc`, `review-rfc`, `list-rfcs`
-- **Commands**: `/code-explain`, `/diagram`
-- **Use**: Documentation generation, code explanation, Mermaid diagrams, ADR management, RFC lifecycle (create, review, list)
+- **Skills**: `doc-coauthoring`, `diagramming`, `code-explanation`, `adr`, `rfc`
+- **Commands**: `/code-explain`, `/diagram`, `/rfc`
+- **Use**: Documentation generation, code explanation, Mermaid diagrams, ADR management, RFC lifecycle (create, review, list, update)
 
 ### Review Plugin
 Code quality review tools for development teams.

@@ -80,8 +80,8 @@ Multi-purpose documentation toolkit.
 **Install**: `/plugin install doc@arkhe-claude-plugins`
 
 **Components**:
-- 4 skills: `doc-coauthoring` (auto-invoked for documentation), `diagramming` (auto-invoked for diagrams), `code-explanation`, `managing-adrs`
-- 2 commands: `/code-explain`, `/diagram`
+- 6 skills: `doc-coauthoring` (auto-invoked for documentation), `diagramming` (auto-invoked for diagrams), `code-explanation`, `adr`, `jd-docs`, `rfc`
+- 3 commands: `/code-explain`, `/diagram`, `/rfc`
 
 ---
 
