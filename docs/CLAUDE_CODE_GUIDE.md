@@ -172,6 +172,8 @@ claude mcp remove <server-name>
 
 | Use Case | MCP Overhead | Alternative |
 |----------|-------------|-------------|
+| GitHub (PRs, issues, CI/CD) | High | `gh` CLI (built-in, lighter weight) |
+| Playwright (browser testing) | High | `playwright` CLI (no persistent server) |
 | Trello tasks | High | CLI tool (`trello-cli`) |
 | Simple HTTP calls | Overkill | `curl` via Bash |
 | One-off queries | Wasteful | Direct command |
@@ -183,7 +185,6 @@ claude mcp remove <server-name>
 | Server | Purpose | Install |
 |--------|---------|---------|
 | Context7 | Live docs for any library | `claude mcp add context7 -- npx -y @upstash/context7-mcp@latest` |
-| GitHub | PRs, issues, CI/CD | `claude mcp add github -- npx -y @modelcontextprotocol/server-github` |
 | Filesystem | Advanced file operations | `claude mcp add filesystem -- npx -y @modelcontextprotocol/server-filesystem` |
 | Sequential Thinking | Structured problem-solving | `claude mcp add sequential-thinking -- npx -y @modelcontextprotocol/server-sequential-thinking` |
 
@@ -207,7 +208,6 @@ claude mcp remove <server-name>
 
 | Server | Purpose | Install |
 |--------|---------|---------|
-| Playwright | E2E testing, scraping | `claude mcp add playwright -- npx -y @anthropic-ai/playwright-mcp` |
 | Browser MCP | Use your logged-in Chrome | browsermcp.io |
 
 **Cloud & DevOps**
