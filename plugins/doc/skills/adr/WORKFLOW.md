@@ -430,11 +430,59 @@ Display the agent's output to the user:
 |-------|--------|
 | ADR created | Always append Author's Notes (2-5 items) |
 | `/adr review` invoked | Critic reads Author's Notes as attack vectors |
-| Status → Accepted | Strip `## Author's Notes` section entirely |
+| `/adr status N accepted` | Strip `## Author's Notes` section entirely (Phase 8) |
 | Status → Deprecated | Preserve Author's Notes (historical record) |
 | Status → Superseded | Preserve Author's Notes (historical record) |
 | Consequences rewritten | Refresh Author's Notes to match new content |
 | Minor edits (typos, links) | Preserve Author's Notes as-is |
+
+---
+
+## Phase 8: Status Transitions
+
+Dedicated workflow for changing ADR status with validation and side effects.
+
+### 8.1 Find ADR
+
+1. Resolve ADR number to file path using the same pattern as `adr_supersede.py`:
+   - Search ADR directory for files matching `^(?:ADR-)?0*{number}-.*\.md$`
+2. Read the file and extract current status from `## Status` section
+3. If ADR not found, report error with the number and searched directory
+
+### 8.2 Validate Transition
+
+Check current → target transition and warn on unusual paths:
+
+| Current | Target | Behavior |
+|---------|--------|----------|
+| Proposed | Accepted | Normal — but warn if no `/adr review` was run in this conversation |
+| Proposed | Deprecated | Normal |
+| Proposed | Superseded | Warn: "Use `/adr supersede` to properly link the replacement ADR" |
+| Accepted | Deprecated | Normal |
+| Accepted | Superseded | Warn: "Use `/adr supersede` to properly link the replacement ADR" |
+| Accepted | Proposed | Warn: "Going backwards — this will re-open a decided matter" |
+| Deprecated | Proposed | Warn: "Reviving a deprecated decision — ensure context is still relevant" |
+
+On warning: use `AskUserQuestion` to ask user to confirm. If user declines, abort.
+
+### 8.3 Apply Status Change
+
+1. **Update `## Status` field** in the ADR file — replace the status value on the line after `## Status`
+2. **Side effects by target status**:
+   - **→ Accepted**: Strip the entire `## Author's Notes` section and all its content. This is the primary enforcement mechanism for the confession lifecycle.
+   - **→ Superseded** (via `/adr status`, not `/adr supersede`): The status is updated but no supersession links are created. Warn user they should use `/adr supersede` instead for proper linking.
+3. **Preserve everything else** — only modify the Status line and (if applicable) remove Author's Notes
+
+### 8.4 Post-Transition
+
+1. Run `adr_index.py` to update README.md with the new status
+2. Show confirmation:
+   ```
+   ADR-0014: Proposed → Accepted
+   ✓ Author's Notes stripped
+   ✓ Index updated
+   ```
+3. If the new status is Accepted, suggest: "Decision is now final. To reverse later, use `/adr status 14 deprecated`."
 
 ---
 

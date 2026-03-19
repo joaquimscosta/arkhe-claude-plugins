@@ -6,7 +6,7 @@ description: >-
   Use when user mentions "ADR", "architecture decision", "document this
   decision", "create ADR", "review ADR", editing ADR files (docs/adr/,
   doc/adr/, .adr/), or discussing architectural choices and tradeoffs.
-argument-hint: "<action> [args]  (create <title> | review <path> | list | supersede <old> <new> | index)"
+argument-hint: "<action> [args]  (create <title> | review <path> | status <number> <status> | list | supersede <old> <new> | index)"
 ---
 
 # ADR Manager
@@ -21,6 +21,7 @@ When invoked explicitly with `/adr <action>`, parse the first word:
 |------------|---------------|-----------|
 | `create` | `<title>` | Create a new ADR with the given title |
 | `review` | `<path>` | Lightweight quality review of an ADR |
+| `status` | `<number> <status>` | Transition ADR status with validation and side effects |
 | `list` | (none) | List all ADRs (same as running `adr_index.py --dry-run`) |
 | `supersede` | `<old-number> <new-number>` | Supersede an old ADR with a new one |
 | `index` | (none) | Regenerate the README.md index |
@@ -93,7 +94,20 @@ Every ADR gets an `## Author's Notes` section after Consequences:
 
 Target: 2-5 items. Be specific, reference ADR sections.
 
-**Lifecycle**: Added on create (always) | Read by adr-critic as review targets | Stripped when Status → Accepted | Preserved on Superseded | Refreshed on major rewrites.
+**Lifecycle**: Added on create (always) | Read by adr-critic as review targets | Stripped when Status → Accepted (via `/adr status`) | Preserved on Superseded | Refreshed on major rewrites.
+
+### 8. Status Transitions
+Dedicated command for changing ADR status with validation and side effects:
+1. Find ADR by number, read current status
+2. Validate transition — warn on unusual paths (allow but confirm):
+   - Accepted → Proposed: "Going backwards — re-opening a decided matter"
+   - → Accepted without prior `/adr review`: "Consider reviewing first"
+   - → Superseded directly: "Use `/adr supersede` to link replacement"
+3. Apply status change, handle side effects:
+   - **→ Accepted**: Strip `## Author's Notes` section entirely
+4. Update README.md index via `adr_index.py`
+
+**Valid statuses**: Proposed | Accepted | Deprecated | Superseded
 
 ## Core Template Sections
 
@@ -147,6 +161,16 @@ Target: 2-5 items. Be specific, reference ADR sections.
 # Auto-invoke:
 "Supersede ADR-0005 with a new caching strategy"
 "Replace our database decision ADR with the new approach"
+```
+
+### Change Status
+```bash
+# Transition with validation and side effects:
+/adr status 14 accepted
+/adr status 7 deprecated
+
+# Auto-strips Author's Notes when accepting
+# Warns on unusual transitions (e.g., skipping review)
 ```
 
 ### List and Index

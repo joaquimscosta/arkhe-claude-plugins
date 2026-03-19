@@ -560,9 +560,59 @@ Note: The `## Author's Notes` section has been removed because the status transi
 
 ---
 
+## Example 10: Status Transition
+
+Using `/adr status` to change ADR status with validation and side effects.
+
+### Normal Transition (Proposed → Accepted)
+```bash
+/adr status 14 accepted
+```
+
+Output:
+```
+ADR-0014: Proposed → Accepted
+✓ Author's Notes stripped
+✓ Index updated
+
+Decision is now final. To reverse later, use `/adr status 14 deprecated`.
+```
+
+### Warned Transition (Skipping Review)
+```bash
+/adr status 14 accepted
+```
+
+If no `/adr review` was run in the conversation:
+```
+⚠️ Warning: No /adr review was run for ADR-0014. Consider reviewing first
+   to check decision quality before accepting.
+
+Proceed anyway?
+  1. Yes, accept without review
+  2. No, run /adr review first
+```
+
+### Warned Transition (Direct Supersession)
+```bash
+/adr status 5 superseded
+```
+
+Output:
+```
+⚠️ Warning: Use `/adr supersede 5 <new-number>` instead to properly link
+   the replacement ADR. Direct status change won't create supersession links.
+
+Proceed anyway?
+  1. Yes, mark as superseded without linking
+  2. No, use /adr supersede instead
+```
+
+---
+
 ## Typical Workflow
 
-End-to-end ADR creation and review flow:
+End-to-end ADR creation, review, and acceptance flow:
 
 ```bash
 # 1. Discuss a decision in conversation
@@ -580,8 +630,8 @@ End-to-end ADR creation and review flow:
 # 5. Re-review if needed
 /adr review docs/adr/0014-use-redis-for-session-storage.md
 
-# 6. Accept the decision (strips Author's Notes)
-"Change the status of ADR-0014 to Accepted"
+# 6. Accept the decision (validates, strips Author's Notes, updates index)
+/adr status 14 accepted
 ```
 
 ---
@@ -618,6 +668,15 @@ End-to-end ADR creation and review flow:
 ```bash
 /adr review docs/adr/0014-use-redis-for-session-storage.md
 # Output: Score + Verdict + 3-5 findings from adr-critic agent
+```
+
+### `/adr status`
+```bash
+/adr status 14 accepted
+# Validates transition, strips Author's Notes, updates index
+
+/adr status 7 deprecated
+# Validates transition, preserves Author's Notes, updates index
 ```
 
 ### `/adr list`

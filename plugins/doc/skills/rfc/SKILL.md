@@ -1,16 +1,16 @@
 ---
 name: rfc
 description: >-
-  Manage architecture RFCs: create, review, list, and update.
+  Manage architecture RFCs: create, review, list, update, and transition status.
   Use when user mentions "RFC", "technical proposal", "architecture proposal",
-  or wants to draft, review, list, or update RFCs.
-argument-hint: "<action> [args]  (create <topic> | review <path> | list | update <path>)"
+  or wants to draft, review, list, update, or change status of RFCs.
+argument-hint: "<action> [args]  (create <topic> | review <path> | status <number> <status> | list | update <path>)"
 disable-model-invocation: true
 ---
 
 # RFC Manager
 
-Manage architecture RFCs with 4 operations: create, review, list, update.
+Manage architecture RFCs with 5 operations: create, review, list, update, status.
 
 ## Argument Parsing
 
@@ -22,6 +22,7 @@ Parse `$ARGUMENTS` to determine the action:
 | `review` | `<path-to-rfc>` | Review an existing RFC |
 | `list` | (none) | List all RFCs |
 | `update` | `<path-to-rfc>` | Update specific RFC sections |
+| `status` | `<number> <status>` | Transition RFC status with validation and side effects |
 | (empty) | | Ask the user which action to perform |
 
 If the first word does not match any action, treat the entire `$ARGUMENTS` as a topic and default to `create`.
@@ -110,6 +111,24 @@ Re-draft specific sections of an existing RFC based on new context or feedback.
 7. **Check spec alignment** — if a companion `.spec.md` file exists and the update touches Goals, Non-Goals, or Architecture Overview, verify the RFC still aligns with the spec. Flag drift to the user.
 8. **Show diff summary** — list which sections were changed and a brief description of each change
 9. **Suggest next steps**: `/rfc review <path>` to verify the updates
+
+## Operation: status
+
+Transition RFC status with validation, warnings, and side effects.
+
+1. **Find RFC** — resolve number to file path by globbing all convention paths for `NNNN-*.md`. Read current status from `**Status**:` field.
+2. **Validate transition** — check against valid transitions. Warn (but allow) on unusual paths:
+   - Valid: Draft → Review → Approved/Rejected, any → Superseded
+   - Warn: Draft → Approved (skipping Review), Approved → Draft (going backwards)
+   - On warning, use `AskUserQuestion` to confirm
+3. **Apply status change** — update `**Status**:` field in the RFC
+4. **Side effects**:
+   - **→ Approved**: Strip `## Author's Notes` section entirely
+5. **Confirm** — show old status → new status, side effects applied
+
+**Valid statuses**: Draft | Review | Approved | Rejected | Superseded
+
+Note: The `update` operation still handles inline status changes during content updates. Use `/rfc status` for dedicated status transitions with validation.
 
 ## Quality Standards
 

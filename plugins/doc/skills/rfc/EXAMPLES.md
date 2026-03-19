@@ -61,6 +61,37 @@
 
 **What happens**: Reads the existing RFC, identifies which sections to update (from your instructions, review findings, or asks you), re-drafts those sections with fresh context while preserving everything else. Handles Author's Notes lifecycle — strips them on Approved status, refreshes after major re-drafts. Checks spec alignment if scope-related sections were changed. Shows a diff summary.
 
+## Status
+
+```bash
+# Transition RFC status with validation
+/rfc status 3 review
+/rfc status 3 approved
+/rfc status 3 rejected
+```
+
+**What happens**: Finds the RFC by number, reads current status, validates the transition. Warns on unusual paths (e.g., Draft → Approved skips Review). If transitioning to Approved, strips the Author's Notes section entirely. Shows confirmation with old → new status and side effects applied.
+
+**Example: Normal transition**:
+```
+RFC-0003: Draft → Review
+```
+
+**Example: Warned transition (skipping Review)**:
+```
+⚠️ Warning: Skipping Review phase — consider getting review feedback first.
+
+Proceed anyway?
+  1. Yes, approve directly
+  2. No, move to Review first
+```
+
+**Example: Approval with side effects**:
+```
+RFC-0003: Review → Approved
+✓ Author's Notes stripped
+```
+
 ## Typical Workflow
 
 ```bash
@@ -79,6 +110,9 @@
 # 5. Re-review after updates
 /rfc review docs/rfcs/0003-event-driven-notifications.md
 
-# 6. Check the pipeline
+# 6. Approve the RFC (validates, strips Author's Notes)
+/rfc status 3 approved
+
+# 7. Check the pipeline
 /rfc list
 ```

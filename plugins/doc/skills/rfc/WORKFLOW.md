@@ -274,11 +274,12 @@ After updating, output a summary:
 - **Open Questions**: Resolved 2 of 4 open questions based on team discussion
 ```
 
-### Status Transitions
+### Status Transitions (within update)
 
 - Keep Status unchanged by default
 - If user explicitly requests a status change (e.g., "move to Review"), update the `**Status**:` field
 - Valid transitions: Draft → Review → Approved/Rejected, any → Superseded
+- For dedicated status changes with validation, prefer `/rfc status` which validates transitions and handles side effects automatically
 
 ### Author's Notes Handling
 
@@ -294,3 +295,47 @@ If a companion `.spec.md` file exists and the update touches Goals, Non-Goals, A
 1. Re-read the spec file
 2. Verify the updated RFC still aligns with the spec's Problem Statement, Key Constraints, Success Criteria, and Scope Boundaries
 3. If drift is detected, flag it to the user and suggest updating either the spec or the RFC to restore alignment
+
+---
+
+## Status Transition Workflow
+
+Dedicated workflow for changing RFC status with validation and side effects. Invoked by `/rfc status <number> <status>`.
+
+### Find RFC
+
+1. Resolve RFC number to file path by globbing all convention paths for `NNNN-*.md` (exclude `*.spec.md`)
+2. Read the file and extract current status from `**Status**:` field
+3. If RFC not found, report error with the number and searched paths
+
+### Validate Transition
+
+Check current → target transition and warn on unusual paths:
+
+| Current | Target | Behavior |
+|---------|--------|----------|
+| Draft | Review | Normal |
+| Review | Approved | Normal |
+| Review | Rejected | Normal |
+| Draft | Approved | Warn: "Skipping Review phase — consider getting review feedback first" |
+| Approved | Draft | Warn: "Going backwards — this will re-open an approved proposal" |
+| Approved | Review | Warn: "Going backwards — this will re-open an approved proposal" |
+| Rejected | Draft | Warn: "Reviving a rejected proposal — ensure concerns are addressed" |
+| any | Superseded | Normal |
+
+On warning: use `AskUserQuestion` to ask user to confirm. If user declines, abort.
+
+### Apply Status Change
+
+1. **Update `**Status**:` field** in the RFC file
+2. **Side effects by target status**:
+   - **→ Approved**: Strip the entire `## Author's Notes` section and all its content. This is the primary enforcement mechanism for the confession lifecycle.
+3. **Preserve everything else** — only modify the Status field and (if applicable) remove Author's Notes
+
+### Post-Transition
+
+Show confirmation:
+```
+RFC-0003: Review → Approved
+✓ Author's Notes stripped
+```
