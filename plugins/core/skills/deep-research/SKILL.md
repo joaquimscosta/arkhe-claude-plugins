@@ -16,8 +16,8 @@ Coordinate deep technical research with intelligent caching for cross-project re
 
 When research is needed:
 
-1. **Scripts path** - Use `plugins/core/skills/deep-research/scripts/` directly (fall back to Glob for `**/deep-research/scripts/cache_manager.py` if not found)
-2. **Single fetch call** - Run `python3 {scripts}/cache_manager.py fetch "{topic}"` (combines check+get)
+1. **Scripts path** - `${CLAUDE_SKILL_DIR}/scripts/`
+2. **Single fetch call** - Run `python3 ${CLAUDE_SKILL_DIR}/scripts/cache_manager.py fetch "{topic}"` (combines check+get)
 3. **If `exists=true`** - Present the `content` field directly (no agent needed). Suggest promote if valid, refresh if expired.
 4. **If `exists=false`** - Invoke `deep-researcher` agent for EXA research, which caches via `cache_manager.py put`
 5. **Report findings** - Include cache status and promote suggestion
@@ -48,7 +48,7 @@ Research entries are automatically associated with the current git repository wh
 
 ## Scripts
 
-All cache operations use Python scripts in `scripts/`:
+All cache operations use Python scripts in `${CLAUDE_SKILL_DIR}/scripts/`:
 
 | Script | Purpose |
 |--------|---------|

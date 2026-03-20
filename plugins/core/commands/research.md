@@ -10,7 +10,7 @@ argument-hint: "<topic> | promote <slug> | refresh <slug> | list [--all]"
 
 **Arguments:** $ARGUMENTS
 
-**Scripts:** `plugins/core/skills/deep-research/scripts/` — use this path directly. If it fails, fall back to Glob for `**/deep-research/scripts/cache_manager.py`.
+**Scripts:** Glob for `**/deep-research/scripts/cache_manager.py` and use its parent directory as `{scripts}`.
 
 ## Dispatch
 
