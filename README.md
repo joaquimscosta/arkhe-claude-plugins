@@ -50,10 +50,10 @@
 | 📐 **Design Intent** | Visual React prototyping from Figma/mockups with persistent pattern memory. | `design-intent-specialist`, `/design-intent`, `/save-patterns` | [View](./plugins/design-intent/README.md) |
 | 💻 **Lang** | Production-grade language-specific skills (Bash/Shell). | `scripting-bash`, POSIX compliance, ShellCheck | [View](./plugins/lang/README.md) |
 | 🎭 **Playwright** | Browser automation via Playwright CLI for testing and screenshots. | `playwright-cli`, `/playwright-setup` | [View](./plugins/playwright/README.md) |
-| 🍃 **Spring Boot** | DDD with Spring Boot 4, Modulith 2.0, Security 7, and OpenTelemetry. | 11 skills: DDD, data, web-api, modulith, security, observability, testing, flyway | [View](./plugins/spring-boot/README.md) |
+| 🍃 **Spring Boot** | DDD with Spring Boot 4, Modulith 2.0, Security 7, and OpenTelemetry. | 10 skills: DDD, data, web-api, modulith, security, observability, testing, flyway | [View](./plugins/spring-boot/README.md) |
 | 🔄 **Ralph** | Autonomous development loop with fresh context, task sets, and memory system. | `ralph-agent`, `/ralph`, `/create-prd`, Hat-lite system | [View](./plugins/ralph/README.md) |
 | 🗺️ **Roadmap** | Product management, roadmap analysis, and solution architecture. | `product-manager`, `system-architect`, `roadmap-analyst` | [View](./plugins/roadmap/README.md) |
-| 🔧 **Devtools** | Developer tooling: SOPS encryption, Claude Code environment setup. | `sops-setup`, `claude-setup` | [View](./plugins/devtools/README.md) |
+| 🔧 **Devtools** | Developer tooling: SOPS encryption, Claude Code environment setup, quality stack. | `sops-setup`, `claude-setup`, `quality-stack` | [View](./plugins/devtools/README.md) |
 
 ---
 

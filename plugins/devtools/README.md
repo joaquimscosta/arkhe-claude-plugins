@@ -11,6 +11,7 @@ Developer tooling setup and management plugin for Claude Code.
 | `sops-decrypt` | `/devtools:sops-decrypt` | Decrypt .env.encrypted files |
 | `sops-add-key` | `/devtools:sops-add-key` | Add a machine's public key and re-encrypt |
 | `claude-setup` | `/devtools:claude-setup` | Interactive Claude Code environment setup wizard |
+| `quality-stack` | `/devtools:quality-stack` | JVM project quality/testing tooling audit and setup |
 
 ## Claude Code Setup
 
@@ -25,3 +26,14 @@ Run `/devtools:claude-setup` to start the wizard, or `/devtools:claude-setup [ca
 ### Multi-Machine Workflow
 
 Each machine generates its own age key pair. Public keys are listed in `.sops.yaml` (committed to git). Encrypted files can be decrypted by any authorized machine. To add a new machine, run `/devtools:sops-add-key`.
+
+## Quality Stack
+
+Scans JVM projects (Gradle/Maven) to detect configured quality and testing tools, cross-references against research-backed recommendations, and assists with setup.
+
+### Two-Phase Workflow
+
+1. **Recommend** — Run the scanner, fetch research docs, cross-reference, generate a prioritized report
+2. **Setup** — User selects tools from the report, skill configures build files, creates config files, and verifies detection
+
+Run `/devtools:quality-stack` to audit your project's tooling, or mention "quality stack", "audit tooling", or "what tools am I missing" for auto-invocation.

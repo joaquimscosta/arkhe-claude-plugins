@@ -1,4 +1,4 @@
-# Troubleshooting: Spring Boot Tooling Scanner
+# Troubleshooting: Quality Stack Tooling Scanner
 
 ## Scanner Reports Empty Results
 

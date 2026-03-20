@@ -1,20 +1,21 @@
 ---
-name: spring-boot-quality-stack
+name: quality-stack
 description: >
   Scan a JVM project to detect configured quality and testing tools,
   cross-reference against research-backed recommendations, and assist with setup.
   Use when user asks to "audit tooling", "recommend tools", "quality stack",
-  "what tools am I missing", "setup detekt", "add coverage", "configure CI quality pipeline".
+  "what tools am I missing", "setup detekt", "add coverage", "configure CI quality pipeline",
+  "scan project tools", or "tooling audit".
 ---
 
-# Spring Boot Quality Stack
+# Quality Stack
 
 Scan a project's build configuration, cross-reference against curated research documents, and assist with tool setup.
 
 ## Pre-flight
 
 1. **Verify build files exist** — run the scanner. If it returns `"error": "no_build_file"`, check `nearby_build_files` for subproject paths.
-2. **Monorepo?** — if the Spring Boot project is nested, either pass the subproject path directly or use `--recursive`:
+2. **Monorepo?** — if the project is nested, either pass the subproject path directly or use `--recursive`:
    ```bash
    python3 <skill-path>/scripts/scan_tooling.py --recursive <project-root>
    ```

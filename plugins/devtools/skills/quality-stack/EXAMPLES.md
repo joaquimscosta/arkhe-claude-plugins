@@ -1,4 +1,4 @@
-# Examples: Spring Boot Tooling Recommender
+# Examples: Quality Stack Tooling Recommender
 
 ## Example 1: Kotlin Project with Minimal Tooling
 
