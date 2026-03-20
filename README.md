@@ -5,8 +5,8 @@
 
 
   <p>
-    <b>Supercharge Claude Code with 102 specialized components</b> — from deep reasoning and autonomous dev loops to<br />
-    DDD architecture, design system enforcement, and git workflow automation. 22 agents, 32 commands, 48 skills across 13 modular plugins.
+    <b>Supercharge Claude Code with 106 specialized components</b> — from deep reasoning and autonomous dev loops to<br />
+    DDD architecture, design system enforcement, and git workflow automation. 22 agents, 32 commands, 52 skills across 13 modular plugins.
   </p>
 
   <p>
@@ -16,7 +16,7 @@
     <img src="https://img.shields.io/badge/Plugins-13-blue" alt="Plugins" />
     <img src="https://img.shields.io/badge/Agents-22-purple" alt="Agents" />
     <img src="https://img.shields.io/badge/Commands-32-orange" alt="Commands" />
-    <img src="https://img.shields.io/badge/Skills-48-green" alt="Skills" />
+    <img src="https://img.shields.io/badge/Skills-52-green" alt="Skills" />
     <a href="https://github.com/joaquimscosta/arkhe-claude-plugins/stargazers">
       <img src="https://img.shields.io/github/stars/joaquimscosta/arkhe-claude-plugins" alt="Stars" />
     </a>
@@ -53,7 +53,7 @@
 | 🍃 **Spring Boot** | DDD with Spring Boot 4, Modulith 2.0, Security 7, and OpenTelemetry. | 11 skills: DDD, data, web-api, modulith, security, observability, testing, flyway | [View](./plugins/spring-boot/README.md) |
 | 🔄 **Ralph** | Autonomous development loop with fresh context, task sets, and memory system. | `ralph-agent`, `/ralph`, `/create-prd`, Hat-lite system | [View](./plugins/ralph/README.md) |
 | 🗺️ **Roadmap** | Product management, roadmap analysis, and solution architecture. | `product-manager`, `system-architect`, `roadmap-analyst` | [View](./plugins/roadmap/README.md) |
-| 🛠️ **Claude Code** | Interactive environment setup and configuration wizard. | `env-setup` | [View](./plugins/claude-code/README.md) |
+| 🔧 **Devtools** | Developer tooling: SOPS encryption, Claude Code environment setup. | `sops-setup`, `claude-setup` | [View](./plugins/devtools/README.md) |
 
 ---
 
@@ -91,7 +91,7 @@ You can install all plugins at once:
 /plugin install spring-boot@arkhe-claude-plugins
 /plugin install ralph@arkhe-claude-plugins
 /plugin install roadmap@arkhe-claude-plugins
-/plugin install claude-code@arkhe-claude-plugins
+/plugin install devtools@arkhe-claude-plugins
 ```
 
 *Or install selectively based on your needs.*
@@ -183,7 +183,7 @@ arkhe-claude-plugins/
 │   ├── spring-boot/                  # 10. Domain-Driven Design with Spring Boot 4
 │   ├── ralph/                        # 11. Autonomous development loop
 │   ├── roadmap/                      # 12. Product management & architecture
-│   └── claude-code/                  # 13. Claude Code environment setup
+│   └── devtools/                     # 13. Developer tooling & environment setup
 ├── docs/                             # Developer documentation
 ├── templates/                        # Plugin templates
 ├── assets/                           # Project assets

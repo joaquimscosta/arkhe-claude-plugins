@@ -2,7 +2,7 @@
 
 ## Example 1: Fresh Environment
 
-A developer with no existing Claude Code configuration runs `/claude-setup` for the first time.
+A developer with no existing Claude Code configuration runs `/devtools:claude-setup` for the first time.
 
 ### Detection Output
 
@@ -54,7 +54,7 @@ A developer with no existing Claude Code configuration runs `/claude-setup` for 
 
 ## Example 2: Partial Setup
 
-A developer who already has Global CLAUDE.md and some MCP servers runs `/claude-setup` to fill gaps.
+A developer who already has Global CLAUDE.md and some MCP servers runs `/devtools:claude-setup` to fill gaps.
 
 ### Detection Output
 
@@ -105,7 +105,7 @@ A developer who already has Global CLAUDE.md and some MCP servers runs `/claude-
 
 ## Example 3: Single Category
 
-A developer runs `/claude-setup hooks` to only configure hooks.
+A developer runs `/devtools:claude-setup hooks` to only configure hooks.
 
 ### Interaction Flow
 

@@ -32,7 +32,7 @@ arkhe-claude-plugins/
 │   ├── spring-boot/               # Domain-Driven Design with Spring Boot 4
 │   ├── ralph/                     # Autonomous development loop
 │   ├── roadmap/                   # PM, roadmap analysis, solution architecture
-│   └── claude-code/               # Claude Code environment setup wizard
+│   └── devtools/                  # Developer tooling and environment setup
 ├── docs/                          # Developer documentation
 ├── templates/                     # Plugin templates
 └── assets/                        # Project assets
@@ -135,10 +135,10 @@ Product management, roadmap analysis, and solution architecture for any project.
 - **Skills**: `pm` (auto-invoke), `roadmap` (auto-invoke), `architect` (auto-invoke)
 - **Use**: User stories, scope assessments, prioritization, project status, gap analysis, risk mapping, module design, API design, boundary analysis
 
-### Claude Code Plugin
-Claude Code environment setup and configuration wizard.
-- **Skills**: `env-setup` (command-invoke)
-- **Use**: Interactive setup for Global CLAUDE.md, project scaffolding, MCP servers, hooks, custom agents, keybindings, and settings
+### Devtools Plugin
+Developer tooling setup and management.
+- **Skills**: `sops-setup` (command-invoke), `sops-encrypt` (command-invoke), `sops-decrypt` (command-invoke), `sops-add-key` (command-invoke), `claude-setup` (command-invoke)
+- **Use**: SOPS + age encryption for .env files, Claude Code environment setup wizard (Global CLAUDE.md, project scaffolding, MCP servers, hooks, custom agents, keybindings, settings)
 
 ## Common Development Commands
 
@@ -161,7 +161,7 @@ Claude Code environment setup and configuration wizard.
 /plugin install spring-boot@arkhe-claude-plugins
 /plugin install ralph@arkhe-claude-plugins
 /plugin install roadmap@arkhe-claude-plugins
-/plugin install claude-code@arkhe-claude-plugins
+/plugin install devtools@arkhe-claude-plugins
 
 # Verify installation
 /plugin                    # View installed plugins
@@ -586,7 +586,7 @@ See [docs/README.md](docs/README.md) "Maintaining This Documentation" section fo
 
 ## Plugin Versions
 
-Plugin versions: core 2.0.0, ai 1.0.0, doc 1.7.0, design-intent 2.2.0, git 1.0.0, google-stitch 2.0.0, lang 1.0.0, playwright 1.0.0, spring-boot 1.0.0, ralph 2.0.0, roadmap 1.0.0, review 2.0.0, claude-code 1.0.0. When making breaking changes, increment the major version and update `plugin.json`.
+Plugin versions: core 2.0.0, ai 1.0.0, doc 1.7.0, design-intent 2.2.0, git 1.0.0, google-stitch 2.0.0, lang 1.0.0, playwright 1.0.0, spring-boot 1.0.0, ralph 2.0.0, roadmap 1.0.0, review 2.0.0, devtools 1.1.0. When making breaking changes, increment the major version and update `plugin.json`.
 
 ## Related Documentation
 

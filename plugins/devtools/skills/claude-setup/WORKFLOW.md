@@ -352,5 +352,5 @@ After execution, show:
 ## Next Steps
 - Run `/context` to check your token usage
 - Try `ctrl+shift+r` to trigger code review
-- Run `/claude-setup` again anytime to add more configuration
+- Run `/devtools:claude-setup` again anytime to add more configuration
 ```
