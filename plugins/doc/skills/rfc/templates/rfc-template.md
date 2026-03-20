@@ -95,3 +95,12 @@ graph TD
 
 - [ ] [Question 1]
 - [ ] [Question 2]
+
+## Author's Notes
+
+> These notes feed the adversarial review process and will be stripped when the RFC is approved.
+
+- **Shortcuts**: [What was simplified or assumed without full analysis?]
+- **Assumptions**: [What is believed but not confirmed from code or docs?]
+- **Uncertainties**: [Which parts had the least available information?]
+- **Low-confidence sections**: [Which sections does the author consider weakest?]

@@ -42,9 +42,9 @@ git clone https://github.com/joaquimscosta/arkhe-claude-plugins.git
 /plugin install spring-boot@arkhe-claude-plugins
 ```
 
-### 3. Restart Claude Code
+### 3. Reload Plugins
 
-After installation, restart Claude Code for all plugins to take effect.
+After installation, run `/reload-plugins` for all plugins to take effect.
 
 ---
 
@@ -80,8 +80,8 @@ Multi-purpose documentation toolkit.
 **Install**: `/plugin install doc@arkhe-claude-plugins`
 
 **Components**:
-- 4 skills: `doc-coauthoring` (auto-invoked for documentation), `diagramming` (auto-invoked for diagrams), `code-explanation`, `managing-adrs`
-- 2 commands: `/code-explain`, `/diagram`
+- 6 skills: `doc-coauthoring` (auto-invoked for documentation), `diagramming` (auto-invoked for diagrams), `code-explanation`, `adr`, `jd-docs`, `rfc`
+- 3 commands: `/code-explain`, `/diagram`, `/rfc`
 
 ---
 

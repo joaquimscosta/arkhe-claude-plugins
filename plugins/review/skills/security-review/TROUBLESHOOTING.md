@@ -82,6 +82,73 @@ trivy fs . --skip-db-update
 
 ---
 
+## Haiku Verification Issues
+
+### All findings dismissed by Haiku verification
+
+**Symptoms**: Clean report on a branch that introduces security-sensitive functionality.
+
+**Fix**: This means Haiku agents independently determined all candidate findings were false positives. This is expected when:
+- The codebase has strong security frameworks in place
+- Changes follow established secure patterns
+- Findings were theoretical rather than exploitable
+
+If you believe findings were incorrectly dismissed, check the candidate findings before Haiku verification was applied. Rerun the review — Haiku agents may produce slightly different verdicts.
+
+### Haiku verdicts seem inconsistent
+
+**Symptoms**: Similar findings receive different verdicts (one KEEP, one DISMISS).
+
+**Fix**: Each finding is verified by an independent Haiku agent. Slight variation is expected. The verdict depends on the specific code context:
+- Two similar-looking SQL patterns may differ if one uses parameterized queries
+- Framework handling detection depends on which file imports are visible in the context
+- If a verdict seems wrong, the post-hoc verify-findings skill provides a second independent check
+
+### Haiku agent fails for a finding
+
+**Symptoms**: A finding has no verification note in the report.
+
+**Fix**: When a Haiku agent fails, the finding defaults to KEEP (conservative). This is expected behavior — the finding stays in the report for manual review. The verify-findings skill provides additional verification.
+
+---
+
+## GitHub PR Posting Issues
+
+### "No open PR found" when PR exists
+
+**Cause**: `gh pr view` can't find the PR for the current branch.
+
+**Fix**:
+```bash
+# Verify gh CLI is authenticated
+gh auth status
+
+# Check if PR exists for this branch
+gh pr list --head $(git branch --show-current)
+
+# If branch isn't pushed, push first
+git push -u origin $(git branch --show-current)
+```
+
+### PR comment fails to post
+
+**Cause**: Permission denied or PR state changed during review.
+
+**Fix**:
+- Verify `gh auth status` shows correct permissions
+- Check if the PR was closed/merged during the review
+- Ensure you have write access to the repository
+
+### PR posting skipped — "already reviewed"
+
+**Cause**: The eligibility check detected a previous Claude Code security review comment on the PR.
+
+**Fix**: This prevents duplicate reviews. If you want to re-review:
+- Delete the previous review comment on the PR
+- Run `/review:security-review --post-to-pr` again
+
+---
+
 ## Finding Quality Issues
 
 ### Too many findings (noisy report)

@@ -18,8 +18,8 @@ This repository uses a **marketplace-based plugin system** where each plugin is 
 ```
 arkhe-claude-plugins/
 ├── .claude-plugin/
-│   └── marketplace.json          # Marketplace catalog (12 plugins)
-├── plugins/                       # All 12 plugins
+│   └── marketplace.json          # Marketplace catalog (13 plugins)
+├── plugins/                       # All 13 plugins
 │   ├── core/                      # Quality control and workflow orchestration
 │   ├── ai/                        # AI engineering and LLM development
 │   ├── doc/                       # Documentation generation
@@ -31,7 +31,8 @@ arkhe-claude-plugins/
 │   ├── playwright/                # Browser automation via Playwright CLI
 │   ├── spring-boot/               # Domain-Driven Design with Spring Boot 4
 │   ├── ralph/                     # Autonomous development loop
-│   └── roadmap/                   # PM, roadmap analysis, solution architecture
+│   ├── roadmap/                   # PM, roadmap analysis, solution architecture
+│   └── claude-code/               # Claude Code environment setup wizard
 ├── docs/                          # Developer documentation
 ├── templates/                     # Plugin templates
 └── assets/                        # Project assets
@@ -75,9 +76,10 @@ AI engineering toolkit for production-ready LLM applications.
 
 ### Doc Plugin
 Multi-purpose documentation toolkit with RFC management.
-- **Skills**: `doc-coauthoring`, `diagramming`, `code-explanation`, `managing-adrs`, `create-rfc`, `review-rfc`, `list-rfcs`
-- **Commands**: `/code-explain`, `/diagram`
-- **Use**: Documentation generation, code explanation, Mermaid diagrams, ADR management, RFC lifecycle (create, review, list)
+- **Agents**: `rfc-critic`
+- **Skills**: `doc-coauthoring`, `diagramming`, `code-explanation`, `adr`, `rfc`
+- **Commands**: `/code-explain`, `/diagram`, `/rfc`
+- **Use**: Documentation generation, code explanation, Mermaid diagrams, ADR management, RFC lifecycle (create, review, list, update)
 
 ### Review Plugin
 Code quality review tools for development teams.
@@ -133,6 +135,12 @@ Product management, roadmap analysis, and solution architecture for any project.
 - **Skills**: `pm` (auto-invoke), `roadmap` (auto-invoke), `architect` (auto-invoke)
 - **Use**: User stories, scope assessments, prioritization, project status, gap analysis, risk mapping, module design, API design, boundary analysis
 
+### Claude Code Plugin
+Claude Code environment setup and configuration wizard.
+- **Commands**: `/claude-setup`
+- **Skills**: `env-setup` (command-invoke)
+- **Use**: Interactive setup for Global CLAUDE.md, project scaffolding, MCP servers, hooks, custom agents, keybindings, and settings
+
 ## Common Development Commands
 
 ### Plugin Management
@@ -154,6 +162,7 @@ Product management, roadmap analysis, and solution architecture for any project.
 /plugin install spring-boot@arkhe-claude-plugins
 /plugin install ralph@arkhe-claude-plugins
 /plugin install roadmap@arkhe-claude-plugins
+/plugin install claude-code@arkhe-claude-plugins
 
 # Verify installation
 /plugin                    # View installed plugins

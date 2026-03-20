@@ -27,10 +27,10 @@ The agent orchestrates a 3-phase review:
 - Each reviewer reads skill docs and checks assigned files
 - Only reports issues with confidence ≥80
 
-**Phase 3: Report & Fix**
+**Phase 3: Report**
 - Consolidate findings from all reviewers
 - Present unified report grouped by skill area
-- Offer interactive fix options
+- Include fix suggestions for each finding
 
 ## Example Scopes
 

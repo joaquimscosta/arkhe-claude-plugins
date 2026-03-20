@@ -150,6 +150,25 @@ Result: `0005-use-postgresql-for-persistence.md`
 
 Creating the ADR content requires understanding the decision context.
 
+### 4.0 Context Gathering (Enhanced Create)
+
+Before writing, gather context from multiple sources:
+
+1. **Conversation context** — review current conversation for discussion, decisions, and rationale already articulated
+2. **Codebase scan** — search relevant source files to understand the current state (the "before" picture):
+   - Current implementation of the area being decided on
+   - Configuration files that will be affected
+   - Test files showing current patterns
+3. **Existing ADRs** — check for related decisions:
+   - Scan `docs/adr/`, `doc/adr/`, `architecture/decisions/`, `.adr/`
+   - Look for superseded decisions, related contexts, conflicts
+4. **Confirm with user** — present a 2-3 sentence summary of the decision scope and ask user to confirm before drafting
+
+Unlike RFC creation, ADR context gathering does NOT:
+- Search research artifact directories
+- Write a companion spec file
+- Require multiple user confirmations
+
 ### 4.1 Gather Information
 
 Before writing, collect:
@@ -238,6 +257,30 @@ extensive experience with it.
 - Bad, because no ACID transactions across documents
 - Bad, because team lacks experience
 ```
+
+### 4.4 Append Author's Notes (Confession)
+
+After writing the Consequences section, always append an Author's Notes section:
+
+```markdown
+## Author's Notes
+
+**Shortcuts taken:**
+- [specific shortcut, e.g., "Did not benchmark Redis vs Memcached; relied on team experience"]
+
+**Assumptions:**
+- [specific assumption, e.g., "Assumed PostgreSQL read replicas will handle 5x current read load"]
+
+**Uncertainties:**
+- [specific uncertainty, e.g., "License compatibility with our Apache 2.0 project not verified"]
+```
+
+**Guidelines:**
+- 2-5 items total across all categories (lighter than RFC's 3-8)
+- Empty categories can be omitted (but at least 2 items total required)
+- Each item must reference a specific part of the ADR
+- Be specific: "Assumed X" is useful; "Some parts need more thought" is not
+- These feed the adr-critic review — they are features, not bugs
 
 ---
 
@@ -339,6 +382,107 @@ Accepted
 
 Supersedes: [ADR-0005](0005-use-memcached.md)
 ```
+
+---
+
+## Phase 7: Review Workflow
+
+Lightweight quality check of an ADR using the `adr-critic` agent.
+
+### 7.1 Load ADR
+
+1. Read the ADR at the given path
+2. If no path provided, suggest globbing the project's ADR directories
+3. Verify the file exists and is a valid ADR (has `## Status` section)
+
+### 7.2 Agent Delegation
+
+Spawn the `adr-critic` agent via the Agent tool with `subagent_type: "doc:adr-critic"`.
+
+Provide in the prompt:
+1. The full ADR text
+2. Instruction: "Read the Author's Notes section first and use confessions as prioritized review targets"
+3. Instruction: "Produce exactly 3-5 findings, no more. Focus on the most impactful issues."
+
+The agent independently evaluates 4 dimensions with read-only codebase access (Read, Grep, Glob, Bash) and returns a structured review.
+
+### 7.3 Present Results
+
+Display the agent's output to the user:
+- Score (1-10) and Verdict
+- Summary
+- 3-5 findings with evidence citations
+- Verdict rationale
+
+### 7.4 Next Steps
+
+| Verdict | Suggestion |
+|---------|------------|
+| **Approve** | Transition Status to Accepted (strips Author's Notes) |
+| **Needs improvement** | Update specific sections, then re-review |
+| **Needs rethink** | Discuss the decision further before rewriting |
+
+---
+
+## Author's Notes Lifecycle
+
+| Event | Action |
+|-------|--------|
+| ADR created | Always append Author's Notes (2-5 items) |
+| `/adr review` invoked | Critic reads Author's Notes as attack vectors |
+| `/adr status N accepted` | Strip `## Author's Notes` section entirely (Phase 8) |
+| Status → Deprecated | Preserve Author's Notes (historical record) |
+| Status → Superseded | Preserve Author's Notes (historical record) |
+| Consequences rewritten | Refresh Author's Notes to match new content |
+| Minor edits (typos, links) | Preserve Author's Notes as-is |
+
+---
+
+## Phase 8: Status Transitions
+
+Dedicated workflow for changing ADR status with validation and side effects.
+
+### 8.1 Find ADR
+
+1. Resolve ADR number to file path using the same pattern as `adr_supersede.py`:
+   - Search ADR directory for files matching `^(?:ADR-)?0*{number}-.*\.md$`
+2. Read the file and extract current status from `## Status` section
+3. If ADR not found, report error with the number and searched directory
+
+### 8.2 Validate Transition
+
+Check current → target transition and warn on unusual paths:
+
+| Current | Target | Behavior |
+|---------|--------|----------|
+| Proposed | Accepted | Normal — but warn if no `/adr review` was run in this conversation |
+| Proposed | Deprecated | Normal |
+| Proposed | Superseded | Warn: "Use `/adr supersede` to properly link the replacement ADR" |
+| Accepted | Deprecated | Normal |
+| Accepted | Superseded | Warn: "Use `/adr supersede` to properly link the replacement ADR" |
+| Accepted | Proposed | Warn: "Going backwards — this will re-open a decided matter" |
+| Deprecated | Proposed | Warn: "Reviving a deprecated decision — ensure context is still relevant" |
+
+On warning: use `AskUserQuestion` to ask user to confirm. If user declines, abort.
+
+### 8.3 Apply Status Change
+
+1. **Update `## Status` field** in the ADR file — replace the status value on the line after `## Status`
+2. **Side effects by target status**:
+   - **→ Accepted**: Strip the entire `## Author's Notes` section and all its content. This is the primary enforcement mechanism for the confession lifecycle.
+   - **→ Superseded** (via `/adr status`, not `/adr supersede`): The status is updated but no supersession links are created. Warn user they should use `/adr supersede` instead for proper linking.
+3. **Preserve everything else** — only modify the Status line and (if applicable) remove Author's Notes
+
+### 8.4 Post-Transition
+
+1. Run `adr_index.py` to update README.md with the new status
+2. Show confirmation:
+   ```
+   ADR-0014: Proposed → Accepted
+   ✓ Author's Notes stripped
+   ✓ Index updated
+   ```
+3. If the new status is Accepted, suggest: "Decision is now final. To reverse later, use `/adr status 14 deprecated`."
 
 ---
 

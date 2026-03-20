@@ -3,6 +3,7 @@
 Cache management for deep research results.
 
 Usage:
+    python cache_manager.py fetch <slug>    (combined check+get, preferred)
     python cache_manager.py get <slug>
     python cache_manager.py put <slug> --title "Title" --content-file content.md [--project name]
     python cache_manager.py check <slug>
@@ -251,6 +252,33 @@ def cmd_put(args) -> int:
     return 0
 
 
+def cmd_fetch(args) -> int:
+    """Handle 'fetch' command - combined check+get in one call."""
+    slug = find_by_alias(args.slug) or normalize_slug(args.slug)
+    entry = get_entry(slug)
+
+    if not entry:
+        print(json.dumps({"exists": False, "slug": slug}))
+        return 0
+
+    expiration = check_expiration(entry["metadata"])
+
+    result = {
+        "exists": True,
+        "slug": slug,
+        "title": entry["metadata"].get("title", slug),
+        "metadata": entry["metadata"],
+        "content": entry["content"],
+        "cache_status": "expired" if expiration["expired"] else "valid",
+        "expired": expiration["expired"],
+        "expires_at": expiration["expires_at"],
+        "researched_at": entry["metadata"].get("researched_at", ""),
+    }
+
+    print(json.dumps(result, indent=2))
+    return 0
+
+
 def cmd_check(args) -> int:
     """Handle 'check' command."""
     slug = find_by_alias(args.slug) or normalize_slug(args.slug)
@@ -287,13 +315,12 @@ def cmd_list(args) -> int:
     else:
         project_filter = get_current_project()
 
-    # Get total count (unfiltered) for context header
+    # Single index read — filter in memory
     all_entries = list_entries(project=None)
     total_count = len(all_entries)
 
-    # Get filtered entries
     if project_filter is not None:
-        entries = list_entries(project=project_filter)
+        entries = [e for e in all_entries if project_filter in e.get("projects", [])]
     else:
         entries = all_entries
 
@@ -373,6 +400,11 @@ def main() -> int:
     put_parser.add_argument("--tags", help="Comma-separated tags")
     put_parser.add_argument("--project", "-p", help="Project name (auto-detected from git repo if omitted)")
     put_parser.set_defaults(func=cmd_put)
+
+    # fetch (combined check+get)
+    fetch_parser = subparsers.add_parser("fetch", help="Check and get in one call")
+    fetch_parser.add_argument("slug", help="Topic slug or alias")
+    fetch_parser.set_defaults(func=cmd_fetch)
 
     # check
     check_parser = subparsers.add_parser("check", help="Check if topic is cached")

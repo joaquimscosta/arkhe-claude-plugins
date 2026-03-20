@@ -1,0 +1,8 @@
+{
+  "name": "claude-code",
+  "description": "Claude Code environment setup and configuration wizard",
+  "version": "1.0.0",
+  "author": {
+    "name": "Arkhe"
+  }
+}

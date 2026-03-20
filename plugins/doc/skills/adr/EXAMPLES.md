@@ -417,6 +417,225 @@ JavaScript/TypeScript AND JVM projects through its plugin architecture.
 
 ---
 
+## Example 7: ADR with Author's Notes (Confession)
+
+A Proposed ADR including the Author's Notes section for self-assessment.
+
+```markdown
+# ADR-0014: Use Redis for Session Storage
+
+## Status
+Proposed
+
+## Date
+2026-03-19
+
+## Decision Makers
+- @jcosta (Tech Lead)
+- @backend-team
+
+## Context and Problem Statement
+Our application stores session data in PostgreSQL, causing unnecessary
+database load during peak traffic. Sessions are read-heavy, short-lived,
+and don't require ACID guarantees. We need a dedicated session store
+to reduce database pressure.
+
+## Decision Drivers
+- Current PostgreSQL session table handles 2,000 reads/sec; projected need is 8,000/sec
+- Sessions are ephemeral (30-minute TTL) — don't need durability guarantees
+- Team has Redis experience from the caching layer (ADR-0009)
+
+## Considered Options
+1. Redis (dedicated instance for sessions)
+2. Memcached
+3. PostgreSQL with read replicas (scale current approach)
+
+## Decision Outcome
+Chosen option: "Redis", because it provides TTL support natively,
+the team already operates Redis for caching, and it handles our
+projected session load with a single instance.
+
+### Consequences
+
+**Positive:**
+- Native TTL eliminates manual session cleanup jobs
+- Single Redis instance handles 100K+ reads/sec (well above 8K need)
+- Team already has Redis monitoring and alerting from caching layer
+- Reduces PostgreSQL load by ~30% (session queries)
+
+**Negative:**
+- New failure mode: Redis downtime causes session loss
+- Memory cost: sessions in-memory vs on-disk
+- Two data stores to manage instead of one
+
+## Author's Notes
+- **Shortcut**: Dismissed Memcached without benchmarking because team lacks experience, but it may outperform Redis for this pure key-value use case
+- **Assumption**: Assumed a single Redis instance handles 8K reads/sec based on general benchmarks, not tested with our session payload size (~2KB per session)
+- **Uncertainty**: Unclear whether our Kubernetes Redis operator supports the automatic failover configuration described in the Consequences
+```
+
+---
+
+## Example 8: Review Output
+
+What the `adr-critic` agent returns for the ADR above.
+
+```markdown
+# ADR Review: Use Redis for Session Storage
+**Reviewer**: adr-critic | **Date**: 2026-03-19 | **ADR**: docs/adr/0014-use-redis-for-session-storage.md | **Score**: 6/10
+
+## Verdict: Needs improvement
+
+## Summary
+The decision rationale is reasonable but relies heavily on team familiarity rather than technical analysis. The Author's Notes honestly flag key gaps — the Memcached dismissal and untested performance claims need addressing before this ADR is accepted.
+
+## Findings
+1. Memcached dismissed without evidence — Dimension: Alternatives Fairness | Evidence: Author's Notes item "Dismissed Memcached without benchmarking" + Considered Options section lists Memcached but Decision Outcome doesn't address it | Severity: Major
+2. Performance claim unverified — Dimension: Decision Rationale | Evidence: Author's Notes "Assumed a single Redis instance handles 8K reads/sec based on general benchmarks" but Consequences states "Single Redis instance handles 100K+ reads/sec" without qualification | Severity: Major
+3. No rollback plan for session loss — Dimension: Consequences Completeness | Evidence: Negative consequences mention "Redis downtime causes session loss" but no mitigation strategy (graceful degradation, fallback to DB) | Severity: Minor
+4. Failover uncertainty unresolved — Dimension: Clarity & Actionability | Evidence: Author's Notes "Unclear whether our Kubernetes Redis operator supports automatic failover" — this directly affects the "reduces single point of failure" implied benefit | Severity: Minor
+
+## Verdict Rationale
+Two major findings prevent approval: the straw-manned alternative (Memcached) and unverified performance claims. Both have clear fixes — add a brief Memcached evaluation and test with actual session payloads.
+```
+
+---
+
+## Example 9: ADR After Acceptance (Author's Notes Stripped)
+
+The same ADR from Example 7 after status transitions to Accepted.
+
+```markdown
+# ADR-0014: Use Redis for Session Storage
+
+## Status
+Accepted
+
+## Date
+2026-03-19
+
+## Decision Makers
+- @jcosta (Tech Lead)
+- @backend-team
+
+## Context and Problem Statement
+Our application stores session data in PostgreSQL, causing unnecessary
+database load during peak traffic. Sessions are read-heavy, short-lived,
+and don't require ACID guarantees. We need a dedicated session store
+to reduce database pressure.
+
+## Decision Drivers
+- Current PostgreSQL session table handles 2,000 reads/sec; projected need is 8,000/sec
+- Sessions are ephemeral (30-minute TTL) — don't need durability guarantees
+- Team has Redis experience from the caching layer (ADR-0009)
+- Benchmarked Redis with 2KB session payloads: 95K reads/sec on single instance
+
+## Considered Options
+1. Redis (dedicated instance for sessions)
+2. Memcached
+3. PostgreSQL with read replicas (scale current approach)
+
+## Decision Outcome
+Chosen option: "Redis", because it provides TTL support natively,
+the team already operates Redis for caching, and benchmarks confirm
+it handles our projected session load with a single instance.
+Memcached was evaluated but lacks built-in TTL per key and our team
+has no operational experience with it.
+
+### Consequences
+
+**Positive:**
+- Native TTL eliminates manual session cleanup jobs
+- Benchmarked at 95K reads/sec with our session payload (well above 8K need)
+- Team already has Redis monitoring and alerting from caching layer
+- Reduces PostgreSQL load by ~30% (session queries)
+
+**Negative:**
+- New failure mode: Redis downtime causes session loss (mitigated by graceful degradation to DB fallback)
+- Memory cost: sessions in-memory vs on-disk (~4GB for projected peak)
+- Two data stores to manage instead of one
+```
+
+Note: The `## Author's Notes` section has been removed because the status transitioned to Accepted.
+
+---
+
+## Example 10: Status Transition
+
+Using `/adr status` to change ADR status with validation and side effects.
+
+### Normal Transition (Proposed → Accepted)
+```bash
+/adr status 14 accepted
+```
+
+Output:
+```
+ADR-0014: Proposed → Accepted
+✓ Author's Notes stripped
+✓ Index updated
+
+Decision is now final. To reverse later, use `/adr status 14 deprecated`.
+```
+
+### Warned Transition (Skipping Review)
+```bash
+/adr status 14 accepted
+```
+
+If no `/adr review` was run in the conversation:
+```
+⚠️ Warning: No /adr review was run for ADR-0014. Consider reviewing first
+   to check decision quality before accepting.
+
+Proceed anyway?
+  1. Yes, accept without review
+  2. No, run /adr review first
+```
+
+### Warned Transition (Direct Supersession)
+```bash
+/adr status 5 superseded
+```
+
+Output:
+```
+⚠️ Warning: Use `/adr supersede 5 <new-number>` instead to properly link
+   the replacement ADR. Direct status change won't create supersession links.
+
+Proceed anyway?
+  1. Yes, mark as superseded without linking
+  2. No, use /adr supersede instead
+```
+
+---
+
+## Typical Workflow
+
+End-to-end ADR creation, review, and acceptance flow:
+
+```bash
+# 1. Discuss a decision in conversation
+"Let's decide on the session storage approach..."
+
+# 2. Create the ADR (gathers context, drafts populated content + Author's Notes)
+/adr create Use Redis for session storage
+
+# 3. Quick quality review (uses adr-critic agent)
+/adr review docs/adr/0014-use-redis-for-session-storage.md
+
+# 4. Address findings and update the ADR
+"Fix the Memcached evaluation and add benchmark results"
+
+# 5. Re-review if needed
+/adr review docs/adr/0014-use-redis-for-session-storage.md
+
+# 6. Accept the decision (validates, strips Author's Notes, updates index)
+/adr status 14 accepted
+```
+
+---
+
 ## Quick Reference: Section Purposes
 
 | Section | Purpose | Required? |
@@ -433,6 +652,51 @@ JavaScript/TypeScript AND JVM projects through its plugin architecture.
 | Pros and Cons | Detailed option analysis | No |
 | Confirmation | How to verify implementation | No |
 | More Information | Links and references | No |
+
+---
+
+## Command Usage
+
+### `/adr create`
+```bash
+/adr create Use PostgreSQL for persistence
+/adr create Migrate from Redux to React Query
+/adr create Use URL path versioning for REST API
+```
+
+### `/adr review`
+```bash
+/adr review docs/adr/0014-use-redis-for-session-storage.md
+# Output: Score + Verdict + 3-5 findings from adr-critic agent
+```
+
+### `/adr status`
+```bash
+/adr status 14 accepted
+# Validates transition, strips Author's Notes, updates index
+
+/adr status 7 deprecated
+# Validates transition, preserves Author's Notes, updates index
+```
+
+### `/adr list`
+```bash
+/adr list
+# Output: table of all ADRs with number, title, status, and date
+```
+
+### `/adr supersede`
+```bash
+/adr supersede 5 12
+# Marks ADR-0005 as "Superseded by ADR-0012"
+# Adds "Supersedes ADR-0005" to ADR-0012
+```
+
+### `/adr index`
+```bash
+/adr index
+# Regenerates the README.md index table in the ADR directory
+```
 
 ---
 
