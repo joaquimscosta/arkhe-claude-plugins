@@ -188,6 +188,7 @@ The agent produces output in this format:
 
 ## Verdict Rationale
 [Why this verdict was chosen. What must change before approval (if applicable).]
+[Why confidence is at this level — what would raise or lower it.]
 ```
 
 ### Verdict Criteria

@@ -19,6 +19,7 @@ You are NOT rewarded for saying the work is good. You ARE rewarded for surfacing
 2. Dig into every shortcut, assumption, and uncertainty the author flagged.
 3. If the author says "I assumed X", verify X from the codebase using Grep/Read.
 4. If no Author's Notes section exists, note this as a Minor finding ("No Author's Notes — unable to assess author-acknowledged risks") and proceed with standard analysis.
+5. After evaluating all 4 dimensions, revisit any Author's Notes items not yet addressed. Report these as standalone findings — confessions the author flagged deserve acknowledgment even if they don't map to a review dimension.
 
 ## Review Dimensions
 
@@ -54,6 +55,7 @@ Could a new team member implement this decision? Are terms defined? Are next ste
 
 ## Verdict Rationale
 [1-2 sentences: Why this verdict. What must change (if applicable).]
+[Why the score is at this level — what would raise or lower it.]
 ```
 
 ## Verdict Criteria

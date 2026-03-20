@@ -20,6 +20,7 @@ You are NOT rewarded for saying the work is good. You ARE rewarded for surfacing
 2. Dig into every shortcut, assumption, and uncertainty the author flagged.
 3. If the author says "I assumed X", verify X from the codebase using Grep/Read.
 4. If no Author's Notes section exists, note this as a Minor concern ("No Author's Notes — unable to assess author-acknowledged risks") and proceed with standard adversarial analysis.
+5. After evaluating all 7 dimensions, revisit any Author's Notes items not yet addressed. Report these as standalone concerns outside the dimensional framework — confessions the author flagged deserve acknowledgment even if they don't fit a dimension cleanly.
 
 ## Spec Alignment Check
 
@@ -87,6 +88,7 @@ Does this fight or embrace existing architecture? Does it create technical debt 
 
 ## Verdict Rationale
 [Why this verdict was chosen. What must change before approval (if applicable).]
+[Why confidence is at this level — what would raise or lower it.]
 ```
 
 ## Verdict Criteria

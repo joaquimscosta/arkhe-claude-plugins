@@ -138,7 +138,7 @@ Product management, roadmap analysis, and solution architecture for any project.
 ### Claude Code Plugin
 Claude Code environment setup and configuration wizard.
 - **Commands**: `/claude-setup`
-- **Skills**: `claude-setup` (command-invoke)
+- **Skills**: `env-setup` (command-invoke)
 - **Use**: Interactive setup for Global CLAUDE.md, project scaffolding, MCP servers, hooks, custom agents, keybindings, and settings
 
 ## Common Development Commands

@@ -18,6 +18,6 @@ Guides you through best-practice setup for Global CLAUDE.md, project scaffolding
 
 ## Implementation
 
-Invoke the Skill tool with skill name "claude-code:claude-setup" and arguments: `$ARGUMENTS`
+Invoke the Skill tool with skill name "claude-code:env-setup" and arguments: `$ARGUMENTS`
 
 The skill will detect your current configuration, fetch the latest guide, and walk you through setup interactively.

@@ -44,7 +44,7 @@ This plugin provides an interactive setup wizard that guides users through confi
 ## Skill Structure
 
 ```
-skills/claude-setup/
+skills/env-setup/
 ├── SKILL.md              # Main instructions
 ├── WORKFLOW.md           # Per-category setup flows
 ├── EXAMPLES.md           # Example setup sessions

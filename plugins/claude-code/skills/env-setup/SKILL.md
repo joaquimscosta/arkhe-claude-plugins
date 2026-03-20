@@ -1,5 +1,5 @@
 ---
-name: claude-setup
+name: env-setup
 description: >-
   Interactive Claude Code environment setup wizard. Detects existing configuration,
   guides through best-practice setup for Global CLAUDE.md, project scaffolding,
