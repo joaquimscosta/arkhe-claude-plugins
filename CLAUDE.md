@@ -76,10 +76,10 @@ AI engineering toolkit for production-ready LLM applications.
 
 ### Doc Plugin
 Multi-purpose documentation toolkit with RFC management.
-- **Agents**: `rfc-critic`
-- **Skills**: `doc-coauthoring`, `diagramming`, `code-explanation`, `adr`, `rfc`
+- **Agents**: `rfc-critic`, `adr-critic`
+- **Skills**: `doc-coauthoring`, `diagramming`, `code-explanation`, `jd-docs`, `adr`, `rfc`
 - **Commands**: `/code-explain`, `/diagram`, `/rfc`
-- **Use**: Documentation generation, code explanation, Mermaid diagrams, ADR management, RFC lifecycle (create, review, list, update)
+- **Use**: Documentation generation, code explanation, Mermaid diagrams, Johnny.Decimal management, ADR management, RFC lifecycle (create, review, list, update)
 
 ### Review Plugin
 Code quality review tools for development teams.
@@ -93,10 +93,10 @@ Claude + Google Stitch workflow toolkit with MCP integration.
 - **Use**: Generate Stitch-ready prompts, automate screen generation via MCP
 
 ### Git Plugin
-Git workflow automation for commits, pull requests, branching, changelog generation, and releases.
-- **Commands**: `/commit`, `/create-pr`, `/create-branch`, `/changelog`, `/release`, `/pr-issue-resolve`
-- **Skills**: 7 skills (3 auto-invoke: `generating-changelog`, `listing-stale-branches`, `cleaning-up-branches`; 4 command-invoke)
-- **Use**: Git commits, PRs, branches, changelogs, semantic versioning releases, release pipeline scaffolding
+Git workflow automation for commits, pull requests, branching, changelog generation, releases, and Dependabot triage.
+- **Commands**: `/commit`, `/create-pr`, `/create-branch`, `/changelog`, `/release`, `/pr-issue-resolve`, `/stale-branches`, `/cleanup-branches`
+- **Skills**: 9 skills (3 auto-invoke: `generating-changelog`, `listing-stale-branches`, `cleaning-up-branches`; 6 command-invoke: `creating-branch`, `creating-commit`, `creating-pr`, `releasing`, `dependabot-review`, `resolving-pr-issues`)
+- **Use**: Git commits, PRs, branches, changelogs, semantic versioning releases, release pipeline scaffolding, Dependabot PR triage
 
 ### Design Intent Plugin
 Design Intent for UI development that combines AI-assisted implementation with persistent pattern memory.
@@ -119,7 +119,7 @@ Browser automation via Playwright CLI for testing, screenshots, and interaction 
 Domain-Driven Design patterns with Spring Boot 4 implementation.
 - **Agents**: `spring-boot-reviewer`, `spring-boot-upgrade-verifier`
 - **Commands**: `/spring-review`, `/verify-upgrade`
-- **Skills**: `spring-boot-scanner`, `domain-driven-design`, `spring-boot-data-ddd`, `spring-boot-web-api`, `spring-boot-modulith`, `spring-boot-security`, `spring-boot-observability`, `spring-boot-testing`, `spring-boot-verify`, `spring-boot-quality-stack` (all auto-invoked)
+- **Skills**: `spring-boot-scanner`, `domain-driven-design`, `spring-boot-data-ddd`, `spring-boot-web-api`, `spring-boot-modulith`, `spring-boot-security`, `spring-boot-observability`, `spring-boot-testing`, `spring-boot-verify`, `spring-boot-quality-stack`, `flyway-consolidate` (all auto-invoked)
 - **Use**: DDD architecture, Spring Data, REST APIs, Spring Modulith, Spring Security 7, observability, testing
 
 ### Ralph Plugin
@@ -137,7 +137,6 @@ Product management, roadmap analysis, and solution architecture for any project.
 
 ### Claude Code Plugin
 Claude Code environment setup and configuration wizard.
-- **Commands**: `/claude-setup`
 - **Skills**: `env-setup` (command-invoke)
 - **Use**: Interactive setup for Global CLAUDE.md, project scaffolding, MCP servers, hooks, custom agents, keybindings, and settings
 
@@ -587,7 +586,7 @@ See [docs/README.md](docs/README.md) "Maintaining This Documentation" section fo
 
 ## Plugin Versions
 
-All plugins are at **version 1.0.0** except Ralph (2.0.0). When making breaking changes, increment the major version and update `plugin.json`.
+Plugin versions: core 2.0.0, ai 1.0.0, doc 1.7.0, design-intent 2.2.0, git 1.0.0, google-stitch 2.0.0, lang 1.0.0, playwright 1.0.0, spring-boot 1.0.0, ralph 2.0.0, roadmap 1.0.0, review 2.0.0, claude-code 1.0.0. When making breaking changes, increment the major version and update `plugin.json`.
 
 ## Related Documentation
 
