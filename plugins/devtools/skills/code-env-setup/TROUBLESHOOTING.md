@@ -56,7 +56,7 @@ chmod 755 ~/.claude/
    python3 -m json.tool ~/.claude/settings.json
    ```
 2. If corrupted, restore from backup or recreate manually
-3. Re-run `/devtools:claude-setup` for the affected category
+3. Re-run `/devtools:code-env-setup` for the affected category
 
 ---
 
@@ -96,7 +96,7 @@ chmod 755 ~/.claude/
 
 ## Re-running Setup
 
-The skill is designed for incremental updates. Running `/devtools:claude-setup` again will:
+The skill is designed for incremental updates. Running `/devtools:code-env-setup` again will:
 - Detect what is already configured
 - Skip completed items
 - Offer to add new items or modify existing ones

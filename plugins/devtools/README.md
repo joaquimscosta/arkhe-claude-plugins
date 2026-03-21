@@ -10,14 +10,14 @@ Developer tooling setup and management plugin for Claude Code.
 | `sops-encrypt` | `/devtools:sops-encrypt` | Encrypt .env files |
 | `sops-decrypt` | `/devtools:sops-decrypt` | Decrypt .env.encrypted files |
 | `sops-add-key` | `/devtools:sops-add-key` | Add a machine's public key and re-encrypt |
-| `claude-setup` | `/devtools:claude-setup` | Interactive Claude Code environment setup wizard |
+| `code-env-setup` | `/devtools:code-env-setup` | Interactive Claude Code environment setup wizard |
 | `quality-stack` | `/devtools:quality-stack` | JVM project quality/testing tooling audit and setup |
 
 ## Claude Code Setup
 
 Interactive environment setup wizard that detects existing Claude Code configuration and guides through best-practice setup for Global CLAUDE.md, project scaffolding, MCP servers, hooks, custom agents, keybindings, and settings.
 
-Run `/devtools:claude-setup` to start the wizard, or `/devtools:claude-setup [category]` to configure a specific category (e.g., `hooks`, `mcp`).
+Run `/devtools:code-env-setup` to start the wizard, or `/devtools:code-env-setup [category]` to configure a specific category (e.g., `hooks`, `mcp`).
 
 ## SOPS + age Overview
 
