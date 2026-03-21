@@ -5,6 +5,7 @@ description: >-
   Use for multi-machine setups. Use when user mentions "add key", "add machine",
   "sops add key", "new machine", "authorize machine", "share key",
   "add public key", "multi machine sops".
+disable-model-invocation: true
 ---
 
 # SOPS Add Key

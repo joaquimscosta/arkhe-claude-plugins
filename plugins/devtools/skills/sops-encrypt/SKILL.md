@@ -5,6 +5,7 @@ description: >-
   SOPS bug #1435), then encrypts. Auto-detects unencrypted .env files. Use when
   user mentions "encrypt env", "sops encrypt", "encrypt secrets", "encrypt .env",
   "encrypt environment", "re-encrypt", "update encrypted".
+disable-model-invocation: true
 ---
 
 # SOPS Encrypt

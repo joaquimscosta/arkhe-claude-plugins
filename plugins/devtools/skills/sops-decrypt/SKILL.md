@@ -5,6 +5,7 @@ description: >-
   decrypts, and converts YAML back to dotenv. Use when user mentions "decrypt env",
   "sops decrypt", "decrypt secrets", "restore env", "decrypt .env",
   "restore secrets", "decrypt environment files".
+disable-model-invocation: true
 ---
 
 # SOPS Decrypt

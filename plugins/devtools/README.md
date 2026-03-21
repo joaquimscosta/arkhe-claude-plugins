@@ -36,4 +36,4 @@ Scans JVM projects (Gradle/Maven) to detect configured quality and testing tools
 1. **Recommend** — Run the scanner, fetch research docs, cross-reference, generate a prioritized report
 2. **Setup** — User selects tools from the report, skill configures build files, creates config files, and verifies detection
 
-Run `/devtools:quality-stack` to audit your project's tooling, or mention "quality stack", "audit tooling", or "what tools am I missing" for auto-invocation.
+Run `/devtools:quality-stack` to audit your project's tooling.

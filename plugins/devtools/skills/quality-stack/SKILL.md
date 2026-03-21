@@ -6,6 +6,7 @@ description: >
   Use when user asks to "audit tooling", "recommend tools", "quality stack",
   "what tools am I missing", "setup detekt", "add coverage", "configure CI quality pipeline",
   "scan project tools", or "tooling audit".
+disable-model-invocation: true
 ---
 
 # Quality Stack

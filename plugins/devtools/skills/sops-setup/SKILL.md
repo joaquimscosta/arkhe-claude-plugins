@@ -6,6 +6,7 @@ description: >-
   and encrypts .env files as YAML (avoids SOPS dotenv bug #1435). Use when user
   mentions "sops setup", "encrypt env", "share secrets", "secure env files",
   "sops age setup", "env encryption", "setup sops", "share env across machines".
+disable-model-invocation: true
 ---
 
 # SOPS + age Setup Wizard

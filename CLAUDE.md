@@ -137,7 +137,7 @@ Product management, roadmap analysis, and solution architecture for any project.
 
 ### Devtools Plugin
 Developer tooling setup and management.
-- **Skills**: `sops-setup` (command-invoke), `sops-encrypt` (command-invoke), `sops-decrypt` (command-invoke), `sops-add-key` (command-invoke), `claude-setup` (command-invoke), `quality-stack` (auto-invoke)
+- **Skills**: `sops-setup` (command-invoke), `sops-encrypt` (command-invoke), `sops-decrypt` (command-invoke), `sops-add-key` (command-invoke), `claude-setup` (command-invoke), `quality-stack` (command-invoke)
 - **Use**: SOPS + age encryption for .env files, Claude Code environment setup wizard (Global CLAUDE.md, project scaffolding, MCP servers, hooks, custom agents, keybindings, settings), JVM project quality/testing tooling audit and setup
 
 ## Common Development Commands
