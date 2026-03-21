@@ -22,19 +22,31 @@ Add a new machine's age public key to the project and re-encrypt all files so th
 2. **Verify prerequisites**:
    - `project.sops_yaml.exists` must be true — if not, tell user to run `/devtools:sops-setup` first
    - `project.encrypted_files` should be non-empty — warn if there are no `.enc.yaml` files to re-encrypt
+   - If `project.tmp_files` is non-empty, warn about stale temporary files (leftover from a failed decrypt/re-encrypt) and suggest the user delete them
 
-3. **Show current authorized keys** from `project.sops_yaml.authorized_keys`:
+3. **Audit key propagation** (if encrypted files exist):
+   For each encrypted file, read its YAML and check the `sops.age` recipients list against `project.sops_yaml.authorized_keys`.
+   If any authorized key is missing from any file's recipients:
+   ```
+   WARNING: Key age1xxx...yyy is in .sops.yaml but NOT a recipient in:
+     - apps/web/.env.local.enc.yaml
+     - apps/api/.env.local.enc.yaml
+   These files need re-encryption before the corresponding machine can decrypt them.
+   ```
+   Offer to run `sops updatekeys -y <file>` for each affected file before proceeding with the new key addition.
+
+4. **Show current authorized keys** from `project.sops_yaml.authorized_keys`:
    ```
    Currently authorized keys (N):
    1. age1abc...def (truncated)
    2. age1ghi...jkl (truncated)
    ```
 
-4. **Use `AskUserQuestion`** — ask user to paste the new machine's age public key. Validate it starts with `age1`.
+5. **Use `AskUserQuestion`** — ask user to paste the new machine's age public key. Validate it starts with `age1`.
 
-5. **Read `.sops.yaml`** and add the new key to the `age:` field in `creation_rules`. Use the `Edit` tool to append the key to the comma-separated list or multi-line block.
+6. **Read `.sops.yaml`** and add the new key to the `age:` field in `creation_rules`. Use the `Edit` tool to append the key to the comma-separated list or multi-line block.
 
-6. **Re-encrypt all files** using `sops updatekeys`:
+7. **Re-encrypt all files** using `sops updatekeys`:
    ```bash
    sops updatekeys -y <file>.enc.yaml
    ```
@@ -47,7 +59,9 @@ Add a new machine's age public key to the project and re-encrypt all files so th
    rm <file>.tmp.yaml
    ```
 
-7. **Summary**:
+   **Verify**: After re-encrypting, read each file's `sops.age` recipients block and confirm all keys from `.sops.yaml` (including the newly added key) appear as recipients. If any key is missing, warn the user that re-encryption may have failed.
+
+8. **Summary**:
    ```
    | Action | Detail |
    |--------|--------|

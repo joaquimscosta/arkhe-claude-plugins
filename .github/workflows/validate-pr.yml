@@ -6,13 +6,48 @@ on:
       - 'plugins/**'
       - '.claude-plugin/marketplace.json'
       - '.claude/skills/**'
+      - 'docs/**'
+      - '*.md'
 
 permissions:
   contents: read
 
 jobs:
+  detect-changes:
+    name: Detect Changes
+    runs-on: ubuntu-latest
+    outputs:
+      plugins: ${{ steps.filter.outputs.plugins }}
+      skills: ${{ steps.filter.outputs.skills }}
+      research: ${{ steps.filter.outputs.research }}
+      docs: ${{ steps.filter.outputs.docs }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Detect changed paths
+        uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36  # v3.0.2
+        id: filter
+        with:
+          filters: |
+            plugins:
+              - 'plugins/**'
+              - '.claude-plugin/marketplace.json'
+              - '.claude/skills/**'
+            skills:
+              - 'plugins/**/skills/**'
+              - '.claude/skills/**'
+            research:
+              - 'docs/research/**'
+            docs:
+              - 'docs/**'
+              - 'plugins/**'
+              - '*.md'
+
   validate-plugins:
     name: Plugin Validation
+    needs: detect-changes
+    if: needs.detect-changes.outputs.plugins == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -30,3 +65,105 @@ jobs:
         run: |
           python3 .claude/skills/plugin-release-checker/scripts/check_release_readiness.py \
             --all --format text
+
+  validate-skills-full:
+    name: Skill Quality (Full)
+    needs: detect-changes
+    if: needs.detect-changes.outputs.skills == 'true'
+    runs-on: ubuntu-latest
+    # PHASE: warning-only (remove continue-on-error when skills are clean at warning level)
+    continue-on-error: true
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install PyYAML
+        run: pip install pyyaml
+
+      - name: Run skill validator (all severities)
+        run: |
+          python3 .claude/skills/plugin-release-checker/scripts/check_release_readiness.py \
+            --all --skill-severity warning --format text
+
+  validate-research-docs:
+    name: Research Docs
+    needs: detect-changes
+    if: needs.detect-changes.outputs.research == 'true'
+    runs-on: ubuntu-latest
+    # PHASE: warning-only (remove continue-on-error when docs/research/ is clean)
+    continue-on-error: true
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for git log dates
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install PyYAML
+        run: pip install pyyaml
+
+      - name: Validate research documents
+        run: |
+          python3 .claude/skills/plugin-release-checker/scripts/validate_research_docs.py \
+            --format text
+
+  validate-cross-references:
+    name: Cross-Reference Integrity
+    needs: detect-changes
+    if: needs.detect-changes.outputs.docs == 'true'
+    runs-on: ubuntu-latest
+    # PHASE: warning-only (remove continue-on-error when cross-refs are clean)
+    continue-on-error: true
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Check markdown link integrity
+        run: |
+          python3 .claude/skills/plugin-release-checker/scripts/validate_cross_references.py \
+            --format text
+
+  validate-staleness:
+    name: Staleness Detection
+    needs: detect-changes
+    if: needs.detect-changes.outputs.docs == 'true'
+    runs-on: ubuntu-latest
+    # PHASE: warning-only (remove continue-on-error when staleness is addressed)
+    continue-on-error: true
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for git log dates
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install PyYAML
+        run: pip install pyyaml
+
+      - name: Check research doc staleness
+        run: |
+          python3 .claude/skills/plugin-release-checker/scripts/validate_research_docs.py \
+            --staleness-only --format text
+
+      - name: Check reference doc staleness
+        run: |
+          python3 .claude/skills/plugin-release-checker/scripts/validate_reference_staleness.py \
+            --format text

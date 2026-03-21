@@ -132,13 +132,13 @@ Autonomous development loop with fresh context per iteration and Hat-lite builde
 ### Roadmap Plugin
 Product management, roadmap analysis, and solution architecture for any project.
 - **Agents**: `product-manager`, `system-architect`, `roadmap-analyst`
-- **Skills**: `pm` (auto-invoke), `roadmap` (auto-invoke), `architect` (auto-invoke)
-- **Use**: User stories, scope assessments, prioritization, project status, gap analysis, risk mapping, module design, API design, boundary analysis
+- **Skills**: `pm` (auto-invoke), `roadmap` (auto-invoke), `architect` (auto-invoke), `doc-freshness` (auto-invoke)
+- **Use**: User stories, scope assessments, prioritization, project status, gap analysis, risk mapping, module design, API design, boundary analysis, documentation freshness detection
 
 ### Devtools Plugin
 Developer tooling setup and management.
-- **Skills**: `sops-setup` (command-invoke), `sops-encrypt` (command-invoke), `sops-decrypt` (command-invoke), `sops-add-key` (command-invoke), `code-env-setup` (command-invoke), `quality-stack` (command-invoke)
-- **Use**: SOPS + age encryption for .env files, Claude Code environment setup wizard (Global CLAUDE.md, project scaffolding, MCP servers, hooks, custom agents, keybindings, settings), multi-ecosystem quality/testing tooling audit and setup (JVM, Node.js/TypeScript, Python)
+- **Skills**: `sops-setup` (command-invoke), `sops-encrypt` (command-invoke), `sops-decrypt` (command-invoke), `sops-add-key` (command-invoke), `code-env-setup` (command-invoke), `quality-stack` (command-invoke), `taskfile-setup` (command-invoke)
+- **Use**: SOPS + age encryption for .env files, Claude Code environment setup wizard (Global CLAUDE.md, project scaffolding, MCP servers, hooks, custom agents, keybindings, settings), multi-ecosystem quality/testing tooling audit and setup (JVM, Node.js/TypeScript, Python), Taskfile task runner setup and audit
 
 ## Common Development Commands
 
@@ -586,7 +586,7 @@ See [docs/README.md](docs/README.md) "Maintaining This Documentation" section fo
 
 ## Plugin Versions
 
-Plugin versions: core 2.0.0, ai 1.0.0, doc 1.7.0, design-intent 2.2.0, git 1.0.0, google-stitch 2.0.0, lang 1.0.0, playwright 1.0.0, spring-boot 1.0.0, ralph 2.0.0, roadmap 1.0.0, review 2.0.0, devtools 2.0.0. When making breaking changes, increment the major version and update `plugin.json`.
+Plugin versions: core 2.0.0, ai 1.0.0, doc 1.7.0, design-intent 2.2.0, git 1.0.0, google-stitch 2.0.0, lang 1.0.0, playwright 1.0.0, spring-boot 1.0.0, ralph 2.0.0, roadmap 1.1.0, review 2.0.0, devtools 2.1.0. When making breaking changes, increment the major version and update `plugin.json`.
 
 ## Related Documentation
 
