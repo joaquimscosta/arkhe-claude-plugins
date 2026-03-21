@@ -1,10 +1,10 @@
 ---
-name: env-setup
+name: code-env-setup
 description: >-
   Interactive Claude Code environment setup wizard. Detects existing configuration,
   guides through best-practice setup for Global CLAUDE.md, project scaffolding,
   MCP servers, hooks, custom agents, keybindings, and settings.
-  Use when user runs /claude-setup, mentions "setup claude code", "configure claude",
+  Use when user runs /devtools:code-env-setup, mentions "setup claude code", "configure claude",
   "claude code setup", "environment setup", or "initialize claude code".
 disable-model-invocation: true
 ---
@@ -56,7 +56,7 @@ python3 ${CLAUDE_SKILL_DIR}/scripts/detect_setup.py
 | 6 | Keybindings | Section 13 | `~/.claude/keybindings.json` |
 | 7 | Settings | Section 13 | Language, background tasks in settings.json |
 
-   If user passed a specific category as argument (e.g., `/claude-setup hooks`), skip the selection and go directly to that category.
+   If user passed a specific category as argument (e.g., `/devtools:code-env-setup hooks`), skip the selection and go directly to that category.
 
 2. **Walk through each selected category** with targeted `AskUserQuestion` calls. See [WORKFLOW.md](WORKFLOW.md) for per-category question flows.
 
@@ -64,7 +64,7 @@ python3 ${CLAUDE_SKILL_DIR}/scripts/detect_setup.py
 
 4. **Execute changes** — create files, install MCP servers, update settings.
 
-5. **Post-setup summary** — show what was configured, next steps, and remind user they can re-run `/claude-setup` for incremental updates.
+5. **Post-setup summary** — show what was configured, next steps, and remind user they can re-run `/devtools:code-env-setup` for incremental updates.
 
 ## Key Rules
 

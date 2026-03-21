@@ -3,7 +3,7 @@
 Detect existing Claude Code environment configuration.
 
 Outputs JSON report of what is already configured at both the global
-(~/.claude/) and project (.claude/) levels. Used by the claude-setup
+(~/.claude/) and project (.claude/) levels. Used by the code-env-setup
 skill to determine what needs to be set up.
 
 Usage:

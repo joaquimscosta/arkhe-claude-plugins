@@ -1,9 +1,9 @@
-# Workflow: Spring Boot Quality Stack
+# Workflow: Quality Stack
 
 ## Phase 1: Recommend
 
 ```
-USER invokes spring-boot-quality-stack
+USER invokes quality-stack
     │
     ▼
 Run scan_tooling.py on project root
