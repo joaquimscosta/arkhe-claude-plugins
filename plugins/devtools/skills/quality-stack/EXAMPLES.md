@@ -560,3 +560,310 @@ pre-commit:
 - Frontend hooks use `stage_fixed: true` (lefthook v2 best practice) so formatted files are auto-restaged
 - Tailwind CSS class sorting happens automatically through `prettier-plugin-tailwindcss` — no separate hook needed
 - Since Tailwind CSS v4 is detected, remind user to verify `tailwindStylesheet` in `.prettierrc` points to the correct CSS entry file
+
+---
+
+## Example 8: Next.js Project with Minimal Tooling
+
+### Scanner Output
+
+```json
+{
+  "ecosystem": "node",
+  "project": {
+    "package_manager": "pnpm",
+    "framework": "next",
+    "typescript": true,
+    "typescript_strict": false,
+    "monorepo_tool": null,
+    "node_version": "22",
+    "test_file_count": 0,
+    "src_file_count": 45
+  },
+  "detected_tools": {
+    "static_analysis": [
+      {"name": "eslint", "status": "active", "source": "package-json", "version": "^9.0.0"}
+    ],
+    "formatting": [],
+    "testing": [],
+    "type_checking": [
+      {"name": "typescript", "status": "active", "source": "package-json", "version": "^5.7.0"}
+    ],
+    "coverage": [],
+    "bundle_analysis": [],
+    "security": [],
+    "build_tools": [],
+    "framework": [
+      {"name": "next", "status": "active", "source": "package-json", "version": "^15.0.0"}
+    ],
+    "api_testing": []
+  },
+  "tool_config": {
+    "eslint_config_type": "flat",
+    "has_test_script": false,
+    "has_lint_script": true
+  }
+}
+```
+
+### Generated Recommendation Report
+
+## Tooling Audit Report — Node.js
+
+### Project Profile
+- **Package Manager**: pnpm | **Framework**: Next.js 15 | **TypeScript**: yes (strict: NO)
+- **Test files**: 0 | **Source files**: 45
+
+### Current Stack
+| Category | Tools | Status |
+|----------|-------|--------|
+| Static Analysis | ESLint (flat config) | active |
+| Type Checking | TypeScript | active |
+| Framework | Next.js 15 | active |
+
+### Recommendations
+| Priority | Tool | Category | Why |
+|----------|------|----------|-----|
+| NOW | TypeScript `strict: true` | Type Checking | Catches null/undefined bugs, prevents `any` proliferation |
+| NOW | Prettier | Formatting | No formatter; inconsistent code style across team |
+| NOW | Vitest | Testing | No test runner; 0 test files for 45 source files |
+| SOON | @vitest/coverage-v8 | Coverage | Add coverage once tests exist |
+| SOON | Playwright Test | Testing | No E2E testing for Next.js app |
+| SOON | @testing-library/react | Testing | React component testing library |
+| LATER | @next/bundle-analyzer | Bundle Analysis | Monitor bundle size growth |
+
+---
+
+## Example 9: Python FastAPI Project with Ruff but No Type Checking
+
+### Scanner Output
+
+```json
+{
+  "ecosystem": "python",
+  "project": {
+    "dependency_manager": "uv",
+    "build_system": "hatch",
+    "python_version": ">=3.12",
+    "framework": "fastapi",
+    "has_pyproject_toml": true,
+    "has_src_layout": true,
+    "test_file_count": 15,
+    "src_file_count": 40
+  },
+  "detected_tools": {
+    "linting": [
+      {"name": "ruff", "status": "active", "source": "pyproject-toml"}
+    ],
+    "formatting": [
+      {"name": "ruff", "status": "active", "source": "pyproject-toml"}
+    ],
+    "type_checking": [],
+    "testing": [
+      {"name": "pytest", "status": "active", "source": "dependency"}
+    ],
+    "coverage": [],
+    "security": [],
+    "task_runner": [],
+    "documentation": [],
+    "framework": [
+      {"name": "fastapi", "status": "active", "source": "dependency"}
+    ]
+  },
+  "tool_config": {
+    "ruff_target_version": "py312",
+    "ruff_line_length": "88",
+    "ruff_formatter_enabled": true,
+    "ruff_select_rules": ["E", "F", "I", "UP"]
+  }
+}
+```
+
+### Generated Recommendation Report
+
+## Tooling Audit Report — Python
+
+### Project Profile
+- **Dep Manager**: uv | **Build**: hatch | **Python**: >=3.12 | **Framework**: FastAPI
+- **Test files**: 15 | **Source files**: 40
+
+### Current Stack
+| Category | Tools | Status |
+|----------|-------|--------|
+| Linting | Ruff | active |
+| Formatting | Ruff (formatter) | active |
+| Testing | pytest | active |
+| Framework | FastAPI | active |
+
+### Tool Configuration
+| Setting | Value | Assessment |
+|---------|-------|------------|
+| Ruff target | py312 | Good — matches requires-python |
+| Ruff line-length | 88 | Standard (Black default) |
+| Ruff rules | E, F, I, UP | Good start — consider adding B, SIM, PTH |
+| Ruff formatter | enabled | Good — no need for Black |
+
+### Recommendations
+| Priority | Tool | Category | Why |
+|----------|------|----------|-----|
+| NOW | mypy (strict) | Type Checking | No type checker; FastAPI uses Pydantic models with type hints |
+| SOON | pytest-cov | Coverage | Has pytest but no coverage measurement |
+| SOON | bandit | Security | No security scanning for Python code |
+| SOON | pip-audit | Security | No dependency vulnerability scanning |
+| SOON | Ruff rules expansion | Linting | Add B (bugbear), SIM (simplify), PTH (pathlib) rule sets |
+| LATER | hypothesis | Testing | Property-based testing for API input validation |
+
+---
+
+## Example 10: Multi-Ecosystem Monorepo (JVM + Node.js + Python)
+
+### Orchestrator Output (summary)
+
+```json
+{
+  "ecosystems": [
+    {
+      "ecosystem": "jvm",
+      "root": "services/api",
+      "project": {
+        "build_tool": "gradle-kotlin",
+        "spring_boot_version": "4.0.1",
+        "language": "kotlin"
+      },
+      "detected_tools": {
+        "static_analysis": [
+          {"name": "detekt", "status": "active"},
+          {"name": "ktlint", "status": "active"}
+        ],
+        "coverage": [
+          {"name": "kover", "status": "active"}
+        ]
+      }
+    },
+    {
+      "ecosystem": "node",
+      "root": "apps/web",
+      "project": {
+        "package_manager": "pnpm",
+        "framework": "next",
+        "typescript": true,
+        "typescript_strict": true
+      },
+      "detected_tools": {
+        "static_analysis": [
+          {"name": "eslint", "status": "active"}
+        ],
+        "formatting": [
+          {"name": "prettier", "status": "active"}
+        ],
+        "testing": [
+          {"name": "vitest", "status": "active"}
+        ]
+      }
+    },
+    {
+      "ecosystem": "python",
+      "root": "ml/pipeline",
+      "project": {
+        "dependency_manager": "uv",
+        "framework": null,
+        "python_version": ">=3.11"
+      },
+      "detected_tools": {
+        "linting": [
+          {"name": "ruff", "status": "active"}
+        ],
+        "testing": [
+          {"name": "pytest", "status": "active"}
+        ]
+      }
+    }
+  ],
+  "cross_cutting": {
+    "ci_cd": [{"name": "github-actions", "status": "active"}],
+    "git_hooks": [],
+    "dependency_automation": [],
+    "security_scanning": []
+  }
+}
+```
+
+### Generated Recommendation Report
+
+## Tooling Audit Report — Multi-Ecosystem
+
+### Detected Ecosystems
+- JVM (Gradle Kotlin) — `services/api` (Spring Boot 4.0.1, Kotlin)
+- Node.js (pnpm) — `apps/web` (Next.js, TypeScript strict)
+- Python (uv) — `ml/pipeline` (Python >=3.11)
+
+### JVM Ecosystem (`services/api`)
+| Priority | Tool | Category | Why |
+|----------|------|----------|-----|
+| SOON | Instancio | Test Data | Auto-generate complex domain objects |
+| SOON | MockMvcTester | API Testing | Built-in for Spring Boot 4+ |
+
+### Node.js Ecosystem (`apps/web`)
+| Priority | Tool | Category | Why |
+|----------|------|----------|-----|
+| SOON | Playwright Test | Testing | No E2E testing |
+| SOON | @vitest/coverage-v8 | Coverage | Has Vitest but no coverage |
+
+### Python Ecosystem (`ml/pipeline`)
+| Priority | Tool | Category | Why |
+|----------|------|----------|-----|
+| NOW | mypy | Type Checking | No type checker |
+| SOON | pytest-cov | Coverage | Has pytest but no coverage |
+
+### Cross-Cutting
+| Priority | Tool | Category | Why |
+|----------|------|----------|-----|
+| NOW | EditorConfig | Editor | Missing entirely across all ecosystems |
+| SOON | Lefthook | Git Hooks | Enforce detekt+ktlint+eslint+ruff on commit |
+| SOON | Renovate | Dependencies | Auto-update across Gradle, npm, and pip |
+| SOON | Trivy | Security | Vulnerability scanning in CI |
+
+### Phase 2: Lefthook for Multi-Ecosystem
+
+```yaml
+pre-commit:
+  parallel: true
+  commands:
+    gitleaks:
+      run: gitleaks protect --staged --verbose
+      skip: [merge, rebase]
+
+    # JVM (services/api)
+    ktlint:
+      glob: "services/api/**/*.{kt,kts}"
+      root: "services/api/"
+      run: ./gradlew ktlintCheck
+    detekt:
+      glob: "services/api/**/*.{kt,kts}"
+      root: "services/api/"
+      run: ./gradlew detekt
+
+    # Node.js (apps/web)
+    eslint:
+      glob: "apps/web/**/*.{ts,tsx,js,jsx}"
+      root: "apps/web/"
+      run: npx eslint --fix {staged_files}
+      stage_fixed: true
+    prettier:
+      glob: "apps/web/**/*.{ts,tsx,js,jsx,json,css,md}"
+      root: "apps/web/"
+      run: npx prettier --write {staged_files}
+      stage_fixed: true
+
+    # Python (ml/pipeline)
+    ruff-check:
+      glob: "ml/pipeline/**/*.py"
+      root: "ml/pipeline/"
+      run: ruff check --fix {staged_files}
+      stage_fixed: true
+    ruff-format:
+      glob: "ml/pipeline/**/*.py"
+      root: "ml/pipeline/"
+      run: ruff format {staged_files}
+      stage_fixed: true
+```
