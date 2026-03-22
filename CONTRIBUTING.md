@@ -306,10 +306,21 @@ plugin-name/
 ```
 arkhe-claude-plugins/
 ├── .claude-plugin/
-│   └── marketplace.json      # Plugin catalog
-├── plugins/                   # All plugins
-│   ├── plugin-1/
-│   └── plugin-2/
+│   └── marketplace.json      # Plugin catalog (13 plugins)
+├── plugins/                   # All 13 plugins
+│   ├── core/                  # Quality control and workflow orchestration
+│   ├── ai/                    # AI engineering and LLM development
+│   ├── doc/                   # Documentation generation
+│   ├── review/                # Code review and quality
+│   ├── git/                   # Git workflow automation
+│   ├── google-stitch/         # Google Stitch prompting toolkit
+│   ├── design-intent/         # Design Intent for UI development
+│   ├── lang/                  # Language-specific programming skills
+│   ├── playwright/            # Browser automation via Playwright CLI
+│   ├── spring-boot/           # Domain-Driven Design with Spring Boot 4
+│   ├── ralph/                 # Autonomous development loop
+│   ├── roadmap/               # PM, roadmap analysis, solution architecture
+│   └── devtools/              # Developer tooling and environment setup
 ├── docs/                      # Developer documentation
 └── README.md
 ```
