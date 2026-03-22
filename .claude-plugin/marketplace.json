@@ -1,7 +1,7 @@
 {
   "name": "arkhe-claude-plugins",
   "metadata": {
-    "description": "Supercharge Claude Code with 106 specialized components — from deep reasoning and autonomous dev loops to DDD architecture, design system enforcement, and git workflow automation. 22 agents, 32 commands, 52 skills across 13 modular plugins."
+    "description": "Supercharge Claude Code with 108 specialized components — from deep reasoning and autonomous dev loops to DDD architecture, design system enforcement, and git workflow automation. 22 agents, 32 commands, 54 skills across 13 modular plugins."
   },
   "owner": {
     "name": "Arkhe"
@@ -70,7 +70,7 @@
     {
       "name": "devtools",
       "source": "./plugins/devtools",
-      "description": "Developer tooling setup and management (SOPS secrets encryption, Claude Code environment setup, quality stack)"
+      "description": "Developer tooling setup and management (SOPS secrets encryption, Claude Code environment setup, multi-ecosystem quality stack for JVM/Node.js/Python, Taskfile task runner setup and audit)"
     }
   ]
 }

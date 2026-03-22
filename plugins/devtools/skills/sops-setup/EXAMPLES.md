@@ -106,7 +106,7 @@ The project already has `.sops.yaml` and encrypted files. A new machine clones a
       "key_count": 1
     },
     "env_files": [],
-    "encrypted_files": [".env.local.enc.yaml"],
+    "encrypted_files": ["apps/web/.env.local.enc.yaml"],
     "gitignore": { "exists": true, "ignores_env": true, "ignores_encrypted": false }
   },
   "os": "macos"

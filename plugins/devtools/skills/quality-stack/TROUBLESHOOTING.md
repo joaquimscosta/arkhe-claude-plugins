@@ -2,23 +2,37 @@
 
 ## Scanner Reports Empty Results
 
-### No build file found
+### No ecosystem detected
 
-**Symptom**: `"error": "no_build_file"` in output
+**Symptom**: `"error": "no_ecosystem_detected"` from `scan_project.py`
 
 **Causes**:
 - Running from wrong directory (not project root)
-- Monorepo where the Spring Boot app is nested
-- Non-standard build file location
+- Monorepo where projects are deeply nested
+- Non-standard project structure
 
-**Fix**: Check `nearby_build_files` in the error output for hints, or pass the correct path:
+**Fix**: Use the multi-ecosystem orchestrator with hints:
 ```bash
-python3 scan_tooling.py /absolute/path/to/project-root
+python3 scan_project.py /absolute/path/to/project-root
 ```
 
-For monorepos, use `--recursive`:
+For monorepos, use `--recursive` or force an ecosystem:
 ```bash
-python3 scan_tooling.py --recursive /path/to/monorepo
+python3 scan_project.py --recursive /path/to/monorepo
+python3 scan_project.py --ecosystem jvm /path/to/project
+```
+
+### No build file found (JVM only)
+
+**Symptom**: `"error": "no_build_file"` from `scan_jvm.py` or `scan_tooling.py`
+
+**Causes**:
+- Running the JVM-specific scanner on a non-JVM project
+- Monorepo where the Spring Boot app is nested
+
+**Fix**: Check `nearby_build_files` in the error output, or use the orchestrator instead:
+```bash
+python3 scan_project.py /path/to/project
 ```
 
 ### Tools configured but not detected
@@ -229,6 +243,109 @@ ktlint:
   glob: "**/*.{kt,kts}"  # matches ALL .kt files, not just api
   root: "apps/api/"
 ```
+
+## Node.js Scanner Issues
+
+### Tools not detected in monorepo
+
+**Symptom**: Root `package.json` shows no tools, but workspace packages have them.
+
+**Cause**: The Node scanner reads one `package.json` at a time. In a monorepo, tools are often in workspace packages, not the root.
+
+**Fix**: The orchestrator (`scan_project.py`) auto-discovers workspace packages in `apps/`, `packages/`, etc. Each is scanned separately. If a workspace isn't found, scan it directly:
+```bash
+python3 scan_node.py /path/to/monorepo/packages/my-app
+```
+
+### TypeScript strict mode false negative
+
+**Symptom**: Scanner reports `typescript_strict: false` but the project uses strict mode.
+
+**Cause**: The strict flag may be in an extended config (e.g., `"extends": "@tsconfig/strictest"`). The scanner only reads the root `tsconfig.json` `compilerOptions.strict` field.
+
+**Workaround**: Check manually:
+```bash
+grep -r "strict" tsconfig.json tsconfig.*.json
+```
+
+### ESLint flat config not detected
+
+**Symptom**: ESLint is in `package.json` but `eslint_config_type` is null.
+
+**Cause**: Config file uses a non-standard name or location.
+
+**Fix**: Check for ESLint config files:
+```bash
+ls eslint.config.* .eslintrc.*
+```
+
+## Python Scanner Issues
+
+### Dependencies not detected from pyproject.toml
+
+**Symptom**: Tools are in `pyproject.toml` but not detected.
+
+**Cause**: The scanner uses a regex-based TOML section extractor (not a full parser). Complex nested structures or inline tables may not parse correctly.
+
+**Known limitations**:
+- Inline tables: `mypy = {version = "^1.0", extras = ["reports"]}` — may miss the package name
+- Deeply nested optional-dependencies groups
+- `dependency-groups` (PEP 735) with complex specifiers
+
+**Workaround**: Check dependencies manually:
+```bash
+grep -E "ruff|mypy|pytest|bandit" pyproject.toml requirements*.txt
+```
+
+### Wrong dependency manager detected
+
+**Symptom**: Scanner reports `pip` when project uses `uv`.
+
+**Cause**: Detection is based on lockfile presence (`uv.lock`, `poetry.lock`). If no lockfile exists yet, fallback is `pip`.
+
+**Fix**: Create the lockfile:
+```bash
+uv lock  # creates uv.lock
+poetry install  # creates poetry.lock
+```
+
+### Python version not detected
+
+**Symptom**: `python_version` is null.
+
+**Cause**: No `.python-version` file and no `requires-python` in `pyproject.toml`.
+
+**Fix**: Add to `pyproject.toml`:
+```toml
+[project]
+requires-python = ">=3.12"
+```
+
+## Multi-Ecosystem Issues
+
+### Overlapping tool detection
+
+**Symptom**: Same tool appears in both ecosystem scanner and cross-cutting scanner.
+
+**Expected behavior**: Each scanner reports independently. For example, ESLint may appear in the Node.js scanner's `static_analysis` category AND in the cross-cutting scanner's `frontend_tools` (for Lefthook wiring). The recommendation phase deduplicates.
+
+### Ecosystem not auto-detected
+
+**Symptom**: Orchestrator misses an ecosystem that exists.
+
+**Cause**: The ecosystem marker files (`build.gradle.kts`, `package.json`, `pyproject.toml`) must be in the root or first two levels of subdirectories. Deeply nested projects may not be found.
+
+**Fix**: Use `--ecosystem` to force detection or `--recursive` for deeper scanning:
+```bash
+python3 scan_project.py --ecosystem python /path/to/project
+python3 scan_project.py --recursive /path/to/monorepo
+```
+
+### Node.js project with only a package.json for tooling
+
+**Symptom**: A JVM project with `package.json` (for Lefthook/Husky) is detected as both JVM and Node.js.
+
+**Expected behavior**: The orchestrator checks that `package.json` has actual dependencies AND source directories (`src/`, `app/`) or scripts before counting it as a Node.js project. A `package.json` with only `lefthook` as a devDep should not trigger Node detection.
 
 ## Research Documents Not Fetchable
 

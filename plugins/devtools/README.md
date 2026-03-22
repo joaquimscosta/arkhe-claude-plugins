@@ -12,6 +12,7 @@ Developer tooling setup and management plugin for Claude Code.
 | `sops-add-key` | `/devtools:sops-add-key` | Add a machine's public key and re-encrypt |
 | `code-env-setup` | `/devtools:code-env-setup` | Interactive Claude Code environment setup wizard |
 | `quality-stack` | `/devtools:quality-stack` | JVM project quality/testing tooling audit and setup |
+| `taskfile-setup` | `/devtools:taskfile-setup` | Install Taskfile and scaffold/audit Taskfile.yml |
 
 ## Claude Code Setup
 
@@ -26,6 +27,17 @@ Run `/devtools:code-env-setup` to start the wizard, or `/devtools:code-env-setup
 ### Multi-Machine Workflow
 
 Each machine generates its own age key pair. Public keys are listed in `.sops.yaml` (committed to git). Encrypted files can be decrypted by any authorized machine. To add a new machine, run `/devtools:sops-add-key`.
+
+## Taskfile Setup
+
+Install [Taskfile](https://taskfile.dev/) and scaffold or audit `Taskfile.yml` configurations with ecosystem-aware templates. Auto-detects Node.js/pnpm, JVM/Gradle, Python/uv, Docker, and recommends single-file or multi-file patterns based on project complexity.
+
+### Two-Phase Workflow
+
+1. **Audit** (when Taskfile exists) — Analyze for best-practice violations (missing desc, no preconditions on deploy tasks, no dotenv config, etc.) and offer fixes
+2. **Scaffold** (when no Taskfile exists) — Detect ecosystems, choose pattern (single-file or multi-file), generate Taskfile.yml with ecosystem-specific task groups
+
+Run `/devtools:taskfile-setup` to get started.
 
 ## Quality Stack
 

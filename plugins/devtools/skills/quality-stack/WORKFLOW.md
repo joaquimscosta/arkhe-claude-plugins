@@ -6,35 +6,45 @@
 USER invokes quality-stack
     │
     ▼
-Run scan_tooling.py on project root
+Run scan_project.py on project root (auto-detects ecosystems)
     │
-    ├── "error": "no_build_file"?
-    │   ├── YES → check nearby_build_files, suggest --recursive or subproject path
+    ├── "error": "no_ecosystem_detected"?
+    │   ├── YES → check nearby_project_files, suggest --recursive or --ecosystem
     │   └── NO → continue
     │
     ▼
-Fetch research docs via WebFetch
-  ├── https://raw.githubusercontent.com/joaquimscosta/arkhe-claude-plugins/main/docs/research/jvm-quality-tools-evaluation.md
-  └── https://raw.githubusercontent.com/joaquimscosta/arkhe-claude-plugins/main/docs/research/kotlin-spring-boot-testing-ecosystem.md
+For each detected ecosystem in output.ecosystems[]:
     │
-    ├── Fetch failed?
-    │   ├── YES → warn user, proceed with scanner + LLM knowledge
-    │   └── NO → continue
+    ├── JVM detected? → fetch JVM research docs via WebFetch
+    │   ├── jvm-quality-tools-evaluation.md
+    │   └── kotlin-spring-boot-testing-ecosystem.md
+    │
+    ├── Node.js detected? → fetch Node.js research doc
+    │   └── node-quality-tools-evaluation.md
+    │
+    ├── Python detected? → fetch Python research doc
+    │   └── python-quality-tools-evaluation.md
+    │
+    └── Always fetch cross-cutting research doc
+        └── cross-cutting-devtools-evaluation.md
+    │
+    ├── Fetch failed? → warn user, proceed with scanner + LLM knowledge
     │
     ▼
-Cross-reference: detected tools vs recommended tools
+Cross-reference: detected tools vs recommended tools (per ecosystem)
   ├── Check status field: active / disabled / config-only
-  ├── Review tool_config (jacoco_threshold, ktlint_sarif_enabled)
+  ├── Review tool_config (jacoco_threshold, eslint_config_type, mypy_strict, etc.)
   └── Compare versions against research recommendations
     │
     ▼
-Apply priority classification rules
-  ├── Language-aware filtering (Kotlin-only, Java-only, mixed)
-  ├── Version-aware filtering (Spring Boot 3.x vs 4.x)
-  └── Research priority mapping (NOW/SOON/LATER from research docs)
+Apply priority classification rules (per ecosystem)
+  ├── JVM: Language-aware (Kotlin/Java/mixed), version-aware (Spring Boot 3.x/4.x)
+  ├── Node.js: Framework-aware (Next.js/React/Vue), TypeScript strict audit
+  ├── Python: Framework-aware (Django/FastAPI/Flask), dep manager aware
+  └── Cross-cutting: Git hooks, CI/CD, dependency automation, security
     │
     ▼
-Generate recommendation report
+Generate recommendation report (grouped by ecosystem)
     │
     ▼
 Present to user with AskUserQuestion (multiSelect: true, top NOW/SOON tools as options)
@@ -56,7 +66,7 @@ For each selected tool:
   └── 4. Add CI/CD workflow steps (if applicable)
     │
     ▼
-Re-run scan_tooling.py to confirm detection
+Re-run scan_project.py to confirm detection
     │
     ▼
 Report: "Added {N} tools. Scanner now detects: {list}"
@@ -377,4 +387,258 @@ gitleaks version  # verify
 
 ### 5. Re-run Scanner
 
-Re-run `scan_tooling.py` to confirm `git_hooks` category now shows lefthook as `active`.
+Re-run `scan_project.py` to confirm `git_hooks` category now shows lefthook as `active`.
+
+---
+
+## Node.js/TypeScript Classification Rules
+
+### Category: Static Analysis
+
+| Tool | When to Recommend | Priority |
+|------|------------------|----------|
+| ESLint (flat config) | No linter present | NOW |
+| Biome | No linter + wants all-in-one (replaces ESLint + Prettier) | SOON |
+| ESLint flat config migration | Has legacy `.eslintrc.*` config | SOON |
+
+### Category: Formatting
+
+| Tool | When to Recommend | Priority |
+|------|------------------|----------|
+| Prettier | No formatter + not using Biome | NOW |
+| Biome (formatter) | Already using Biome for linting | NOW (enable) |
+
+### Category: Type Checking
+
+| Setting | When to Recommend | Priority |
+|---------|------------------|----------|
+| TypeScript `strict: true` | TS project + strict not enabled | NOW |
+| `noUncheckedIndexedAccess` | TS strict enabled but this flag missing | SOON |
+| `exactOptionalPropertyTypes` | TS strict enabled but this flag missing | LATER |
+
+### Category: Testing
+
+| Tool | When to Recommend | Priority |
+|------|------------------|----------|
+| Vitest | No test runner + Vite/Next.js/React project | NOW |
+| Jest | No test runner + non-Vite project | NOW |
+| Playwright Test | No E2E test runner | SOON |
+| @testing-library/react | React project without it | SOON |
+
+### Category: Coverage
+
+| Tool | When to Recommend | Priority |
+|------|------------------|----------|
+| @vitest/coverage-v8 | Has Vitest but no coverage | SOON |
+| c8 | Has Node.js tests but no coverage | SOON |
+| istanbul/nyc | Legacy; prefer c8 or vitest coverage | SKIP |
+
+### Category: Bundle Analysis
+
+| Tool | When to Recommend | Priority |
+|------|------------------|----------|
+| size-limit | Library project without bundle checks | LATER |
+| @next/bundle-analyzer | Next.js project without bundle analysis | LATER |
+
+### Category: Framework-Specific
+
+| Framework | Tools to Check | Priority |
+|-----------|---------------|----------|
+| Next.js | `next lint` in scripts, @next/bundle-analyzer | SOON |
+| React | @testing-library/react, vitest | NOW |
+
+### Node.js Phase 2: Setup Patterns
+
+| Tool | Setup Command |
+|------|--------------|
+| ESLint (flat config) | `pnpm add -D eslint @eslint/js typescript-eslint` |
+| Prettier | `pnpm add -D prettier` + create `.prettierrc` |
+| Vitest | `pnpm add -D vitest @vitest/coverage-v8` |
+| Playwright | `pnpm add -D @playwright/test && npx playwright install` |
+| TypeScript strict | Edit `tsconfig.json`: set `"strict": true` |
+
+---
+
+## Python Classification Rules
+
+### Category: Linting
+
+| Tool | When to Recommend | Priority |
+|------|------------------|----------|
+| Ruff (linter) | No linter present | NOW |
+| Flake8 | Has Flake8, suggest migrating to Ruff | LATER (migrate) |
+| Pylint | Has Pylint, suggest migrating to Ruff | LATER (migrate) |
+
+### Category: Formatting
+
+| Tool | When to Recommend | Priority |
+|------|------------------|----------|
+| Ruff (formatter) | Has Ruff linter but no formatter | NOW |
+| Black | No formatter + not using Ruff formatter | SOON |
+| isort | Using Black without isort (Ruff handles both) | SKIP if using Ruff |
+
+### Category: Type Checking
+
+| Tool | When to Recommend | Priority |
+|------|------------------|----------|
+| mypy (strict) | No type checker + has type annotations | NOW |
+| Pyright | Alternative to mypy for VS Code users | SOON |
+| mypy `strict = true` | Has mypy but not in strict mode | SOON |
+
+### Category: Testing
+
+| Tool | When to Recommend | Priority |
+|------|------------------|----------|
+| pytest | No test runner (or only unittest) | NOW |
+| hypothesis | Domain logic with invariants (property testing) | LATER |
+
+### Category: Coverage
+
+| Tool | When to Recommend | Priority |
+|------|------------------|----------|
+| pytest-cov | Has pytest but no coverage | SOON |
+| coverage.py | No coverage tool | SOON |
+
+### Category: Security
+
+| Tool | When to Recommend | Priority |
+|------|------------------|----------|
+| bandit | No security scanner | SOON |
+| pip-audit | No dependency scanning | SOON |
+| safety | Alternative to pip-audit | LATER |
+
+### Category: Task Runner
+
+| Tool | When to Recommend | Priority |
+|------|------------------|----------|
+| Nox | No task automation + complex test matrix | LATER |
+| tox | No task automation + CI matrix needed | LATER |
+
+### Category: Dependency Manager
+
+| Tool | When to Recommend | Priority |
+|------|------------------|----------|
+| uv | Using pip without lockfile | SOON |
+
+### Python Phase 2: Setup Patterns
+
+| Tool | Setup Command |
+|------|--------------|
+| Ruff | `uv add --dev ruff` + add `[tool.ruff]` to pyproject.toml |
+| mypy | `uv add --dev mypy` + add `[tool.mypy]` with `strict = true` |
+| pytest | `uv add --dev pytest pytest-cov` |
+| bandit | `uv add --dev bandit` |
+| pip-audit | `uv add --dev pip-audit` |
+
+---
+
+## Cross-Cutting Classification Rules
+
+### Category: Git Hooks
+
+| Tool | When to Recommend | Priority |
+|------|------------------|----------|
+| Lefthook | No hook manager + has linters (any ecosystem) | SOON |
+| Lefthook | Husky or pre-commit already present | SKIP (migration possible) |
+
+### Category: Commit Conventions
+
+| Tool | When to Recommend | Priority |
+|------|------------------|----------|
+| commitlint | No commit conventions + team project | LATER |
+| commitizen | No commit conventions + wants interactive | LATER |
+
+### Category: Editor Config
+
+| Setting | When to Recommend | Priority |
+|---------|------------------|----------|
+| `.editorconfig` | Missing entirely | NOW |
+| `root = true` | EditorConfig exists but missing `root = true` | NOW |
+| `trim_trailing_whitespace` | EditorConfig exists but not set | SOON |
+
+### Category: Dependency Automation
+
+| Tool | When to Recommend | Priority |
+|------|------------------|----------|
+| Renovate | No dependency automation (preferred over Dependabot) | SOON |
+| Dependabot | No dep automation + simpler setup needed | SOON |
+
+### Category: Security Scanning
+
+| Tool | When to Recommend | Priority |
+|------|------------------|----------|
+| Trivy | No security scanner in CI | SOON |
+| gitleaks | No secret scanning | SOON |
+
+---
+
+## Multi-Ecosystem Report Format
+
+For projects with multiple ecosystems, the report groups by ecosystem:
+
+```markdown
+## Tooling Audit Report
+
+### Detected Ecosystems
+- JVM (Gradle Kotlin DSL) — root: `.`
+- Node.js (pnpm + Turbo) — root: `apps/web`
+
+---
+
+### JVM Ecosystem (root: `.`)
+
+#### Project Profile
+- **Build**: Gradle (Kotlin DSL) | **Language**: Kotlin | **Spring Boot**: 4.0.1
+
+#### Current Stack
+| Category | Tools | Status |
+|----------|-------|--------|
+| ... | ... | ... |
+
+#### Recommendations
+| Priority | Tool | Category | Why |
+|----------|------|----------|-----|
+| ... | ... | ... | ... |
+
+---
+
+### Node.js Ecosystem (root: `apps/web`)
+
+#### Project Profile
+- **Package Manager**: pnpm | **Framework**: Next.js | **TypeScript**: strict
+
+#### Current Stack
+| Category | Tools | Status |
+|----------|-------|--------|
+| ... | ... | ... |
+
+#### Recommendations
+| Priority | Tool | Category | Why |
+|----------|------|----------|-----|
+| ... | ... | ... | ... |
+
+---
+
+### Cross-Cutting Tools
+
+#### Current Stack
+| Category | Tools | Status |
+|----------|-------|--------|
+| CI/CD | GitHub Actions | active |
+| Git Hooks | (none) | — |
+| ... | ... | ... |
+
+#### Recommendations
+| Priority | Tool | Category | Why |
+|----------|------|----------|-----|
+| NOW | EditorConfig | Editor | Missing entirely |
+| SOON | Lefthook | Git Hooks | Enforce linters on commit |
+| SOON | Renovate | Dependencies | Auto-update across all ecosystems |
+| SOON | Trivy | Security | Vulnerability + secret scanning in CI |
+
+---
+
+### Ready to set up?
+
+[AskUserQuestion — multiSelect: true]
+```

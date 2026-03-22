@@ -32,6 +32,7 @@ Each capability is available as both a **skill** (quick analysis in chat) and an
 | `pm` | `stories`, `prioritize`, `scope`, `validate`, `needs`, `compare`, `next` | Feature analysis from user perspective |
 | `roadmap` | `status`, `gaps`, `next`, `delta`, `blockers`, `risks`, `update`, `specs` | Project health and progress tracking |
 | `architect` | `module`, `api`, `data-model`, `boundaries`, `patterns`, `decisions`, `review`, `frontend` | System architecture analysis |
+| `doc-freshness` | `scan`, `check <path>`, `links`, `drift <path>`, `cross-doc`, `report` | Documentation drift and staleness detection |
 
 ### Agents (Write Artifacts)
 
@@ -117,6 +118,32 @@ All components use a shared vocabulary for assessing module maturity:
 /roadmap:architect boundaries
 /roadmap:architect patterns
 ```
+
+## Doc Freshness
+
+Detect documentation drift across any project:
+
+```bash
+# Full freshness scan (links, versions, staleness, code-doc drift)
+/roadmap:doc-freshness scan
+
+# Fast broken link check only
+/roadmap:doc-freshness links
+
+# Deep drift analysis for a specific doc
+/roadmap:doc-freshness drift docs/api-reference.md
+
+# Cross-document consistency check
+/roadmap:doc-freshness cross-doc
+
+# Check a single file
+/roadmap:doc-freshness check README.md
+
+# Persist a freshness report
+/roadmap:doc-freshness report
+```
+
+Works zero-config on any project. For precise doc-code mappings, add a `doc-freshness:` section to `.arkhe.yaml` (see skill docs for details).
 
 ## Cross-Project Compatibility
 

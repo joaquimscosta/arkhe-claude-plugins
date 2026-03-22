@@ -394,7 +394,8 @@ def check_python_scripts(plugin_dir: Path, result: CheckResult) -> None:
         result.passed.append("Python scripts follow conventions")
 
 
-def run_skill_validator(plugin_dir: Path, validator_path: Path, result: CheckResult) -> None:
+def run_skill_validator(plugin_dir: Path, validator_path: Path, result: CheckResult,
+                        min_severity: str = "error") -> None:
     """Run the skill-validator against each skill in the plugin."""
     skills_dir = plugin_dir / "skills"
     if not skills_dir.is_dir():
@@ -411,7 +412,7 @@ def run_skill_validator(plugin_dir: Path, validator_path: Path, result: CheckRes
 
         try:
             proc = subprocess.run(
-                [str(validator_path), str(skill_dir), "--min-severity", "error", "--format", "json"],
+                [str(validator_path), str(skill_dir), "--min-severity", min_severity, "--format", "json"],
                 capture_output=True,
                 text=True,
                 timeout=30,
@@ -510,6 +511,8 @@ def main():
     parser.add_argument("--all", action="store_true", help="Check all plugins")
     parser.add_argument("--plugin", type=str, help="Check specific plugin")
     parser.add_argument("--skip-skill-validator", action="store_true", help="Skip skill-validator (faster)")
+    parser.add_argument("--skill-severity", choices=["critical", "error", "warning", "suggestion"],
+                        default="error", help="Min severity for skill validation (default: error)")
     parser.add_argument("--format", choices=["text", "json"], default="text", help="Output format")
 
     args = parser.parse_args()
@@ -545,7 +548,7 @@ def main():
         check_python_scripts(plugin_dir, result)
 
         if not args.skip_skill_validator:
-            run_skill_validator(plugin_dir, validator_path, result)
+            run_skill_validator(plugin_dir, validator_path, result, args.skill_severity)
 
         results.append(result)
 

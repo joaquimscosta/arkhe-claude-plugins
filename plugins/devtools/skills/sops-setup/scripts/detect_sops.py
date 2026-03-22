@@ -115,21 +115,30 @@ def detect_sops_yaml(project_root):
 
 
 def detect_env_files(project_root):
-    """Find .env* files and encrypted YAML files in the project root."""
+    """Find .env* files and encrypted YAML files in the project tree."""
     root = Path(project_root)
     env_files = []
     encrypted_files = []
+    tmp_files = []
+    skip_dirs = {
+        ".git", "node_modules", "build", "dist", ".next",
+        "__pycache__", ".gradle", "target", ".terraform",
+    }
 
-    for f in sorted(root.iterdir()):
+    for f in sorted(root.rglob("*")):
+        if any(part in skip_dirs for part in f.parts):
+            continue
         if not f.is_file():
             continue
         name = f.name
-        if name.endswith(".enc.yaml"):
-            encrypted_files.append(name)
-        elif name.startswith(".env") and name != ".env.example":
+        if name.endswith(".enc.yaml.tmp") or name.endswith(".tmp.yaml"):
+            tmp_files.append(str(f.relative_to(root)))
+        elif name.endswith(".enc.yaml"):
+            encrypted_files.append(str(f.relative_to(root)))
+        elif name.startswith(".env") and name != ".env.example" and f.parent == root:
             env_files.append(name)
 
-    return env_files, encrypted_files
+    return env_files, encrypted_files, tmp_files
 
 
 def detect_gitignore(project_root):
@@ -176,9 +185,9 @@ def detect_os():
 
 def detect(project_root):
     """Run all detection checks and return structured results."""
-    env_files, encrypted_files = detect_env_files(project_root)
+    env_files, encrypted_files, tmp_files = detect_env_files(project_root)
 
-    return {
+    result = {
         "tools": {
             "sops": detect_tool("sops"),
             "age": detect_tool("age"),
@@ -192,6 +201,11 @@ def detect(project_root):
         },
         "os": detect_os(),
     }
+
+    if tmp_files:
+        result["project"]["tmp_files"] = tmp_files
+
+    return result
 
 
 def main():
