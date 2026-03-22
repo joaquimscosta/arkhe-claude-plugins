@@ -170,9 +170,112 @@ Run `jd_index.py` to update the README with the new structure.
 
 ## Ongoing Maintenance
 
-After initial setup:
+After initial setup, use the Day-2 scripts below or these manual steps:
 
 - **Adding new docs**: Place in the appropriate `NN-area/` directory
 - **Re-indexing**: Run `jd_index.py --dir docs` after adding/removing docs
 - **Validation**: Run `jd_validate.py --dir docs` periodically or in CI
 - **New areas**: Add to `.jd-config.json` areas map, create directory manually or re-run `jd_init.py`
+
+## Phase 7: Day-2 Operations
+
+Scripted workflows for evolving the documentation structure as the project grows.
+
+### Adding a New Area
+
+Use `jd_add_area.py` to create a new area with a single command:
+
+```bash
+# Preview first
+uv run scripts/jd_add_area.py --prefix 40 --name operations --dry-run
+
+# Create with a custom description
+uv run scripts/jd_add_area.py --prefix 40 --name operations \
+  --description "Deployment, monitoring, and runbooks"
+```
+
+What happens:
+1. Validates prefix (two digits, multiple of 10, not already taken)
+2. Creates `40-operations/` directory with README stub
+3. Updates `.jd-config.json` (creates if missing)
+4. Regenerates the root README index
+
+### Classifying Unorganized Files
+
+Use `jd_classify.py` to determine which area files belong to:
+
+```bash
+# Classify files (table output)
+uv run scripts/jd_classify.py docs/*.md
+
+# JSON output for scripting
+uv run scripts/jd_classify.py docs/*.md --json
+
+# Filename-only (skip content scanning)
+uv run scripts/jd_classify.py docs/*.md --no-content
+```
+
+The script uses a two-pass classification:
+
+1. **Filename analysis** — Matches filename segments against a keyword table
+2. **Content analysis** — Scans the first heading and first 50 lines for keywords
+
+Confidence levels:
+- **High** (score >= 0.7): Strong keyword match — safe to auto-move
+- **Medium** (0.4-0.69): Partial match — review suggested destination
+- **Low** (< 0.4): No clear match — flag for Claude review
+
+To classify AND move files in one step:
+
+```bash
+# Preview moves
+uv run scripts/jd_classify.py docs/*.md --move --dry-run
+
+# Move with confirmation prompt
+uv run scripts/jd_classify.py docs/*.md --move
+
+# Move without prompt (CI-friendly)
+uv run scripts/jd_classify.py docs/*.md --move --yes
+```
+
+Low-confidence files are always skipped during `--move` and flagged for manual review.
+
+### Moving Files to Areas
+
+Use `jd_add.py` to move a file to a specific area:
+
+```bash
+# Move by area prefix
+uv run scripts/jd_add.py docs/roadmap.md 00
+
+# Move by full area name
+uv run scripts/jd_add.py docs/roadmap.md 00-getting-started
+
+# Override output filename
+uv run scripts/jd_add.py "docs/My Design Doc.md" 20 --name design-doc.md
+
+# Preview first
+uv run scripts/jd_add.py docs/api-design.md 20 --dry-run
+```
+
+What happens:
+1. Resolves target area (by prefix or full name)
+2. Auto-normalizes filename to kebab-case (e.g., `My Design Doc.md` → `my-design-doc.md`)
+3. Checks for destination conflicts
+4. Moves the file
+5. Scans for cross-references in other markdown files and prints suggestions
+6. Regenerates the root README index
+
+### Filename Normalization
+
+All Day-2 scripts auto-normalize filenames:
+
+| Input | Output |
+|-------|--------|
+| `My Design Doc.md` | `my-design-doc.md` |
+| `Tech_Stack_v2.md` | `tech-stack-v2.md` |
+| `SETUP Guide!.md` | `setup-guide.md` |
+| `a--b---c.md` | `a-b-c.md` |
+| `.gitkeep` | `.gitkeep` (hidden files unchanged) |
+
+Use `--name` with `jd_add.py` to override the normalized name.

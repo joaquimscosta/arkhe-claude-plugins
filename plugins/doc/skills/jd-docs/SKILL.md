@@ -4,8 +4,9 @@ description: >
   Scaffold, validate, and maintain Johnny.Decimal documentation structure
   for software projects. Use when user mentions "Johnny Decimal", "J.D docs",
   "docs structure", "organize docs", "documentation layout", "scaffold docs",
-  "docs migration", "generate index", "docs index", editing files in numbered
-  directories (00-*, 10-*, 20-*), or discussing documentation organization.
+  "docs migration", "generate index", "docs index", "add area", "classify docs",
+  "move doc", editing files in numbered directories (00-*, 10-*, 20-*),
+  or discussing documentation organization.
 ---
 
 # Johnny.Decimal Documentation
@@ -24,9 +25,18 @@ uv run scripts/jd_validate.py --dir docs
 
 # Regenerate README index
 uv run scripts/jd_index.py --dir docs
+
+# Day-2: Add a new area
+uv run scripts/jd_add_area.py --prefix 40 --name operations --dry-run
+
+# Day-2: Classify unorganized files
+uv run scripts/jd_classify.py docs/*.md
+
+# Day-2: Move a file to an area
+uv run scripts/jd_add.py docs/roadmap.md 00 --dry-run
 ```
 
-See [WORKFLOW.md](WORKFLOW.md) for the full six-phase methodology.
+See [WORKFLOW.md](WORKFLOW.md) for the full methodology.
 
 ## Capabilities
 
@@ -34,6 +44,12 @@ See [WORKFLOW.md](WORKFLOW.md) for the full six-phase methodology.
 - **Validation** (`jd_validate.py`) — Check `NN-kebab-case` naming, detect orphan files, verify README presence per area; `--strict` for CI enforcement
 - **Index generation** (`jd_index.py`) — Generate/update root README with table or tree index; preserves custom content via `<!-- JD:INDEX:START/END -->` markers
 - **Migration** (Claude-driven) — Classify flat docs into J.D areas using naming heuristics, present a move plan, execute interactively
+
+## Day-2 Operations
+
+- **Add area** (`jd_add_area.py`) — Create a new J.D area with prefix, name, README stub, config update, and auto re-index
+- **Classify** (`jd_classify.py`) — Classify files into areas using keyword heuristics with confidence scoring (high/medium/low); low-confidence files flagged for Claude review
+- **Add/move file** (`jd_add.py`) — Move a file to an area with auto-normalized kebab-case naming and cross-reference detection
 
 ## Default Area Scheme
 
@@ -71,11 +87,12 @@ Create with `uv run scripts/jd_init.py --init-config`. All fields have sensible 
 | `uv` not found | `curl -LsSf https://astral.sh/uv/install.sh \| sh` or run with `python3 scripts/jd_init.py` |
 | Orphan files in validation | Move to area dir, or add to `"ignore"` in `.jd-config.json` |
 | Index appended at wrong position | Move `<!-- JD:INDEX:START/END -->` markers to desired location after first run |
+| Low confidence on all files | Expand keywords in config or use Claude-driven classification |
 
-See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for all 10 error scenarios.
+See [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for all error scenarios.
 
 ## References
 
-- [WORKFLOW.md](WORKFLOW.md) — Six-phase methodology (discovery, config, scaffold, validate, index, migrate)
-- [EXAMPLES.md](EXAMPLES.md) — Real-world examples for all six operations
+- [WORKFLOW.md](WORKFLOW.md) — Full methodology (discovery, config, scaffold, validate, index, migrate, day-2)
+- [EXAMPLES.md](EXAMPLES.md) — Real-world examples for all operations
 - [TROUBLESHOOTING.md](TROUBLESHOOTING.md) — Error handling and debugging tips

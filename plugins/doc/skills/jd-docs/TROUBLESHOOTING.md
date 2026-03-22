@@ -114,6 +114,72 @@
 - Files matching ignore patterns are skipped
 - Check ignore list: `"ignore": ["adr", "*.pdf"]` in config
 
+## 11. Area Prefix Already Taken
+
+**Symptom:** `jd_add_area.py` reports "Prefix 'XX' already in config" or "already exists on disk".
+
+**Solutions:**
+- Check existing areas: `ls -d docs/[0-9][0-9]-*/`
+- Choose a different prefix (multiples of 10: 40, 50, 60, 70, 80)
+- If the area exists on disk but not in config, add it manually to `.jd-config.json`
+
+## 12. Invalid Prefix (Not Multiple of 10)
+
+**Symptom:** `jd_add_area.py` reports "Prefix 'XX' is not a multiple of 10".
+
+**Explanation:** J.D convention uses multiples of 10 for top-level areas (00, 10, 20, ..., 90).
+
+**Solutions:**
+- Use a valid prefix: `--prefix 40`, `--prefix 50`, etc.
+- If you intentionally need a non-standard prefix (e.g., `41` for a sub-category), create the directory manually
+
+## 13. Classification Shows All Low Confidence
+
+**Symptom:** `jd_classify.py` reports all files as low confidence.
+
+**Common causes:**
+- Filenames are generic (e.g., `notes.md`, `draft.md`, `todo.md`)
+- Content doesn't contain classification keywords
+- Custom areas not in the keyword table
+
+**Solutions:**
+- Use `--no-content` to see filename-only results, then add content
+- Use Claude-driven classification for ambiguous files (ask Claude to suggest areas)
+- Move files manually with `jd_add.py` and specify the target area
+
+## 14. File Already Exists in Target Area
+
+**Symptom:** `jd_add.py` reports "File already exists" at destination.
+
+**Solutions:**
+- Use `--name` to specify a different filename: `--name alternative-name.md`
+- Check if the existing file is the same document (duplicate)
+- Remove or archive the existing file first
+
+## 15. Cross-References Not Auto-Updated
+
+**Symptom:** After moving a file with `jd_add.py`, other docs still link to the old path.
+
+**Explanation:** Cross-reference updates are intentionally NOT automated — the script prints suggestions but does not modify other files, to avoid accidental breakage.
+
+**Solutions:**
+- Review the suggested replacements printed by `jd_add.py`
+- Use find-and-replace to update links in the affected files
+- Run `jd_validate.py` to catch any remaining orphan references
+
+## 16. Filename Normalization Unexpected
+
+**Symptom:** The auto-normalized filename is not what you expected.
+
+**Examples:**
+- `Tech_Stack_v2.md` → `tech-stack-v2.md` (underscores become hyphens)
+- `SETUP Guide!.md` → `setup-guide.md` (special chars stripped)
+- `.gitkeep` → `.gitkeep` (hidden files unchanged)
+
+**Solutions:**
+- Preview first with `--dry-run` to see the normalized name
+- Use `--name` to override: `jd_add.py file.md 20 --name my-preferred-name.md`
+
 ## Debugging Tips
 
 **Verify structure:**

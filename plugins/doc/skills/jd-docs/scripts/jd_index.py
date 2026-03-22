@@ -13,86 +13,19 @@ Usage:
 """
 
 import argparse
-import fnmatch
-import json
 import re
-import subprocess
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from shared import (
+    AREA_DESCRIPTIONS_SHORT,
+    is_ignored,
+    resolve_config,
+)
+
 START_MARKER = "<!-- JD:INDEX:START -->"
 END_MARKER = "<!-- JD:INDEX:END -->"
-
-# Default area descriptions for index
-AREA_DESCRIPTIONS: dict[str, str] = {
-    "00": "Onboarding, setup, quick start, MVP",
-    "10": "Specs, features, roadmap, design",
-    "20": "Tech decisions, system design",
-    "30": "Research, spikes, investigations",
-    "90": "Historical/deprecated docs",
-}
-
-DEFAULT_CONFIG = {
-    "version": 1,
-    "root": "docs",
-    "areas": {
-        "00": "getting-started",
-        "10": "product",
-        "20": "architecture",
-        "30": "research",
-        "90": "archive",
-    },
-    "products": [],
-    "ignore": ["adr", "*.pdf"],
-    "readme_format": "table",
-}
-
-
-def find_git_root(start: Path) -> Path | None:
-    """Walk up from start to find the git repository root."""
-    try:
-        result = subprocess.run(
-            ["git", "rev-parse", "--show-toplevel"],
-            capture_output=True,
-            text=True,
-            cwd=start,
-        )
-        if result.returncode == 0:
-            return Path(result.stdout.strip())
-    except FileNotFoundError:
-        pass
-    return None
-
-
-def load_config(base_path: Path) -> dict:
-    """Find .jd-config.json walking up to git root, or return defaults."""
-    current = base_path.resolve()
-    git_root = find_git_root(current)
-    stop_at = git_root or current
-
-    while True:
-        config_path = current / ".jd-config.json"
-        if config_path.exists():
-            with open(config_path) as f:
-                config = json.load(f)
-            for key, value in DEFAULT_CONFIG.items():
-                if key not in config:
-                    config[key] = value
-            return config
-
-        if current == stop_at or current == current.parent:
-            break
-        current = current.parent
-
-    return dict(DEFAULT_CONFIG)
-
-
-def is_ignored(name: str, ignore_patterns: list[str]) -> bool:
-    """Check if a name matches any ignore pattern."""
-    return any(
-        fnmatch.fnmatch(name, p) or fnmatch.fnmatch(name.lower(), p.lower())
-        for p in ignore_patterns
-    )
 
 
 def parse_doc_title(filepath: Path) -> str:
@@ -144,7 +77,7 @@ def scan_areas(docs_dir: Path, ignore: list[str]) -> list[dict]:
 
         subdirs = [d for d in entries if d.is_dir() and not is_ignored(d.name, ignore)]
 
-        desc = AREA_DESCRIPTIONS.get(prefix, "")
+        desc = AREA_DESCRIPTIONS_SHORT.get(prefix, "")
 
         areas.append({
             "prefix": prefix,
@@ -282,6 +215,26 @@ def update_readme(
         return True
 
 
+def re_index(docs_dir: Path, config: dict, dry_run: bool) -> None:
+    """Regenerate the README index for a docs directory.
+
+    Convenience wrapper used by other jd-docs scripts after mutations.
+    """
+    ignore = config.get("ignore", ["adr", "*.pdf"])
+    fmt = config.get("readme_format", "table")
+
+    areas = scan_areas(docs_dir, ignore)
+    if not areas:
+        return
+
+    if fmt == "tree":
+        index_content = generate_tree_index(areas)
+    else:
+        index_content = generate_table_index(areas)
+
+    update_readme(docs_dir, index_content, dry_run)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
         description="Generate or update a README.md index for Johnny.Decimal docs"
@@ -323,20 +276,7 @@ def main() -> int:
         return 1
 
     # Load config
-    if args.config:
-        config_path = Path(args.config)
-        if not config_path.is_absolute():
-            config_path = Path.cwd() / config_path
-        if config_path.exists():
-            with open(config_path) as f:
-                config = json.load(f)
-            for key, value in DEFAULT_CONFIG.items():
-                if key not in config:
-                    config[key] = value
-        else:
-            config = dict(DEFAULT_CONFIG)
-    else:
-        config = load_config(Path.cwd())
+    config = resolve_config(args.config, Path.cwd())
 
     ignore = config.get("ignore", ["adr", "*.pdf"])
     fmt = args.format or config.get("readme_format", "table")
