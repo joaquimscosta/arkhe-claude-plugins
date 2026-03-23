@@ -17,3 +17,4 @@ See [TEMPLATE.md](TEMPLATE.md) for the standard format when creating new researc
 | [Backend Testing Ecosystem for Kotlin + Spring Boot 4](kotlin-spring-boot-testing-ecosystem.md) | 1.0.0 | Published | 2026-03-05 | 2026-03-05 |
 | [Multi-Agent Orchestration Patterns: Quick Reference](multi-agent-patterns-overview.md) | 1.0.0 | Published | 2026-03-19 | 2026-03-19 |
 | [Multi-Agent Orchestration Patterns: Deep Dive](multi-agent-patterns-deep-dive.md) | 1.0.0 | Published | 2026-03-19 | 2026-03-19 |
+| [Johnny.Decimal + Diataxis Information Architecture](johnny-decimal-diataxis.md) | 1.0.0 | Published | 2026-03-23 | 2026-03-23 |

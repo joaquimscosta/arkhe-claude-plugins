@@ -77,9 +77,9 @@ AI engineering toolkit for production-ready LLM applications.
 ### Doc Plugin
 Multi-purpose documentation toolkit with RFC management.
 - **Agents**: `rfc-critic`, `adr-critic`
-- **Skills**: `doc-coauthoring`, `diagramming`, `code-explanation`, `jd-docs`, `adr`, `rfc`
+- **Skills**: `doc-coauthoring`, `diagramming`, `code-explanation`, `jd-docs`, `diataxis`, `adr`, `rfc`
 - **Commands**: `/code-explain`, `/diagram`, `/rfc`
-- **Use**: Documentation generation, code explanation, Mermaid diagrams, Johnny.Decimal management, ADR management, RFC lifecycle (create, review, list, update)
+- **Use**: Documentation generation, code explanation, Mermaid diagrams, Johnny.Decimal management, Diataxis framework (audit, classify, validate, scaffold), ADR management, RFC lifecycle (create, review, list, update)
 
 ### Review Plugin
 Code quality review tools for development teams.
@@ -94,8 +94,8 @@ Claude + Google Stitch workflow toolkit with MCP integration.
 
 ### Git Plugin
 Git workflow automation for commits, pull requests, branching, changelog generation, releases, and Dependabot triage.
-- **Commands**: `/commit`, `/create-pr`, `/create-branch`, `/changelog`, `/release`, `/pr-issue-resolve`, `/stale-branches`, `/cleanup-branches`
-- **Skills**: 9 skills (3 auto-invoke: `generating-changelog`, `listing-stale-branches`, `cleaning-up-branches`; 6 command-invoke: `creating-branch`, `creating-commit`, `creating-pr`, `releasing`, `dependabot-review`, `resolving-pr-issues`)
+- **Commands**: `/commit`, `/create-pr`, `/create-branch`, `/changelog`, `/release`, `/resolve-review`, `/stale-branches`, `/cleanup-branches`
+- **Skills**: 9 skills (4 auto-invoke: `generating-changelog`, `listing-stale-branches`, `cleaning-up-branches`, `resolving-pr-issues`; 5 command-invoke: `creating-branch`, `creating-commit`, `creating-pr`, `releasing`, `dependabot-review`)
 - **Use**: Git commits, PRs, branches, changelogs, semantic versioning releases, release pipeline scaffolding, Dependabot PR triage
 
 ### Design Intent Plugin
@@ -586,7 +586,7 @@ See [docs/README.md](docs/README.md) "Maintaining This Documentation" section fo
 
 ## Plugin Versions
 
-Plugin versions: core 2.0.0, ai 1.0.0, doc 1.7.0, design-intent 2.2.0, git 1.0.0, google-stitch 2.0.0, lang 1.0.0, playwright 1.0.0, spring-boot 1.0.0, ralph 2.0.0, roadmap 1.1.0, review 2.0.0, devtools 2.1.0. When making breaking changes, increment the major version and update `plugin.json`.
+Plugin versions: core 2.0.0, ai 1.0.0, doc 1.10.0, design-intent 2.2.0, git 1.0.0, google-stitch 2.0.0, lang 1.0.0, playwright 1.0.0, spring-boot 1.0.0, ralph 2.0.0, roadmap 1.1.0, review 2.0.0, devtools 2.1.0. When making breaking changes, increment the major version and update `plugin.json`.
 
 ## Related Documentation
 

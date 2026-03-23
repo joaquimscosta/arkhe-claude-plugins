@@ -19,6 +19,7 @@ Scaffold, validate, and maintain [Johnny.Decimal](https://johnnydecimal.com/) do
 # Scaffold a new structure
 uv run scripts/jd_init.py --dry-run   # Preview first
 uv run scripts/jd_init.py             # Create docs/ with defaults
+uv run scripts/jd_init.py --diataxis  # Include Diataxis areas (41-44)
 
 # Validate existing structure
 uv run scripts/jd_validate.py --dir docs
@@ -31,6 +32,7 @@ uv run scripts/jd_add_area.py --prefix 40 --name operations --dry-run
 
 # Day-2: Classify unorganized files
 uv run scripts/jd_classify.py docs/*.md
+uv run scripts/jd_classify.py docs/*.md --diataxis  # With quadrant info
 
 # Day-2: Move a file to an area
 uv run scripts/jd_add.py docs/roadmap.md 00 --dry-run
@@ -40,7 +42,7 @@ See [WORKFLOW.md](WORKFLOW.md) for the full methodology.
 
 ## Capabilities
 
-- **Scaffolding** (`jd_init.py`) — Create J.D directory tree with README templates; supports `--product` for monorepo sub-trees and `--init-config` to generate `.jd-config.json`
+- **Scaffolding** (`jd_init.py`) — Create J.D directory tree with README templates; supports `--product` for monorepo sub-trees, `--init-config` to generate `.jd-config.json`, and `--diataxis` to include Diataxis quadrant areas (41-44)
 - **Validation** (`jd_validate.py`) — Check `NN-kebab-case` naming, detect orphan files, verify README presence per area; `--strict` for CI enforcement
 - **Index generation** (`jd_index.py`) — Generate/update root README with table or tree index; preserves custom content via `<!-- JD:INDEX:START/END -->` markers
 - **Migration** (Claude-driven) — Classify flat docs into J.D areas using naming heuristics, present a move plan, execute interactively
@@ -48,7 +50,7 @@ See [WORKFLOW.md](WORKFLOW.md) for the full methodology.
 ## Day-2 Operations
 
 - **Add area** (`jd_add_area.py`) — Create a new J.D area with prefix, name, README stub, config update, and auto re-index
-- **Classify** (`jd_classify.py`) — Classify files into areas using keyword heuristics with confidence scoring (high/medium/low); low-confidence files flagged for Claude review
+- **Classify** (`jd_classify.py`) — Classify files into areas using keyword heuristics with confidence scoring (high/medium/low); `--diataxis` adds Diataxis quadrant column, `--diataxis-move` routes files to quadrant areas (41-44)
 - **Add/move file** (`jd_add.py`) — Move a file to an area with auto-normalized kebab-case naming and cross-reference detection
 
 ## Default Area Scheme
@@ -62,6 +64,13 @@ See [WORKFLOW.md](WORKFLOW.md) for the full methodology.
 | `90-` | archive | Historical/deprecated docs |
 
 Gap at 40-80 reserved for per-project customization (e.g., `40-operations`).
+
+**With `--diataxis`**, areas 41-44 are added for Diataxis quadrants:
+
+| `41-` | tutorials | Tutorials — step-by-step lessons (Diataxis) |
+| `42-` | how-to | How-to guides — practical tasks (Diataxis) |
+| `43-` | reference | Reference — technical descriptions (Diataxis) |
+| `44-` | explanation | Explanation — conceptual discussions (Diataxis) |
 
 ## Config File (.jd-config.json)
 

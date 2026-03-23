@@ -22,7 +22,9 @@ Multi-purpose documentation toolkit for generating comprehensive technical docum
 
 - **adr**: ADR (Architecture Decision Record) management with quality review. Supports explicit subcommands (`/adr create`, `/adr review`, `/adr status`, `/adr list`, `/adr supersede`, `/adr index`) and auto-invokes on keywords like "ADR", "architecture decision", or when editing files in `docs/adr/`. Features context-driven creation, Author's Notes (confession pattern for self-assessment), lightweight quality review via `adr-critic` agent, validated status transitions with side effects (Author's Notes stripping on Accepted), auto-numbering, template detection (minimal or MADR 4.0), README index updates, and supersession workflow. Includes Python scripts using `uv` for deterministic operations.
 
-- **jd-docs**: Auto-invoked Johnny.Decimal documentation structure management for scaffolding, validating, and maintaining numbered docs areas. Triggers on keywords like "Johnny Decimal", "docs structure", "organize docs", or when editing files in numbered directories (00-*, 10-*, 20-*). Features default area scheme with per-project customization via `.jd-config.json`, structure validation, and README index generation. Includes Python scripts using `uv` for deterministic operations.
+- **jd-docs**: Auto-invoked Johnny.Decimal documentation structure management for scaffolding, validating, and maintaining numbered docs areas. Triggers on keywords like "Johnny Decimal", "docs structure", "organize docs", or when editing files in numbered directories (00-*, 10-*, 20-*). Features default area scheme with per-project customization via `.jd-config.json`, structure validation, README index generation, and optional Diataxis integration (`--diataxis` to scaffold quadrant areas 41-44, `--diataxis-move` to route files by content type). Includes Python scripts using `uv` for deterministic operations.
+
+- **diataxis**: Auto-invoked Diataxis documentation framework skill for auditing, classifying, validating, and scaffolding documentation by quadrant (Tutorial, How-to, Reference, Explanation). Triggers on "diataxis", "documentation framework", "quadrant", "doc audit", "doc coverage", "collapsed document", or "documentation types". Features multi-signal classification, collapsed document detection, quadrant purity validation (DX001-DX010), coverage reporting with quality scores, and folder scaffolding. Includes Python scripts using `uv` for deterministic operations.
 
 - **rfc**: Unified RFC management with 5 operations: create, review, list, update, and status. Use `/rfc create <topic>` to draft a populated RFC from conversation context and codebase analysis; `/rfc review <path>` to evaluate against 7 architecture dimensions; `/rfc list` to show all RFCs with status; `/rfc update <path>` to re-draft specific sections; `/rfc status <number> <status>` to transition status with validation and side effects. User-invoked only.
 
@@ -44,6 +46,7 @@ Multi-purpose documentation toolkit for generating comprehensive technical docum
 ✅ Architecture Decision Records (ADRs)
 ✅ Proposals, specs, and decision documents
 ✅ Johnny.Decimal documentation organization
+✅ Diataxis documentation framework (audit, classify, validate, scaffold)
 ✅ RFC lifecycle management (create, review, list, update)
 
 ## Applies To
@@ -193,4 +196,4 @@ uv run doc/skills/jd-docs/scripts/jd_index.py --dir docs
 
 ## Version
 
-1.7.0
+1.10.0

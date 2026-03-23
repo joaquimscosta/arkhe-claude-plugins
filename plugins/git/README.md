@@ -148,7 +148,7 @@ Generate comprehensive changelogs from git commit history with semantic versioni
 
 ---
 
-#### 5. /pr-issue-resolve
+#### 5. /resolve-review
 Analyze and systematically resolve GitHub PR review suggestions.
 
 **Features**:
@@ -161,8 +161,8 @@ Analyze and systematically resolve GitHub PR review suggestions.
 
 **Usage**:
 ```bash
-/pr-issue-resolve 123                          # Resolve PR #123
-/pr-issue-resolve https://github.com/org/repo/pull/123  # With full URL
+/resolve-review 123                          # Resolve PR #123
+/resolve-review https://github.com/org/repo/pull/123  # With full URL
 ```
 
 **Process**:

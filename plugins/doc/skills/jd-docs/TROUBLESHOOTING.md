@@ -209,3 +209,31 @@ Always use `--dry-run` before any write operation:
 uv run scripts/jd_init.py --dry-run
 uv run scripts/jd_index.py --dir docs --dry-run
 ```
+
+---
+
+## Diataxis Integration Issues
+
+### Quadrant column shows "-" for all files
+
+**Symptom:** `--diataxis` flag shows `-` in the Quadrant and Q. Conf columns.
+
+**Cause:** The diataxis skill scripts are not found at the expected path.
+
+**Fix:** Ensure the diataxis skill is installed alongside jd-docs:
+```bash
+ls plugins/doc/skills/diataxis/scripts/diataxis_classify.py
+```
+
+If missing, install the diataxis skill or the quadrant column will remain empty (JD classification still works).
+
+### --diataxis-move fails with "area not found"
+
+**Symptom:** Files not routed to Diataxis areas, warning printed.
+
+**Cause:** The 41-44 Diataxis area directories don't exist in the docs structure.
+
+**Fix:** Scaffold with `--diataxis` first:
+```bash
+uv run scripts/jd_init.py --diataxis
+```

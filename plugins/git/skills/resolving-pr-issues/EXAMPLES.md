@@ -16,7 +16,7 @@ A PR adding JWT authentication has 5 review comments from two reviewers.
 ### Command
 
 ```bash
-/pr-issue-resolve 142
+/resolve-review 142
 ```
 
 ### Phase 1 — Context Gathering
@@ -104,7 +104,7 @@ A reviewer misunderstood the React component architecture and left 4 comments, 3
 ### Command
 
 ```bash
-/pr-issue-resolve 87
+/resolve-review 87
 ```
 
 ### Phase 3 — Triage Report
@@ -154,7 +154,7 @@ Two reviewers disagree on error handling strategy for an API endpoint.
 ### Command
 
 ```bash
-/pr-issue-resolve 203
+/resolve-review 203
 ```
 
 ### Phase 3 — Triage Report
@@ -217,7 +217,7 @@ A reviewer leaves valid suggestions that are unrelated to the PR's purpose.
 ### Command
 
 ```bash
-/pr-issue-resolve 156
+/resolve-review 156
 ```
 
 ### Phase 3 — Triage Report
@@ -270,7 +270,7 @@ A code review was generated locally using `/review:code-review` and saved to a f
 ### Command
 
 ```bash
-/pr-issue-resolve reviews/code/2026-03-18_14-30-00_code-review.md
+/resolve-review reviews/code/2026-03-18_14-30-00_code-review.md
 ```
 
 ### Phase 1 — File Parsing
@@ -331,5 +331,5 @@ No PR to update in file mode. The fixes are committed locally for the user to pu
 1. **Most PRs have some false positives**: Expect 20-40% of comments to be filtered. This is normal — reviewers often flag concerns based on incomplete context.
 2. **Confidence scoring prevents over-correction**: Without scoring, you'd blindly apply every suggestion. The threshold ensures only high-confidence issues get fixed.
 3. **Questions deserve thoughtful responses**: Don't dismiss "Why?" questions — they often reveal misunderstandings that, if left unaddressed, lead to the same feedback on future PRs.
-4. **File mode is great for self-review**: Run `/review:code-review` first, then `/pr-issue-resolve` on the report to fix findings before opening a PR.
+4. **File mode is great for self-review**: Run `/review:code-review` first, then `/resolve-review` on the report to fix findings before opening a PR.
 5. **One commit per fix**: Keeps the git history clean and makes it easy for reviewers to see exactly what was changed for each comment.

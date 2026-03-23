@@ -107,7 +107,7 @@ Git workflow automation for commits, pull requests, branching, and changelog gen
 **Requirements**: GitHub CLI (`gh`) for PR commands
 
 **Components**:
-- 5 commands: `/commit`, `/create-pr`, `/create-branch`, `/changelog`, `/pr-issue-resolve`
+- 5 commands: `/commit`, `/create-pr`, `/create-branch`, `/changelog`, `/resolve-review`
 - 4 skills: 1 auto-invoke (`generating-changelog`) + 3 command-invoke
 - 4 scripts: Shell scripts for git workflow automation
 
@@ -312,7 +312,7 @@ You should see commands from installed plugins:
 - **ai**: `/improve-agent`, `/multi-agent-optimize`
 - **doc**: `/code-explain`, `/diagram`
 - **review**: `/code`, `/security`, `/design`, `/codebase`
-- **git**: `/commit`, `/create-pr`, `/create-branch`, `/changelog`, `/pr-issue-resolve`
+- **git**: `/commit`, `/create-pr`, `/create-branch`, `/changelog`, `/resolve-review`
 - **design-intent**: `/setup`, `/design-intent`, `/save-patterns`, `/diary`
 - **google-stitch**: `/prompt`
 
