@@ -50,12 +50,18 @@ class ValidationIssue:
 def _count_preamble_words(filepath: Path) -> int:
     """Count words before the first numbered step or code block."""
     word_count = 0
+    in_frontmatter = False
     try:
         with open(filepath) as f:
-            for line in f:
+            for i, line in enumerate(f):
                 stripped = line.strip()
-                # Skip frontmatter
-                if stripped == "---":
+                # Track YAML frontmatter state
+                if i == 0 and stripped == "---":
+                    in_frontmatter = True
+                    continue
+                if in_frontmatter:
+                    if stripped == "---":
+                        in_frontmatter = False
                     continue
                 # Stop at first step or code block
                 if re.match(r"^\d+\.\s+", stripped) or stripped.startswith("```"):

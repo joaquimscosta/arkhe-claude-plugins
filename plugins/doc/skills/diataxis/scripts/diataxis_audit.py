@@ -348,12 +348,14 @@ def main() -> int:
         print(format_report(results, coverage, quality, gaps, collapsed_results, docs_dir))
 
     # Check minimum coverage
+    failed = False
     for quadrant in QUADRANTS:
         if len(coverage[quadrant]) < args.min_coverage:
+            failed = True
             if not args.json_output:
                 print(f"\nNote: {quadrant} has fewer than {args.min_coverage} doc(s)")
 
-    return 0
+    return 1 if failed else 0
 
 
 if __name__ == "__main__":

@@ -76,7 +76,7 @@ def generate_root_readme(project_name: str, areas: dict[str, str]) -> str:
     ])
 
     # Include Diataxis range if those areas are present
-    if any(k.startswith("4") for k in areas):
+    if any(k in ("41", "42", "43", "44") for k in areas):
         lines.append("- `41-44` — Diataxis quadrants (tutorials, how-to, reference, explanation)")
 
     lines.extend([

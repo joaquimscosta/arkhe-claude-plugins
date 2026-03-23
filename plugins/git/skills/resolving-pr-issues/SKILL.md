@@ -7,6 +7,7 @@ description: >
   for approval, then applies fixes and replies. Use when user runs /resolve-review, mentions
   "resolve PR comments", "address review feedback", "fix PR suggestions", "handle review
   comments", or "resolve review findings".
+disable-model-invocation: true
 allowed-tools: Bash(gh pr view:*), Bash(gh pr diff:*), Bash(gh pr checkout:*), Bash(gh pr comment:*), Bash(gh pr review:*), Bash(gh api:*), Bash(gh issue create:*), Bash(git:*), Read, Write, Grep, Glob
 argument-hint: "[PR-number | URL | file-path]"
 ---
