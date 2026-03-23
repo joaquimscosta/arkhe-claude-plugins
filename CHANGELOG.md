@@ -5,9 +5,47 @@ All notable changes to the Arkhe Claude Plugins project will be documented in th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.14.0] - 2026-03-21
+## [1.14.0] - 2026-03-23
 
 ### Added
+
+#### Doc Plugin
+
+- **`rfc` skill** for RFC lifecycle management (#39)
+  - Create, review, list, and update Architecture RFCs
+  - `rfc-critic` agent for multi-perspective review
+  - Python scripts: `rfc_create.py`, `rfc_list.py`
+  - `/rfc` command wrapper
+- **`diataxis` skill** for Diataxis documentation framework (#46)
+  - Audit, classify, validate, and scaffold documentation by quadrant (Tutorials, How-to, Reference, Explanation)
+  - Scripts: `diataxis_audit.py`, `diataxis_validate.py`, `diataxis_classify.py`, `diataxis_scaffold.py`
+  - Integration with jd-docs via `--diataxis` flag
+
+#### Design Intent Plugin
+
+- **`prototype` skill** for rapid UI component generation (#38)
+  - Generates 3 visually distinct HTML/CSS components from text prompts
+  - Physical/material metaphor-driven design exploration
+  - `--vary` flag for radical variations of existing artifacts
+  - Position-numbered files with `manifest.json` tracking
+  - Side-by-side comparison `index.html`
+
+#### Git Plugin
+
+- **`dependabot-review` skill** for PR triage and merging (#41)
+  - Risk classification: patch/minor/major, security, lockfile-only
+  - Auto-merge safe PRs or advise on risky ones
+
+#### Review Plugin
+
+- **Design review** capability with `design-review` skill and agent (#42)
+- Enhanced RFC and ADR skills with multi-agent patterns (#42)
+- `adr-critic` agent for architecture decision review
+
+#### Core Plugin
+
+- **`sync-docs` skill** for documentation sync and impact analysis
+  - Runs `update-claude-docs.sh`, computes diffs, reports impacts on skills, plugins, and docs
 
 #### Devtools Plugin
 
@@ -30,7 +68,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Multiple modes: `scan`, `links`, `check`, `drift`, `cross-doc`, `report`
   - Script-driven analysis with `scan_freshness.py`
 
+### Fixed
+
+#### Core Plugin
+
+- **sdlc-develop**: Replaced LLM-based spec numbering with deterministic Python script for reliable ordering (#40)
+
 ### Changed
+
+#### Review Plugin
+
+- Overhauled plugin with enhanced RFC/ADR skills and multi-agent patterns (#42)
+- Bumped version: 1.2.0 → 2.0.0
 
 #### Devtools Plugin
 
@@ -42,6 +91,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 #### Roadmap Plugin
 
 - Bumped version: 1.0.0 → 1.1.0
+
+#### Documentation
+
+- Added GitHub issue and PR templates for community contributions
+- Updated README, CLAUDE.md, and marketplace.json with accurate component counts
+- Fixed documentation freshness issues: broken links, missing plugins, stale changelog (#45)
+
+#### CI/CD
+
+- Added PR validation workflow for plugin quality checks
 
 ### Removed
 
@@ -1131,7 +1190,8 @@ The `/specprep:tasks` command has been removed in favor of automatic command cha
 - **Documentation**: See README.md and docs/ directory
 - **Installation**: See INSTALLATION.md
 
-[Unreleased]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.13.0...HEAD
+[Unreleased]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.14.0...HEAD
+[1.14.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.13.0...v1.14.0
 [1.13.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.12.0...v1.13.0
 [1.12.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.11.0...v1.12.0
 [1.11.0]: https://github.com/joaquimscosta/arkhe-claude-plugins/compare/v1.10.0...v1.11.0

@@ -5,8 +5,8 @@
 
 
   <p>
-    <b>Supercharge Claude Code with 106 specialized components</b> — from deep reasoning and autonomous dev loops to<br />
-    DDD architecture, design system enforcement, and git workflow automation. 22 agents, 32 commands, 52 skills across 13 modular plugins.
+    <b>Supercharge Claude Code with 109 specialized components</b> — from deep reasoning and autonomous dev loops to<br />
+    DDD architecture, design system enforcement, and git workflow automation. 22 agents, 32 commands, 55 skills across 13 modular plugins.
   </p>
 
   <p>
