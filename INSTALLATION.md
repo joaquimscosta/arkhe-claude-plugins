@@ -40,6 +40,9 @@ git clone https://github.com/joaquimscosta/arkhe-claude-plugins.git
 /plugin install lang@arkhe-claude-plugins
 /plugin install playwright@arkhe-claude-plugins
 /plugin install spring-boot@arkhe-claude-plugins
+/plugin install ralph@arkhe-claude-plugins
+/plugin install roadmap@arkhe-claude-plugins
+/plugin install devtools@arkhe-claude-plugins
 ```
 
 ### 3. Reload Plugins
@@ -162,6 +165,20 @@ Browser automation via Playwright CLI for testing, screenshots, and interaction 
 
 ---
 
+### Spring Boot Plugin
+Domain-Driven Design patterns with Spring Boot 4 implementation.
+
+**Install**: `/plugin install spring-boot@arkhe-claude-plugins`
+
+**Components**:
+- 2 agents: `spring-boot-reviewer`, `spring-boot-upgrade-verifier`
+- 2 commands: `/spring-review`, `/verify-upgrade`
+- 10 skills: `spring-boot-scanner`, `domain-driven-design`, `spring-boot-data-ddd`, `spring-boot-web-api`, `spring-boot-modulith`, `spring-boot-security`, `spring-boot-observability`, `spring-boot-testing`, `spring-boot-verify`, `flyway-consolidate` (all auto-invoked)
+
+**Use for:** DDD architecture, Spring Data repositories, REST APIs, Spring Modulith, Spring Security 7, observability, testing, Spring Boot 4 migration verification.
+
+---
+
 ### Ralph Plugin
 Autonomous development loop with fresh context per iteration and Hat-lite builder/verifier system.
 
@@ -173,6 +190,31 @@ Autonomous development loop with fresh context per iteration and Hat-lite builde
 - 2 skills: `ralph-loop` (command-invoke), `ralph-prd` (command-invoke)
 
 **Use for:** Greenfield development, POCs, focused features, test coverage campaigns, refactoring tasks with clear boundaries.
+
+---
+
+### Roadmap Plugin
+Product management, roadmap analysis, and solution architecture for any project.
+
+**Install**: `/plugin install roadmap@arkhe-claude-plugins`
+
+**Components**:
+- 3 agents: `product-manager`, `system-architect`, `roadmap-analyst`
+- 4 skills: `pm` (auto-invoke), `roadmap` (auto-invoke), `architect` (auto-invoke), `doc-freshness` (auto-invoke)
+
+**Use for:** User stories, scope assessments, prioritization, project status, gap analysis, risk mapping, module design, API design, boundary analysis, documentation freshness detection.
+
+---
+
+### Devtools Plugin
+Developer tooling setup and management.
+
+**Install**: `/plugin install devtools@arkhe-claude-plugins`
+
+**Components**:
+- 7 skills: `sops-setup`, `sops-encrypt`, `sops-decrypt`, `sops-add-key` (command-invoke), `code-env-setup` (command-invoke), `quality-stack` (command-invoke), `taskfile-setup` (command-invoke)
+
+**Use for:** SOPS + age encryption for .env files, Claude Code environment setup wizard, multi-ecosystem quality/testing tooling audit (JVM, Node.js, Python), Taskfile task runner setup and audit.
 
 ---
 
@@ -221,6 +263,16 @@ Install only the plugins you need:
 /plugin install ralph@arkhe-claude-plugins
 ```
 
+### For Project Management & Architecture
+```bash
+/plugin install roadmap@arkhe-claude-plugins
+```
+
+### For Developer Tooling & Environment Setup
+```bash
+/plugin install devtools@arkhe-claude-plugins
+```
+
 ---
 
 ## Verification
@@ -233,7 +285,7 @@ After installation, verify that everything works:
 /plugin
 ```
 
-You should see all 11 plugins listed.
+You should see all 13 plugins listed.
 
 ### Check Available Agents
 
@@ -247,6 +299,7 @@ You should see agents from installed plugins:
 - **review**: `pragmatic-code-review`, `design-review`
 - **design-intent**: `ui-explorer`, `ui-architect`, `design-reviewer`
 - **ralph**: `ralph-agent`
+- **roadmap**: `product-manager`, `system-architect`, `roadmap-analyst`
 
 ### Check Available Commands
 
@@ -491,4 +544,4 @@ For issues or questions:
 - [Main README](./README.md) - Project overview and plugin summaries
 - [Developer Documentation](./docs/README.md) - Complete guide for plugin developers
 - [Plugin Development Best Practices](./docs/SKILL_DEVELOPMENT_BEST_PRACTICES.md) - Lessons learned from real implementations
-- [Claude 4 Best Practices](./docs/CLAUDE_4_BEST_PRACTICES.md) - Official prompt engineering guide
+- [Claude Code Best Practices](./docs/reference/BEST_PRACTICES.md) - Official Claude Code best practices

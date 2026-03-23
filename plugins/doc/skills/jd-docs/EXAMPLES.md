@@ -263,6 +263,154 @@ When you say "organize my docs into Johnny Decimal areas", Claude will:
 
 ---
 
+## Example 7: Adding a Custom Area
+
+**Scenario:** DevOps-heavy project needs a `40-operations` area after initial scaffold.
+
+```bash
+$ uv run scripts/jd_add_area.py --prefix 40 --name operations \
+    --description "Deployment, monitoring, and runbooks" --dry-run
+Adding area 40-operations (dry-run)
+
+  Would create: /projects/infra/docs/40-operations/
+  Would create: /projects/infra/docs/40-operations/README.md
+
+  Would update: /projects/infra/.jd-config.json
+    + "40": "operations"
+
+Re-indexing...
+Would update: /projects/infra/docs/README.md
+
+--- Index content ---
+| Prefix | Area | Docs | Description |
+|--------|------|------|-------------|
+| `00-` | [`00-getting-started/`](./00-getting-started/) | 3 docs | Onboarding, setup, quick start, MVP |
+| `10-` | [`10-product/`](./10-product/) | 2 docs | Specs, features, roadmap, design |
+| `20-` | [`20-architecture/`](./20-architecture/) | 4 docs | Tech decisions, system design |
+| `30-` | [`30-research/`](./30-research/) | 1 doc | Research, spikes, investigations |
+| `40-` | [`40-operations/`](./40-operations/) | — |  |
+| `90-` | [`90-archive/`](./90-archive/) | — | Historical/deprecated docs |
+--- End ---
+
+Would create: 2 items
+```
+
+**Error case — prefix already taken:**
+
+```bash
+$ uv run scripts/jd_add_area.py --prefix 20 --name operations
+Error: Prefix '20' already in config as '20-architecture'
+```
+
+---
+
+## Example 8: Classifying Unorganized Files
+
+**Scenario:** Several markdown files sitting in the docs root need organizing.
+
+```bash
+$ uv run scripts/jd_classify.py docs/roadmap.md docs/api-design.md \
+    docs/performance-research.md docs/old-plan-v1.md docs/random-notes.md
+File                     | Suggested Area       | Confidence | Reason
+-------------------------+----------------------+------------+-------------------------------
+roadmap.md               | 00-getting-started   | high       | Filename: 'roadmap'
+api-design.md            | 20-architecture      | high       | Filename: 'api'; Content: 'schema'
+performance-research.md  | 30-research          | high       | Filename: 'research'
+old-plan-v1.md           | 90-archive           | high       | Filename: 'old', 'v1'
+random-notes.md          | (unknown)            | low        | No keyword matches
+
+Summary: 4 high, 0 medium, 1 low confidence
+  1 file(s) need Claude review (low confidence)
+```
+
+**Moving with preview:**
+
+```bash
+$ uv run scripts/jd_classify.py docs/*.md --move --dry-run
+...
+  Would move: roadmap.md -> 00-getting-started/roadmap.md
+  Would move: api-design.md -> 20-architecture/api-design.md
+  Would move: performance-research.md -> 30-research/performance-research.md
+  Would move: old-plan-v1.md -> 90-archive/old-plan-v1.md
+  Skip (low confidence): random-notes.md — flag for Claude review
+
+Would move: 4 file(s)
+```
+
+**JSON output for scripting:**
+
+```bash
+$ uv run scripts/jd_classify.py docs/roadmap.md --json
+[
+  {
+    "file": "docs/roadmap.md",
+    "suggested_area": "00-getting-started",
+    "suggested_prefix": "00",
+    "confidence": "high",
+    "score": 0.5,
+    "reason": "Filename: 'roadmap'",
+    "filename_matches": ["roadmap"],
+    "content_matches": []
+  }
+]
+```
+
+---
+
+## Example 9: Moving a File to an Area
+
+**Scenario:** Moving a poorly named file to the correct area with auto-normalization.
+
+```bash
+$ uv run scripts/jd_add.py "docs/My Design Doc.md" 20 --dry-run
+Moving file to 20-architecture/ (dry-run)
+
+  Source:      /projects/my-app/docs/My Design Doc.md
+  Destination: /projects/my-app/docs/20-architecture/my-design-doc.md
+  Renamed:     My Design Doc.md -> my-design-doc.md
+
+Cross-references found (1 occurrence(s)):
+These files reference the old path and may need updating:
+
+  00-getting-started/setup.md:15: See [design doc](../My Design Doc.md) for details
+
+Suggested replacement: 'My Design Doc.md' -> '20-architecture/my-design-doc.md'
+
+Would re-index after move.
+```
+
+**Moving by prefix:**
+
+```bash
+$ uv run scripts/jd_add.py docs/api-design.md 20
+Moving file to 20-architecture/
+
+  Source:      /projects/my-app/docs/api-design.md
+  Destination: /projects/my-app/docs/20-architecture/api-design.md
+
+  Moved successfully.
+
+No cross-references found.
+
+Re-indexing...
+Updated: /projects/my-app/docs/README.md
+```
+
+**Override filename:**
+
+```bash
+$ uv run scripts/jd_add.py docs/notes.md 30 --name spike-caching-strategies.md
+Moving file to 30-research/
+
+  Source:      /projects/my-app/docs/notes.md
+  Destination: /projects/my-app/docs/30-research/spike-caching-strategies.md
+  Renamed:     notes.md -> spike-caching-strategies.md
+
+  Moved successfully.
+```
+
+---
+
 ## Quick Reference
 
 | Action | Script | Key Flags |
@@ -271,3 +419,6 @@ When you say "organize my docs into Johnny Decimal areas", Claude will:
 | Validate existing structure | `jd_validate.py` | `--dir`, `--strict`, `--config` |
 | Generate/update index | `jd_index.py` | `--dir`, `--format`, `--dry-run` |
 | Migrate flat docs | _(Claude-driven)_ | Natural language request |
+| Add new area | `jd_add_area.py` | `--prefix`, `--name`, `--description`, `--dry-run` |
+| Classify files | `jd_classify.py` | `--move`, `--yes`, `--no-content`, `--json`, `--dry-run` |
+| Move file to area | `jd_add.py` | `--name`, `--dry-run` |

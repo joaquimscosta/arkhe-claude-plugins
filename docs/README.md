@@ -68,21 +68,6 @@ Learn to customize and extend Claude Code's behavior with event-driven automatio
 
 Deep-dive into advanced plugin features and patterns for sophisticated use cases.
 
-### 🎯 [Agent Skills Overview](./AGENT_SKILLS_OVERVIEW.md)
-
-Complete guide to understanding Agent Skills in Claude Code.
-
-**Topics covered:**
-- What are Agent Skills and why use them
-- How Skills work (progressive disclosure architecture)
-- Three-level loading strategy (metadata → instructions → resources)
-- Creating custom skills
-- Best practices and patterns
-
-**Best for:** Understanding the fundamentals of how skills work in Claude Code
-
----
-
 ### 🛠️ [Skill Development Best Practices](./SKILL_DEVELOPMENT_BEST_PRACTICES.md)
 
 Lessons learned from real-world skill implementation, specifically from the `extract` skill.
@@ -98,21 +83,6 @@ Lessons learned from real-world skill implementation, specifically from the `ext
 - Real-world case studies and implementation patterns
 
 **Best for:** Practical guidance when building your own skills
-
-### 🎯 [Claude 4 Best Practices](./CLAUDE_4_BEST_PRACTICES.md)
-
-Official prompt engineering guide for Claude 4 models.
-
-**Topics covered:**
-- Claude 4 prompt engineering techniques (Sonnet 4.5, Opus 4.1, Haiku 4.5)
-- Explicit instruction patterns for precise results
-- Context optimization and performance improvement
-- Migration guidance from previous Claude models
-- Best practices for instruction following
-
-**Best for:** Optimizing prompts for Claude 4 agents, understanding model capabilities, improving agent performance
-
----
 
 ### [Claude Code V4 Guide](./CLAUDE_CODE_GUIDE.md)
 
@@ -426,12 +396,12 @@ LSP (Language Server Protocol) setup guides for configuring language intelligenc
 
 - [Claude Code Plugins Guide](https://docs.claude.com/en/docs/claude-code/plugins) - Also available locally: [PLUGINS.md](./reference/PLUGINS.md)
 - [Subagents Guide](https://docs.claude.com/en/docs/claude-code/sub-agents) - Also available locally: [SUBAGENTS.md](./reference/SUBAGENTS.md)
-- [Slash Commands Guide](https://docs.claude.com/en/docs/claude-code/slash-commands) - Also available locally: [COMMANDS.md](./COMMANDS.md)
+- [Slash Commands Guide](https://docs.claude.com/en/docs/claude-code/slash-commands)
 - [Skills Guide](https://docs.claude.com/en/docs/claude-code/skills) - Also available locally: [SKILLS.md](./reference/SKILLS.md)
 - [Hooks Guide](https://docs.claude.com/en/docs/claude-code/hooks-guide) - Also available locally: [HOOKS.md](./reference/HOOKS.md)
 - [Settings Guide](https://docs.claude.com/en/docs/claude-code/settings) - Also available locally: [SETTINGS.md](./reference/SETTINGS.md)
-- [Agent Skills Overview](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview) - Also available locally: [AGENT_SKILLS_OVERVIEW.md](./AGENT_SKILLS_OVERVIEW.md)
-- [Claude 4 Best Practices](https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/claude-4-best-practices) - Also available locally: [CLAUDE_4_BEST_PRACTICES.md](./CLAUDE_4_BEST_PRACTICES.md)
+- [Agent Skills Overview](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview)
+- [Claude 4 Best Practices](https://docs.claude.com/en/docs/build-with-claude/prompt-engineering/claude-4-best-practices)
 
 ### Official Resources
 
@@ -443,7 +413,7 @@ LSP (Language Server Protocol) setup guides for configuring language intelligenc
 
 - [Main README](../README.md) - Plugin marketplace overview and quick start
 - [Installation Guide](../INSTALLATION.md) - Detailed installation instructions
-- Plugin READMEs: [core](../plugins/core/README.md), [doc](../plugins/doc/README.md), [git](../plugins/git/README.md), [review](../plugins/review/README.md), [design-intent](../plugins/design-intent/README.md)
+- Plugin READMEs: [core](../plugins/core/README.md), [doc](../plugins/doc/README.md), [git](../plugins/git/README.md), [review](../plugins/review/README.md), [design-intent](../plugins/design-intent/README.md), [roadmap](../plugins/roadmap/README.md), [devtools](../plugins/devtools/README.md), [spring-boot](../plugins/spring-boot/README.md), [ralph](../plugins/ralph/README.md)
 
 ---
 
@@ -488,11 +458,11 @@ cd docs/reference
 ✓ Updated: SUBAGENTS.md
 ✓ Updated: PLUGINS.md
 ✓ Updated: HOOKS.md
-✓ Updated: COMMANDS.md
 ✓ Updated: SKILLS.md
-✓ Updated: AGENT_SKILLS_OVERVIEW.md
-✓ Updated: CLAUDE_4_BEST_PRACTICES.md
 ✓ Updated: SETTINGS.md
+✓ Updated: MCP.md
+✓ Updated: PLUGINS_REFERENCE.md
+✓ Updated: BEST_PRACTICES.md
 ```
 
 ### Adding New Documentation URLs
@@ -504,7 +474,7 @@ To add new official Claude Code documentation to the sync system:
    "https://docs.claude.com/path/to/doc.md|YOUR_FILENAME.md"
    ```
 
-2. **Follow naming conventions**: Use `UPPERCASE_WITH_UNDERSCORES.md` format (e.g., `CLAUDE_4_BEST_PRACTICES.md`)
+2. **Follow naming conventions**: Use `UPPERCASE_WITH_UNDERSCORES.md` format (e.g., `BEST_PRACTICES.md`)
 
 3. **Run the sync script**: Execute `./reference/update-claude-docs.sh` to download the new documentation
 

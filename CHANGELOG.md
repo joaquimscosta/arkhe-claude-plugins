@@ -5,6 +5,50 @@ All notable changes to the Arkhe Claude Plugins project will be documented in th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.14.0] - 2026-03-21
+
+### Added
+
+#### Devtools Plugin
+
+- **`taskfile-setup` skill** for Taskfile task runner setup and audit (#44)
+  - Auto-detects Node.js/pnpm, JVM/Gradle, Python/uv, Docker ecosystems
+  - Two-phase workflow: audit existing Taskfile or scaffold new one
+  - Recommends single-file or multi-file patterns based on project complexity
+- **Multi-ecosystem `quality-stack` scanning** for JVM, Node.js/TypeScript, and Python (#44)
+  - `scan_project.py` orchestrator with auto-detection and `--ecosystem` flag
+  - `scan_node.py`: ESLint, Biome, Prettier, Vitest, Jest, Playwright, TypeScript strict audit
+  - `scan_python.py`: Ruff, mypy, Pyright, pytest, coverage, Bandit, pip-audit, uv
+  - `scan_cross_cutting.py`: CI/CD, git hooks, commitlint, EditorConfig, Renovate, Trivy
+  - `shared.py` common utilities extracted for cross-ecosystem reuse
+- Validation scripts for plugin-release-checker: cross-reference and staleness validators
+
+#### Roadmap Plugin
+
+- **`doc-freshness` skill** for documentation drift detection (#44)
+  - Scans for broken links, version mismatches, and git staleness
+  - Multiple modes: `scan`, `links`, `check`, `drift`, `cross-doc`, `report`
+  - Script-driven analysis with `scan_freshness.py`
+
+### Changed
+
+#### Devtools Plugin
+
+- **BREAKING**: Merged `claude-code` plugin into devtools; renamed `env-setup` to `code-env-setup` (#43)
+- Moved `quality-stack` skill from spring-boot to devtools (#43)
+- Refactored `scan_tooling.py` into `scan_jvm.py` with backwards-compatible wrapper (#44)
+- Bumped version: 1.0.0 → 2.1.0
+
+#### Roadmap Plugin
+
+- Bumped version: 1.0.0 → 1.1.0
+
+### Removed
+
+- **`claude-code` plugin** — consolidated into devtools (#43)
+
+---
+
 ## [1.13.0] - 2026-03-07
 
 ### Added

@@ -15,76 +15,17 @@ Usage:
 
 import argparse
 import json
-import subprocess
 import sys
 from pathlib import Path
 
-# Default area scheme
-DEFAULT_AREAS: dict[str, str] = {
-    "00": "getting-started",
-    "10": "product",
-    "20": "architecture",
-    "30": "research",
-    "90": "archive",
-}
-
-# Purpose descriptions for each default area
-AREA_DESCRIPTIONS: dict[str, str] = {
-    "00": "Onboarding, setup, quick start, MVP, and phase planning",
-    "10": "Product specs, features, roadmap, design, and branding",
-    "20": "Technical decisions, system design, and integration",
-    "30": "Research notes, spikes, investigations, and reference material",
-    "90": "Historical and deprecated documentation",
-}
-
-DEFAULT_CONFIG = {
-    "version": 1,
-    "root": "docs",
-    "areas": DEFAULT_AREAS,
-    "products": [],
-    "ignore": ["adr", "*.pdf"],
-    "readme_format": "table",
-}
-
-
-def find_git_root(start: Path) -> Path | None:
-    """Walk up from start to find the git repository root."""
-    try:
-        result = subprocess.run(
-            ["git", "rev-parse", "--show-toplevel"],
-            capture_output=True,
-            text=True,
-            cwd=start,
-        )
-        if result.returncode == 0:
-            return Path(result.stdout.strip())
-    except FileNotFoundError:
-        pass
-    return None
-
-
-def load_config(base_path: Path) -> dict:
-    """Find .jd-config.json walking up to git root, or return defaults."""
-    current = base_path.resolve()
-    git_root = find_git_root(current)
-    stop_at = git_root or current
-
-    while True:
-        config_path = current / ".jd-config.json"
-        if config_path.exists():
-            with open(config_path) as f:
-                config = json.load(f)
-            # Merge with defaults for missing keys
-            for key, value in DEFAULT_CONFIG.items():
-                if key not in config:
-                    config[key] = value
-            return config
-
-        if current == stop_at or current == current.parent:
-            break
-        current = current.parent
-
-    return dict(DEFAULT_CONFIG)
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from shared import (
+    AREA_DESCRIPTIONS,
+    DEFAULT_AREAS,
+    DEFAULT_CONFIG,
+    find_git_root,
+    resolve_config,
+)
 
 
 def generate_root_readme(project_name: str, areas: dict[str, str]) -> str:
@@ -269,21 +210,15 @@ def main() -> int:
     base_path = Path.cwd()
 
     # Load config
-    if args.config:
+    config = resolve_config(args.config, base_path)
+    if args.config and not Path(args.config).exists():
+        # resolve_config prints warning, but init needs hard error
         config_path = Path(args.config)
         if not config_path.is_absolute():
             config_path = base_path / config_path
-        if config_path.exists():
-            with open(config_path) as f:
-                config = json.load(f)
-            for key, value in DEFAULT_CONFIG.items():
-                if key not in config:
-                    config[key] = value
-        else:
+        if not config_path.exists():
             print(f"Error: Config file not found: {config_path}")
             return 1
-    else:
-        config = load_config(base_path)
 
     areas = config.get("areas", DEFAULT_AREAS)
 

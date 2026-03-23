@@ -13,88 +13,18 @@ Usage:
 """
 
 import argparse
-import fnmatch
-import json
 import re
-import subprocess
 import sys
 from pathlib import Path
 
-# Pattern for valid J.D area directory names: NN-kebab-case
-AREA_NAME_PATTERN = re.compile(r"^[0-9]{2}-[a-z0-9]+(?:-[a-z0-9]+)*$")
-
-# Default area scheme for comparison
-DEFAULT_AREAS: dict[str, str] = {
-    "00": "getting-started",
-    "10": "product",
-    "20": "architecture",
-    "30": "research",
-    "90": "archive",
-}
-
-# Files that are expected at the docs root (not orphans)
-ROOT_ALLOWED_FILES = {
-    "readme.md",
-    "glossary.md",
-    ".jd-config.json",
-    ".ds_store",
-}
-
-DEFAULT_CONFIG = {
-    "version": 1,
-    "root": "docs",
-    "areas": DEFAULT_AREAS,
-    "products": [],
-    "ignore": ["adr", "*.pdf"],
-    "readme_format": "table",
-}
-
-
-def find_git_root(start: Path) -> Path | None:
-    """Walk up from start to find the git repository root."""
-    try:
-        result = subprocess.run(
-            ["git", "rev-parse", "--show-toplevel"],
-            capture_output=True,
-            text=True,
-            cwd=start,
-        )
-        if result.returncode == 0:
-            return Path(result.stdout.strip())
-    except FileNotFoundError:
-        pass
-    return None
-
-
-def load_config(base_path: Path) -> dict:
-    """Find .jd-config.json walking up to git root, or return defaults."""
-    current = base_path.resolve()
-    git_root = find_git_root(current)
-    stop_at = git_root or current
-
-    while True:
-        config_path = current / ".jd-config.json"
-        if config_path.exists():
-            with open(config_path) as f:
-                config = json.load(f)
-            for key, value in DEFAULT_CONFIG.items():
-                if key not in config:
-                    config[key] = value
-            return config
-
-        if current == stop_at or current == current.parent:
-            break
-        current = current.parent
-
-    return dict(DEFAULT_CONFIG)
-
-
-def is_ignored(name: str, ignore_patterns: list[str]) -> bool:
-    """Check if a directory or file name matches any ignore pattern."""
-    return any(
-        fnmatch.fnmatch(name, p) or fnmatch.fnmatch(name.lower(), p.lower())
-        for p in ignore_patterns
-    )
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from shared import (
+    AREA_NAME_PATTERN,
+    DEFAULT_AREAS,
+    ROOT_ALLOWED_FILES,
+    is_ignored,
+    resolve_config,
+)
 
 
 def find_areas(docs_dir: Path, ignore: list[str]) -> list[Path]:
@@ -213,21 +143,7 @@ def main() -> int:
         return 1
 
     # Load config
-    if args.config:
-        config_path = Path(args.config)
-        if not config_path.is_absolute():
-            config_path = Path.cwd() / config_path
-        if config_path.exists():
-            with open(config_path) as f:
-                config = json.load(f)
-            for key, value in DEFAULT_CONFIG.items():
-                if key not in config:
-                    config[key] = value
-        else:
-            print(f"Warning: Config not found: {config_path}, using defaults")
-            config = dict(DEFAULT_CONFIG)
-    else:
-        config = load_config(Path.cwd())
+    config = resolve_config(args.config, Path.cwd())
 
     expected_areas = config.get("areas", DEFAULT_AREAS)
     ignore = config.get("ignore", ["adr", "*.pdf"])
