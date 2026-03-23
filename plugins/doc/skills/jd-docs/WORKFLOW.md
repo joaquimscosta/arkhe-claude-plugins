@@ -279,3 +279,55 @@ All Day-2 scripts auto-normalize filenames:
 | `.gitkeep` | `.gitkeep` (hidden files unchanged) |
 
 Use `--name` with `jd_add.py` to override the normalized name.
+
+---
+
+## Phase 7: Diataxis Integration (Optional)
+
+**Goal:** Combine Johnny.Decimal's structural organization with Diataxis content-type classification.
+
+### Scaffold with Diataxis Areas
+
+Add Diataxis quadrant areas (41-44) alongside standard areas:
+
+```bash
+uv run scripts/jd_init.py --diataxis --dry-run
+uv run scripts/jd_init.py --diataxis
+```
+
+This creates 9 areas: 5 standard (00-90) + 4 Diataxis (41-44):
+- `41-tutorials` — Learning-oriented, step-by-step lessons
+- `42-how-to` — Task-oriented, practical guides
+- `43-reference` — Information-oriented, technical descriptions
+- `44-explanation` — Understanding-oriented, conceptual discussions
+
+### Classify with Diataxis Quadrant
+
+Show Diataxis quadrant alongside JD area classification:
+
+```bash
+uv run scripts/jd_classify.py docs/*.md --diataxis
+```
+
+This adds Quadrant and Q. Conf columns to the output table.
+
+### Route Files to Diataxis Areas
+
+Move files to their Diataxis area instead of their JD area:
+
+```bash
+uv run scripts/jd_classify.py docs/*.md --diataxis-move --move --dry-run
+```
+
+This requires the 41-44 areas to exist (created via `--diataxis` init).
+
+### Relationship Between JD and Diataxis
+
+| Dimension | JD Area | Diataxis Quadrant |
+|-----------|---------|-------------------|
+| **Classifies by** | Topic (where) | Content type (what) |
+| **Example** | `20-architecture` | `explanation` |
+| **Structure** | Numbered directories | Content-type directories |
+| **Overlap** | A doc in `20-architecture/` can be an `explanation` or `reference` | A `tutorial` can be about any topic |
+
+Both systems are complementary: JD organizes by topic, Diataxis classifies by user need.

@@ -32,6 +32,10 @@ AREA_DESCRIPTIONS: dict[str, str] = {
     "20": "Technical decisions, system design, and integration",
     "30": "Research notes, spikes, investigations, and reference material",
     "90": "Historical and deprecated documentation",
+    "41": "Learning-oriented, step-by-step lessons (Diataxis: Tutorial)",
+    "42": "Task-oriented, practical problem-solving guides (Diataxis: How-to)",
+    "43": "Information-oriented, technical descriptions (Diataxis: Reference)",
+    "44": "Understanding-oriented, conceptual discussions (Diataxis: Explanation)",
 }
 
 # Short descriptions for index tables
@@ -41,6 +45,26 @@ AREA_DESCRIPTIONS_SHORT: dict[str, str] = {
     "20": "Tech decisions, system design",
     "30": "Research, spikes, investigations",
     "90": "Historical/deprecated docs",
+    "41": "Tutorials (Diataxis)",
+    "42": "How-to guides (Diataxis)",
+    "43": "Reference docs (Diataxis)",
+    "44": "Explanation docs (Diataxis)",
+}
+
+# Diataxis quadrant areas (range 41-44, within the 40-49 custom zone)
+DIATAXIS_AREAS: dict[str, str] = {
+    "41": "tutorials",
+    "42": "how-to",
+    "43": "reference",
+    "44": "explanation",
+}
+
+# Mapping from Diataxis quadrant name to JD prefix
+DIATAXIS_QUADRANT_TO_PREFIX: dict[str, str] = {
+    "tutorial": "41",
+    "how-to": "42",
+    "reference": "43",
+    "explanation": "44",
 }
 
 DEFAULT_CONFIG: dict = {

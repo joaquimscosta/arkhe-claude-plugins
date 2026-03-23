@@ -420,5 +420,40 @@ Moving file to 30-research/
 | Generate/update index | `jd_index.py` | `--dir`, `--format`, `--dry-run` |
 | Migrate flat docs | _(Claude-driven)_ | Natural language request |
 | Add new area | `jd_add_area.py` | `--prefix`, `--name`, `--description`, `--dry-run` |
-| Classify files | `jd_classify.py` | `--move`, `--yes`, `--no-content`, `--json`, `--dry-run` |
+| Classify files | `jd_classify.py` | `--move`, `--yes`, `--no-content`, `--json`, `--dry-run`, `--diataxis`, `--diataxis-move` |
 | Move file to area | `jd_add.py` | `--name`, `--dry-run` |
+
+---
+
+## Example 7: Diataxis Integration
+
+### Scaffold with Diataxis Areas
+
+```bash
+$ uv run scripts/jd_init.py --diataxis --root /tmp/test-docs --dry-run
+
+Scaffolding J.D structure at: /tmp/test-docs/ (dry-run)
+
+  Would create: /tmp/test-docs/00-getting-started/
+  Would create: /tmp/test-docs/10-product/
+  Would create: /tmp/test-docs/20-architecture/
+  Would create: /tmp/test-docs/30-research/
+  Would create: /tmp/test-docs/41-tutorials/
+  Would create: /tmp/test-docs/42-how-to/
+  Would create: /tmp/test-docs/43-reference/
+  Would create: /tmp/test-docs/44-explanation/
+  Would create: /tmp/test-docs/90-archive/
+```
+
+### Classify with Diataxis Quadrant Column
+
+```bash
+$ uv run scripts/jd_classify.py docs/*.md --diataxis
+
+File               | Suggested Area  | Confidence | Quadrant    | Q. Conf | Reason
+-------------------+-----------------+------------+-------------+---------+----------
+deploy-guide.md    | 20-architecture | medium     | how-to      | high    | Filename: 'deploy'
+api-reference.md   | 20-architecture | medium     | reference   | high    | Filename: 'api', 'reference'
+getting-started.md | 00-getting...   | high       | tutorial    | high    | Filename: 'getting-started'
+why-postgres.md    | 30-research     | medium     | explanation | high    | Filename: 'why'
+```

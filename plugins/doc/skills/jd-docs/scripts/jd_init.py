@@ -11,6 +11,7 @@ Usage:
     uv run jd_init.py --root docs/skrebe       # Product sub-tree
     uv run jd_init.py --init-config            # Also create .jd-config.json
     uv run jd_init.py --dry-run                # Preview only
+    uv run jd_init.py --diataxis               # Include Diataxis areas (41-44)
 """
 
 import argparse
@@ -23,6 +24,7 @@ from shared import (
     AREA_DESCRIPTIONS,
     DEFAULT_AREAS,
     DEFAULT_CONFIG,
+    DIATAXIS_AREAS,
     find_git_root,
     resolve_config,
 )
@@ -71,6 +73,13 @@ def generate_root_readme(project_name: str, areas: dict[str, str]) -> str:
         "- `10-19` — Product decisions",
         "- `20-29` — Architecture and technical design",
         "- `30-39` — Research and reference material",
+    ])
+
+    # Include Diataxis range if those areas are present
+    if any(k.startswith("4") for k in areas):
+        lines.append("- `41-44` — Diataxis quadrants (tutorials, how-to, reference, explanation)")
+
+    lines.extend([
         "- `90-99` — Archive",
         "",
         "This convention provides consistent sorting and helps developers",
@@ -201,6 +210,11 @@ def main() -> int:
         help="Create .jd-config.json with defaults",
     )
     parser.add_argument(
+        "--diataxis",
+        action="store_true",
+        help="Include Diataxis quadrant areas (41-44) alongside standard areas",
+    )
+    parser.add_argument(
         "--dry-run",
         action="store_true",
         help="Show what would be created without writing",
@@ -221,6 +235,10 @@ def main() -> int:
             return 1
 
     areas = config.get("areas", DEFAULT_AREAS)
+
+    # Include Diataxis quadrant areas if requested
+    if args.diataxis:
+        areas = {**areas, **DIATAXIS_AREAS}
 
     # Determine root directory
     if args.root:

@@ -11,6 +11,8 @@ Usage:
     uv run jd_classify.py docs/*.md
     uv run jd_classify.py docs/*.md --move --yes
     uv run jd_classify.py docs/*.md --no-content
+    uv run jd_classify.py docs/*.md --diataxis
+    uv run jd_classify.py docs/*.md --diataxis-move --move --dry-run
 """
 
 import argparse
@@ -24,11 +26,52 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from shared import (
     DEFAULT_AREAS,
+    DIATAXIS_QUADRANT_TO_PREFIX,
     find_area_by_prefix,
     normalize_filename,
     resolve_config,
 )
 from jd_index import re_index
+
+def _get_diataxis_classifier():
+    """Try to import diataxis classify_file. Returns None if unavailable.
+
+    Uses importlib to avoid module name collisions (both skills have shared.py).
+    """
+    import importlib.util
+
+    diataxis_scripts = Path(__file__).resolve().parent.parent.parent / "diataxis" / "scripts"
+    classify_path = diataxis_scripts / "diataxis_classify.py"
+    shared_path = diataxis_scripts / "shared.py"
+
+    if not classify_path.is_file() or not shared_path.is_file():
+        return None
+
+    try:
+        # Load diataxis shared module under a unique name to avoid collision
+        shared_spec = importlib.util.spec_from_file_location("diataxis_shared", shared_path)
+        shared_mod = importlib.util.module_from_spec(shared_spec)
+        sys.modules["diataxis_shared"] = shared_mod
+        shared_spec.loader.exec_module(shared_mod)
+
+        # Temporarily make diataxis shared importable as "shared" for diataxis_classify
+        orig_shared = sys.modules.get("shared")
+        sys.modules["shared"] = shared_mod
+
+        classify_spec = importlib.util.spec_from_file_location("diataxis_classify", classify_path)
+        classify_mod = importlib.util.module_from_spec(classify_spec)
+        classify_spec.loader.exec_module(classify_mod)
+
+        # Restore original shared module
+        if orig_shared is not None:
+            sys.modules["shared"] = orig_shared
+        else:
+            del sys.modules["shared"]
+
+        return classify_mod.classify_file
+    except Exception:
+        return None
+
 
 # Expanded keyword table for classification
 CLASSIFICATION_KEYWORDS: dict[str, list[str]] = {
@@ -71,6 +114,8 @@ class ClassificationResult:
     reason: str = ""
     filename_matches: list[str] = field(default_factory=list)
     content_matches: list[str] = field(default_factory=list)
+    diataxis_quadrant: str = ""       # populated when --diataxis is used
+    diataxis_confidence: str = ""     # populated when --diataxis is used
 
 
 def _parse_first_heading(filepath: Path) -> str:
@@ -216,30 +261,52 @@ def classify_file(
     return result
 
 
-def format_table(results: list[ClassificationResult]) -> str:
+def format_table(results: list[ClassificationResult], show_diataxis: bool = False) -> str:
     """Format classification results as a human-readable table."""
     # Calculate column widths
     file_w = max(len("File"), max(len(r.file_path.name) for r in results))
     area_w = max(len("Suggested Area"), max(len(r.suggested_area or "(unknown)") for r in results))
     conf_w = len("Confidence")
 
-    header = f"{'File':<{file_w}} | {'Suggested Area':<{area_w}} | {'Confidence':<{conf_w}} | Reason"
-    sep = f"{'-' * file_w}-+-{'-' * area_w}-+-{'-' * conf_w}-+{'-' * 30}"
+    if show_diataxis:
+        quad_w = max(len("Quadrant"), max(len(r.diataxis_quadrant or "-") for r in results))
+        qconf_w = len("Q. Conf")
+        header = (
+            f"{'File':<{file_w}} | {'Suggested Area':<{area_w}} | "
+            f"{'Confidence':<{conf_w}} | {'Quadrant':<{quad_w}} | "
+            f"{'Q. Conf':<{qconf_w}} | Reason"
+        )
+        sep = (
+            f"{'-' * file_w}-+-{'-' * area_w}-+-{'-' * conf_w}-+-"
+            f"{'-' * quad_w}-+-{'-' * qconf_w}-+{'-' * 30}"
+        )
+    else:
+        header = f"{'File':<{file_w}} | {'Suggested Area':<{area_w}} | {'Confidence':<{conf_w}} | Reason"
+        sep = f"{'-' * file_w}-+-{'-' * area_w}-+-{'-' * conf_w}-+{'-' * 30}"
 
     lines = [header, sep]
     for r in results:
         area = r.suggested_area or "(unknown)"
-        lines.append(
-            f"{r.file_path.name:<{file_w}} | {area:<{area_w}} | {r.confidence:<{conf_w}} | {r.reason}"
-        )
+        if show_diataxis:
+            quadrant = r.diataxis_quadrant or "-"
+            qconf = r.diataxis_confidence or "-"
+            lines.append(
+                f"{r.file_path.name:<{file_w}} | {area:<{area_w}} | "
+                f"{r.confidence:<{conf_w}} | {quadrant:<{quad_w}} | "
+                f"{qconf:<{qconf_w}} | {r.reason}"
+            )
+        else:
+            lines.append(
+                f"{r.file_path.name:<{file_w}} | {area:<{area_w}} | {r.confidence:<{conf_w}} | {r.reason}"
+            )
     return "\n".join(lines)
 
 
-def format_json(results: list[ClassificationResult]) -> str:
+def format_json(results: list[ClassificationResult], show_diataxis: bool = False) -> str:
     """Format classification results as JSON."""
     data = []
     for r in results:
-        data.append({
+        entry = {
             "file": str(r.file_path),
             "suggested_area": r.suggested_area,
             "suggested_prefix": r.suggested_prefix,
@@ -248,7 +315,11 @@ def format_json(results: list[ClassificationResult]) -> str:
             "reason": r.reason,
             "filename_matches": r.filename_matches,
             "content_matches": r.content_matches,
-        })
+        }
+        if show_diataxis:
+            entry["diataxis_quadrant"] = r.diataxis_quadrant
+            entry["diataxis_confidence"] = r.diataxis_confidence
+        data.append(entry)
     return json.dumps(data, indent=2)
 
 
@@ -332,6 +403,16 @@ def main() -> int:
         help="Output results as JSON",
     )
     parser.add_argument(
+        "--diataxis",
+        action="store_true",
+        help="Show Diataxis quadrant classification alongside JD area",
+    )
+    parser.add_argument(
+        "--diataxis-move",
+        action="store_true",
+        help="With --move, route files to Diataxis areas (41-44) instead of JD areas",
+    )
+    parser.add_argument(
         "--dry-run",
         action="store_true",
         help="Preview move operations without executing",
@@ -372,20 +453,46 @@ def main() -> int:
     scan_content = not args.no_content
     results = [classify_file(f, config, scan_content) for f in files]
 
+    # Diataxis classification (if requested)
+    show_diataxis = args.diataxis or args.diataxis_move
+    if show_diataxis:
+        diataxis_classify = _get_diataxis_classifier()
+        if diataxis_classify:
+            for r in results:
+                dx_result = diataxis_classify(r.file_path, config, scan_content)
+                r.diataxis_quadrant = dx_result.primary_quadrant
+                r.diataxis_confidence = dx_result.confidence
+        else:
+            print("Note: Diataxis skill not found, quadrant column will be empty",
+                  file=sys.stderr)
+
+    # Override prefix for --diataxis-move
+    if args.diataxis_move and args.move:
+        for r in results:
+            if r.diataxis_quadrant and r.diataxis_quadrant in DIATAXIS_QUADRANT_TO_PREFIX:
+                dx_prefix = DIATAXIS_QUADRANT_TO_PREFIX[r.diataxis_quadrant]
+                dx_area_dir = find_area_by_prefix(docs_dir, dx_prefix)
+                if dx_area_dir:
+                    r.suggested_prefix = dx_prefix
+                    r.suggested_area = dx_area_dir.name
+                else:
+                    print(f"  Note: {dx_prefix}-* area not found for {r.file_path.name}, "
+                          f"keeping JD area {r.suggested_area}", file=sys.stderr)
+
     # Output
     if args.json_output:
-        print(format_json(results))
+        print(format_json(results, show_diataxis))
     else:
-        print(format_table(results))
+        print(format_table(results, show_diataxis))
 
-    # Summary
-    high = sum(1 for r in results if r.confidence == "high")
-    medium = sum(1 for r in results if r.confidence == "medium")
-    low = sum(1 for r in results if r.confidence == "low")
-    print(f"\nSummary: {high} high, {medium} medium, {low} low confidence")
+        # Summary (human-readable only)
+        high = sum(1 for r in results if r.confidence == "high")
+        medium = sum(1 for r in results if r.confidence == "medium")
+        low = sum(1 for r in results if r.confidence == "low")
+        print(f"\nSummary: {high} high, {medium} medium, {low} low confidence")
 
-    if low > 0:
-        print(f"  {low} file(s) need Claude review (low confidence)")
+        if low > 0:
+            print(f"  {low} file(s) need Claude review (low confidence)")
 
     # Move if requested
     if args.move:
