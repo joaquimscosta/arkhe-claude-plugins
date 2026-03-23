@@ -10,9 +10,9 @@ Multi-agent review resolution with trust-but-verify methodology and confidence-b
 ## Usage
 
 ```bash
-/pr-issue-resolve 123                              # Resolve PR review comments by number
-/pr-issue-resolve https://github.com/org/repo/42   # Resolve PR review comments by URL
-/pr-issue-resolve reviews/code/2026-03-18_review.md # Resolve findings from a local review file
+/resolve-review 123                              # Resolve PR review comments by number
+/resolve-review https://github.com/org/repo/42   # Resolve PR review comments by URL
+/resolve-review reviews/code/2026-03-18_review.md # Resolve findings from a local review file
 ```
 
 ## What It Does
