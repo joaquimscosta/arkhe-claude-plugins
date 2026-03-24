@@ -18,44 +18,7 @@ You perform comprehensive analysis of a project by reading every planning docume
 
 **Run full discovery — this agent is thorough.**
 
-### 1. Read Configuration
-
-Read `.arkhe.yaml` from the project root. Extract `roadmap:` section.
-
-### 2. Read Rich Context
-
-If `{context_dir}` exists (default: `.arkhe/roadmap`), read ALL `.md` files:
-- `project.md` — Project overview, personas, domain, constraints, phases
-- `architecture.md` — Tech stack, modules, patterns, boundaries
-- `documents.md` — Document map (key docs and their roles)
-
-### 2b. Johnny Decimal Detection
-
-Check if the project uses Johnny Decimal documentation structure:
-1. Read `.jd-config.json` at project root — if present, use its `root` (default: `docs`) and `areas` map
-2. If no config, glob for `docs/[0-9][0-9]-*/` — if 2+ matches exist, J.D structure is present
-
-If J.D detected, supplement Step 4 globs:
-- Glob `{jd_root}/[0-9][0-9]-*/**/*.md` to capture all area docs
-- Read ALL areas — this agent is thorough and must not miss anything
-- Deprioritize `90-*` (archive) — read last, flag content as potentially outdated
-- Keep existing non-J.D paths (`plan/**/*.md`, `specs/**/*.md`) as fallback
-
-### 3. Read Project Identity
-
-Read `CLAUDE.md` and `README.md` for project scope and conventions.
-
-### 4. Read ALL Documentation
-
-Glob for every documentation file in the project:
-```
-docs/**/*.md
-plan/**/*.md
-specs/**/*.md
-arkhe/specs/*/spec.md
-```
-
-Read ALL of them. The value of this analysis is comprehensiveness.
+Run the shared context discovery protocol in [CONTEXT_DISCOVERY.md](../references/CONTEXT_DISCOVERY.md). Execute all phases in order (use thorough scan mode for Phase 7). Read ALL documentation files discovered — the value of this analysis is comprehensiveness.
 
 ## Analysis Protocol
 
@@ -116,66 +79,11 @@ Produce a report with ALL sections below.
 
 ## Report Template
 
-```markdown
-# Project Health Report
-_Deep analysis generated: {date}_
-
-## 1. Executive Summary
-{3-5 sentences on overall project health, trajectory, and key concerns}
-
-## 2. Phase/Milestone Status
-
-| Phase | Description | Status | Completion | Blocker | Next Milestone |
-|-------|-------------|--------|------------|---------|----------------|
-
-## 3. Module Implementation Matrix
-
-| Module | Source Files | Test Files | Maturity | Key Gaps |
-|--------|------------|-----------|----------|----------|
-
-## 4. Decision Traceability
-
-| Decision | Description | Code Evidence | Status | Notes |
-|----------|------------|---------------|--------|-------|
-
-## 5. Documentation Health
-
-| Document | Purpose | Current? | Actionable? | Notes |
-|----------|---------|----------|-------------|-------|
-
-## 6. Gap Analysis Risk Map
-
-| Gap Source | Gap | Current Status | Risk | Likelihood | Impact | Mitigation |
-|-----------|-----|---------------|------|-----------|--------|------------|
-
-## 7. Dependency Graph
-{What blocks what — trace the critical path}
-
-## 8. Blocking Chain
-{Ordered list of blockers with downstream impact}
-
-## 9. Risk Register
-
-| # | Risk | Likelihood | Impact | Score | Mitigation | Owner |
-|---|------|-----------|--------|-------|------------|-------|
-
-## 10. Prioritized Action Plan
-{Numbered list of next actions, ordered by impact and urgency}
-
-## 11. Recommendations
-{Strategic recommendations for the project}
-```
+Use the Roadmap Analyst templates in [TEMPLATES.md](../references/TEMPLATES.md) for: Project Health Report, Status Dashboard, Risk Register.
 
 ## Module Maturity Scale
 
-| Level | Description |
-|-------|-------------|
-| **Stub** | Directory/package exists, maybe a placeholder |
-| **Domain Started** | Entities/models/types defined |
-| **Service Layer** | Business logic implemented |
-| **API Ready** | Endpoints/routes exposed |
-| **Tested** | Tests covering key paths |
-| **Production Ready** | Fully tested, documented, monitoring-ready |
+Use the shared vocabulary in [MATURITY_SCALE.md](../references/MATURITY_SCALE.md).
 
 ## Important Guidelines
 

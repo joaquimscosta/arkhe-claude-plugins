@@ -130,10 +130,10 @@ Autonomous development loop with fresh context per iteration and Hat-lite builde
 - **Use**: Greenfield development, POCs, focused features, test coverage campaigns, refactoring tasks
 
 ### Roadmap Plugin
-Product management, roadmap analysis, and solution architecture for any project.
-- **Agents**: `product-manager`, `system-architect`, `roadmap-analyst`
-- **Skills**: `pm` (auto-invoke), `roadmap` (auto-invoke), `architect` (auto-invoke), `doc-freshness` (auto-invoke)
-- **Use**: User stories, scope assessments, prioritization, project status, gap analysis, risk mapping, module design, API design, boundary analysis, documentation freshness detection
+Product management, roadmap analysis, and solution architecture with multi-agent orchestration.
+- **Agents**: `product-manager`, `system-architect`, `roadmap-analyst`, `roadmap-critic`
+- **Skills**: `pm` (auto-invoke, `--deep` for multi-agent pipeline), `roadmap` (auto-invoke, `--deep` for cross-perspective analysis), `architect` (auto-invoke, `--deep` for adversarial review), `doc-freshness` (auto-invoke), `refresh` (command-invoke)
+- **Use**: User stories, scope assessments, prioritization, project status, gap analysis, risk mapping, module design, API design, boundary analysis, documentation freshness detection. `--deep` mode adds: confidence scoring, Confession Pattern, cross-agent validation, adversarial architecture review
 
 ### Devtools Plugin
 Developer tooling setup and management.
@@ -586,7 +586,7 @@ See [docs/README.md](docs/README.md) "Maintaining This Documentation" section fo
 
 ## Plugin Versions
 
-Plugin versions: core 2.0.0, ai 1.0.0, doc 1.10.0, design-intent 2.2.0, git 1.0.0, google-stitch 2.0.0, lang 1.0.0, playwright 1.0.0, spring-boot 1.0.0, ralph 2.0.0, roadmap 1.1.0, review 2.0.0, devtools 2.1.0. When making breaking changes, increment the major version and update `plugin.json`.
+Plugin versions: core 2.0.0, ai 1.0.0, doc 1.10.0, design-intent 2.2.0, git 1.0.0, google-stitch 2.0.0, lang 1.0.0, playwright 1.0.0, spring-boot 1.0.0, ralph 2.0.0, roadmap 2.0.0, review 2.0.0, devtools 2.1.0. When making breaking changes, increment the major version and update `plugin.json`.
 
 ## Related Documentation
 
