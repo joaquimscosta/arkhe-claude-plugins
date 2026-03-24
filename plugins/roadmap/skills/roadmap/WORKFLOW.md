@@ -4,108 +4,7 @@ Detailed codebase scanning protocol and mode workflows for the Roadmap Analyst s
 
 ## Context Discovery Protocol
 
-Same protocol as the PM skill. Execute before any analysis.
-
-### Phase 1: Configuration
-
-Read `.arkhe.yaml` → extract `roadmap:` section (output_dir, context_dir, status_file).
-
-### Phase 2: Rich Context
-
-Read `{context_dir}/*.md` if the directory exists. Key files:
-- `documents.md` — Document map with roles
-- `architecture.md` — Module structure and tech stack
-- `project.md` — Project overview and phases
-
-### Phase 3: Project Identity
-
-Read `CLAUDE.md` + `README.md` for scope, conventions, and constraints.
-
-### Phase 4: Documentation Inventory
-
-Glob for all documentation and planning files:
-
-```
-docs/**/*.md
-plan/**/*.md
-specs/**/*.md
-arkhe/specs/*/spec.md
-```
-
-Categorize each file:
-- **Status documents**: PROJECT-STATUS.md, roadmap.md, CHANGELOG.md
-- **Gap analyses**: Documents identifying missing features or capabilities
-- **Specs**: Feature specifications with requirements
-- **ADRs**: Architecture Decision Records
-- **Research**: Technical research and investigation documents
-- **Reports**: Generated analysis reports
-
-### Phase 5: Build File Detection
-
-Same as PM skill — detect tech stack from build files.
-
-### Phase 6: Codebase Scanning
-
-This phase is more thorough for the roadmap skill than for PM.
-
-#### Tech-Stack-Aware Module Scan
-
-**Java/Kotlin (Gradle/Maven):**
-```
-apps/*/src/main/kotlin/**/*.kt OR apps/*/src/main/java/**/*.java
-apps/*/src/test/**/*.kt OR apps/*/src/test/**/*.java
-apps/*/src/main/resources/db/migration/*.sql
-```
-Count: entities, services, controllers, repositories, tests, migrations.
-
-**JavaScript/TypeScript (Node):**
-```
-src/components/**/*.tsx OR src/components/**/*.vue
-src/pages/**/*.tsx OR src/app/**/page.tsx
-src/hooks/**/*.ts
-src/api/**/*.ts OR src/routes/**/*.ts
-```
-Count: components, pages, hooks, API routes.
-
-**Python:**
-```
-src/**/*.py OR app/**/*.py
-tests/**/*.py
-migrations/**/*.py OR alembic/versions/*.py
-```
-Count: models, views/routes, services, tests, migrations.
-
-**Go:**
-```
-cmd/**/*.go
-internal/**/*.go OR pkg/**/*.go
-*_test.go
-```
-Count: handlers, services, models, tests.
-
-**Rust:**
-```
-src/**/*.rs
-tests/**/*.rs
-```
-Count: modules, structs, traits, tests.
-
-#### Module Maturity Assessment
-
-For each discovered module, assess maturity:
-
-1. **Stub**: Directory exists, placeholder files only
-2. **Domain Started**: Models/entities/types defined
-3. **Service Layer**: Business logic present
-4. **API Ready**: Routes/endpoints exposed
-5. **Tested**: Test files exist and cover key paths
-6. **Production Ready**: Comprehensive tests, docs, monitoring
-
-Evidence checklist:
-- Count source files vs test files
-- Check for TODOs, FIXMEs, stubs
-- Verify tests actually run (not just exist)
-- Check for documentation
+Run the shared context discovery protocol in [CONTEXT_DISCOVERY.md](../../references/CONTEXT_DISCOVERY.md). Execute all phases in order (use thorough scan mode for Phase 7). For tech-stack-aware module scanning, see [TECH_STACK_DETECTION.md](../../references/TECH_STACK_DETECTION.md). For module maturity assessment, see [MATURITY_SCALE.md](../../references/MATURITY_SCALE.md).
 
 ## Mode Workflows
 
@@ -284,3 +183,87 @@ _Generated: {date}_
 |---|------|-----------|--------|-------|------------|-------|
 | 1 | {risk} | H/M/L | H/M/L | {LxI} | {action} | {team/person} |
 ```
+
+---
+
+## Deep Pipeline (`--deep`)
+
+When `$ARGUMENTS` contains `--deep`, execute this multi-agent pipeline -- the most complex in the roadmap plugin. Three Sonnet agents analyze the project simultaneously from PM, Architect, and Roadmap perspectives. A synthesizer then merges findings and surfaces contradictions.
+
+### Phase 1: Context Gathering (2 Parallel Haiku Agents)
+
+Launch **2 Haiku agents in parallel**:
+
+**Agent A -- Config & Documentation**:
+"Run the context discovery protocol from CONTEXT_DISCOVERY.md. Return: project name, configuration (output_dir, context_dir, status_file), personas, project phases, documentation inventory (categorized as: status docs, gap analyses, specs, ADRs, research), and key constraints. Read all documentation files discovered."
+
+**Agent B -- Codebase Scan**:
+"Detect tech stack from build files using TECH_STACK_DETECTION.md. Scan the codebase for: module inventory (name, source file count, test file count), directory structure, detected architecture patterns, migration count, TODO/FIXME count, and infrastructure files (Docker, CI/CD, deployment). Return structured results."
+
+Provide each agent with the relevant reference files.
+
+### Phase 2: Parallel Perspective Analysis (3 Parallel Sonnet Agents)
+
+Launch **3 Sonnet agents simultaneously**, each with the combined context from Phase 1 but a different analytical lens:
+
+**Agent C -- PM Perspective**:
+"You are a product manager analyzing this project. Using the context provided, identify: requirement gaps (features needed but not built), unmet user needs, scope creep (features built that aren't in documented scope), missing user stories for existing features, user-facing risks, and priority recommendations. Focus on user value, not technical concerns. After your analysis, append a Builder Confessions block."
+
+**Agent D -- Architect Perspective**:
+"You are a systems architect analyzing this project. Using the context provided, identify: architectural risks (boundary violations, pattern drift, tech debt), module maturity imbalances, missing infrastructure (monitoring, error handling, security), data model concerns, scalability bottlenecks, and dependency risks. Focus on structural health, not user stories. After your analysis, append a Builder Confessions block."
+
+**Agent E -- Roadmap Perspective**:
+"You are a project analyst analyzing this project. Using the context provided, assess: phase/milestone completion status, gap closure rate, blocker chains, spec pipeline status, documentation freshness, velocity indicators, and timeline risk. Focus on project trajectory, not architecture or requirements. After your analysis, append a Builder Confessions block."
+
+Each agent must end with a **Builder Confessions block**:
+```markdown
+## Builder Confessions
+- **Assumption**: {what was assumed without verification}
+- **Uncertainty**: {areas where confidence is low}
+- **Shortcut**: {where a deeper analysis was skipped}
+- **Missing data**: {what couldn't be found in the codebase}
+```
+
+### Phase 3: Cross-Reference Synthesis (Sonnet Agent)
+
+Launch a **single Sonnet agent** to merge the three perspectives:
+
+**Agent prompt**: "You are a project health synthesizer. You have three independent analyses of the same project -- from PM, Architect, and Roadmap perspectives. Your job is to:
+
+1. **Merge findings** into a unified view -- deduplicate, consolidate related findings
+2. **Surface contradictions** -- where perspectives disagree (e.g., PM says 'auth is ready' but Architect says 'boundary violations in auth module')
+3. **Map cross-perspective dependencies** -- PM gap X requires architectural change Y which blocks roadmap milestone Z
+4. **Build unified risk register** -- combine risks from all three perspectives, deduplicate, re-score with cross-perspective context
+5. **Produce Cross-Perspective Insights** -- the unique findings that only emerge from comparing all three perspectives
+
+Output format: A comprehensive Project Health Report using the template from TEMPLATES.md, with an additional 'Cross-Perspective Insights' section."
+
+Provide the agent with:
+- All three Phase 2 analyses (including their Builder Confessions)
+- The Project Health Report template from [TEMPLATES.md](../../references/TEMPLATES.md)
+
+### Phase 4: Confidence Scoring (Parallel Haiku Agents)
+
+For each major finding in the synthesized report, launch a **parallel Haiku agent** to score confidence:
+
+**Agent prompt**: "Score this finding 0-100. Consider: Is it backed by file paths or evidence? Was it flagged in Builder Confessions? Do multiple perspectives agree? Use rubric: 90-100 = strong evidence from multiple perspectives, 70-89 = good evidence but some uncertainty, 50-69 = single-perspective finding with limited evidence, below 50 = speculative."
+
+**Filter**: Remove findings scoring below 70. Tag findings 70-89 with `[NEEDS VALIDATION]`.
+
+### Phase 5: Report Generation
+
+1. Produce the final **Project Health Report** with all confidence annotations
+2. Include the **Cross-Perspective Insights** section (unique to `--deep`)
+3. Include a **Methodology** footer noting this was a multi-agent analysis with 3 parallel perspectives
+4. Every finding includes its source perspective (PM/Architect/Roadmap) and confidence score
+5. Save to `{output_dir}/reports/{YYYY-MM-DD}-health-report.md` (ask user to confirm)
+
+### Deep Pipeline Summary
+
+| Phase | Agents | Model | Purpose |
+|-------|--------|-------|---------|
+| 1 | 2 parallel | Haiku | Config/docs gathering + codebase scanning |
+| 2 | 3 parallel | Sonnet | PM + Architect + Roadmap perspectives (each with Confessions) |
+| 3 | 1 | Sonnet | Cross-reference synthesis, contradiction detection, unified risk register |
+| 4 | N parallel | Haiku | Per-finding confidence scoring, filter below 70 |
+| 5 | -- | -- | Present with annotations, save health report |

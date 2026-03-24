@@ -4,89 +4,7 @@ Detailed discovery protocol and mode workflows for the Product Manager skill.
 
 ## Context Discovery Protocol
 
-Execute this protocol before any analysis. Earlier sources override later ones.
-
-### Phase 1: Configuration Check
-
-1. Read `.arkhe.yaml` from project root
-2. Extract `roadmap.output_dir` (default: `arkhe/roadmap`)
-3. Extract `roadmap.context_dir` (default: `.arkhe/roadmap`)
-4. Extract `roadmap.status_file` (default: `docs/PROJECT-STATUS.md`)
-
-### Phase 2: Rich Context
-
-If `{context_dir}` exists:
-
-1. Read `{context_dir}/project.md` — Extract:
-   - Project name and description
-   - Target users / personas
-   - Domain constraints
-   - Project phases and milestones
-   - Key terminology
-
-2. Read `{context_dir}/documents.md` — Extract:
-   - Document map (key docs and their roles)
-   - Where to find planning docs, specs, gap analyses
-
-3. Read `{context_dir}/architecture.md` — Extract:
-   - Tech stack
-   - Module boundaries
-   - Key patterns
-
-### Phase 3: Project Identity
-
-Read `CLAUDE.md` and `README.md` from the project root. Extract:
-- Project purpose and scope
-- Conventions and constraints
-- Tech stack indicators
-- Architecture overview
-
-### Phase 4: Documentation Scan
-
-Glob for planning and documentation:
-
-```
-docs/**/*.md
-plan/**/*.md
-specs/**/*.md
-arkhe/specs/*/spec.md
-```
-
-Categorize findings:
-- **Status docs**: PROJECT-STATUS.md, roadmap.md, changelog
-- **Gap analyses**: gap-analysis.md, missing features
-- **Specs**: spec.md files in spec directories
-- **ADRs**: Architecture Decision Records
-- **Research**: Technical research documents
-
-### Phase 5: Build File Detection
-
-Detect tech stack from build files:
-
-| File | Stack |
-|------|-------|
-| `build.gradle.kts` / `build.gradle` | Java/Kotlin (Gradle) |
-| `pom.xml` | Java/Kotlin (Maven) |
-| `package.json` | JavaScript/TypeScript (Node) |
-| `Cargo.toml` | Rust |
-| `go.mod` | Go |
-| `pyproject.toml` / `setup.py` | Python |
-| `Gemfile` | Ruby |
-| `mix.exs` | Elixir |
-
-### Phase 6: Codebase Structure
-
-Glob for directory structure to understand module boundaries:
-
-```
-apps/*
-src/*
-packages/*
-libs/*
-modules/*
-```
-
-For each discovered module, note its name and contents.
+Run the shared context discovery protocol in [CONTEXT_DISCOVERY.md](../../references/CONTEXT_DISCOVERY.md). Execute all phases in order before any analysis. Earlier sources override later ones.
 
 ## Mode Workflows
 
@@ -231,3 +149,80 @@ If project context defines personas, use them consistently. If not, derive from 
 ### Recommendation
 {Build now / Defer to Phase N / Needs research / Reject}
 ```
+
+---
+
+## Deep Pipeline (`--deep`)
+
+When `$ARGUMENTS` contains `--deep`, execute this multi-agent pipeline instead of the conversational mode workflows above. This produces reviewed, confidence-scored artifacts.
+
+### Phase 1: Context Gathering (Haiku Agent)
+
+Launch a **Haiku agent** to run the full context discovery protocol:
+
+**Agent prompt**: "Run the context discovery protocol from CONTEXT_DISCOVERY.md. Return a structured summary including: project name, tech stack, personas, module inventory with maturity levels, documentation inventory (categorized), key constraints, and current phase/milestone. Be thorough but concise."
+
+Provide the agent with the content of [CONTEXT_DISCOVERY.md](../../references/CONTEXT_DISCOVERY.md).
+
+### Phase 2: PM Analysis (Sonnet Agent)
+
+Launch a **Sonnet agent** to produce the PM artifact for the requested mode.
+
+**Agent prompt**: "You are a product manager. Using the context summary from Phase 1, produce a {mode} artifact for {feature/topic}. Use templates from TEMPLATES.md. After your analysis, append a Builder Confessions block."
+
+Provide the agent with:
+- Phase 1 context summary
+- The content of [TEMPLATES.md](../../references/TEMPLATES.md) (PM section)
+- The PM lane rules from [LANE_DISCIPLINE.md](../../references/LANE_DISCIPLINE.md)
+
+**Builder Confessions block** (required at end of output):
+
+```markdown
+## Builder Confessions
+- **Assumption**: {what was assumed without verification}
+- **Uncertainty**: {areas where confidence is low}
+- **Shortcut**: {where a deeper analysis was skipped}
+- **Missing data**: {what couldn't be found in the codebase}
+```
+
+### Phase 3: Architect Feasibility Check (Haiku Agent)
+
+**Only for `scope` and `stories` modes.** Skip for other modes.
+
+Launch a **Haiku agent** to review the PM artifact from an architect's perspective:
+
+**Agent prompt**: "You are a systems architect reviewing a PM artifact. Check for: unrealistic effort estimates (compare against actual codebase complexity), missing technical dependencies (what infrastructure must exist?), incorrect assumptions about existing capabilities, acceptance criteria that are technically infeasible. Return a structured feasibility report."
+
+Provide the agent with:
+- Phase 2 PM artifact
+- Phase 1 context summary (especially module inventory)
+
+### Phase 4: Confidence Scoring (Haiku Agent)
+
+Launch a **Haiku agent** using the `roadmap-critic` agent's scoring rubric:
+
+**Agent prompt**: "You are a quality critic. Score each section of this PM artifact 0-100. Read the Builder Confessions block first and focus scrutiny on confessed areas. For `stories` mode: score each acceptance criterion for testability (can you write a Given/When/Then test?). For `scope` mode: incorporate the architect feasibility findings. Use the scoring rubric: 90-100 = strong evidence, 70-89 = include with [NEEDS VALIDATION], 50-69 = appendix only, below 50 = exclude."
+
+Provide the agent with:
+- Phase 2 PM artifact (including Builder Confessions)
+- Phase 3 architect feasibility report (if applicable)
+- The `roadmap-critic` scoring rubric
+
+**Filter**: Remove or flag sections scoring below 70.
+
+### Phase 5: Output
+
+1. Present the final artifact to the user with confidence annotations
+2. Include a summary of critic findings (high-priority issues, confession analysis)
+3. If architect feasibility flagged issues, present them as a separate "Technical Feasibility Notes" section
+4. Save to `{output_dir}/requirements/{filename}.md` (ask user to confirm)
+
+### Deep Pipeline Summary
+
+| Phase | Agent | Model | Purpose |
+|-------|-------|-------|---------|
+| 1 | Context Gatherer | Haiku | Run CONTEXT_DISCOVERY.md, return structured context |
+| 2 | PM Analyst | Sonnet | Produce artifact + Confession Block |
+| 3 | Architect Feasibility | Haiku | Technical feasibility check (scope/stories only) |
+| 4 | Confidence Scoring | Haiku | Score 0-100, filter below 70, confession-aware |
+| 5 | Output | -- | Present with annotations, save |

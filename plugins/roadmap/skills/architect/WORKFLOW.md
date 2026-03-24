@@ -4,56 +4,7 @@ Detailed pattern analysis and mode workflows for the System Architect skill.
 
 ## Context Discovery Protocol
 
-Same priority-based discovery as PM and Roadmap skills. Architecture-specific additions:
-
-### Architecture-Specific Discovery
-
-After standard discovery, perform these additional scans:
-
-#### Detect Framework Patterns
-
-**Spring Boot / Spring Modulith:**
-- Grep for `@SpringBootApplication`, `@ApplicationModule`, `@RestController`
-- Scan for `application.yaml` / `application.properties`
-- Check for Flyway/Liquibase migrations
-
-**Next.js / React:**
-- Check for `next.config.js`, `app/` directory (App Router), `pages/` (Pages Router)
-- Scan for component patterns, hooks, context providers
-
-**Django / Flask / FastAPI:**
-- Check for `settings.py`, `urls.py` (Django) or app factory patterns (Flask/FastAPI)
-- Scan for models, views/routes, serializers
-
-**Go (standard library / Gin / Echo):**
-- Check for `main.go`, `cmd/` pattern
-- Scan for handler, service, repository patterns
-
-**Rust (Actix / Axum):**
-- Check for `Cargo.toml` workspace structure
-- Scan for module hierarchy, trait patterns
-
-#### Detect Architecture Patterns
-
-1. **Layered Architecture**: controller → service → repository
-2. **Hexagonal/Ports & Adapters**: domain core + adapters
-3. **Modular Monolith**: bounded contexts in single deployable
-4. **Microservices**: multiple deployable services
-5. **Event-Driven**: event publishers and consumers
-6. **CQRS**: separate read/write models
-
-Evidence to look for:
-- Directory naming (`domain/`, `infrastructure/`, `application/`, `ports/`, `adapters/`)
-- Import patterns (do services import from controllers? → violation)
-- Event classes/types
-- Separate query/command handlers
-
-#### Detect Database Patterns
-
-1. **ORM**: Entity classes, migration files
-2. **Raw SQL**: Query files, SQL builders
-3. **NoSQL**: Document models, collection access patterns
-4. **Multi-tenancy**: Tenant ID columns, tenant filters
+Run the shared context discovery protocol in [CONTEXT_DISCOVERY.md](../../references/CONTEXT_DISCOVERY.md). Then perform architecture-specific scans from [TECH_STACK_DETECTION.md](../../references/TECH_STACK_DETECTION.md) § Architecture-Specific Scanning.
 
 ## Mode Workflows
 
@@ -235,3 +186,89 @@ Evidence to look for:
 | Module A | Module B | Coupling Type | Strength |
 |----------|----------|---------------|----------|
 ```
+
+---
+
+## Deep Pipeline (`--deep`)
+
+When `$ARGUMENTS` contains `--deep`, execute this multi-agent pipeline with Adversarial Review. A red team agent actively tries to break the proposed architecture.
+
+### Phase 1: Context Gathering (Haiku Agent)
+
+Launch a **Haiku agent** to run the full context discovery protocol plus architecture-specific scanning:
+
+**Agent prompt**: "Run the context discovery protocol from CONTEXT_DISCOVERY.md, then perform architecture-specific scans from TECH_STACK_DETECTION.md. Return: project name, tech stack, detected architecture pattern, module inventory with dependencies, established patterns (layering, DTOs, events), ADR inventory, and key architectural constraints."
+
+Provide the agent with [CONTEXT_DISCOVERY.md](../../references/CONTEXT_DISCOVERY.md) and [TECH_STACK_DETECTION.md](../../references/TECH_STACK_DETECTION.md).
+
+### Phase 2: Architecture Analysis (Sonnet Agent)
+
+Launch a **Sonnet agent** to produce the architecture artifact for the requested mode.
+
+**Agent prompt**: "You are a systems architect. Using the context from Phase 1, produce a {mode} artifact for {target}. Use templates from TEMPLATES.md. Every design must extend existing patterns, not introduce new ones. After your analysis, append a Builder Confessions block."
+
+Provide the agent with:
+- Phase 1 context summary
+- The content of [TEMPLATES.md](../../references/TEMPLATES.md) (System Architect section)
+- The architect lane rules from [LANE_DISCIPLINE.md](../../references/LANE_DISCIPLINE.md)
+
+**Builder Confessions block** (required at end of output):
+
+```markdown
+## Builder Confessions
+- **Assumption**: {what was assumed without verification}
+- **Uncertainty**: {areas where confidence is low}
+- **Shortcut**: {where a deeper analysis was skipped}
+- **Missing data**: {what couldn't be found in the codebase}
+```
+
+### Phase 3: Red Team Adversary (Sonnet Agent)
+
+Launch a **Sonnet agent** to adversarially review the architecture proposal.
+
+**Agent prompt**: "You are a penetration tester and chaos engineer. Your job is to BREAK this architecture. You are rewarded for finding problems, not for approving. Attack the proposed design across these vectors:
+
+1. **Scaling bottlenecks**: What breaks at 10x, 100x traffic?
+2. **Single points of failure**: What happens when component X goes down?
+3. **Boundary violations**: Does this design violate existing module boundaries?
+4. **Data integrity risks**: Can data be corrupted, lost, or inconsistent?
+5. **Security gaps**: Auth bypass, injection, data exposure?
+6. **Missing error handling**: What happens on timeout, invalid input, partial failure?
+7. **Migration risks**: How does this change affect existing data and code?
+8. **Pattern drift**: Does this introduce patterns inconsistent with the codebase?
+
+For each finding, provide: the attack vector, the failure scenario, the severity (Critical/High/Medium/Low), and a suggested mitigation."
+
+Provide the agent with:
+- Phase 2 architecture artifact (including Builder Confessions)
+- Phase 1 context summary (especially existing patterns and module inventory)
+
+### Phase 4: Confidence Scoring (Haiku Agent)
+
+Launch a **Haiku agent** to score the architecture artifact informed by the red team findings:
+
+**Agent prompt**: "Score each section of this architecture artifact 0-100. Read the Builder Confessions first and focus on confessed areas. Incorporate the Red Team findings: sections with unmitigated Critical/High findings get max score of 60. Use rubric: 90-100 = strong evidence, 70-89 = include with [NEEDS VALIDATION], 50-69 = appendix only, below 50 = exclude."
+
+Provide the agent with:
+- Phase 2 architecture artifact (including Confessions)
+- Phase 3 red team findings
+
+**Filter**: Flag sections scoring below 70.
+
+### Phase 5: Output
+
+1. Present the architecture artifact with confidence annotations
+2. Include a **Red Team Findings** section with severity-sorted issues
+3. Include a **Confession Analysis** section (confessed vs unconfessed issues)
+4. For each red team finding, show: the attack vector, the failure scenario, and suggested mitigation
+5. Save to `{output_dir}/architecture/{filename}.md` (ask user to confirm)
+
+### Deep Pipeline Summary
+
+| Phase | Agent | Model | Purpose |
+|-------|-------|-------|---------|
+| 1 | Context Gatherer | Haiku | Context discovery + architecture scanning |
+| 2 | Architecture Analyst | Sonnet | Produce artifact + Confession Block |
+| 3 | Red Team Adversary | Sonnet | Try to break the architecture |
+| 4 | Confidence Scoring | Haiku | Score using confessions + adversary findings, filter below 70 |
+| 5 | Output | -- | Present with red team findings + annotations, save |

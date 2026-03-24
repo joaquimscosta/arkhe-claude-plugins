@@ -65,7 +65,7 @@
     {
       "name": "roadmap",
       "source": "./plugins/roadmap",
-      "description": "Product management, roadmap analysis, and solution architecture for any project"
+      "description": "Product management, roadmap analysis, and solution architecture with multi-agent orchestration"
     },
     {
       "name": "devtools",
