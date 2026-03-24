@@ -32,7 +32,7 @@ Quality control and workflow orchestration utilities for Claude Code.
 
 - **/discuss**: Facilitates thorough technical discussions about code, architecture, and implementation decisions. Helps you think through problems by asking focused questions.
 
-- **/double-check**: Quality validation command that verifies your work from multiple angles. Ensures completeness and correctness before finalizing.
+- **/double-check**: Comprehensive verification with automated quality gates, confession gathering, and confidence-based issue filtering. Auto-detects and runs project tests/lint/types/build as backpressure gates before reasoning-based review. `--deep` mode dispatches the `code-reviewer` agent for Critic-Actor separation.
 
 - **/develop**: Unified SDLC command with 6-phase pipeline (Discovery, Requirements, Architecture, Workstreams, Implementation, Summary). Supports plan persistence, resume mode (`@path/to/plan.md`), and configurable interaction (`--auto` for autonomous). Includes mandatory Phase 0 existing system analysis. Flags: `--plan-only`, `--validate`, `--phase=N`, `--auto`.
 
@@ -60,6 +60,7 @@ After installation, the agents and commands will be available:
 # Use quality control commands
 /discuss implementing a new authentication system
 /double-check
+/double-check --deep
 
 # Use the unified develop command
 /develop add user authentication              # Full 6-phase pipeline
@@ -85,4 +86,4 @@ After installation, the agents and commands will be available:
 
 ## Version
 
-2.0.0
+2.1.0

@@ -65,7 +65,7 @@ plugin-name/
 ### Core Plugin
 Quality control and workflow orchestration utilities.
 - **Agents**: `deep-think-partner`, `deep-researcher`, `code-explorer`, `code-architect`, `code-reviewer`
-- **Commands**: `/discuss`, `/double-check`, `/develop`, `/debug`, `/think`, `/research`
+- **Commands**: `/discuss`, `/double-check` (`--deep` for multi-agent review), `/develop`, `/debug`, `/think`, `/research`
 - **Skills**: `sdlc-develop` (command-invoke), `deep-research` (auto-invoke), `workflow-orchestration` (auto-invoke)
 
 ### AI Plugin
@@ -586,7 +586,7 @@ See [docs/README.md](docs/README.md) "Maintaining This Documentation" section fo
 
 ## Plugin Versions
 
-Plugin versions: core 2.0.0, ai 1.0.0, doc 1.10.0, design-intent 2.2.0, git 1.0.0, google-stitch 2.0.0, lang 1.0.0, playwright 1.0.0, spring-boot 1.0.0, ralph 2.0.0, roadmap 2.0.0, review 2.0.0, devtools 2.1.0. When making breaking changes, increment the major version and update `plugin.json`.
+Plugin versions: core 2.1.0, ai 1.0.0, doc 1.10.0, design-intent 2.2.0, git 1.0.0, google-stitch 2.0.0, lang 1.0.0, playwright 1.0.0, spring-boot 1.0.0, ralph 2.0.0, roadmap 2.0.0, review 2.0.0, devtools 2.1.0. When making breaking changes, increment the major version and update `plugin.json`.
 
 ## Related Documentation
 
