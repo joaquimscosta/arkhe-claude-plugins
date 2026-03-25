@@ -118,9 +118,9 @@ Browser automation via Playwright CLI for testing, screenshots, and interaction 
 ### Spring Boot Plugin
 Domain-Driven Design patterns with Spring Boot 4 implementation.
 - **Agents**: `spring-boot-reviewer`, `spring-boot-upgrade-verifier`
-- **Commands**: `/spring-review`, `/verify-upgrade`
-- **Skills**: `spring-boot-scanner`, `domain-driven-design`, `spring-boot-data-ddd`, `spring-boot-web-api`, `spring-boot-modulith`, `spring-boot-security`, `spring-boot-observability`, `spring-boot-testing`, `spring-boot-verify`, `flyway-consolidate` (all auto-invoked)
-- **Use**: DDD architecture, Spring Data, REST APIs, Spring Modulith, Spring Security 7, observability, testing
+- **Commands**: `/spring-review`, `/verify-upgrade`, `/spring-refresh`
+- **Skills**: `spring-boot-scanner`, `domain-driven-design`, `spring-boot-data-ddd`, `spring-boot-web-api`, `spring-boot-modulith`, `spring-boot-security`, `spring-boot-observability`, `spring-boot-testing`, `spring-boot-verify`, `flyway-consolidate` (all auto-invoked), `spring-refresh` (command-invoke)
+- **Use**: DDD architecture, Spring Data, REST APIs, Spring Modulith, Spring Security 7, observability, testing, skill content freshness tracking
 
 ### Ralph Plugin
 Autonomous development loop with fresh context per iteration and Hat-lite builder/verifier system.
@@ -586,7 +586,7 @@ See [docs/README.md](docs/README.md) "Maintaining This Documentation" section fo
 
 ## Plugin Versions
 
-Plugin versions: core 2.1.0, ai 1.0.0, doc 1.10.0, design-intent 2.2.0, git 1.0.0, google-stitch 2.0.0, lang 1.0.0, playwright 1.0.0, spring-boot 1.0.0, ralph 2.0.0, roadmap 2.0.0, review 2.0.0, devtools 2.1.0. When making breaking changes, increment the major version and update `plugin.json`.
+Plugin versions: core 2.1.0, ai 1.0.0, doc 1.10.0, design-intent 2.2.0, git 1.0.0, google-stitch 2.0.0, lang 1.0.0, playwright 1.0.0, spring-boot 1.2.0, ralph 2.0.0, roadmap 2.0.0, review 2.0.0, devtools 2.1.0. When making breaking changes, increment the major version and update `plugin.json`.
 
 ## Related Documentation
 

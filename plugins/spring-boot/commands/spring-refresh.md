@@ -1,0 +1,42 @@
+---
+description: Refresh Spring Boot research docs and check which skills need updating for the latest Spring Boot version
+argument-hint: "[check | refresh | update <skill-name>]"
+---
+
+# Spring Boot Skill Refresh
+
+Check Spring Boot skill freshness and update content when needed.
+
+## Mode
+
+$ARGUMENTS
+
+## Instructions
+
+Invoke the Skill tool with `spring-boot:spring-refresh` and the mode above.
+
+The skill supports three modes:
+
+**`check`** (default when no arguments)
+- Runs the freshness scanner script
+- Produces a report showing which research docs and skills are stale
+- Recommends which skills need updating
+
+**`refresh`**
+- Updates all 3 Spring Boot research docs via deep-research skill
+- Then runs `check` to show the updated freshness status
+- Use when a new Spring Boot version has been released
+
+**`update <skill-name>`**
+- Reads relevant research docs and current skill content
+- Identifies specific content that needs updating
+- Proposes changes for your confirmation before editing
+
+## Examples
+
+```
+/spring-refresh                              # Quick freshness check
+/spring-refresh check                        # Same as above
+/spring-refresh refresh                      # Update research docs + check
+/spring-refresh update spring-boot-security  # Update a specific skill
+```

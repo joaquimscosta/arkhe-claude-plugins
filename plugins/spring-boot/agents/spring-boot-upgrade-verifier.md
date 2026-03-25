@@ -56,6 +56,13 @@ For each verifier in `relevant_verifiers`, launch a **sonnet** sub-agent via the
 
 CRITICAL findings **must** include a concrete migration path. Workers that find no issues must explicitly confirm it.
 
+**Quality gate — each worker must also include a Confessions section:**
+  - **Assumptions**: What the verifier assumed (e.g., "Assumed standard database dialect")
+  - **Skipped areas**: What wasn't fully checked (e.g., "XML configuration not scanned")
+  - **Uncertain findings**: Findings where confidence is below reporting threshold
+
+If a worker's output lacks confessions, note: "Verifier did not report confessions — treat its assessment with lower trust."
+
 ---
 
 ## Phase 3: Migration Report
@@ -90,12 +97,18 @@ Migration: {replacement pattern}
 ### Errors / Warnings
 ...
 
+## Verifier Confessions
+| Verifier | Assumptions Made | Areas Not Verified |
+|----------|-----------------|-------------------|
+...
+
 ## Next Steps
 1. Address all CRITICAL issues first
-2. Run tests after each migration step
-3. Update to Spring Boot 4.0.x
-4. Run full test suite
-5. Address remaining errors and warnings
+2. Resolve NEEDS_MANUAL_REVIEW areas
+3. Run tests after each migration step
+4. Update to Spring Boot 4.0.x
+5. Run full test suite
+6. Address remaining errors and warnings
 ```
 
 Sort findings by severity (Critical > Error > Warning). Every CRITICAL finding must have a concrete migration path.

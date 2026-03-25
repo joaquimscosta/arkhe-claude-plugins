@@ -176,6 +176,65 @@ Stale unmerged branches flagged: 0
 All branches are active and up to date.
 ```
 
+## Example 7: Squash-Merged Branch Cleanup
+
+**Input:**
+```bash
+/cleanup-branches
+```
+
+**Output:**
+```
+=== BRANCH STATUS ===
+Current branch: main
+Base branch: main
+Local branches: 21 (1 merged into main)
+Remote branches: 15 (3 merged into main)
+
+=== LOCAL MERGED BRANCHES ===
+  feat/003-roadmap-critic  (last commit: 2025-12-10)
+Found 1 local merged branch(es)
+```
+
+Claude asks: _"This branch is merged into main. Delete it?"_ User confirms.
+
+```
+→ Deleted: feat/003-roadmap-critic
+
+=== SQUASH-MERGED BRANCHES ===
+  feat/007-rfc-skills-migration (2 weeks ago)
+  chore/005-reference-doc-sync  (3 weeks ago)
+  feat/003-icon-forge           (4 weeks ago)
+  assets/add-plugin-banners     (4 weeks ago)
+  fix/merge-duplicate-checkpoints (4 weeks ago)
+Found 5 squash-merged branch(es) (verified via git cherry)
+```
+
+Claude asks: _"These 5 branches were squash-merged into main (verified via git cherry). Delete them?"_ User confirms.
+
+```
+→ Deleted: feat/007-rfc-skills-migration
+→ Deleted: chore/005-reference-doc-sync
+→ Deleted: feat/003-icon-forge
+→ Deleted: assets/add-plugin-banners
+→ Deleted: fix/merge-duplicate-checkpoints
+
+=== STALE UNMERGED BRANCHES (manual review required) ===
+  backup-before-rewrite-20251127 (4 months ago) [ahead 56, behind 120]
+
+To delete these branches manually:
+  Local:   git branch -D <branch>
+  Remote:  git push origin --delete <branch>
+
+=== CLEANUP SUMMARY ===
+Local merged branches deleted: 1
+Squash-merged branches deleted: 5
+Remote merged branches deleted: skipped — use --remote
+Stale unmerged branches flagged: 1 (manual review)
+```
+
+Note: Squash-merged branches use `git branch -D` (force delete) since git doesn't recognize them as merged. The `git cherry` verification ensures they're safe to delete.
+
 ## Version
 
-1.0.0
+1.1.0

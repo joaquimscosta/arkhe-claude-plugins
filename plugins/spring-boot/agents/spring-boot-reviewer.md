@@ -54,6 +54,13 @@ For each skill in `relevant_skills`, launch a **sonnet** sub-agent via the Agent
 
 Workers that find no issues must explicitly confirm "no issues found" rather than returning empty results.
 
+**Quality gate — each worker must also include a Confessions section:**
+- **Assumptions**: What the worker assumed (e.g., "Assumed standard auto-configuration", "Didn't verify runtime behavior")
+- **Skipped areas**: What wasn't fully checked (e.g., "XML configuration not scanned", "Custom meta-annotations not traced")
+- **Uncertain findings**: Findings where confidence is 50-79 (below reporting threshold but worth noting)
+
+If a worker's output lacks confessions, note: "Worker did not report confessions — treat its findings with lower trust."
+
 ---
 
 ## Phase 3: Report
@@ -76,6 +83,12 @@ Skills reviewed: [list] | Skills skipped: [list]
 [confidence] file:line — Severity
 Issue: {description}
 Fix: {before/after suggestion}
+
+## Builder Confessions
+| Worker | Assumptions | Skipped Areas | Uncertain Findings |
+|--------|------------|---------------|-------------------|
+| {skill} | {list} | {list} | {count} |
+
 ```
 
 Sort findings by severity (Critical > Error > Warning). If no issues found across all skills, produce a clean summary confirming the code meets standards.

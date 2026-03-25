@@ -253,6 +253,21 @@ grep -E "@Timed|@Counted|@Observed|HealthIndicator|MeterRegistry|Tracer|Span|Obs
 grep -E "@MockBean|@EnableGlobalMethodSecurity|\.and\(\)|antMatchers|authorizeRequests|com\.fasterxml\.jackson" **/*.java **/*.kt
 ```
 
+## Model Tier Performance
+
+The scanner is designed for reliability across all model tiers:
+
+| Aspect | Behavior |
+|--------|----------|
+| **Haiku/Sonnet/Opus** | All fully supported |
+| **Determinism** | Python script ensures consistent results regardless of model |
+| **Single file scan** | <100ms typical |
+| **Project scan** | 1-2s for typical projects (recursive) |
+
+The Python detection script handles heavy lifting, making results model-independent.
+
+---
+
 ## Response Templates
 
 ### Low Risk Auto-Invoke Template

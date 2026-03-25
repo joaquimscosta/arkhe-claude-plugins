@@ -108,6 +108,66 @@ Delete these 2 branches? [Confirm/Skip]
 
 **Output**: List of deleted branches or skip confirmation.
 
+## Phase 2.5: Squash-Merged Branch Cleanup
+
+### Purpose
+
+Detect and delete branches whose changes are already in the base branch via squash-and-merge or rebase-merge. These branches appear as "unmerged" to `git branch --merged` because squash merges create a new commit rather than preserving branch commits as ancestors.
+
+### Detection: `git cherry`
+
+`git cherry` compares patch-ids (content-based hashes of diffs) to determine if a branch's commits have equivalents in the base branch:
+- `-` prefix: Equivalent patch exists in base (change is already in base)
+- `+` prefix: No equivalent patch (change is NOT in base)
+
+If ALL commits show `-`, the branch is squash-merged and safe to delete.
+
+### Process
+
+```bash
+for branch in $(git for-each-ref --format='%(refname:short)' refs/heads/); do
+  # Skip base, current, and already-merged branches
+  # Compute merge-base, count unique commits
+  # Run git cherry — if unpicked=0, branch is squash-merged
+  unpicked=$(git cherry "$BASE_BRANCH" "$branch" | grep '^+' | wc -l | tr -d ' ')
+done
+```
+
+### Safety Model
+
+Squash-merged branches require special handling:
+- **Cannot use `git branch -d`**: Git doesn't recognize them as merged, so `-d` (safe delete) will refuse
+- **Must use `git branch -D`**: Force delete is required
+- **User confirmation is mandatory**: Always present the list and ask before deleting
+- **Dry-run support**: `--dry-run` shows "[DRY RUN] Would delete:" prefix
+
+### Confirmation
+
+Present the full list with verification context:
+
+```
+=== SQUASH-MERGED BRANCHES ===
+  feat/007-rfc-skills-migration (2 weeks ago)
+  chore/005-reference-doc-sync  (3 weeks ago)
+Found 2 squash-merged branch(es) (verified via git cherry)
+
+Delete these 2 squash-merged branches? [Confirm/Skip]
+```
+
+### Deletion
+
+```bash
+git branch -D "$branch"  # Force delete required
+```
+
+### Edge Cases
+
+- **Partial squash**: Mix of `+` and `-` in `git cherry` output — NOT flagged as squash-merged
+- **Amended commits**: If squash commit was amended after merge, patch-ids may not match — remains undetected
+- **Rebase merges**: Also detected (same mechanism) — correct behavior
+
+**Output**: List of deleted squash-merged branches or skip confirmation.
+
 ## Phase 3: Remote Merged Branch Cleanup
 
 ### Trigger
@@ -238,6 +298,15 @@ Include the parameters used for the cleanup:
 |  - Delete with git -d     |
 +-----------+---------------+
             |
+            v
++-----------------------------+
+| 2.5 Squash-Merged Cleanup  |
+|  - git cherry per branch   |
+|  - Compare patch-ids       |
+|  - ASK USER CONFIRMATION   |
+|  - Delete with git -D      |
++-----------+-----------------+
+            |
             v (if --remote)
 +---------------------------+
 | 3. Remote Merged Cleanup  |
@@ -297,4 +366,4 @@ No local merged branches to delete.
 
 ## Version
 
-1.0.0
+1.1.0
