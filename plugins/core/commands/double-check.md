@@ -28,7 +28,7 @@ Establish what was completed and what ecosystem this project uses.
 3. **Check unstaged changes**: !`git diff --stat`
 4. **Check recent commits** (if no uncommitted changes): !`git log -3 --oneline`
 5. **Check todo list**: Review any in-progress or recently completed todos
-6. **Detect ecosystem**: !`ls package.json Makefile pyproject.toml build.gradle build.gradle.kts pom.xml 2>/dev/null`
+6. **Detect ecosystem**: !`ls package.json Makefile pyproject.toml build.gradle build.gradle.kts pom.xml 2>/dev/null || true`
 
 **Scope Summary**: Summarize what will be verified (files changed, features affected, ecosystem detected).
 If the user specified a focus area, prioritize that scope.
@@ -45,15 +45,15 @@ Before reasoning-based review, run automated quality checks. Auto-detect availab
 !`node -e "try{const s=require('./package.json').scripts||{};console.log(JSON.stringify({test:s.test||null,lint:s.lint||s['lint:check']||null,typecheck:s.typecheck||s['type-check']||s.tsc||null,build:s.build||null}))}catch(e){}" 2>/dev/null`
 
 **Python** (if `pyproject.toml` exists):
-!`grep -c '\[tool\.pytest' pyproject.toml 2>/dev/null && echo "pytest detected"`
-!`grep -c '\[tool\.ruff' pyproject.toml 2>/dev/null && echo "ruff detected"`
-!`grep -c '\[tool\.mypy' pyproject.toml 2>/dev/null && echo "mypy detected"`
+!`grep -c '\[tool\.pytest' pyproject.toml 2>/dev/null && echo "pytest detected" || true`
+!`grep -c '\[tool\.ruff' pyproject.toml 2>/dev/null && echo "ruff detected" || true`
+!`grep -c '\[tool\.mypy' pyproject.toml 2>/dev/null && echo "mypy detected" || true`
 
 **JVM** (if `gradlew` or `pom.xml` exists):
 !`test -f gradlew && echo "gradle" || (test -f pom.xml && echo "maven") || echo "none"`
 
 **Makefile** (if `Makefile` exists):
-!`grep -E '^(test|lint|check|build)[[:space:]]*:' Makefile 2>/dev/null | cut -d: -f1`
+!`grep -E '^(test|lint|check|build)[[:space:]]*:' Makefile 2>/dev/null | cut -d: -f1 || true`
 
 ### Execution
 
@@ -85,10 +85,10 @@ Gate failures are **informational, not blocking** — they become high-priority 
 Gather signals about known shortcuts, assumptions, or uncertainties from the builder's work. These focus the review on areas most likely to have issues.
 
 **Source 1 — Commit message signals:**
-!`git log -10 --oneline 2>/dev/null | grep -iE "(WIP|hack|todo|fixme|temp|workaround|shortcut|quick.fix|placeholder|stub|skip|NOCOMMIT)"`
+!`git log -10 --oneline 2>/dev/null | grep -iE "(WIP|hack|todo|fixme|temp|workaround|shortcut|quick.fix|placeholder|stub|skip|NOCOMMIT)" || true`
 
 **Source 2 — TODOs in changed files:**
-!`git diff --name-only HEAD~3 2>/dev/null | head -20 | xargs grep -nHi -E "(TODO|FIXME|HACK|WORKAROUND|XXX|NOCOMMIT)" 2>/dev/null | head -15`
+!`git diff --name-only HEAD~3 2>/dev/null | head -20 | xargs grep -nHi -E "(TODO|FIXME|HACK|WORKAROUND|XXX|NOCOMMIT)" 2>/dev/null | head -15 || true`
 
 **Source 3 — Active todos:** Review any in-progress todo items.
 
