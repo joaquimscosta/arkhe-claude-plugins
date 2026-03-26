@@ -48,6 +48,7 @@ Parse from `$ARGUMENTS`:
 | `drift <path>` | Code-doc drift for a specific doc or doc-code pair |
 | `cross-doc` | Cross-document consistency check |
 | `report` | Persist structured freshness report to `{output_dir}/` |
+| `claude-md` | CLAUDE.md structural drift (plugin counts, components, versions) |
 | _(none)_ | Full scan (same as `scan`) |
 
 ## Scanning Tiers
@@ -101,6 +102,12 @@ Tier is auto-detected per file. No configuration needed. The scanner JSON output
 ### `report`
 
 Same as `scan` but write output to `{output_dir}/{YYYY-MM-DD}-freshness.md`.
+
+### `claude-md`
+
+1. Run `claude_md_checker.py` to compare CLAUDE.md claims against filesystem
+2. Present findings by category: plugin counts, component inventories, versions, file paths
+3. Highlight undocumented components (CRITICAL) and version mismatches (WARNING)
 
 ## Automation Integration
 

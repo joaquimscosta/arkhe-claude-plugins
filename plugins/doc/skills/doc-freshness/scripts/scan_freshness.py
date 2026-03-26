@@ -40,6 +40,7 @@ from shared import (
 )
 from link_checker import check_all_links
 from version_checker import check_all_versions, collect_ground_truth
+from claude_md_checker import check_claude_md
 
 
 # ---------------------------------------------------------------------------
@@ -284,10 +285,14 @@ def scan(
     # Run additional checks unless links-only mode
     version_results: Dict[str, object] = {"findings": [], "summary": {}}
     staleness: List[Dict[str, object]] = []
+    claude_md_results: Dict[str, object] = {"findings": [], "summary": {}}
 
     if not links_only:
         version_results = check_all_versions(doc_paths, project_root)
         staleness = compute_staleness(doc_paths, project_root)
+        # CLAUDE.md structural drift check
+        if (project_root / "CLAUDE.md").exists():
+            claude_md_results = check_claude_md(project_root)
 
     # Build summary
     broken_count = link_results["summary"].get("broken", 0)
@@ -321,12 +326,17 @@ def scan(
         "broken_links": link_results,
         "version_mismatches": version_results,
         "staleness": staleness,
+        "claude_md_drift": claude_md_results,
         "summary": {
             "total_docs": len(doc_paths),
             "tier_counts": tier_counts,
             "broken_links": broken_count,
             "version_mismatches": version_mismatch_count,
             "stale_docs": stale_count,
+            "claude_md_drift": len([
+                f for f in claude_md_results.get("findings", [])
+                if f.get("status") != "ok"
+            ]),
         },
     }
 

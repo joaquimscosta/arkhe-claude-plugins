@@ -169,3 +169,40 @@ doc-freshness:
 ```
 
 This produces more precise drift analysis since the doc-code relationships are explicit rather than guessed.
+
+---
+
+## Example 7: CLAUDE.md Structural Drift
+
+**Command**: `/doc:health claude-md`
+
+**What it does**: Compares CLAUDE.md claims (plugin counts, component inventories, versions, file paths) against filesystem ground truth.
+
+**Example output**:
+
+```
+### CLAUDE.md Drift Analysis
+
+| # | Severity | Category | Plugin | Finding |
+|---|----------|----------|--------|---------|
+| 1 | CRITICAL | agents | design-intent | agent 'design-reviewer' exists on disk but not in CLAUDE.md |
+| 2 | CRITICAL | agents | design-intent | agent 'ui-architect' exists on disk but not in CLAUDE.md |
+| 3 | CRITICAL | agents | design-intent | agent 'ui-explorer' exists on disk but not in CLAUDE.md |
+| 4 | WARNING | version | doc | CLAUDE.md says 1.10.0, plugin.json says 1.11.0 |
+
+**Summary**: 144 checks, 140 ok, 3 undocumented, 1 version drift
+```
+
+**Standalone script**:
+
+```bash
+python3 plugins/doc/skills/doc-freshness/scripts/claude_md_checker.py .
+```
+
+**Categories checked**:
+- `plugin_count` — Number of plugins in CLAUDE.md vs marketplace.json
+- `agents` — Agent names per plugin vs agents/*.md files
+- `commands` — Command names per plugin vs commands/*.md files
+- `skills` — Skill names per plugin vs skills/*/SKILL.md frontmatter
+- `version` — Version strings vs plugin.json files
+- `file_path` — Backtick-quoted paths vs filesystem existence
