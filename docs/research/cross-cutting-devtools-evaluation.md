@@ -4,17 +4,6 @@ version: "1.0.0"
 status: Published
 created: 2026-03-25
 last_updated: 2026-03-25
-last_refreshed: 2026-03-26T01:40:38.638335+00:00
-sources: []
----
-
-<!-- AUTO-GENERATED: Start -->
----
-title: "Cross-Cutting Developer Tools Evaluation"
-version: "1.0.0"
-status: Published
-created: 2026-03-25
-last_updated: 2026-03-25
 ---
 
 # Cross-Cutting Developer Tools Evaluation
@@ -1594,11 +1583,3 @@ New code quality gate (recommended defaults):
 | Trivy | ~34,000 | github.com/aquasecurity/trivy |
 | Gitleaks | 24,400 | github.com/gitleaks/gitleaks |
 | semantic-release | ~21,000 | github.com/semantic-release/semantic-release |
-<!-- AUTO-GENERATED: End -->
-
-<!-- TEAM-NOTES: Start -->
-## Team Context
-
-_Add project-specific notes, implementation references, and team knowledge here._
-
-<!-- TEAM-NOTES: End -->
