@@ -7,7 +7,7 @@ description: >
   outdated versions). Use when checking "doc freshness", "stale docs", "documentation drift",
   "broken links", "outdated documentation", "doc accuracy", "docs out of date", "doc audit",
   "doc health", or "verify documentation".
-argument-hint: scan | check <path> | links | drift <path> | cross-doc | report
+argument-hint: scan | check <path> | links | drift <path> | cross-doc | claude-md | onboard | report
 allowed-tools: Read, Glob, Grep, Bash, Write
 ---
 

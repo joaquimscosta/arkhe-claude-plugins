@@ -1,6 +1,6 @@
 ---
 description: Run documentation health checks (freshness, links, drift, cross-doc consistency)
-argument-hint: "scan | check <path> | links | drift <path> | cross-doc | claude-md | report"
+argument-hint: "scan | check <path> | links | drift <path> | cross-doc | claude-md | onboard | report"
 ---
 
 # Documentation Health
