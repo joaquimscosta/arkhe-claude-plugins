@@ -18,6 +18,7 @@ Unified documentation health analysis. Detects stale docs, broken links, version
 | `cross-doc` | Cross-document consistency check |
 | `report` | Full scan + persist report |
 | `claude-md` | CLAUDE.md structural drift detection |
+| `onboard` | Suggest/apply tracking frontmatter to docs |
 | _(none)_ | Same as `scan` |
 
 ## Examples
@@ -29,6 +30,7 @@ Unified documentation health analysis. Detects stale docs, broken links, version
 /doc:health drift docs/api-reference.md
 /doc:health cross-doc
 /doc:health claude-md
+/doc:health onboard
 /doc:health report
 ```
 

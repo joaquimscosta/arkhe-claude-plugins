@@ -49,6 +49,7 @@ Parse from `$ARGUMENTS`:
 | `cross-doc` | Cross-document consistency check |
 | `report` | Persist structured freshness report to `{output_dir}/` |
 | `claude-md` | CLAUDE.md structural drift (plugin counts, components, versions) |
+| `onboard` | Suggest/apply tracking frontmatter to docs that need it |
 | _(none)_ | Full scan (same as `scan`) |
 
 ## Scanning Tiers
@@ -108,6 +109,13 @@ Same as `scan` but write output to `{output_dir}/{YYYY-MM-DD}-freshness.md`.
 1. Run `claude_md_checker.py` to compare CLAUDE.md claims against filesystem
 2. Present findings by category: plugin counts, component inventories, versions, file paths
 3. Highlight undocumented components (CRITICAL) and version mismatches (WARNING)
+
+### `onboard`
+
+1. Run `frontmatter_onboard.py` to find docs without tracking frontmatter
+2. Uses whitelist of known-maintained docs (READMEs, custom docs)
+3. Generates minimal `title` + `last_updated` frontmatter from git history
+4. On user approval, apply with `--apply` flag
 
 ## Automation Integration
 
