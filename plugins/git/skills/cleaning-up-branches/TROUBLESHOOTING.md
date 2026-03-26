@@ -42,20 +42,26 @@ fatal: unable to delete 'feat/001-user-auth': remote ref does not exist
    ```
 3. If you lack permissions, ask a repository admin to delete the remote branches.
 
-## Squash-Merged Branches Not Detected as Merged
+## Squash-Merged Branch Not Detected Automatically
 
-**Symptom:** A branch shows up as "stale unmerged" even though its changes were merged via squash-and-merge on GitHub.
+**Symptom:** A branch shows up as "stale unmerged" even though its changes were merged via squash-and-merge on GitHub. It does NOT appear in the "SQUASH-MERGED BRANCHES" section.
 
-**Cause:** `git branch --merged` checks if the branch's commit history is an ancestor of the base branch. Squash merges create a new single commit, so the original branch commits are not ancestors.
+**Note:** As of v1.1.0, most squash-merged branches are detected automatically using `git cherry` (patch-id comparison). However, edge cases exist.
 
-**Solution:** This is a known git limitation. To verify if a branch was squash-merged:
+**Cause of false negatives:**
+- The squash commit on base was **amended** after merge, changing the patch-id
+- Only **some** commits were cherry-picked (partial merge)
+- The branch was **rebased and modified** before squash-merge
+
+**Solution:** Verify manually and force-delete if confirmed:
 ```bash
-# Check if the branch's changes exist in the base
-git log --oneline main | grep "branch description or PR title"
-```
+# Check git cherry output — all '-' lines means squash-merged
+git cherry main <branch-name>
 
-If confirmed, you can safely delete the branch manually:
-```bash
+# Cross-reference with GitHub
+gh pr list --state merged --head <branch-name>
+
+# If confirmed squash-merged, safe to delete
 git branch -D <branch-name>          # Force-delete local
 git push origin --delete <branch-name> # Delete remote
 ```
@@ -139,4 +145,4 @@ git branch --merged main | grep -v main | head -50 | xargs git branch -d
 
 ## Version
 
-1.0.0
+1.1.0

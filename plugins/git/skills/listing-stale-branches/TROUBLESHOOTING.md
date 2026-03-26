@@ -56,7 +56,7 @@ git branch -a
 
 ---
 
-### Issue 3: Squash-merged branches appear as "unmerged"
+### Issue 3: Squash-merged branch not detected automatically
 
 **Symptom:**
 ```
@@ -64,28 +64,30 @@ Branch 'feat/my-feature' appears in INACTIVE UNMERGED section
 but was already merged via GitHub squash-and-merge
 ```
 
-**Cause:**
-- `git branch --merged` only detects branches merged with standard merge commits
-- Squash merges create a new commit on the base branch that is not an ancestor of the feature branch
-- GitHub's "Squash and merge" button triggers this behavior
+**Note:** As of v1.1.0, most squash-merged branches are detected automatically using `git cherry` (patch-id comparison) and shown in the "SQUASH-MERGED BRANCHES" section. However, edge cases exist where detection may fail.
+
+**Cause of false negatives:**
+- The squash commit on base was **amended** after merge, changing the patch-id
+- Only **some** commits were cherry-picked (partial merge) — `git cherry` shows a mix of `+` and `-`
+- The branch was **rebased and modified** before squash-merge, altering the diffs
 
 **Solution:**
-This is a fundamental limitation of git's merge detection. To verify if a squash-merged branch's changes are already in base:
+If you know a branch was squash-merged but it wasn't detected, verify manually:
 
 ```bash
-# Check if the branch's diff is empty against base
-git diff main...feat/my-feature --stat
-
-# If diff is empty or shows only trivial changes, the work is in main
+# Check git cherry output — all lines should show '-' for squash-merged
+git cherry main feat/my-feature
 
 # Alternative: check if PR was merged on GitHub
 gh pr list --state merged --head feat/my-feature
+
+# If confirmed squash-merged, safe to delete
+git branch -D feat/my-feature
 ```
 
 **Prevention:**
-- Review the "INACTIVE UNMERGED" section carefully — some branches may have been squash-merged
-- Use `gh pr list --state merged` to cross-reference with GitHub
-- Consider using standard merge commits instead of squash merges if branch cleanup is important
+- The automatic detection handles the vast majority of squash-merge cases
+- For edge cases, cross-reference with `gh pr list --state merged`
 
 ---
 
@@ -298,4 +300,4 @@ git rev-list --left-right --count main...branch-name
 
 ## Version
 
-1.0.0
+1.1.0

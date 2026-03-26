@@ -18,3 +18,6 @@ See [TEMPLATE.md](TEMPLATE.md) for the standard format when creating new researc
 | [Multi-Agent Orchestration Patterns: Quick Reference](multi-agent-patterns-overview.md) | 1.0.0 | Published | 2026-03-19 | 2026-03-19 |
 | [Multi-Agent Orchestration Patterns: Deep Dive](multi-agent-patterns-deep-dive.md) | 1.0.0 | Published | 2026-03-19 | 2026-03-19 |
 | [Johnny.Decimal + Diataxis Information Architecture](johnny-decimal-diataxis.md) | 1.0.0 | Published | 2026-03-23 | 2026-03-23 |
+| [Node.js/TypeScript Quality Tools Evaluation](node-quality-tools-evaluation.md) | 1.0.0 | Published | 2026-03-25 | 2026-03-25 |
+| [Python Quality Tools Evaluation](python-quality-tools-evaluation.md) | 1.0.0 | Published | 2026-03-25 | 2026-03-25 |
+| [Cross-Cutting Developer Tools Evaluation](cross-cutting-devtools-evaluation.md) | 1.0.0 | Published | 2026-03-25 | 2026-03-25 |

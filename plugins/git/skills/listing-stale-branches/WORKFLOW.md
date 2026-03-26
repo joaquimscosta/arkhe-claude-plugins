@@ -93,6 +93,56 @@ Total merged: 3
 
 **Output**: List of merged branches with last commit dates.
 
+## Phase 2.5: Squash-Merge Detection
+
+### Purpose
+
+Detect branches whose changes are already in the base branch via squash-and-merge or rebase-merge. These branches appear as "unmerged" to `git branch --merged` because squash merges create a new commit on the base branch rather than preserving the original branch commits as ancestors.
+
+### Mechanism: `git cherry`
+
+`git cherry` uses `git patch-id` to compare the actual code changes (diffs) introduced by each commit, ignoring commit metadata (author, date, message). For each commit on the branch:
+- `-` prefix: An equivalent patch exists in the base branch (the change is already in base)
+- `+` prefix: No equivalent patch exists (the change is NOT in base)
+
+If ALL commits show `-`, the branch's entire contribution is already in base — it was squash-merged, rebase-merged, or cherry-picked.
+
+### Process
+
+```bash
+# For each local branch not already detected as merged:
+git cherry "$BASE_BRANCH" "$branch"
+
+# Count commits NOT in base
+git cherry "$BASE_BRANCH" "$branch" | grep '^+' | wc -l
+```
+
+### Filtering Criteria
+
+For each branch:
+1. Skip the base branch
+2. Skip branches already detected as merged (Phase 2)
+3. Compute merge-base and count unique commits (skip if 0)
+4. Run `git cherry` — if unpicked count is 0, branch is squash-merged
+
+### Output Format
+
+```
+=== SQUASH-MERGED BRANCHES (safe to delete) ===
+  feat/007-rfc-skills-migration (2 weeks ago)
+  chore/005-reference-doc-sync  (3 weeks ago)
+  feat/003-icon-forge           (4 weeks ago)
+Total squash-merged: 3
+```
+
+### Edge Cases
+
+- **Partial squash**: If only some commits were cherry-picked, `git cherry` shows a mix of `+` and `-`. These are NOT flagged as squash-merged (they have genuinely unmerged work).
+- **Amended commits**: If the squash commit on base was amended after merge, patch-ids may not match. These remain undetected.
+- **Rebase merges**: Also detected by `git cherry` (same patch-id mechanism). This is correct — the changes are in base either way.
+
+**Output**: List of squash-merged branches with relative dates.
+
 ## Phase 3: Inactive Branch Detection
 
 ### Purpose
@@ -244,6 +294,14 @@ Cleanup commands (run manually):
             |
             v
 +---------------------------+
+| 2.5 Squash-Merge Detection|
+|  - git cherry per branch  |
+|  - Compare patch-ids      |
+|  - Flag if all in base    |
++-----------+---------------+
+            |
+            v
++---------------------------+
 | 3. Inactive Branch Detect |
 |  - for-each-ref scan      |
 |  - Filter by threshold    |
@@ -297,4 +355,4 @@ Warning: Could not reach remote 'origin'
 
 ## Version
 
-1.0.0
+1.1.0

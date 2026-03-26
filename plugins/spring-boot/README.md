@@ -10,13 +10,14 @@ Domain-Driven Design patterns with Spring Boot 4 implementation for complex busi
 
 ### Agents
 
-- **spring-boot-reviewer**: Reviews Spring Boot codebases against all spring-boot skills for correctness, best practices, and Spring Boot 4 compatibility. Uses confidence-based filtering (≥80) to report only high-priority issues.
-- **spring-boot-upgrade-verifier**: Verifies Spring Boot upgrade readiness using parallel multi-skill analysis. Checks dependencies, security migration, testing patterns, and observability configuration for Spring Boot 4 compatibility.
+- **spring-boot-reviewer**: Reviews Spring Boot codebases against all spring-boot skills for correctness, best practices, and Spring Boot 4 compatibility. Uses confidence-based filtering (≥80) to report only high-priority issues. Includes Confession Pattern for worker transparency.
+- **spring-boot-upgrade-verifier**: Verifies Spring Boot upgrade readiness using parallel multi-skill analysis. Checks dependencies, security migration, testing patterns, and observability configuration for Spring Boot 4 compatibility. Includes Confession Pattern for verifier transparency.
 
 ### Commands
 
 - **/spring-review**: Comprehensive Spring Boot implementation review against DDD, security, testing, and other best practices. Supports natural language scopes like "all", "the order module", "security configuration", or specific file paths.
 - **/verify-upgrade**: Verify Spring Boot project upgrade readiness with parallel multi-skill analysis.
+- **/spring-refresh**: Check skill content freshness against research docs and update stale skills. Modes: `check` (default), `refresh` (update research docs), `update <skill-name>`.
 
 ### Skills
 
@@ -32,6 +33,7 @@ Domain-Driven Design patterns with Spring Boot 4 implementation for complex busi
 | **spring-boot-testing** | Slice tests, Testcontainers, @MockitoBean | Unit/integration tests, security testing, Modulith Scenario API |
 | **spring-boot-verify** | Dependency and configuration verification | pom.xml, build.gradle, application.yml, "verify dependencies", "check configuration" |
 | **flyway-consolidate** | Flyway migration analysis and consolidation | User-invoke via `/flyway-consolidate` (not auto-invoked) |
+| **spring-refresh** | Skill content freshness checking and research doc sync | User-invoke via `/spring-refresh` (not auto-invoked) |
 
 ## Tech Stack
 
@@ -240,4 +242,4 @@ private OrderService orderService;
 
 ## Version
 
-1.0.0
+1.2.0

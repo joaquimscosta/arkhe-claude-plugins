@@ -244,6 +244,49 @@ Cleanup commands (run manually):
 
 ---
 
+## Example 6: Squash-Merged Branch Detection
+
+### Context
+A project uses GitHub's "Squash and merge" strategy. After running `/stale-branches`, several branches that were already merged via squash don't appear as "merged". The skill now detects these automatically.
+
+### Command
+```bash
+/stale-branches
+```
+
+### Output
+```
+=== MERGED BRANCHES (safe to delete) ===
+  feat/003-roadmap-critic  (last commit: 2025-12-10)
+Total merged: 1
+
+=== SQUASH-MERGED BRANCHES (safe to delete) ===
+  feat/007-rfc-skills-migration (2 weeks ago)
+  chore/005-reference-doc-sync  (3 weeks ago)
+  feat/003-icon-forge           (4 weeks ago)
+  assets/add-plugin-banners     (4 weeks ago)
+  fix/merge-duplicate-checkpoints (4 weeks ago)
+Total squash-merged: 5
+
+=== INACTIVE UNMERGED BRANCHES (review before delete) ===
+  backup-before-rewrite-20251127 (4 months ago) [ahead 56, behind 120]
+
+=== SUMMARY ===
+Current branch: main
+Base branch: main
+Inactivity threshold: 3 months
+Total local branches: 21
+Merged into main: 1
+Squash-merged (detected via git cherry): 5
+```
+
+### Key Takeaways
+- 5 branches that `git branch --merged` missed are now detected via `git cherry` patch-id comparison
+- These are safe to delete — all their code changes are already in `main`
+- The `backup-before-rewrite-20251127` branch has genuinely unmerged work (56 commits ahead) and is correctly NOT flagged as squash-merged
+
+---
+
 ## Auto-Invoke Example
 
 ### User Message
@@ -260,4 +303,4 @@ The skill auto-invokes because the user mentioned "stale" and "branches". It run
 
 ## Version
 
-1.0.0
+1.1.0
