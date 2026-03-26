@@ -104,7 +104,7 @@ Migration: {replacement pattern}
 
 ## Next Steps
 1. Address all CRITICAL issues first
-2. Resolve NEEDS_MANUAL_REVIEW areas
+2. Review areas flagged in Verifier Confessions
 3. Run tests after each migration step
 4. Update to Spring Boot 4.0.x
 5. Run full test suite

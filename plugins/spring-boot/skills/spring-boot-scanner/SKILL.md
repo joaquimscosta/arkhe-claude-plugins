@@ -23,6 +23,18 @@ Scans in 3 phases: (1) detect Spring Boot project via build files, (2) scan anno
 
 ## Annotation → Skill Map
 
+| Annotation Pattern | Detected Skill | Risk Level |
+|-------------------|----------------|------------|
+| `@RestController`, `@GetMapping`, `@PostMapping`, `@RequestMapping` | spring-boot-web-api | LOW |
+| `@Entity`, `@Repository`, `@Aggregate`, `@MappedSuperclass` | spring-boot-data-ddd | LOW |
+| `@Service` in `**/domain/**` or `**/service/**` | domain-driven-design | LOW |
+| `@ApplicationModule`, `@ApplicationModuleListener` | spring-boot-modulith | LOW |
+| `@Timed`, `@Counted`, `HealthIndicator`, `MeterRegistry` | spring-boot-observability | LOW |
+| `@EnableWebSecurity`, `@PreAuthorize`, `@Secured`, `SecurityFilterChain` | spring-boot-security | HIGH |
+| `@SpringBootTest`, `@WebMvcTest`, `@DataJpaTest`, `@MockitoBean` | spring-boot-testing | HIGH |
+| `@MockBean` (deprecated) | spring-boot-testing | HIGH + WARNING |
+| Build file with version < 4.0 | spring-boot-verify | HIGH |
+
 Use this script to detect patterns:
 
 ```bash
