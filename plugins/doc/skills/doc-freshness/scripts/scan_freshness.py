@@ -10,6 +10,7 @@ Uses only standard library (no external dependencies). Python 3.8+.
 Usage:
     python3 scan_freshness.py <project_root>
     python3 scan_freshness.py --links-only <project_root>
+    python3 scan_freshness.py --critical-only <project_root>
     python3 scan_freshness.py --config .arkhe.yaml <project_root>
 
 Output:
@@ -217,6 +218,7 @@ def scan(
     project_root: Path,
     links_only: bool = False,
     config_path: Optional[str] = None,
+    critical_only: bool = False,
 ) -> dict:
     """Run the full freshness scan.
 
@@ -224,6 +226,7 @@ def scan(
         project_root: Path to the project root.
         links_only: If True, only run link checks (fast mode).
         config_path: Optional path to config file.
+        critical_only: If True, only scan critical docs (README.md, CLAUDE.md, plugin docs).
 
     Returns:
         Complete scan results as a dict.
@@ -241,6 +244,17 @@ def scan(
 
     # Discover documentation files
     doc_paths = discover_markdown_files(project_root, doc_patterns, exclude)
+
+    # Filter to critical docs if requested
+    if critical_only:
+        critical_paths = {
+            "README.md",
+            "CLAUDE.md",
+        }
+        doc_paths = [
+            p for p in doc_paths
+            if str(p.relative_to(project_root)) in critical_paths
+        ]
 
     if not doc_paths:
         return {
@@ -301,6 +315,7 @@ def scan(
             "doc_patterns": doc_patterns,
             "exclude": exclude,
             "links_only": links_only,
+            "critical_only": critical_only,
         },
         "docs": inventory,
         "broken_links": link_results,
@@ -330,6 +345,11 @@ def main() -> None:
         help="Only check for broken links (fast mode)",
     )
     parser.add_argument(
+        "--critical-only",
+        action="store_true",
+        help="Only scan critical docs (README.md, CLAUDE.md, plugin docs) — fast mode for SessionStart hook",
+    )
+    parser.add_argument(
         "--config",
         help="Path to .arkhe.yaml config file (default: <project_root>/.arkhe.yaml)",
     )
@@ -341,7 +361,7 @@ def main() -> None:
         print(f"Error: {root} is not a directory", file=sys.stderr)
         sys.exit(1)
 
-    result = scan(root, links_only=args.links_only, config_path=args.config)
+    result = scan(root, links_only=args.links_only, config_path=args.config, critical_only=args.critical_only)
     print(json.dumps(result, indent=2, default=str))
 
 

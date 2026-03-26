@@ -221,6 +221,34 @@ uv run doc/skills/jd-docs/scripts/jd_index.py --dir docs
 /doc:health report
 ```
 
+### Automation Examples
+
+**SessionStart Hook** — Critical-doc alerts on session start:
+```bash
+# Automatically runs on session start (5-second timeout)
+# Scans: README.md, CLAUDE.md, .claude-plugin/plugin.json, plugins/doc/README.md
+# Surface only if issues found
+```
+
+**PostToolUse Hook** — Post-commit doc-impact checks:
+```bash
+/commit
+# After commit succeeds, automatically checks if modified code files
+# lack corresponding documentation using /doc:health drift
+```
+
+**User-Driven Periodic Monitoring**:
+```bash
+# Hourly broken-link checks
+/loop 1h /doc:health links
+
+# Full scans every 4 hours
+/loop 4h /doc:health scan
+
+# Post-commit doc checks every 30 minutes
+/loop 30m /doc:health drift
+```
+
 ## Version
 
 1.11.0

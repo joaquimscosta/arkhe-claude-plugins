@@ -102,6 +102,26 @@ Tier is auto-detected per file. No configuration needed. The scanner JSON output
 
 Same as `scan` but write output to `{output_dir}/{YYYY-MM-DD}-freshness.md`.
 
+## Automation Integration
+
+**SessionStart Hook**: Critical-doc fast scan on session start (5-second timeout)
+```bash
+/doc:health --critical-only
+# Scans: README.md, CLAUDE.md only (root-level critical docs)
+```
+
+**PostToolUse Hook** (after `/commit`): Post-commit doc-impact checks
+```bash
+/doc:health drift
+# Checks if modified code files have corresponding documentation
+```
+
+**User-Driven (`/loop`)**: Periodic freshness monitoring
+```bash
+/loop 1h /doc:health links        # Hourly broken-link checks
+/loop 4h /doc:health scan         # Full scans every 4 hours
+```
+
 ## Severity Levels
 
 | Severity | Meaning |

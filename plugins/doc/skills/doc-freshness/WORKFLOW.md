@@ -247,4 +247,73 @@ doc-freshness:
       source: ".nvmrc"
 ```
 
+## Hook Integration
+
+The doc-freshness skill integrates with Claude Code hooks for proactive freshness monitoring.
+
+### SessionStart Hook (Critical-Doc Fast Scan)
+
+**Trigger**: Session start (synchronous, 5-second timeout)
+
+**Configuration** (in `.claude/settings.local.json`):
+```json
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Check critical documentation freshness: README.md, CLAUDE.md. Use: /doc:health --critical-only\n\nSurface only if issues found (broken links or stale docs).",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+**Behavior**: Scans critical root-level docs only (README.md, CLAUDE.md) to keep execution < 1 second. Surfaces alerts only if issues found.
+
+### PostToolUse Hook (Post-Commit Doc-Impact Checks)
+
+**Trigger**: After `/commit` command completes (async, non-blocking, 30-second timeout)
+
+**Configuration** (in `.claude/settings.local.json`):
+```json
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Skill",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "After commit completed, check if modified code files lack corresponding documentation: /doc:health drift\n\nReport findings only if doc-code misalignment detected.",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+
+**Behavior**: Runs asynchronously after commit succeeds. Checks if modified source files have corresponding documentation updates. Non-blocking — doesn't interrupt workflow.
+
+### User-Driven Periodic Monitoring (`/loop`)
+
+**Pattern**: `/loop <interval> /doc:health <mode>`
+
+**Examples**:
+```bash
+/loop 1h /doc:health links        # Hourly broken-link checks
+/loop 4h /doc:health scan         # Full scans every 4 hours
+/loop 30m /doc:health drift       # Rapid post-commit checks
+```
+
+**Configuration**: No setup needed — user initiates based on session needs.
+
 When no config is present, the skill uses convention-based discovery and default patterns.
