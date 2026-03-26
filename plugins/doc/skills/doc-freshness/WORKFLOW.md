@@ -4,7 +4,7 @@ Detailed detection algorithms, convention tables, and output templates.
 
 ## Context Discovery Protocol
 
-Same priority-based discovery as sibling skills (pm, roadmap, architect):
+Priority-based context discovery:
 
 1. **Configuration**: Read `.arkhe.yaml` → `doc-freshness:` section
 2. **Project Identity**: Read `CLAUDE.md` and `README.md`
@@ -44,6 +44,17 @@ When no explicit `mappings` config exists, map docs to code by convention:
 | **Rust** | `src/**/*.rs`, `crates/**/*.rs` |
 
 ## Detection Algorithms
+
+### Algorithm 0: Tier Detection (Script-Driven)
+
+Before running checks, classify each doc into a scanning tier:
+
+1. Read first 50 lines for YAML frontmatter (`---` delimiters)
+2. If frontmatter contains `last_updated:` or `version:` field → **deep** tier
+3. Otherwise → **basic** tier
+
+Basic tier runs: link checking, backtick-path verification, git staleness.
+Deep tier runs: all basic checks + version checking, `last_updated` accuracy vs git date, cross-doc consistency.
 
 ### Algorithm 1: Stale References (Script-Driven)
 
@@ -169,7 +180,7 @@ Step 4: Present conflicts with doc references
 ```
 Step 1: Run full scan (same as scan mode)
 Step 2: Format as markdown report
-Step 3: Write to {output_dir}/freshness/{YYYY-MM-DD}-freshness.md
+Step 3: Write to {output_dir}/{YYYY-MM-DD}-freshness.md
 Step 4: Confirm file written
 ```
 

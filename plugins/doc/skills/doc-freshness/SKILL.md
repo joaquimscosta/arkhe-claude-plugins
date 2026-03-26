@@ -20,7 +20,7 @@ Detect documentation drift across any project. Reports findings without auto-fix
 ### Priority 1: Configuration
 
 Read `.arkhe.yaml` from project root. Extract `doc-freshness:` section for custom patterns, exclusions, and doc-code mappings.
-Extract `roadmap:` section for `output_dir` (used by `report` mode, default: `arkhe/roadmap`).
+Extract `doc-health:` section for `output_dir` (used by `report` mode, default: `docs/health`).
 
 ### Priority 2: Project Identity
 
@@ -47,8 +47,19 @@ Parse from `$ARGUMENTS`:
 | `links` | Broken links and stale references only (script-driven, fast) |
 | `drift <path>` | Code-doc drift for a specific doc or doc-code pair |
 | `cross-doc` | Cross-document consistency check |
-| `report` | Persist structured freshness report to `{output_dir}/freshness/` |
+| `report` | Persist structured freshness report to `{output_dir}/` |
 | _(none)_ | Full scan (same as `scan`) |
+
+## Scanning Tiers
+
+Documents are automatically classified into scanning tiers:
+
+| Tier | Detection | Checks Performed |
+|------|-----------|-----------------|
+| **Basic** | All `.md` files | Broken links, git age classification, backtick-path verification |
+| **Deep** | YAML frontmatter with `last_updated` or `version` | Basic + version drift, `last_updated` accuracy, cross-doc consistency |
+
+Tier is auto-detected per file. No configuration needed. The scanner JSON output includes `"tier"` per doc and `"tier_counts"` in the summary.
 
 ## Mode Execution
 
@@ -89,7 +100,7 @@ Parse from `$ARGUMENTS`:
 
 ### `report`
 
-Same as `scan` but write output to `{output_dir}/freshness/{YYYY-MM-DD}-freshness.md`.
+Same as `scan` but write output to `{output_dir}/{YYYY-MM-DD}-freshness.md`.
 
 ## Severity Levels
 

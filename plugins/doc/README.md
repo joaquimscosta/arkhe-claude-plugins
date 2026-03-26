@@ -8,7 +8,7 @@ Multi-purpose documentation toolkit for generating comprehensive technical docum
 
 ## Domain
 
-📚 **Documentation** (generation, explanation, diagrams)
+📚 **Documentation** (generation, explanation, diagrams, health)
 
 ## Components
 
@@ -28,6 +28,8 @@ Multi-purpose documentation toolkit for generating comprehensive technical docum
 
 - **rfc**: Unified RFC management with 5 operations: create, review, list, update, and status. Use `/rfc create <topic>` to draft a populated RFC from conversation context and codebase analysis; `/rfc review <path>` to evaluate against 7 architecture dimensions; `/rfc list` to show all RFCs with status; `/rfc update <path>` to re-draft specific sections; `/rfc status <number> <status>` to transition status with validation and side effects. User-invoked only.
 
+- **doc-freshness**: Auto-invoked documentation drift and staleness detection. Scans for broken links, version mismatches, git staleness, code-doc drift, and cross-document inconsistencies. Supports tiered scanning: basic checks (links, git age) for all `.md` files, deep checks (version drift, semantic staleness, cross-doc consistency) for frontmatter-tracked docs. Modes: `scan`, `links`, `check <path>`, `drift <path>`, `cross-doc`, `report`. Triggers on "doc freshness", "stale docs", "documentation drift", "broken links", "doc health", "doc audit".
+
 ### Commands
 
 - **/code-explain**: Explains code in detail using the code-explanation skill. Generates visual diagrams, step-by-step breakdowns, and identifies patterns and gotchas. Perfect for understanding complex codebases.
@@ -35,6 +37,8 @@ Multi-purpose documentation toolkit for generating comprehensive technical docum
 - **/diagram**: Create or edit Mermaid diagrams with manual control. Supports all diagram types: flowcharts, sequence diagrams, ERDs, state diagrams, Gantt charts, pie charts, git graphs, user journeys, quadrant charts, and timelines.
 
 - **/rfc**: Manage architecture RFCs. Supports `create <topic>`, `review <path>`, `list`, and `update <path>` operations.
+
+- **/health**: Run documentation health checks across a project. Detects stale docs, broken links, version drift, and cross-document inconsistencies. Supports modes: `scan`, `links`, `check <path>`, `drift <path>`, `cross-doc`, `report`.
 
 ## Use Cases
 
@@ -48,6 +52,7 @@ Multi-purpose documentation toolkit for generating comprehensive technical docum
 ✅ Johnny.Decimal documentation organization
 ✅ Diataxis documentation framework (audit, classify, validate, scaffold)
 ✅ RFC lifecycle management (create, review, list, update)
+✅ Documentation health monitoring (freshness, links, drift)
 
 ## Applies To
 
@@ -194,6 +199,28 @@ uv run doc/skills/jd-docs/scripts/jd_index.py --dir docs
    "I need a flowchart for the deployment process"
    ```
 
+### Documentation Health
+
+```bash
+# Full freshness scan
+/doc:health scan
+
+# Fast broken link check only
+/doc:health links
+
+# Check a single file or directory
+/doc:health check README.md
+
+# Deep drift analysis for a specific doc
+/doc:health drift docs/api-reference.md
+
+# Cross-document consistency check
+/doc:health cross-doc
+
+# Persist a freshness report
+/doc:health report
+```
+
 ## Version
 
-1.10.0
+1.11.0

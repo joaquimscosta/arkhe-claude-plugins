@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from shared import read_file_safe, read_json_safe
+from shared import extract_frontmatter, read_file_safe, read_json_safe
 
 
 # ---------------------------------------------------------------------------
@@ -329,6 +329,65 @@ def check_all_versions(
             "minor_mismatches": minor,
         },
     }
+
+
+def check_last_updated(
+    doc_path: Path, project_root: Path
+) -> Optional[Dict[str, object]]:
+    """Check if a doc's last_updated frontmatter matches its git history.
+
+    Only applies to deep-tier docs (those with last_updated in frontmatter).
+    Returns a finding dict if the dates differ by >7 days, or None.
+    """
+    import subprocess
+
+    content = read_file_safe(doc_path)
+    if content is None:
+        return None
+
+    fm = extract_frontmatter(content)
+    if not fm or "last_updated" not in fm:
+        return None
+
+    last_updated_str = fm["last_updated"]
+    # Parse frontmatter date (YYYY-MM-DD)
+    date_match = re.match(r'(\d{4}-\d{2}-\d{2})', last_updated_str)
+    if not date_match:
+        return None
+
+    from datetime import datetime
+    try:
+        fm_date = datetime.strptime(date_match.group(1), "%Y-%m-%d")
+    except ValueError:
+        return None
+
+    # Get git last modified date
+    rel_doc = str(doc_path.relative_to(project_root))
+    try:
+        result = subprocess.run(
+            ["git", "log", "-1", "--format=%aI", "--", rel_doc],
+            capture_output=True, text=True, timeout=10,
+            cwd=str(project_root),
+        )
+        if result.returncode != 0 or not result.stdout.strip():
+            return None
+        git_date_str = result.stdout.strip()[:10]
+        git_date = datetime.strptime(git_date_str, "%Y-%m-%d")
+    except (subprocess.TimeoutExpired, FileNotFoundError, ValueError):
+        return None
+
+    # Compare dates
+    diff_days = abs((git_date - fm_date).days)
+    if diff_days > 7:
+        return {
+            "doc": rel_doc,
+            "frontmatter_date": date_match.group(1),
+            "git_date": git_date_str,
+            "diff_days": diff_days,
+            "status": "outdated_frontmatter",
+        }
+
+    return None
 
 
 if __name__ == "__main__":

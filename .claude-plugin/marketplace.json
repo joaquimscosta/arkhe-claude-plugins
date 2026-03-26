@@ -20,7 +20,7 @@
     {
       "name": "doc",
       "source": "./plugins/doc",
-      "description": "Multi-purpose documentation toolkit (generation, explanation, diagrams)"
+      "description": "Multi-purpose documentation toolkit (generation, explanation, diagrams, health)"
     },
     {
       "name": "review",

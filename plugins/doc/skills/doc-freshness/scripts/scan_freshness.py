@@ -26,6 +26,7 @@ from typing import Dict, List, Optional
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from shared import (
+    detect_doc_tier,
     discover_markdown_files,
     extract_headings,
     git_is_available,
@@ -182,9 +183,11 @@ def build_inventory(
     for doc_path in doc_paths:
         rel_doc = str(doc_path.relative_to(project_root))
         content = read_file_safe(doc_path)
+        tier = detect_doc_tier(doc_path)
         if content is None:
             inventory.append({
                 "path": rel_doc,
+                "tier": tier,
                 "headings": [],
                 "link_count": 0,
                 "line_count": 0,
@@ -197,6 +200,7 @@ def build_inventory(
 
         inventory.append({
             "path": rel_doc,
+            "tier": tier,
             "headings": [h["text"] for h in headings],
             "link_count": len(links),
             "line_count": len(content.splitlines()),
@@ -284,6 +288,12 @@ def scan(
         if s.get("drift_score") in ("stale", "very_stale")
     )
 
+    # Count docs per tier
+    tier_counts = {"basic": 0, "deep": 0}
+    for doc in inventory:
+        tier = doc.get("tier", "basic")
+        tier_counts[tier] = tier_counts.get(tier, 0) + 1
+
     return {
         "scan_date": datetime.now().isoformat(),
         "project_root": str(project_root),
@@ -298,6 +308,7 @@ def scan(
         "staleness": staleness,
         "summary": {
             "total_docs": len(doc_paths),
+            "tier_counts": tier_counts,
             "broken_links": broken_count,
             "version_mismatches": version_mismatch_count,
             "stale_docs": stale_count,

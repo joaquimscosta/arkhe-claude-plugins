@@ -75,11 +75,11 @@ AI engineering toolkit for production-ready LLM applications.
 - **Skills**: `lyra` (auto-invoked for AI prompt engineering)
 
 ### Doc Plugin
-Multi-purpose documentation toolkit with RFC management.
+Multi-purpose documentation toolkit with RFC management and documentation health.
 - **Agents**: `rfc-critic`, `adr-critic`
-- **Skills**: `doc-coauthoring`, `diagramming`, `code-explanation`, `jd-docs`, `diataxis`, `adr`, `rfc`
-- **Commands**: `/code-explain`, `/diagram`, `/rfc`
-- **Use**: Documentation generation, code explanation, Mermaid diagrams, Johnny.Decimal management, Diataxis framework (audit, classify, validate, scaffold), ADR management, RFC lifecycle (create, review, list, update)
+- **Skills**: `doc-coauthoring`, `diagramming`, `code-explanation`, `jd-docs`, `diataxis`, `adr`, `rfc`, `doc-freshness` (auto-invoke)
+- **Commands**: `/code-explain`, `/diagram`, `/rfc`, `/health`
+- **Use**: Documentation generation, code explanation, Mermaid diagrams, Johnny.Decimal management, Diataxis framework (audit, classify, validate, scaffold), ADR management, RFC lifecycle (create, review, list, update), documentation health (freshness, links, drift, cross-doc consistency)
 
 ### Review Plugin
 Code quality review tools for development teams.
@@ -132,8 +132,8 @@ Autonomous development loop with fresh context per iteration and Hat-lite builde
 ### Roadmap Plugin
 Product management, roadmap analysis, and solution architecture with multi-agent orchestration.
 - **Agents**: `product-manager`, `system-architect`, `roadmap-analyst`, `roadmap-critic`
-- **Skills**: `pm` (auto-invoke, `--deep` for multi-agent pipeline), `roadmap` (auto-invoke, `--deep` for cross-perspective analysis), `architect` (auto-invoke, `--deep` for adversarial review), `doc-freshness` (auto-invoke), `refresh` (command-invoke)
-- **Use**: User stories, scope assessments, prioritization, project status, gap analysis, risk mapping, module design, API design, boundary analysis, documentation freshness detection. `--deep` mode adds: confidence scoring, Confession Pattern, cross-agent validation, adversarial architecture review
+- **Skills**: `pm` (auto-invoke, `--deep` for multi-agent pipeline), `roadmap` (auto-invoke, `--deep` for cross-perspective analysis), `architect` (auto-invoke, `--deep` for adversarial review), `refresh` (command-invoke)
+- **Use**: User stories, scope assessments, prioritization, project status, gap analysis, risk mapping, module design, API design, boundary analysis. `--deep` mode adds: confidence scoring, Confession Pattern, cross-agent validation, adversarial architecture review
 
 ### Devtools Plugin
 Developer tooling setup and management.
@@ -586,7 +586,7 @@ See [docs/README.md](docs/README.md) "Maintaining This Documentation" section fo
 
 ## Plugin Versions
 
-Plugin versions: core 2.1.0, ai 1.0.0, doc 1.10.0, design-intent 2.2.0, git 1.0.0, google-stitch 2.0.0, lang 1.0.0, playwright 1.0.0, spring-boot 1.2.0, ralph 2.0.0, roadmap 2.0.0, review 2.0.0, devtools 2.1.0. When making breaking changes, increment the major version and update `plugin.json`.
+Plugin versions: core 2.1.0, ai 1.0.0, doc 1.11.0, design-intent 2.2.0, git 1.0.0, google-stitch 2.0.0, lang 1.0.0, playwright 1.0.0, spring-boot 1.2.0, ralph 2.0.0, roadmap 2.0.0, review 2.0.0, devtools 2.1.0. When making breaking changes, increment the major version and update `plugin.json`.
 
 ## Related Documentation
 
