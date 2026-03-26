@@ -33,13 +33,13 @@
 
 **Symptom:** Report shows no research docs.
 
-**Cause:** `docs/research/spring-boot/` directory doesn't exist or has no `.md` files.
+**Cause:** `docs/research/` directory doesn't contain Spring Boot research files.
 
-**Fix:** Verify the directory exists relative to the git project root:
+**Fix:** Verify the files exist relative to the git project root:
 ```bash
-ls docs/research/spring-boot/
+ls docs/research/spring-boot-*.md
 ```
-Expected files: `ecosystem-research.md`, `ddd-implementation.md`, `security-observability-testing.md`
+Expected files: `spring-boot-ecosystem-research.md`, `spring-boot-ddd-implementation.md`, `spring-boot-security-observability-testing.md`
 
 ### Frontmatter parse errors
 
@@ -69,9 +69,9 @@ spring-boot-version: "4.0"
 **Symptom:** You want to browse research docs without cloning the repo.
 
 **Links:**
-- [ecosystem-research.md](https://github.com/joaquimscosta/arkhe-claude-plugins/blob/main/docs/research/spring-boot/ecosystem-research.md)
-- [ddd-implementation.md](https://github.com/joaquimscosta/arkhe-claude-plugins/blob/main/docs/research/spring-boot/ddd-implementation.md)
-- [security-observability-testing.md](https://github.com/joaquimscosta/arkhe-claude-plugins/blob/main/docs/research/spring-boot/security-observability-testing.md)
+- [spring-boot-ecosystem-research.md](https://github.com/joaquimscosta/arkhe-claude-plugins/blob/main/docs/research/spring-boot-ecosystem-research.md)
+- [spring-boot-ddd-implementation.md](https://github.com/joaquimscosta/arkhe-claude-plugins/blob/main/docs/research/spring-boot-ddd-implementation.md)
+- [spring-boot-security-observability-testing.md](https://github.com/joaquimscosta/arkhe-claude-plugins/blob/main/docs/research/spring-boot-security-observability-testing.md)
 
 ---
 
