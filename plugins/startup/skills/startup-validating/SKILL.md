@@ -5,7 +5,7 @@ description: >
   and composable domain presets. Use when user runs /startup-validate command, wants to validate
   a startup idea, mentions "startup validation", "idea validation", "market validation",
   "feasibility analysis", or "go-to-market plan".
-argument-hint: "<idea>" [--preset <name>]... [--fast] [--deep] [--from <N>] [--stage <N>] [--name <slug>]
+argument-hint: "\"<idea>\" [--preset <name>]... [--fast] [--deep] [--from <N>] [--stage <N>] [--name <slug>]"
 allowed-tools: Read, Write, Glob, Grep, Agent, AskUserQuestion
 ---
 
