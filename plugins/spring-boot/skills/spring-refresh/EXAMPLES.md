@@ -14,9 +14,9 @@
 ### Research Documents
 | Document                             | Version | Updated    | Age  | Status   |
 |--------------------------------------|---------|------------|------|----------|
-| ecosystem-research.md                | 1.0.0   | 2026-03-07 | 17d  | AGING    |
-| ddd-implementation.md                | 1.0.0   | 2026-03-07 | 17d  | AGING    |
-| security-observability-testing.md    | 1.0.0   | 2026-03-07 | 17d  | AGING    |
+| spring-boot-ecosystem-research.md           | 1.0.0   | 2026-03-07 | 17d  | AGING    |
+| spring-boot-ddd-implementation.md           | 1.0.0   | 2026-03-07 | 17d  | AGING    |
+| spring-boot-security-observability-testing.md | 1.0.0   | 2026-03-07 | 17d  | AGING    |
 
 ### Skills
 | Skill                   | Target | Modified   | Research   | Drift | Status       |
@@ -44,7 +44,7 @@
 
 **What happens:**
 1. Deep-research skill refreshes all 3 Spring Boot research docs using EXA web search
-2. Research docs in `docs/research/spring-boot/` are updated with latest findings
+2. Research docs in `docs/research/spring-boot-*.md` are updated with latest findings
 3. Freshness check runs with updated data
 4. Report shows which skills now have drift against the new research
 

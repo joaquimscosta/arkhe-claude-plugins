@@ -1,9 +1,9 @@
 ---
 title: "LLM Agentic Development: Evidence-Based Pattern Catalog"
-version: "2.0.0"
+version: "2.1.0"
 status: Published
 created: 2026-02-13
-last_updated: 2026-02-13
+last_updated: 2026-03-26
 ---
 
 # LLM Agentic Development: Evidence-Based Pattern Catalog
@@ -13,7 +13,7 @@ last_updated: 2026-02-13
 
 The landscape of LLM-driven software development transformed dramatically between late 2025 and early 2026. "Vibe coding" gave way to "agentic engineering" — a discipline where AI agents operate as coordinated teams under human governance, not as magic code generators.
 
-This catalog synthesizes findings from 35+ sources (academic papers, industry reports, production case studies) into actionable patterns organized by confidence level:
+This catalog synthesizes findings from 45+ sources (academic papers, industry reports, production case studies) into actionable patterns organized by confidence level:
 
 - **PROVEN** — Backed by multiple sources and production deployments. Adopt with confidence.
 - **EMERGING** — Supported by research with limited production evidence. Pilot before full adoption.
@@ -23,24 +23,28 @@ This catalog synthesizes findings from 35+ sources (academic papers, industry re
 
 **What changed since October 2025:**
 
-| Area | October 2025 | February 2026 |
-|------|-------------|---------------|
-| **Multi-agent** | Experimental orchestration | Orchestrator-Worker is the dominant production pattern (90% perf gain) |
-| **Context** | Manual optimization | Progressive disclosure is industry standard (97% token reduction) |
-| **MCP** | Early adoption | 17,000+ servers, Linux Foundation backing, industry standard |
-| **Models** | Sonnet 4.5 / Haiku 4.5 | Opus 4.6 (1M context), tiered model selection proven (60-80% savings) |
-| **Verification** | Manual review | AST-based hallucination detection (87%), DeepEval in CI/CD |
-| **Security** | OWASP LLM Top 10 | New: OWASP Top 10 for Agentic Applications (2026) |
-| **Anti-patterns** | 6 documented | 11+ documented, with quantified industry data |
+| Area | October 2025 | February 2026 | March 2026 |
+|------|-------------|---------------|------------|
+| **Multi-agent** | Experimental orchestration | Orchestrator-Worker is the dominant production pattern (90% perf gain) | Claude Code Agent Teams ship; Swarm mode enables peer-to-peer coordination |
+| **Context** | Manual optimization | Progressive disclosure is industry standard (97% token reduction) | Context engineering emerges as a discipline (6-pillar framework); 1M context window GA |
+| **MCP** | Early adoption | 17,000+ servers, Linux Foundation backing, industry standard | MCP v1.27 SDK release; OpenAI Agents SDK v0.12 adds MCP; Google ADK v2.0 integrates; 2026 roadmap published |
+| **Models** | Sonnet 4.5 / Haiku 4.5 | Opus 4.6 (1M context), tiered model selection proven (60-80% savings) | 60% of developer work uses AI, but only 0-20% fully delegable (Anthropic) |
+| **Verification** | Manual review | AST-based hallucination detection (87%), DeepEval in CI/CD | Confident AI, Braintrust emerge as full-lifecycle eval platforms; DeepEval now 50+ metrics |
+| **Security** | OWASP LLM Top 10 | New: OWASP Top 10 for Agentic Applications (2026) | Runtime AI governance platforms mature (Zero Trust for agents, prompt firewalling) |
+| **Anti-patterns** | 6 documented | 11+ documented, with quantified industry data | 57% of teams have agents in production but lack operational boundaries (LangChain) |
 
 ### Critical Industry Data (2026)
 
 - **Anthropic**: 70-90% of code written by Claude Code; 90% of Claude Code's own codebase is AI-generated
+- **Anthropic (Mar 2026)**: Developers use AI in ~60% of work but can fully delegate only 0-20% of tasks
+- **LangChain State of AI Agents**: 57% of teams now have agents in production
+- **Gartner**: 33% of enterprise software will incorporate agentic AI by 2028
 - **Google DORA 2025**: 90% AI adoption correlates with 9% more bugs and 91% longer code reviews
 - **Veracode**: 45% of AI-generated code contains OWASP Top 10 vulnerabilities
 - **Package hallucinations**: 19.7% of LLM package recommendations are fabricated (USENIX 2025)
+- **Agentic milestone**: 16 AI agents built a complete C compiler capable of compiling the Linux kernel across x86, ARM, and RISC-V (~2B tokens, ~$20K)
 
-**Bottom line**: Agentic development delivers massive productivity gains, but only when paired with rigorous verification, context management, and human oversight.
+**Bottom line**: Agentic development delivers massive productivity gains, but only when paired with rigorous verification, context management, and human oversight. The delegation gap (60% AI usage vs 0-20% full delegation) reveals that orchestration without intent engineering remains the primary bottleneck.
 
 ---
 
@@ -109,13 +113,44 @@ Project Manager Agent
 
 **Sources:** LangGraph Production Case Studies (2025), Multi-Agent Orchestration for Enterprise (Jan 2026)
 
-### 1.4 Emerging Patterns
+### 1.4 Evaluator-Optimizer (EMERGING)
+
+A generation agent produces output, then an evaluator agent scores it against criteria and feeds improvements back in a loop until quality thresholds are met.
+
+```
+Generator Agent → Output → Evaluator Agent → Score/Feedback
+     ↑                                            │
+     └────────────── Iterate ──────────────────────┘
+```
+
+**Why it matters:** Automates the human review loop. Particularly effective for code quality, documentation, and content generation where quality criteria can be formalized.
+
+**When to use:** Tasks with measurable quality criteria, content refinement workflows, code generation with test-based validation.
+
+**Sources:** Multi-Agent Orchestration Patterns (Feb 2026), Antigravity case studies
+
+### 1.5 Agent Teams (EMERGING — March 2026)
+
+Claude Code Agent Teams, shipped as an experimental feature in February 2026, enable multiple independent Claude instances to communicate, share tasks, and work in parallel on a codebase. Unlike subagents (which report results back in isolation), Agent Teams can share findings, challenge assumptions, and coordinate directly.
+
+**Key capabilities:**
+- **TeammateTool**: Enables direct inter-agent communication
+- **Swarm mode**: Peer-to-peer coordination without a central orchestrator
+- **Shared context**: Agents can read each other's progress and findings
+
+**When to use:** Complex refactors touching multiple layers (API, database, tests, docs), large codebase migrations, tasks requiring real collaboration vs. isolated delegation.
+
+**When NOT to use:** Simple tasks, when subagent isolation is preferable, budget-constrained scenarios (multiple sessions multiply cost).
+
+**Sources:** Claude Code v2.1.76 (Mar 2026), Claude Code Agent Teams Guide (claudefast.com)
+
+### 1.6 Emerging Patterns
 
 **Swarm/Conversational (EMERGING):** Agents self-organize through natural language handoffs. OpenAI Swarm, Google A2A protocol. Limited enterprise adoption due to non-deterministic behavior.
 
 **Event-Driven/Blackboard (EMERGING):** Agents subscribe to events on a shared knowledge base. Decentralized but difficult to debug. Race conditions in shared state remain a challenge.
 
-### 1.5 Agent Design Principles
+### 1.7 Agent Design Principles
 
 **PROVEN: Lightweight agents outperform heavy agents.**
 
@@ -135,7 +170,7 @@ Project Manager Agent
 
 **Sources:** Budget-Aware Tool-Use (arXiv, Nov 2025), Claude Code Agent Engineering Best Practices
 
-### 1.6 Model Selection Strategy
+### 1.8 Model Selection Strategy
 
 **PROVEN: Tiered model assignment saves 60-80% while maintaining quality.**
 
@@ -155,7 +190,7 @@ Project Manager Agent
 
 **Sources:** Tactical Model Selection (ClaudeLog, Jan 2026), Opus 4.6 Release (Jan 2026)
 
-### 1.7 Single-Agent vs Multi-Agent Decision
+### 1.9 Single-Agent vs Multi-Agent Decision
 
 **Use single-agent when:**
 - Task is sequential and stateful
@@ -187,11 +222,14 @@ Project Manager Agent
 
 **Claude Code evolution (Dec 2025):** Improved by *reserving more free context*, not using more. Auto-compaction triggers at ~64% usage, not at capacity.
 
+**Context engineering as a discipline (Mar 2026):** The emerging "Six Pillars" framework formalizes context management: (1) strategic loading over upfront dumping, (2) memory hierarchy (CLAUDE.md, rules, skills), (3) session lifecycle management, (4) tool context budgeting, (5) compaction timing, (6) cross-session persistence. This represents the maturation from ad-hoc "prompt engineering" to systematic "context engineering."
+
 **Production recommendations:**
 1. Reserve 30-40% context buffer for reasoning quality
 2. Place critical information at context boundaries (start/end)
 3. Auto-compact at 60% utilization, not 90%
 4. Monitor effective context, not raw capacity
+5. Watch token percentage in status bar; restart sessions at 80% for complex tasks
 
 ### 2.2 Progressive Disclosure Architecture (PROVEN)
 
@@ -224,8 +262,19 @@ Project Manager Agent
 **Timeline:**
 - Nov 2024: Anthropic open-sources MCP
 - Mar 2025: OpenAI officially adopts MCP
-- End 2025: Donated to Linux Foundation
-- Early 2026: 17,000+ servers publicly listed
+- End 2025: Donated to Linux Foundation's Agentic AI Foundation (AAIF)
+- Jan 2026: OpenAI and Block co-donate alongside Anthropic
+- Mar 2026: TypeScript SDK v1.27.1, Python SDK v1.26 released; 2026 roadmap published
+
+**Cross-framework adoption (Mar 2026):**
+- **OpenAI Agents SDK v0.12.x**: Native MCP client integration
+- **Google ADK v2.0**: Task API with MCP support
+- **Enterprise adoption**: CData Arc v26 adds MCP-powered AI workflows
+
+**2026 MCP roadmap priorities** (blog.modelcontextprotocol.io, Mar 2026):
+- Formal governance via Spec Enhancement Proposals (SEPs) and Working Groups
+- Focus on production pain points: reliability, auth, observability
+- Moving beyond local tool wiring to production agent workflows at scale
 
 **Best practices:**
 - **Single responsibility** per server (one domain/auth boundary)
@@ -354,14 +403,18 @@ Project Manager Agent
 
 ### 3.4 Evaluation Frameworks
 
-**Framework comparison for CI/CD integration:**
+**Framework comparison for CI/CD integration (updated Mar 2026):**
 
 | Framework | Best For | Integration | Key Metrics |
 |-----------|----------|-------------|-------------|
-| **DeepEval** | Unit testing LLMs | Native pytest | 14+ metrics (faithfulness, hallucination, bias) |
+| **DeepEval** | Unit testing LLMs | Native pytest | 50+ metrics (faithfulness, hallucination, bias, safety) |
+| **Confident AI** | Full-lifecycle eval | UI + CI/CD | 50+ research-backed metrics, cross-functional workflows |
+| **Braintrust** | Production monitoring + eval | Strong | Full eval lifecycle, release enforcement |
 | **RAGAS** | RAG evaluation | Moderate | 4 core metrics (faithfulness, precision, recall, relevancy) |
-| **TruLens** | Runtime monitoring | Limited | Faithfulness, relevance |
 | **LangSmith** | Tracing + eval | Strong | Custom metrics (proprietary) |
+| **Arize Phoenix** | Observability + eval | Strong | Tracing, retrieval analysis |
+
+**Key shift (Mar 2026):** The evaluation landscape has matured from developer-only tools to cross-functional platforms. Confident AI and Braintrust now enable PMs, QA, and domain experts to own evaluation alongside engineers — addressing the blind spot where single engineers picked metrics in isolation.
 
 **Retrieval poisoning detection** (AIMultiple, Dec 2025):
 - DeepEval: 91% top-1 accuracy
@@ -370,7 +423,8 @@ Project Manager Agent
 
 **Recommended stack:**
 - **Startups**: DeepEval + GitHub Actions
-- **Enterprises**: DeepEval + RAGAS + custom validators
+- **Growth teams**: Braintrust (covers eval through production monitoring)
+- **Enterprises**: Confident AI + RAGAS + custom validators (cross-functional workflows)
 
 ### 3.5 Test-Driven Generation
 
@@ -558,6 +612,8 @@ In multi-service or multi-agent systems, agents independently implement the same
 
 **Core insight (Sean Grove, OpenAI):** "Writing specifications is the new superpower. The person who communicates best is most valuable."
 
+**The delegation gap (Mar 2026):** Anthropic's 2026 Agentic Coding Trends Report quantifies this: developers use AI in ~60% of work but can fully delegate only 0-20% of tasks. The gap is not a model limitation — it is an *intent specification* gap. "Orchestration without intent is just expensive guessing" (Pathmode, Mar 2026). This validates SDD as the key lever for increasing AI delegation rates.
+
 ### 5.2 Three Tiers of Specification Rigor
 
 | Tier | Description | When to Use |
@@ -600,7 +656,7 @@ A specification is ready when:
 
 ### 6.1 OWASP Top 10 for Agentic Applications (2026)
 
-**New framework, peer-reviewed by 500+ security experts:**
+**New framework, peer-reviewed by 100+ security researchers, endorsed by Microsoft, NVIDIA, AWS, and GoDaddy:**
 
 | Rank | Risk | Description |
 |------|------|-------------|
@@ -615,7 +671,21 @@ A specification is ready when:
 | ASI09 | Rogue Agents | Agent operates outside intended boundaries |
 | ASI10 | Insufficient Observability | Can't detect or respond to incidents |
 
-### 6.2 Permission Models & Hooks
+### 6.2 Runtime AI Governance (EMERGING — Mar 2026)
+
+**A new category of security tooling has emerged for production LLM/agent systems.**
+
+Runtime AI governance platforms provide:
+- **Prompt firewalling**: Detect and block prompt injection at inference time
+- **Zero Trust for agents**: Verify agent identity and permissions per action, not per session
+- **Behavioral monitoring**: Detect anomalous agent behavior patterns in real-time
+- **Continuous compliance**: Automated policy enforcement against regulatory requirements
+
+**Key insight:** Static security measures (pre-deployment scanning, code review) are necessary but insufficient. Agents operating autonomously in production require runtime controls that mirror network security's Zero Trust architecture — verify every action, assume breach.
+
+**Sources:** AccuKnox Runtime AI Governance (Feb 2026), Security Boulevard LLM Security Guide (Mar 2026)
+
+### 6.3 Permission Models & Hooks
 
 **Claude Code permission evaluation order (PROVEN):**
 1. **Hooks** (beforeToolUse, afterToolUse) — Code-based decisions, most flexible
@@ -628,7 +698,7 @@ A specification is ready when:
 2. Require approval for writes and bash commands
 3. Lock allow/deny lists in version control with PR-based changes
 
-### 6.3 Security Checklist
+### 6.4 Security Checklist
 
 **Pre-deployment:**
 - [ ] Permission model with deny-by-default
@@ -815,7 +885,7 @@ This repository implements many patterns from the catalog. Here's how each maps 
 
 ---
 
-## Appendix C: Research References
+## References
 
 ### Academic Papers (2024-2026)
 
@@ -833,11 +903,11 @@ This repository implements many patterns from the catalog. Here's how each maps 
 ### Industry Reports & Documentation
 
 11. Anthropic — "How we built our multi-agent research system" (June 2025)
-12. Anthropic — "2026 Agentic Coding Trends Report"
+12. Anthropic — "2026 Agentic Coding Trends Report" (case studies: Rakuten, CRED, TELUS, Zapier)
 13. Google — "Agent2Agent Protocol (A2A)" (April 2025)
 14. Google — "Developer's guide to multi-agent patterns in ADK" (Dec 2025)
 15. Microsoft — Azure AI Agent Design Patterns (July 2025)
-16. OWASP — "Top 10 for Agentic Applications for 2026" (Dec 2025)
+16. OWASP — "Top 10 for Agentic Applications for 2026" (Dec 2025, endorsed by Microsoft, NVIDIA, AWS, GoDaddy)
 17. OWASP — LLM Top 10: LLM06:2025 Excessive Agency
 18. Spotify Engineering — "Background Coding Agents: Predictable Results Through Strong Feedback Loops" (Dec 2025)
 19. Thoughtworks — "Spec-driven development: Unpacking 2025's new practices"
@@ -845,27 +915,39 @@ This repository implements many patterns from the catalog. Here's how each maps 
 21. Google DORA 2025 Report — AI adoption impact metrics
 22. Veracode 2025 Report — AI-generated code vulnerability rates
 23. Composio — "Why AI Agent Pilots Fail in Production" (2025)
+24. LangChain — "State of AI Agents" report (57% in production)
+25. Gartner — 33% of enterprise software to incorporate agentic AI by 2028
 
 ### Tools & Frameworks
 
-24. Claude Context MCP — github.com/zilliztech/claude-context
-25. DeepEval — LLM evaluation framework (14+ metrics)
-26. RAGAS — RAG-specific evaluation metrics
-27. Model Context Protocol — modelcontextprotocol.io
-28. LangGraph / CrewAI / AutoGen — Multi-agent frameworks
-29. NeMo Guardrails — NVIDIA open-source guardrails
+26. Claude Context MCP — github.com/zilliztech/claude-context
+27. DeepEval — LLM evaluation framework (50+ metrics as of Mar 2026)
+28. Confident AI — Full-lifecycle LLM evaluation platform (50+ research-backed metrics)
+29. Braintrust — Production monitoring + eval lifecycle platform
+30. RAGAS — RAG-specific evaluation metrics
+31. Model Context Protocol — modelcontextprotocol.io (TypeScript SDK v1.27.1, Python SDK v1.26)
+32. LangGraph / CrewAI / AutoGen — Multi-agent frameworks
+33. OpenAI Agents SDK v0.12.x — Native MCP integration
+34. Google ADK v2.0 — Task API with MCP support
+35. NeMo Guardrails — NVIDIA open-source guardrails
+36. AccuKnox — Runtime AI governance and Zero Trust for agents
 
 ### Practitioner Sources
 
-30. ClaudeLog — "Tactical Model Selection" (Jan 2026)
-31. paddo.dev — "Claude Code Hooks: Guardrails That Actually Work" (2026)
-32. williamzujkowski — "From 150K to 2K Tokens: Progressive Context Loading"
-33. Kili Technology — "HITL, HOTL, and LLM-as-a-Judge" (Feb 2026)
-34. Encord — "The Ultimate Human-in-the-Loop Guide for 2026"
-35. Temporal — "HITL for AI Agents: Patterns and Best Practices"
-36. "The Architecture of Scale: Sub-Agents" (Feb 2026)
-37. Sec-Context — AI Code Security Anti-Patterns (150+ sources)
-38. Agentic Coding Handbook — "Test-Driven Development" (tweag.io)
+37. ClaudeLog — "Tactical Model Selection" (Jan 2026)
+38. paddo.dev — "Claude Code Hooks: Guardrails That Actually Work" (2026)
+39. williamzujkowski — "From 150K to 2K Tokens: Progressive Context Loading"
+40. Kili Technology — "HITL, HOTL, and LLM-as-a-Judge" (Feb 2026)
+41. Encord — "The Ultimate Human-in-the-Loop Guide for 2026"
+42. Temporal — "HITL for AI Agents: Patterns and Best Practices"
+43. "The Architecture of Scale: Sub-Agents" (Feb 2026)
+44. Sec-Context — AI Code Security Anti-Patterns (150+ sources)
+45. Agentic Coding Handbook — "Test-Driven Development" (tweag.io)
+46. Pathmode — "Orchestration Without Intent Is Just Expensive Guessing" (Mar 2026)
+47. claudefast.com — "Context Engineering: The Six Pillars Framework" (Mar 2026)
+48. MCP Blog — "The 2026 MCP Roadmap" (Mar 2026)
+49. heyuan110.com — "Multi-Agent Orchestration: 4 Patterns That Actually Work" (Feb 2026)
+50. harness-engineering.ai — "Production AI Agent Deployment: The Complete Operations Guide" (Mar 2026)
 
 ---
 
@@ -873,7 +955,11 @@ This repository implements many patterns from the catalog. Here's how each maps 
 
 **A2A (Agent-to-Agent)** — Google's protocol for cross-framework agent communication.
 
+**Agent Teams** — Multiple independent AI agent instances that communicate, share tasks, and coordinate directly (vs. subagents that report back in isolation). Shipped as Claude Code experimental feature in Feb 2026.
+
 **AST (Abstract Syntax Tree)** — Tree representation of source code structure, used for deterministic hallucination detection.
+
+**Context Engineering** — The discipline of systematically managing what information an AI agent sees and when, encompassing strategic loading, memory hierarchy, session lifecycle, tool budgeting, compaction timing, and cross-session persistence. Emerged as a formal discipline in early 2026.
 
 **Context Rot** — Measurable quality degradation as context window fills, even within technical limits.
 
@@ -892,6 +978,8 @@ This repository implements many patterns from the catalog. Here's how each maps 
 **PBT (Property-Based Testing)** — Testing by validating high-level properties rather than specific input-output pairs.
 
 **Progressive Disclosure** — Loading information on-demand rather than upfront; the defining context pattern of 2026.
+
+**Runtime AI Governance** — Security platforms providing prompt firewalling, Zero Trust for agents, behavioral monitoring, and continuous compliance at inference time. Emerged as a category in early 2026.
 
 **RAG (Retrieval-Augmented Generation)** — Enhancing LLM with verified external knowledge retrieval.
 

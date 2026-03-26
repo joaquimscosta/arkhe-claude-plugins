@@ -3,14 +3,14 @@ title: "Java/Kotlin Quality Tools Evaluation"
 version: "1.0.0"
 status: Published
 created: 2026-02-13
-last_updated: 2026-02-13
+last_updated: 2026-03-26
 ---
 
 # Java/Kotlin Quality Tools Evaluation
 
 ## A Practitioner's Guide for Modern JVM Projects
 
-> **Java baseline**: 21+ | **Build tools**: Gradle 9.x / Maven 3.9+
+> **Java baseline**: 21+ | **Kotlin**: 2.1-2.3 | **Build tools**: Gradle 9.x (9.4.1 latest) / Maven 3.9+
 >
 > This guide evaluates 19 tools across four categories for Java and Kotlin teams building
 > production systems with Spring Boot. Every tool listed is free or has a meaningful free tier.
@@ -24,10 +24,11 @@ last_updated: 2026-02-13
 
 | Tool | Category | Version | Java 21 | Kotlin | Spring Boot 3/4 | Gradle | Maven | Cost | Stars |
 |------|----------|---------|---------|--------|-----------------|--------|-------|------|-------|
-| **Error Prone** | Static Analysis | 2.47.0 | Required | No | Yes | Yes | Yes | Free | 7.1k |
-| **SpotBugs** | Static Analysis | 4.9.8 | Yes | Via bytecode | Yes | Yes | Yes | Free | 3.8k |
-| **Detekt** | Static Analysis | 1.23.8 / 2.0.0-alpha.2 | N/A | Native | Yes | Yes | Yes | Free | 6.8k |
+| **Error Prone** | Static Analysis | 2.48.0 | Required | No | Yes | Yes | Yes | Free | 7.1k |
+| **SpotBugs** | Static Analysis | 4.9.6 | Yes | Via bytecode | Yes | Yes | Yes | Free | 3.8k |
+| **Detekt** | Static Analysis | 1.23.8 / 2.0.0-alpha.2 | N/A | Native | Yes | Yes | Yes | Free | 6.9k |
 | **ktlint** | Static Analysis | 1.8.0 | N/A | Native | Yes | Yes | Yes | Free | 5.9k |
+| **Qodana** | Static Analysis | 2026.1 | Yes | Yes | Yes | Yes | Yes | Freemium | N/A |
 | **SonarQube** | Static Analysis | 26.1.0 | Yes | Yes | Yes | Yes | Yes | Freemium | N/A |
 | **JaCoCo** | Testing & Quality | 0.8.14 | Yes | Yes | Yes | Yes | Yes | Free | 4.5k |
 | **PIT** | Testing & Quality | 1.22.0 | Yes | Yes (plugin) | Yes | Yes | Yes | Freemium | 1.8k |
@@ -35,7 +36,7 @@ last_updated: 2026-02-13
 | **Testcontainers** | Testing & Quality | 2.0.3 | Yes | Yes | Native | Yes | Yes | Free | 8.6k |
 | **Spring Cloud Contract** | Testing & Quality | 4.1.x | Yes | Yes | Native | Yes | Yes | Free | N/A |
 | **Pact** | Testing & Quality | 4.6.x | Yes | Yes | Yes | Yes | Yes | Freemium | N/A |
-| **Gradle Cache** | Build & CI/CD | 9.3.1 | Yes | Yes | Yes | Native | N/A | Free | N/A |
+| **Gradle Cache** | Build & CI/CD | 9.4.1 | Yes | Yes | Yes | Native | N/A | Free | N/A |
 | **GitHub Actions** | Build & CI/CD | N/A | Yes | Yes | Yes | Yes | Yes | Freemium | N/A |
 | **OpenRewrite** | Build & CI/CD | 8.71.0 | Yes | Partial | Yes | Yes | Yes | Free | N/A |
 | **Renovate** | Build & CI/CD | 43.x | N/A | N/A | N/A | Yes | Yes | Free | 20.7k |
@@ -99,7 +100,7 @@ last_updated: 2026-02-13
 ### 1.1 Error Prone
 
 **What**: Compile-time static analysis tool that augments the Java compiler with 500+ bug pattern checks
-**Site**: [errorprone.info](https://errorprone.info/) | **Version**: 2.47.0 (Feb 2025) | **License**: Apache 2.0
+**Site**: [errorprone.info](https://errorprone.info/) | **Version**: 2.48.0 (Feb 2026) | **License**: Apache 2.0
 **Compat**: Java 21 **Required**, Kotlin No, Spring Boot 3/4 Yes, Gradle Yes, Maven Yes
 
 #### Why It Matters
@@ -129,7 +130,7 @@ plugins {
 }
 
 dependencies {
-    errorprone("com.google.errorprone:error_prone_core:2.47.0")
+    errorprone("com.google.errorprone:error_prone_core:2.48.0")
 }
 
 tasks.withType<JavaCompile>().configureEach {
@@ -156,7 +157,7 @@ tasks.withType<JavaCompile>().configureEach {
             <path>
                 <groupId>com.google.errorprone</groupId>
                 <artifactId>error_prone_core</artifactId>
-                <version>2.47.0</version>
+                <version>2.48.0</version>
             </path>
         </annotationProcessorPaths>
     </configuration>
@@ -172,10 +173,17 @@ tasks.withType<JavaCompile>().configureEach {
 | `disable("UnusedVariable")` | Suppress noisy checks | All enabled |
 | `option("NullAway:AnnotatedPackages", "com.example")` | NullAway configuration | None |
 
+#### Recent Updates [Updated 2026-03]
+
+- **v2.48.0** (Feb 2026): Added `@`-file support for passing flags, new checks `UnnecessarySemicolon` and `AvoidValueSetter`
+- **v2.47.0** (Feb 2026): New checks `UnnamedVariable` (rename unused vars to `_`), `RefactorSwitch` (simplify arrow switches), `InterruptedInCatchBlock`
+- **v2.46.0** (Jan 2026): API encapsulation of internal javac references, requires `-XDaddTypeAnnotationsToSymbol=true` flag
+- **JDK 21 minimum** now enforced; JDK 17 support being dropped (tracked in issue #4867)
+
 #### Known Limitations
 
 - **Requires JDK 21+** to run, even when targeting Java 8 (`--release 8`)
-- Java 23 support still in progress (tracked in issue #4415)
+- JDK 17 support being phased out; upgrade to JDK 21+ recommended
 - Cannot analyze Kotlin source code directly
 - Adds 10-30% to compile time
 - JDK 16+ requires `--add-exports` flags for some checks
@@ -190,7 +198,7 @@ tasks.withType<JavaCompile>().configureEach {
 ### 1.2 SpotBugs
 
 **What**: Successor to FindBugs; analyzes compiled Java bytecode to detect 400+ bug patterns
-**Site**: [spotbugs.readthedocs.io](https://spotbugs.readthedocs.io/) | **Version**: 4.9.8 (Oct 2025) | **License**: LGPL 2.1
+**Site**: [spotbugs.readthedocs.io](https://spotbugs.readthedocs.io/) | **Version**: 4.9.6 (Sep 2025) | **License**: LGPL 2.1
 **Compat**: Java 21 Yes, Kotlin Via bytecode, Spring Boot 3/4 Yes, Gradle Yes, Maven Yes
 
 #### Why It Matters
@@ -220,7 +228,7 @@ plugins {
 }
 
 spotbugs {
-    toolVersion.set("4.9.8")
+    toolVersion.set("4.9.6")
     effort.set(Effort.MAX)
     reportLevel.set(Confidence.LOW)
 }
@@ -260,6 +268,13 @@ dependencies {
 | `reportLevel` | Minimum confidence (LOW / MEDIUM / HIGH) | `MEDIUM` |
 | `excludeFilter` | XML file listing exclusions | None |
 | `onlyAnalyze` | Restrict to specific packages | All |
+
+#### Recent Updates [Updated 2026-03]
+
+- **v4.9.6** (Sep 2025): Fixed exception with `jakarta.servlet.http.HttpServletRequest` method calls
+- **Unreleased (master)**: Migrating internal annotations from `javax.annotation` to `jakarta.annotation`, new detector `FindImproperSynchronization`, new bug type `NCR_NOT_PROPERLY_CHECKED_READ`, detection of `sun.misc.Unsafe` / `jdk.internal.misc.Unsafe` usage
+- SpotBugs now recognized as the built-in SAST analyzer for JVM languages in GitLab CI/CD
+- Find Security Bugs plugin covers 144 vulnerability types with 826+ API signatures
 
 #### Known Limitations
 
@@ -303,7 +318,7 @@ Detekt is the only static analysis tool that natively understands Kotlin constru
 | Ongoing Maintenance | **Medium** - Baseline management, rule tuning |
 | Quality Impact | **High** - Catches coroutine misuse, complexity, code smells |
 | Cost | **Free** |
-| Ecosystem Maturity | **Strong** - 6.8k stars, 300+ contributors |
+| Ecosystem Maturity | **Strong** - 6.9k stars, 300+ contributors |
 
 #### Quick Start - Gradle
 
@@ -346,12 +361,19 @@ dependencies {
 | `allRules` | Enable all available rules | `false` |
 | `detekt-formatting` plugin | Integrates ktlint rules into Detekt | Not included |
 
+#### Recent Updates [Updated 2026-03]
+
+- **Detekt 2.0.0-alpha.2** (Jan 2026): Built against Kotlin 2.3.0, Gradle 9.3.0, AGP 9.0.0, tested against JDK 25. New rules: `UnnecessaryInitOnArray`, `UnnecessaryFullyQualifiedName`. Renamed `documentation` ruleset to `comments`. Bundled ktlint upgraded to 1.8.0 with new `ThenSpacingRule`.
+- **Detekt 1.23.8** (Feb 2025): Stable release built against Kotlin 2.0.21, Gradle 8.10.2, AGP 8.8.0. Multiple bug fixes including `MatchingDeclarationName` platform suffix support and `ThrowingExceptionsWithoutMessageOrCause` false positive fix.
+- Detekt 2.0 requires `android.newDsl=false` and `android.builtInKotlin=false` in `gradle.properties` for AGP 9 compatibility
+
 #### Known Limitations
 
-- 2.0.0 is still alpha (stable at 1.23.8)
+- 2.0.0 is still alpha (stable at 1.23.8); breaking changes expected before GA
 - Cannot analyze Java code
 - Slower than ktlint (deep analysis vs syntax-level)
 - Custom rule authoring requires Detekt API knowledge
+- Detekt 2.0 alpha requires Kotlin 2.3.0+ and Gradle 9.3.0+
 
 #### Alternatives
 
@@ -502,6 +524,20 @@ Run: `mvn clean verify sonar:sonar -Dsonar.token=$SONAR_TOKEN`
 - SonarScanner Gradle plugin had configuration cache issues (resolved in recent versions)
 - Quality profiles require initial tuning to avoid noise
 
+#### Emerging Alternative: JetBrains Qodana [Updated 2026-03]
+
+**Qodana** has emerged as a serious SonarQube competitor, particularly for JetBrains-centric teams. It runs the exact IntelliJ inspection engine in CI/CD pipelines, guaranteeing identical results between IDE and CI. Key differentiators:
+
+- **3,000+ inspections** across 60+ languages, including deep Kotlin analysis
+- **Configuration as code** with version-controlled inspection profiles
+- **$6/contributor/month** (vs SonarQube's LOC-based pricing)
+- **Perfect IDE consistency**: same inspections in IntelliJ IDEA and CI/CD
+- Community tier available for open-source projects
+
+**Choose SonarQube** for: broadest language coverage (6,500+ rules, 35+ languages), vendor-neutral IDE support (SonarLint for VS Code, Eclipse, Visual Studio), mature compliance reporting (OWASP/CWE/SANS), portfolio management.
+
+**Choose Qodana** for: JetBrains ecosystem teams, lower cost, configuration-as-code workflows, perfect IDE/CI parity, Kotlin-first analysis.
+
 ### Static Analysis Decision Guide
 
 ```
@@ -526,8 +562,8 @@ Need centralized quality tracking?
 ### 2.1 JaCoCo
 
 **What**: Java code coverage library using bytecode instrumentation via Java agent
-**Site**: [jacoco.org](https://www.jacoco.org/) | **Version**: 0.8.14 (Oct 2025) | **License**: EPL 2.0
-**Compat**: Java 21 Yes (up to Java 25), Kotlin Yes (excellent filtering), Spring Boot 3/4 Yes, Gradle Yes, Maven Yes
+**Site**: [jacoco.org](https://www.jacoco.org/) | **Version**: 0.8.14 (Oct 2025) / 0.8.15-SNAPSHOT | **License**: EPL 2.0
+**Compat**: Java 21 Yes (up to Java 26), Kotlin Yes (excellent filtering), Spring Boot 3/4 Yes, Gradle Yes, Maven Yes
 
 #### Why It Matters
 
@@ -537,8 +573,8 @@ JaCoCo is the uncontested standard for JVM code coverage. It provides line, bran
 
 | Criterion | Rating |
 |-----------|--------|
-| Java Compatibility | **Strong** - Java 25 official, Java 26 experimental |
-| Kotlin Support | **Strong** - Advanced filtering for coroutines, inline functions |
+| Java Compatibility | **Strong** - Java 26 official (0.8.15), Java 27 experimental |
+| Kotlin Support | **Strong** - Advanced filtering for coroutines, inline functions, elvis/safe-call operators |
 | Spring Boot Integration | **Strong** - Works with all Spring Boot versions |
 | Setup Effort | **Low** - Built-in Gradle plugin |
 | Ongoing Maintenance | **Low** - Minimal configuration needed |
@@ -591,10 +627,15 @@ tasks.jacocoTestReport {
 </plugin>
 ```
 
+#### Recent Updates [Updated 2026-03]
+
+- **0.8.15-SNAPSHOT** (Mar 2026): Official Java 26 support, experimental Java 27 class files, improved Kotlin SMAP processing in synthetic classes, compatibility method filtering for Kotlin interface functions, performance fix with `BufferedOutputStream` for agent writes
+- **0.8.14** (Oct 2025): Official Java 25 support, experimental Java 26, extensive Kotlin filtering improvements for default arguments (arg 33+), elvis operator, safe-call operators, and `suspendCoroutineUninterceptedOrReturn` intrinsic
+
 #### Known Limitations
 
 - Line coverage can be misleading without branch coverage
-- Kotlin coroutine bytecode inflates uncovered branches (mitigated in recent versions)
+- Kotlin coroutine bytecode inflates uncovered branches (significantly mitigated in 0.8.14+)
 - Cannot measure coverage of native methods
 
 ---
@@ -682,12 +723,19 @@ pitest {
 - **Optimization**: Use incremental mode (Git integration), parallel threads, and scoped execution
 - **Kotlin**: MUST use `pitest-kotlin` plugin to filter junk mutations from compiler artifacts
 
+#### Recent Updates [Updated 2026-03]
+
+- **gradle-pitest-plugin 1.19.0-rc.3** (Jan 2026): Gradle 9 compatibility, classpath file used by default (fixes long classpath issues on Windows), improved additional classpath inputs mapping. Final stable release pending.
+- **PIT 1.22.0**: Core engine, bundled as default with gradle-pitest-plugin 1.19.0-rc.3
+- Gradle 9 support is functional via RC; stable release of 1.19.0 expected soon
+
 #### Known Limitations
 
 - Full mutation runs on large Spring Boot apps can take hours
 - Spring context startup overhead amplified per mutation
 - Without `pitest-kotlin`, Kotlin projects generate many false surviving mutations
 - ArcMutate (commercial) reduces runtime by 50-80% for large codebases
+- Gradle pitest plugin 1.19.0 still in RC; use RC for Gradle 9 projects
 
 ---
 
@@ -916,7 +964,7 @@ What do you need?
 ### 3.1 Gradle Build Cache & Configuration Cache
 
 **What**: Gradle's build acceleration features that cache task outputs and configuration phase results
-**Site**: [gradle.org](https://gradle.org/) | **Version**: 9.3.1 (Jan 2026) | **License**: Apache 2.0
+**Site**: [gradle.org](https://gradle.org/) | **Version**: 9.4.1 (Mar 2026) | **License**: Apache 2.0
 **Compat**: Java 21 Yes, Kotlin Yes, Spring Boot 3/4 Yes, Gradle Native, Maven N/A
 
 #### Why It Matters
@@ -955,10 +1003,16 @@ org.gradle.jvmargs=-Xmx4g -XX:MaxMetaspaceSize=1g
 | Incremental build (cache hit) | 5 minutes | 10-20 seconds |
 | Multi-module CI pipeline | 15 minutes | 1-2 minutes |
 
+#### Recent Updates [Updated 2026-03]
+
+- **Gradle 9.4.1** (Mar 2026): Java 26 support, non-class-based test support (Cucumber features, custom engines), expanded PMD output formats, high-resolution progress bars with native terminal integration, Bearer token authentication for Wrapper
+- **Gradle 9.0.0** (Jul 2025): Configuration cache became preferred execution mode, Kotlin 2 and Groovy 4, Java 17+ minimum to run, Semantic Versioning adopted, reproducible archives by default, much improved Kotlin DSL compilation avoidance
+- Plugin ecosystem has largely adapted to Gradle 9; migration from 8.x reported as smooth by most teams
+
 #### Known Limitations
 
-- ~15-20% of plugins still incompatible with configuration cache
-- Remote build cache requires infrastructure (Gradle Enterprise or HTTP server)
+- ~10-15% of plugins still incompatible with configuration cache (improved from ~15-20%)
+- Remote build cache requires infrastructure (Develocity or HTTP server)
 - CI requires encryption key for configuration cache (`GRADLE_ENCRYPTION_KEY` secret)
 - Cache debugging can be complex (use Build Scans)
 
@@ -1525,7 +1579,7 @@ java {
 
 // Error Prone (Java compile-time)
 dependencies {
-    errorprone("com.google.errorprone:error_prone_core:2.47.0")
+    errorprone("com.google.errorprone:error_prone_core:2.48.0")
 }
 
 tasks.withType<JavaCompile>().configureEach {
@@ -1534,7 +1588,7 @@ tasks.withType<JavaCompile>().configureEach {
 
 // SpotBugs (bytecode analysis)
 spotbugs {
-    toolVersion.set("4.9.8")
+    toolVersion.set("4.9.6")
     effort.set(Effort.MAX)
 }
 
@@ -1658,7 +1712,7 @@ dependencies {
                         <path>
                             <groupId>com.google.errorprone</groupId>
                             <artifactId>error_prone_core</artifactId>
-                            <version>2.47.0</version>
+                            <version>2.48.0</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
@@ -1847,7 +1901,7 @@ jobs:
 ### Research Sources
 
 All tool evaluations are based on:
-- Official documentation and release notes (as of February 2026)
+- Official documentation and release notes (as of March 2026)
 - GitHub repository activity and issue trackers
 - Community benchmarks and comparison articles
 - Direct configuration testing
@@ -1907,7 +1961,7 @@ All tool evaluations are based on:
 |-----------|-------|-------------|
 | [google/error-prone](https://github.com/google/error-prone) | 7.1k | Active |
 | [spotbugs/spotbugs](https://github.com/spotbugs/spotbugs) | 3.8k | Active |
-| [detekt/detekt](https://github.com/detekt/detekt) | 6.8k | Active |
+| [detekt/detekt](https://github.com/detekt/detekt) | 6.9k | Active |
 | [pinterest/ktlint](https://github.com/pinterest/ktlint) | 5.9k | Active |
 | [jacoco/jacoco](https://github.com/jacoco/jacoco) | 4.5k | Active |
 | [hcoles/pitest](https://github.com/hcoles/pitest) | 1.8k | Active |

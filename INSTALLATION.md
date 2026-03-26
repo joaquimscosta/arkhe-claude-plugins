@@ -83,8 +83,8 @@ Multi-purpose documentation toolkit.
 **Install**: `/plugin install doc@arkhe-claude-plugins`
 
 **Components**:
-- 6 skills: `doc-coauthoring` (auto-invoked for documentation), `diagramming` (auto-invoked for diagrams), `code-explanation`, `adr`, `jd-docs`, `rfc`
-- 3 commands: `/code-explain`, `/diagram`, `/rfc`
+- 8 skills: `doc-coauthoring` (auto-invoked for documentation), `diagramming` (auto-invoked for diagrams), `code-explanation`, `adr`, `jd-docs`, `diataxis`, `rfc`, `doc-freshness` (auto-invoke)
+- 4 commands: `/code-explain`, `/diagram`, `/rfc`, `/health`
 
 ---
 
@@ -200,9 +200,9 @@ Product management, roadmap analysis, and solution architecture for any project.
 
 **Components**:
 - 3 agents: `product-manager`, `system-architect`, `roadmap-analyst`
-- 4 skills: `pm` (auto-invoke), `roadmap` (auto-invoke), `architect` (auto-invoke), `doc-freshness` (auto-invoke)
+- 3 skills: `pm` (auto-invoke), `roadmap` (auto-invoke), `architect` (auto-invoke)
 
-**Use for:** User stories, scope assessments, prioritization, project status, gap analysis, risk mapping, module design, API design, boundary analysis, documentation freshness detection.
+**Use for:** User stories, scope assessments, prioritization, project status, gap analysis, risk mapping, module design, API design, boundary analysis.
 
 ---
 

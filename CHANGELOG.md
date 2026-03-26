@@ -5,6 +5,23 @@ All notable changes to the Arkhe Claude Plugins project will be documented in th
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+#### Doc Plugin (1.11.0)
+
+- **Moved `doc-freshness` skill from roadmap plugin** to doc plugin for better domain alignment
+- **New `/doc:health` command** — unified entry point for documentation health checks
+- **Tiered scanning** — basic checks (links, git age) for all `.md` files; deep checks (version drift, `last_updated` accuracy, cross-doc consistency) for frontmatter-tracked docs
+- New `detect_doc_tier()` and `extract_frontmatter()` utilities in `shared.py`
+- New `check_last_updated()` function in `version_checker.py`
+- Scanner JSON output now includes `"tier"` per doc and `"tier_counts"` in summary
+
+#### Roadmap Plugin
+
+- **Removed `doc-freshness` skill** — moved to doc plugin (use `/doc:health` instead of `/roadmap:doc-freshness`)
+
 ## [1.14.0] - 2026-03-23
 
 ### Added

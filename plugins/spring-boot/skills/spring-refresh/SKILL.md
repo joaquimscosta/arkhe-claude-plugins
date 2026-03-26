@@ -50,9 +50,9 @@ python3 ${CLAUDE_SKILL_DIR}/scripts/scan_skill_freshness.py --format json ${CLAU
 1. Run `check` mode first to identify drift status for the specified skill.
 
 2. Read the research docs that map to this skill:
-   - `ecosystem-research.md` → scanner, verify, web-api, data-ddd, modulith, domain-driven-design
-   - `ddd-implementation.md` → domain-driven-design, data-ddd, web-api, modulith
-   - `security-observability-testing.md` → security, observability, testing
+   - `spring-boot-ecosystem-research.md` → scanner, verify, web-api, data-ddd, modulith, domain-driven-design
+   - `spring-boot-ddd-implementation.md` → domain-driven-design, data-ddd, web-api, modulith
+   - `spring-boot-security-observability-testing.md` → security, observability, testing
 
 3. Read the skill's current content: SKILL.md, EXAMPLES.md, TROUBLESHOOTING.md, and all files in references/.
 
@@ -86,5 +86,5 @@ python3 ${CLAUDE_SKILL_DIR}/scripts/scan_skill_freshness.py --format json ${CLAU
 
 - [EXAMPLES.md](EXAMPLES.md) for usage examples
 - [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for common issues
-- Research docs (local): `docs/research/spring-boot/`
-- [Research docs on GitHub](https://github.com/joaquimscosta/arkhe-claude-plugins/tree/main/docs/research/spring-boot)
+- Research docs (local): `docs/research/spring-boot-*.md`
+- [Research docs on GitHub](https://github.com/joaquimscosta/arkhe-claude-plugins/tree/main/docs/research)

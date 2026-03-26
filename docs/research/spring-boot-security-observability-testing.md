@@ -3,12 +3,16 @@ title: "Spring Boot 4: Security, Observability, and Testing"
 version: "1.0.0"
 status: Published
 created: 2025-12-20
-last_updated: 2025-12-20
+last_updated: 2026-03-26
 ---
 
 # Spring Boot 4 implementation skills: Security, Observability, and Testing
 
-**Spring Boot 4.0** introduces significant breaking changes alongside powerful new capabilities across its security, observability, and testing stacks. The **Lambda DSL is now mandatory** for Spring Security 7, `@MockitoBean` replaces the deprecated `@MockBean`, and OpenTelemetry becomes the default tracing solution. This report provides implementation-ready guidance with Java and Kotlin code examples for building production-grade applications.
+## Executive Summary
+
+This document provides implementation-ready guidance for Spring Boot 4's security, observability, and testing stacks, covering Spring Security 7's mandatory Lambda DSL migration, built-in Multi-Factor Authentication and Passkeys/WebAuthn support, OpenTelemetry as the default tracing solution, and the replacement of `@MockBean` with `@MockitoBean`. Key recommendations include adopting `Argon2PasswordEncoder.defaultsForSpring7()` for password hashing, using `spring-boot-starter-opentelemetry` for vendor-neutral observability independent of Actuator, and leveraging `@ServiceConnection` for Testcontainers integration. The report also covers critical CVE fixes in Spring Boot 4.0.4, the consolidation of Spring Authorization Server and Kerberos into Spring Security 7, and Spring Modulith's Scenario API improvements for event-driven testing. This is essential reading for backend engineers and architects migrating to or building new applications on Spring Boot 4.
+
+**Spring Boot 4.0** (now at 4.0.4, March 2026) introduces significant breaking changes alongside powerful new capabilities across its security, observability, and testing stacks. The **Lambda DSL is now mandatory** for Spring Security 7 (now at 7.0.4), `@MockitoBean` replaces the deprecated `@MockBean`, and OpenTelemetry becomes the default tracing solution. Spring Security 7 also adds first-class **Multi-Factor Authentication**, **Passkeys/WebAuthn** support, and consolidates **Spring Authorization Server** and **Kerberos** into the core project. This report provides implementation-ready guidance with Java and Kotlin code examples for building production-grade applications.
 
 ## Spring Security 7 fundamentals and breaking changes
 
@@ -21,7 +25,10 @@ Spring Security 7.0 removes several deprecated APIs and makes the Lambda DSL the
 | `antMatchers()` | `requestMatchers()` | **Required** |
 | `WebSecurityConfigurerAdapter` | `SecurityFilterChain` bean | **Required** |
 | `AccessDecisionManager` | `AuthorizationManager` | **Required** |
+| `AuthorizationManager#check` | `AuthorizationManager#authorize` | **Required** |
 | Jackson 2 modules | Jackson 3 `JsonMapper.builder()` | **Required** |
+| Separate Spring Authorization Server | Merged into Spring Security 7 | **Required** |
+| External Spring Security Kerberos | Merged into Spring Security 7 core | **Required** |
 
 **Complete SecurityFilterChain configuration (Java):**
 
@@ -210,6 +217,90 @@ public class JwtConfig {
 }
 ```
 
+### Multi-Factor Authentication (MFA) [Updated 2026-03]
+
+Spring Security 7 introduces built-in Multi-Factor Authentication, one of its most requested features (originally proposed in 2013). MFA is enabled via `@EnableMultiFactorAuthentication` and uses the new `FactorGrantedAuthority` concept to track which authentication factors a user has completed.
+
+**Key concepts:**
+- **FactorGrantedAuthority**: Determines whether a user has authenticated through every required factor. Until all factors are satisfied, the user is not considered fully authenticated.
+- **Supported factors**: Password, WebAuthn/Passkeys, TOTP, and custom factors.
+- **Automatic enforcement**: Spring Security handles factor-step redirection and session management.
+
+**MFA configuration (Java):**
+
+```java
+@Configuration
+@EnableWebSecurity
+@EnableMultiFactorAuthentication
+public class MfaSecurityConfig {
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/login/**", "/mfa/**").permitAll()
+                .anyRequest().authenticated()
+            )
+            .formLogin(form -> form
+                .loginPage("/login")
+            )
+            .multiFactor(mfa -> mfa
+                .factors(FactorType.PASSWORD, FactorType.TOTP)
+            );
+        return http.build();
+    }
+}
+```
+
+**MFA with declarative properties:**
+
+```yaml
+# Simplified configuration approach (e.g., with framework wrappers)
+user:
+  mfa:
+    enabled: true
+    factors: PASSWORD, WEBAUTHN
+```
+
+### Passkeys/WebAuthn support [Updated 2026-03]
+
+Spring Security 7 provides production-ready Passkeys/WebAuthn support based on the FIDO2/WebAuthn standard. This enables passwordless authentication using biometric keys (fingerprint, Face ID) or hardware security keys.
+
+**Key features:**
+- Public/private key pair authentication (no shared secrets)
+- Synced passkeys across devices
+- Built-in registration and authentication endpoints
+- Jackson 3 support with mixins for `WebAuthnAuthentication` (fixed in 7.0.4)
+
+### Module consolidation [Updated 2026-03]
+
+Spring Security 7 consolidates two previously separate projects:
+- **Spring Authorization Server** is now part of Spring Security under the OAuth 2.0 Authorization Server module. Dependencies change from `spring-security-oauth2-authorization-server` (separate project) to being included in the Spring Security BOM.
+- **Spring Security Kerberos Extension** is now a core module of Spring Security, providing SPNEGO/Kerberos authentication without a separate dependency.
+
+This consolidation provides a streamlined developer experience: OAuth2 Client, Resource Server, and Authorization Server are all in one project with unified source, javadoc, and reference documentation.
+
+### JWT validation updates [Updated 2026-03]
+
+Spring Security 7 introduces `JwtTypeValidator` for `typ` header validation in `NimbusJwtDecoder`, replacing reliance on Nimbus for type validation. If you are customizing Nimbus's default type validation via `jwtProcessorCustomizer`, migrate that logic to `JwtTypeValidator` or a custom `OAuth2TokenValidator`.
+
+```java
+@Bean
+JwtDecoder jwtDecoder() {
+    NimbusJwtDecoder jwtDecoder = NimbusJwtDecoder
+        .withIssuerLocation(issuerLocation)
+        .validateTypes(false) // Disable Nimbus type validation
+        .build();
+    // Add JwtTypeValidator to your validator chain instead
+    jwtDecoder.setJwtValidator(new DelegatingOAuth2TokenValidator<>(
+        JwtTypeValidator.jwt(), // New in Security 7
+        new JwtTimestampValidator(),
+        new JwtIssuerValidator(issuerLocation)
+    ));
+    return jwtDecoder;
+}
+```
+
 **Testing secured endpoints (Java):**
 
 ```java
@@ -240,13 +331,15 @@ class SecuredControllerTest {
 
 ---
 
-## Observability with Actuator, Micrometer, and OpenTelemetry
+## Observability with Actuator, Micrometer, and OpenTelemetry [Updated 2026-03]
 
-Spring Boot 4 elevates OpenTelemetry to the **default tracing implementation**, with `spring-boot-starter-opentelemetry` providing integrated support for OTLP export. Micrometer remains the metrics abstraction, while Actuator exposes operational endpoints with granular security controls.
+Spring Boot 4 elevates OpenTelemetry to the **default tracing implementation**, with `spring-boot-starter-opentelemetry` providing integrated support for OTLP export **without requiring Spring Boot Actuator**. This is a significant architectural change: observability and operational endpoints are now independently addressable. Micrometer (1.16.x in Boot 4.0.4) remains the metrics abstraction, while Actuator exposes operational endpoints with granular security controls. Spring Boot 4.0.4 includes Micrometer 1.16.4.
 
 ### Actuator endpoint configuration for production
 
 Production deployments require careful endpoint exposure. Spring Boot 4 introduces a new access control model with `none`, `read-only`, and `unrestricted` options per endpoint.
+
+**Security advisory (March 2026):** Spring Boot 4.0.4 fixes CVE-2026-22731 (Authentication Bypass under Actuator Health groups paths) and CVE-2026-22733 (Authentication Bypass under Actuator CloudFoundry endpoints). All production deployments should upgrade to 4.0.4 or later.
 
 **Production configuration (application-production.yml):**
 
@@ -477,15 +570,45 @@ public class ActuatorSecurityConfiguration {
 }
 ```
 
+### Spring Boot 4.1 OpenTelemetry enhancements (preview) [Updated 2026-03]
+
+Spring Boot 4.1.0-M3 (March 2026) introduces significant OpenTelemetry improvements:
+
+- **SslBundles support** for OTLP traces, metrics, and logging export (mutual TLS)
+- **Fine-grained metric exemplar selection** and auto-configuration for OTLP exemplars
+- **Configurable OpenTelemetry sampler** via properties (no custom beans required)
+- **SDK disable toggle**: A property to completely disable the OpenTelemetry SDK
+- **BatchLogRecordProcessor configuration** via properties
+- **Deprecation notice**: OpenTelemetry's `ZipkinSpanExporter` is deprecated and will be removed in Spring Boot 4.2. Migrate to native OTLP export.
+
+### Micrometer vs OpenTelemetry: choosing the right approach [Updated 2026-03]
+
+A common question in the Spring Boot 4 ecosystem is whether to use Micrometer or OpenTelemetry. The answer is that they are **complementary**, not competing:
+
+| Aspect | Micrometer | OpenTelemetry |
+|--------|-----------|---------------|
+| **Role** | Metrics facade + Observation API | Export protocol + full telemetry stack |
+| **In Spring Boot 4** | Built-in, always available | Via `spring-boot-starter-opentelemetry` |
+| **Best for** | Application-level metrics, SLOs | Distributed tracing, vendor-neutral export |
+| **Approach** | Instrument with `ObservationRegistry` | Data exported via OTLP protocol |
+
+**Recommended pattern**: Use the Micrometer Observation API as your instrumentation facade in code (`Observation.createNotStarted()`), and configure OpenTelemetry as the export backend for traces and metrics. This gives you vendor neutrality with a clean programming model.
+
 ---
 
-## Testing strategies with slice tests and Testcontainers
+## Testing strategies with slice tests and Testcontainers [Updated 2026-03]
 
-Spring Boot 4 introduces **modular test starters** and replaces `@MockBean` with Spring Framework's `@MockitoBean`. The `@ServiceConnection` annotation for Testcontainers eliminates boilerplate dynamic property configuration.
+Spring Boot 4 introduces **modular test starters** and replaces `@MockBean` with Spring Framework's `@MockitoBean`. The `@ServiceConnection` annotation for Testcontainers eliminates boilerplate dynamic property configuration. JUnit 4 support has been fully retired, and `RestTestClient` provides a unified HTTP testing client.
 
 ### Critical breaking change: @MockitoBean replaces @MockBean
 
-The migration from `@MockBean` to `@MockitoBean` is **mandatory** in Spring Boot 4. Key differences include the `REPLACE_OR_CREATE` strategy and prohibition on usage within `@Configuration` classes.
+The migration from `@MockBean` to `@MockitoBean` is **mandatory** in Spring Boot 4. The annotation now lives in Spring Framework (not Spring Boot): `org.springframework.test.context.bean.override.mockito.MockitoBean`. Key differences include the `REPLACE_OR_CREATE` strategy, prohibition on usage within `@Configuration` classes, and support for `@Nested` test classes via type-level or enclosing class annotations.
+
+**Annotation placement options** (expanded in Spring Framework 7):
+- On a non-static field in a test class or superclass
+- On a non-static field in an enclosing class for `@Nested` test classes
+- At the type level on a test class, superclass, or implemented interface
+- At the type level on an enclosing class for `@Nested` test classes
 
 **@WebMvcTest with @MockitoBean (Java):**
 
@@ -818,6 +941,37 @@ class ApiIntegrationTest {
 }
 ```
 
+### RestTestClient: unified HTTP testing [Updated 2026-03]
+
+Spring Boot 4 introduces `RestTestClient` as a unified HTTP testing client that works with both WebFlux and servlet-based MVC applications. This replaces the previous pattern of choosing between `MockMvc` (servlet) and `WebTestClient` (reactive).
+
+**RestTestClient advantages:**
+- Works identically regardless of the underlying web stack
+- Supports both full server and mock server testing modes
+- Designed to test `@HttpExchange` interfaces directly
+- Integrates with security test annotations like `@WithMockUser`
+
+### Modular test dependencies [Updated 2026-03]
+
+Reflecting the broader modularization of Spring Boot 4, test auto-configuration is organized into focused modules:
+
+| Old (Boot 3.x) | New (Boot 4.x) |
+|----------------|-----------------|
+| `spring-boot-test-autoconfigure` (single jar) | `spring-boot-webmvc-test-autoconfigure` |
+| | `spring-boot-data-jpa-test-autoconfigure` |
+| | `spring-boot-json-test-autoconfigure` |
+| | (and other technology-specific test modules) |
+
+For applications using Starter POMs (e.g., `spring-boot-starter-test`), this change is transparent. Direct references to auto-configuration classes may require updated imports.
+
+### Spring Modulith Scenario API updates [Updated 2026-03]
+
+Spring Modulith 2.0.4 and the 2.1 milestone bring important testing improvements:
+
+- **Application-wide event visibility**: `PublishedEvents` and `Scenario` now see events from all threads by default (previously thread-bound). This fixes a common issue where events published on virtual threads or async executors were invisible to tests.
+- **Slice test combination**: `@ApplicationModuleTest` can now be combined with Spring Boot's slice test annotations (`@WebMvcTest`, `@DataJpaTest`, etc.), enabling more focused module tests.
+- **JDBC schema auto-creation**: The event publication schema for JDBC is now created by default, removing setup boilerplate.
+
 ---
 
 ## Cross-cutting concerns for Spring Boot 4 migration
@@ -873,35 +1027,68 @@ public class UserService {
 
 | Anti-Pattern | Correct Approach |
 |-------------|------------------|
-| Using `@MockBean` in Boot 4.x | Use `@MockitoBean` |
+| Using `@MockBean` in Boot 4.x | Use `@MockitoBean` from Spring Framework |
 | Creating `RestTemplate` with `new` | Use `RestTemplateBuilder` (preserves tracing) |
 | Including DB checks in liveness probe | Only in readiness probe |
 | 100% trace sampling in production | Use 10% sampling |
 | `http.csrf().disable()` without JWT | Use `csrf().spa()` for SPAs |
 | High-cardinality metric tags | Use low-cardinality tags only |
 | `@SpringBootTest` for unit tests | Use appropriate slice test |
+| Custom MFA filter chains | Use built-in `@EnableMultiFactorAuthentication` |
+| Using `spring-retry` externally | Use built-in `org.springframework.resilience` |
+| Copying pre-2025 retry tutorials | Use new `@Retryable` from `resilience.annotation` package |
+| Using `ZipkinSpanExporter` | Migrate to native OTLP export (deprecated in 4.1) |
+| Separate Authorization Server dependency | Use merged Spring Security 7 module |
 
-### Migration checklist
+### Migration checklist [Updated 2026-03]
 
-- [ ] Update to Spring Boot 4.0.0 and Spring Framework 7.0
-- [ ] Replace all `@MockBean` with `@MockitoBean`
+- [ ] Update to Spring Boot 4.0.4+ and Spring Framework 7.0.6+ (includes critical CVE fixes)
+- [ ] Replace all `@MockBean` with `@MockitoBean` (import from `org.springframework.test.context.bean.override.mockito`)
 - [ ] Add `@AutoConfigureMockMvc` explicitly to `@SpringBootTest` tests
 - [ ] Convert Security config to Lambda DSL (remove all `and()` calls)
 - [ ] Replace `authorizeRequests()` with `authorizeHttpRequests()`
 - [ ] Replace `antMatchers()` with `requestMatchers()`
 - [ ] Replace `@EnableGlobalMethodSecurity` with `@EnableMethodSecurity`
+- [ ] Replace `AuthorizationManager#check` with `AuthorizationManager#authorize`
 - [ ] Migrate `@DynamicPropertySource` to `@ServiceConnection`
-- [ ] Update Jackson 2 modules to Jackson 3 `JsonMapper.builder()`
+- [ ] Update Jackson 2 modules to Jackson 3 `JsonMapper.builder()` (note: null handling for primitives changed)
 - [ ] Configure OpenTelemetry with `spring-boot-starter-opentelemetry`
 - [ ] Update health indicator imports to `org.springframework.boot.health.contributor`
 - [ ] Verify all `javax.*` imports changed to `jakarta.*`
+- [ ] If using Spring Authorization Server: update to merged Spring Security 7 coordinates
+- [ ] If using Kerberos: update to Spring Security 7 built-in Kerberos module
+- [ ] If using `spring-retry`: migrate to `org.springframework.resilience` built-in retry
+- [ ] Review auto-configuration imports for modularized dependencies
+- [ ] If using `ZipkinSpanExporter`: plan migration to native OTLP (removal in Boot 4.2)
+- [ ] If implementing MFA: evaluate built-in `@EnableMultiFactorAuthentication` over custom filters
 
 ---
 
-## Conclusion
+## Conclusion [Updated 2026-03]
 
-Spring Boot 4 represents a significant evolution requiring careful migration planning. The **mandatory Lambda DSL** in Spring Security 7 improves configuration readability while enforcing modern patterns. The `@MockitoBean` annotation brings testing closer to Spring Framework conventions, and `@ServiceConnection` dramatically simplifies Testcontainers integration.
+Spring Boot 4, now at 4.0.4 (March 2026) with Spring Security 7.0.4 and Spring Framework 7.0.6, represents a significant evolution requiring careful migration planning. The **mandatory Lambda DSL** in Spring Security 7 improves configuration readability while enforcing modern patterns. The addition of **built-in MFA** via `@EnableMultiFactorAuthentication` and **Passkeys/WebAuthn** support brings enterprise-grade authentication capabilities out of the box. The consolidation of **Spring Authorization Server** and **Kerberos** into Spring Security 7 simplifies the dependency landscape for OAuth2 scenarios.
 
-For observability, the elevation of **OpenTelemetry as the default tracer** alongside Micrometer's metrics abstraction provides a vendor-neutral observability stack. Production deployments should use the new **endpoint access model** with separate management ports and appropriate sampling rates.
+The `@MockitoBean` annotation (now in Spring Framework, not Boot) brings testing closer to framework conventions, `@ServiceConnection` dramatically simplifies Testcontainers integration, and `RestTestClient` unifies HTTP testing across web stacks. Spring Modulith's `Scenario` API now captures events across all threads, fixing a common pain point with virtual thread testing.
 
-Key technical decisions include using `Argon2PasswordEncoder.defaultsForSpring7()` for password hashing, implementing health groups that separate liveness from readiness concerns, and leveraging `MockMvcTester` for AssertJ-style test assertions. The Scenario API in Spring Modulith provides essential tooling for testing event-driven architectures that are increasingly common in microservices.
+For observability, the elevation of **OpenTelemetry as the default tracer** — now available independently of Actuator via `spring-boot-starter-opentelemetry` — alongside Micrometer's metrics abstraction provides a vendor-neutral observability stack. Production deployments should use the new **endpoint access model** with separate management ports and appropriate sampling rates. The upcoming 4.1 release enhances OpenTelemetry with SslBundles support and fine-grained sampler configuration.
+
+Key technical decisions include using `Argon2PasswordEncoder.defaultsForSpring7()` for password hashing, implementing health groups that separate liveness from readiness concerns, leveraging `MockMvcTester` for AssertJ-style test assertions, and adopting the built-in `org.springframework.resilience` retry/throttling over external libraries. All production deployments should update to 4.0.4+ to address the Actuator authentication bypass CVEs.
+
+---
+
+## References
+
+- **Spring Boot 4.0** — Application framework with auto-configuration, modular test starters, and production-ready features. Latest: 4.0.4 (March 2026). https://spring.io/projects/spring-boot
+- **Spring Security 7** — Security framework with mandatory Lambda DSL, built-in MFA via `@EnableMultiFactorAuthentication`, Passkeys/WebAuthn support, and consolidated Authorization Server and Kerberos modules. Latest: 7.0.4. https://spring.io/projects/spring-security
+- **Spring Framework 7** — Core framework providing `@MockitoBean` (replacing `@MockBean`), built-in resilience API (`org.springframework.resilience`), and JSpecify null safety. Latest: 7.0.6. https://spring.io/projects/spring-framework
+- **Micrometer** — Metrics facade providing Observation API, Timer, Counter, Gauge, and DistributionSummary meter types for application-level instrumentation. Latest: 1.16.4 (in Boot 4.0.4). https://micrometer.io/
+- **OpenTelemetry** — Vendor-neutral observability standard for distributed tracing, metrics, and log export via OTLP protocol. Default tracer in Spring Boot 4 via `spring-boot-starter-opentelemetry`. https://opentelemetry.io/
+- **Testcontainers** — Library for ephemeral Docker containers in integration tests, integrated with Spring Boot via `@ServiceConnection` for automatic property injection. https://testcontainers.com/
+- **Spring Modulith 2.0 / 2.1** — Modular monolith toolkit with `@ApplicationModuleTest`, Scenario API for event-driven testing, and application-wide event visibility (no longer thread-bound). https://spring.io/projects/spring-modulith
+- **Jakarta EE 11** — Enterprise Java specifications including Servlet 6.1, JPA 3.2, and Bean Validation 3.1 required by Spring Boot 4. https://jakarta.ee/
+- **Jackson 3** — JSON processing library with relocated `tools.jackson` package namespace. Security-related serialization modules require migration from Jackson 2. https://github.com/FasterXML/jackson
+- **JSpecify** — Standardized null-safety annotations (`@Nullable`, `@NonNull`) adopted portfolio-wide by Spring Framework 7 and Spring Boot 4. https://jspecify.dev/
+- **NimbusJwtDecoder** — JWT decoder used by Spring Security 7 for token validation, with new `JwtTypeValidator` for `typ` header validation. Part of the Nimbus JOSE+JWT library. https://connect2id.com/products/nimbus-jose-jwt
+- **FIDO2/WebAuthn** — W3C standard for passwordless authentication using public key cryptography, supported natively in Spring Security 7. https://fidoalliance.org/fido2/
+- **Argon2** — Password hashing algorithm used by `Argon2PasswordEncoder.defaultsForSpring7()` as the recommended encoder in Spring Security 7. https://github.com/P-H-C/phc-winner-argon2
+- **CVE-2026-22731 / CVE-2026-22733** — Actuator authentication bypass vulnerabilities fixed in Spring Boot 4.0.4. https://spring.io/security

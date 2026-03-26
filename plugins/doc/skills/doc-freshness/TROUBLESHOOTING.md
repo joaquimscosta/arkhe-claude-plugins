@@ -37,7 +37,7 @@ doc-freshness:
 
 **Fix**:
 ```bash
-chmod +x plugins/roadmap/skills/doc-freshness/scripts/*.py
+chmod +x plugins/doc/skills/doc-freshness/scripts/*.py
 ```
 
 ## Python Version Error

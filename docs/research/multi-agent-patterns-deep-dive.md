@@ -3,12 +3,16 @@ title: "Multi-Agent Orchestration Patterns: Deep Dive"
 version: "1.0.0"
 status: Published
 created: 2026-03-19
-last_updated: 2026-03-19
+last_updated: 2026-03-26
 ---
 
 # Multi-Agent Orchestration Patterns: Deep Dive
 
 > A comprehensive guide to multi-agent orchestration patterns, with reference implementations and cross-domain application examples.
+
+## Executive Summary
+
+This document provides an in-depth exploration of 19 multi-agent orchestration patterns, organized into four categories: core architectural concepts (specialized roles, event-driven routing, completion promises, backpressure), multi-agent coordination patterns (pipeline, critic-actor, adversarial review, supervisor-worker, rotating roles, scientific method), quality and confidence patterns (confidence-gated completion, confession pattern, specification-first, documentation-first), and state, persistence, and scaling patterns (persistent memory, task tracking, fresh context, human-in-the-loop, parallel execution). Each pattern includes Mermaid diagrams, reference implementations drawn from the Ralph orchestrator's YAML configuration, concrete application examples across domains, and key design decisions. The guide also covers pattern composition -- how patterns combine for real workflows like feature development, security review, and autonomous coding -- along with anti-patterns to avoid. This is the companion deep-dive to the quick-reference overview document and is intended for developers designing or extending multi-agent systems.
 
 ## Introduction
 
@@ -1062,3 +1066,16 @@ graph TD
 - **Complex retry logic**: Fresh context handles recovery naturally. Don't build retry mechanisms.
 - **Detailed step-by-step instructions**: Use backpressure (quality gates) instead of prescribing every step.
 - **Saving plans obsessively**: Plans are disposable. Regenerating a plan costs one planning loop. Don't fight to save a bad plan.
+
+## References
+
+- **Multi-Agent Orchestration Patterns: Quick Reference** -- Companion overview document. See `docs/research/multi-agent-patterns-overview.md`
+- **ralph.yml** -- Ralph orchestrator configuration defining hats, event routing, completion promises, memory, and task management. Primary source for reference implementations throughout this document.
+- **CLAUDE.md** -- Project-level instructions containing Ralph Tenets (Backpressure Over Prescription, Fresh Context Is Reliability) and parallel execution architecture (primary loop, worktree loops, merge queue).
+- **presets/spec-driven.yml** -- Specification-first pipeline preset demonstrating the Pipeline and Specification-First patterns with bounded rejection.
+- **presets/tdd-red-green.yml** -- TDD Red-Green-Refactor preset demonstrating the Critic-Actor pattern with test writer, implementer, and refactorer hats.
+- **presets/adversarial-review.yml** -- Adversarial security review preset demonstrating blue team / red team / fixer workflow.
+- **presets/mob-programming.yml** -- Mob programming preset demonstrating the Rotating Roles pattern with navigator, driver, and observer hats.
+- **presets/scientific-method.yml** -- Hypothesis-driven debugging preset demonstrating the Scientific Method pattern with observer, theorist, experimenter, and fixer hats.
+- **presets/documentation-first.yml** -- Documentation-first development preset where docs serve as the specification before implementation.
+- **COLLECTION.md** -- Catalog of Ralph orchestrator presets referenced for adversarial review, mob programming, scientific method, and documentation-first patterns.

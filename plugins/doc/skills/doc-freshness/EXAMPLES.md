@@ -169,3 +169,85 @@ doc-freshness:
 ```
 
 This produces more precise drift analysis since the doc-code relationships are explicit rather than guessed.
+
+---
+
+## Example 7: CLAUDE.md Structural Drift
+
+**Command**: `/doc:health claude-md`
+
+**What it does**: Compares CLAUDE.md claims (plugin counts, component inventories, versions, file paths) against filesystem ground truth.
+
+**Example output**:
+
+```
+### CLAUDE.md Drift Analysis
+
+| # | Severity | Category | Plugin | Finding |
+|---|----------|----------|--------|---------|
+| 1 | CRITICAL | agents | design-intent | agent 'design-reviewer' exists on disk but not in CLAUDE.md |
+| 2 | CRITICAL | agents | design-intent | agent 'ui-architect' exists on disk but not in CLAUDE.md |
+| 3 | CRITICAL | agents | design-intent | agent 'ui-explorer' exists on disk but not in CLAUDE.md |
+| 4 | WARNING | version | doc | CLAUDE.md says 1.10.0, plugin.json says 1.11.0 |
+
+**Summary**: 144 checks, 140 ok, 3 undocumented, 1 version drift
+```
+
+**Standalone script**:
+
+```bash
+python3 plugins/doc/skills/doc-freshness/scripts/claude_md_checker.py .
+```
+
+**Categories checked**:
+- `plugin_count` — Number of plugins in CLAUDE.md vs marketplace.json
+- `agents` — Agent names per plugin vs agents/*.md files
+- `commands` — Command names per plugin vs commands/*.md files
+- `skills` — Skill names per plugin vs skills/*/SKILL.md frontmatter
+- `version` — Version strings vs plugin.json files
+- `file_path` — Backtick-quoted paths vs filesystem existence
+
+---
+
+## Example 8: Frontmatter Onboarding
+
+**Command**: `/doc:health onboard`
+
+**What it does**: Finds maintained docs without tracking frontmatter and suggests minimal `title` + `last_updated` fields using git history.
+
+**Suggest mode** (default — no file changes):
+
+```bash
+python3 plugins/doc/skills/doc-freshness/scripts/frontmatter_onboard.py .
+```
+
+**Example output**:
+
+```
+23 candidates found for frontmatter onboarding:
+
+| # | File | Title | Last Updated |
+|---|------|-------|-------------|
+| 1 | README.md | Arkhe Claude Plugins | 2026-03-23 |
+| 2 | CLAUDE.md | CLAUDE.md | 2026-03-26 |
+| 3 | INSTALLATION.md | Installation Guide | 2026-03-26 |
+| 4 | plugins/core/README.md | Core Plugin | 2026-03-24 |
+| ... | ... | ... | ... |
+```
+
+**Apply mode** (prepends frontmatter to files):
+
+```bash
+python3 plugins/doc/skills/doc-freshness/scripts/frontmatter_onboard.py --apply .
+```
+
+**Generated frontmatter** (minimal 2-field format for general docs):
+
+```yaml
+---
+title: "Installation Guide"
+last_updated: 2026-03-26
+---
+```
+
+**Note**: Research docs keep their full 5-field template (`title`, `version`, `status`, `created`, `last_updated`). The onboard script only targets general docs that have no frontmatter at all.

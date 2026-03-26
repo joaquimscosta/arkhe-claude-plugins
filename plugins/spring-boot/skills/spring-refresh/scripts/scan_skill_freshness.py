@@ -25,7 +25,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 # Research doc → skills mapping
 RESEARCH_TO_SKILLS: Dict[str, List[str]] = {
-    "ecosystem-research.md": [
+    "spring-boot-ecosystem-research.md": [
         "spring-boot-scanner",
         "spring-boot-verify",
         "spring-boot-web-api",
@@ -33,13 +33,13 @@ RESEARCH_TO_SKILLS: Dict[str, List[str]] = {
         "spring-boot-modulith",
         "domain-driven-design",
     ],
-    "ddd-implementation.md": [
+    "spring-boot-ddd-implementation.md": [
         "domain-driven-design",
         "spring-boot-data-ddd",
         "spring-boot-web-api",
         "spring-boot-modulith",
     ],
-    "security-observability-testing.md": [
+    "spring-boot-security-observability-testing.md": [
         "spring-boot-security",
         "spring-boot-observability",
         "spring-boot-testing",
@@ -202,16 +202,14 @@ def scan_research_docs(
     project_root: Path, now: datetime
 ) -> List[Dict[str, Any]]:
     """Scan Spring Boot research documents."""
-    research_dir = project_root / "docs" / "research" / "spring-boot"
+    research_dir = project_root / "docs" / "research"
     results = []
 
     if not research_dir.is_dir():
         return results
 
     for doc in sorted(research_dir.iterdir()):
-        if not doc.name.endswith(".md"):
-            continue
-        if doc.name in ("README.md", "TEMPLATE.md"):
+        if not doc.name.startswith("spring-boot-") or not doc.name.endswith(".md"):
             continue
 
         fm = parse_frontmatter(doc)

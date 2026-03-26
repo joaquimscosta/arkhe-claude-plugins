@@ -3,10 +3,14 @@ title: AI-Ready SDLC Design Patterns
 version: "2.0.0"
 status: Living Document
 created: 2026-02-13
-last_updated: 2026-02-13
+last_updated: 2026-03-26
 ---
 
 # AI-Ready SDLC Design Patterns
+
+## Executive Summary
+
+This document defines design patterns for structuring SDLC artifacts -- specifications, plans, task breakdowns, ADRs, API contracts, data models, wave context files, and verification reports -- so they are optimally consumable by AI coding assistants operating under finite context windows. The core thesis is that progressive disclosure (metadata for routing at ~100 tokens, summaries for scoping at ~500 tokens, details for implementation at ~2,000 tokens) combined with search-first retrieval reduces token consumption by 60-98% compared to bulk-loading all artifacts. The document covers five areas: artifact architecture with phase-to-artifact mapping, five design patterns (frontmatter metadata, unique identifiers, section markers, predictable naming, wave-based grouping), four navigation patterns (search-first retrieval, progressive loading tiers, cross-reference tracing, wave-based resume), common implementation scenarios, and six anti-patterns to avoid. It is intended for developers and tech leads designing SDLC pipelines for AI-assisted development workflows.
 
 ## Quick Reference
 
@@ -493,3 +497,14 @@ Designing AI-ready SDLC artifacts comes down to three principles:
 3. **Stateful checkpoints** — Capture session state in wave context files so multi-session work resumes cleanly. Each checkpoint file is a complete handoff document, eliminating the need to re-read all artifacts.
 
 When in doubt: **Search, Read, Validate, Implement.**
+
+## References
+
+- **Progressive Disclosure** -- Information architecture principle of revealing detail in tiers; applied here to SDLC artifact design for AI context window optimization.
+- **Architecture Decision Records (ADRs)** -- Lightweight documentation format for capturing architecture decisions, alternatives considered, and consequences. Used as a conditional artifact type in the directory structure pattern.
+- **Wave-Based Execution** -- Task grouping pattern organizing work into dependency waves for parallel execution and session handoff. Inspired by topological sorting of task dependency graphs.
+- **Search-First Retrieval** -- Navigation pattern using content search operations (`content_search`, `file_search`) instead of sequential file reads to minimize token consumption.
+- **Cross-Reference Tracing** -- Bidirectional traceability pattern using unique identifiers (FR-XXX, T-XX, ADR-XXX) to link requirements to implementation and back.
+- **Kanban / Task Tracking** -- Work management methodology using status-based task progression (SELECTED, IN_PROGRESS, COMPLETED, DEFERRED) referenced in the task breakdown artifact design.
+- **OpenAPI Specification** -- API contract format referenced as an artifact type for endpoint definitions and request/response shapes.
+- **Flyway** -- Database migration tool referenced in the context of data model artifacts and migration strategy patterns.

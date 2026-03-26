@@ -20,7 +20,7 @@ Detect documentation drift across any project. Reports findings without auto-fix
 ### Priority 1: Configuration
 
 Read `.arkhe.yaml` from project root. Extract `doc-freshness:` section for custom patterns, exclusions, and doc-code mappings.
-Extract `roadmap:` section for `output_dir` (used by `report` mode, default: `arkhe/roadmap`).
+Extract `doc-health:` section for `output_dir` (used by `report` mode, default: `docs/health`).
 
 ### Priority 2: Project Identity
 
@@ -47,8 +47,21 @@ Parse from `$ARGUMENTS`:
 | `links` | Broken links and stale references only (script-driven, fast) |
 | `drift <path>` | Code-doc drift for a specific doc or doc-code pair |
 | `cross-doc` | Cross-document consistency check |
-| `report` | Persist structured freshness report to `{output_dir}/freshness/` |
+| `report` | Persist structured freshness report to `{output_dir}/` |
+| `claude-md` | CLAUDE.md structural drift (plugin counts, components, versions) |
+| `onboard` | Suggest/apply tracking frontmatter to docs that need it |
 | _(none)_ | Full scan (same as `scan`) |
+
+## Scanning Tiers
+
+Documents are automatically classified into scanning tiers:
+
+| Tier | Detection | Checks Performed |
+|------|-----------|-----------------|
+| **Basic** | All `.md` files | Broken links, git age classification, backtick-path verification |
+| **Deep** | YAML frontmatter with `last_updated` or `version` | Basic + version drift, `last_updated` accuracy, cross-doc consistency |
+
+Tier is auto-detected per file. No configuration needed. The scanner JSON output includes `"tier"` per doc and `"tier_counts"` in the summary.
 
 ## Mode Execution
 
@@ -89,7 +102,40 @@ Parse from `$ARGUMENTS`:
 
 ### `report`
 
-Same as `scan` but write output to `{output_dir}/freshness/{YYYY-MM-DD}-freshness.md`.
+Same as `scan` but write output to `{output_dir}/{YYYY-MM-DD}-freshness.md`.
+
+### `claude-md`
+
+1. Run `claude_md_checker.py` to compare CLAUDE.md claims against filesystem
+2. Present findings by category: plugin counts, component inventories, versions, file paths
+3. Highlight undocumented components (CRITICAL) and version mismatches (WARNING)
+
+### `onboard`
+
+1. Run `frontmatter_onboard.py` to find docs without tracking frontmatter
+2. Uses whitelist of known-maintained docs (READMEs, custom docs)
+3. Generates minimal `title` + `last_updated` frontmatter from git history
+4. On user approval, apply with `--apply` flag
+
+## Automation Integration
+
+**SessionStart Hook**: Critical-doc fast scan on session start (5-second timeout)
+```bash
+/doc:health --critical-only
+# Scans: README.md, CLAUDE.md only (root-level critical docs)
+```
+
+**PostToolUse Hook** (after `/commit`): Post-commit doc-impact checks
+```bash
+/doc:health drift
+# Checks if modified code files have corresponding documentation
+```
+
+**User-Driven (`/loop`)**: Periodic freshness monitoring
+```bash
+/loop 1h /doc:health links        # Hourly broken-link checks
+/loop 4h /doc:health scan         # Full scans every 4 hours
+```
 
 ## Severity Levels
 

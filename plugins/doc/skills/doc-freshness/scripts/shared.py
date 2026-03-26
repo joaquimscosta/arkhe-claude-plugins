@@ -34,6 +34,49 @@ DEFAULT_EXCLUDE_PATTERNS: List[str] = [
 ]
 
 
+def extract_frontmatter(content: str) -> Optional[Dict[str, str]]:
+    """Extract YAML frontmatter from markdown content.
+
+    Parses the block between opening and closing '---' delimiters.
+    Returns flat key-value dict, or None if no frontmatter found.
+    """
+    lines = content.splitlines()
+    if not lines or lines[0].strip() != "---":
+        return None
+
+    for i, line in enumerate(lines[1:50], start=1):
+        if line.strip() == "---":
+            result: Dict[str, str] = {}
+            for fm_line in lines[1:i]:
+                fm_stripped = fm_line.strip()
+                if not fm_stripped or fm_stripped.startswith("#"):
+                    continue
+                if ":" in fm_stripped:
+                    key, _, value = fm_stripped.partition(":")
+                    value = value.strip().strip('"').strip("'")
+                    if value:
+                        result[key.strip()] = value
+            return result if result else None
+
+    return None
+
+
+def detect_doc_tier(path: Path) -> str:
+    """Detect whether a doc qualifies for deep or basic scanning.
+
+    Deep tier: has YAML frontmatter with last_updated or version fields.
+    Basic tier: everything else.
+    """
+    content = read_file_safe(path)
+    if not content:
+        return "basic"
+
+    fm = extract_frontmatter(content)
+    if fm and ("last_updated" in fm or "version" in fm):
+        return "deep"
+    return "basic"
+
+
 def read_file_safe(path: Path) -> Optional[str]:
     """Read a file's text content, returning None on any error."""
     try:

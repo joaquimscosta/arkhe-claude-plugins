@@ -3,18 +3,20 @@ title: "Spring Boot 4 and Spring Framework 7: Ecosystem Research"
 version: "1.0.0"
 status: Published
 created: 2025-12-20
-last_updated: 2026-02-13
+last_updated: 2026-03-26
 ---
 
 # **Spring Boot 4 and Spring Framework 7: A Comprehensive Ecosystem Research Dossier**
 
-## **Executive Summary**
+## Executive Summary
 
 The transition to Spring Boot 4 and Spring Framework 7 represents the most significant architectural inflection point in the Java ecosystem since the release of Spring Boot 2.0. This generation of the framework is not merely an iterative update; it is a fundamental re-platforming designed to leverage the modern capabilities of the Java Virtual Machine (JVM), specifically targeting Java 17 as a strict baseline while optimizing for Java 21 and the forthcoming Java 25.1
 
 The architectural philosophy of Spring Boot 4 is defined by three primary forcing functions: the adoption of Project Loom (Virtual Threads) as a first-class citizen, which challenges the decade-long necessity of Reactive programming for standard I/O-bound workloads; the rigorous standardization of null-safety via JSpecify, which bridges the interoperability gap between Java and Kotlin 3; and the complete alignment with Jakarta EE 11, necessitating upgrades to Servlet 6.1, JPA 3.2, and Hibernate 7.1
 
 Furthermore, this release cycle institutionalizes the "modular monolith" as a default architectural pattern through the deep integration of Spring Modulith 2.0. This signals a strategic move away from the premature optimization of microservices toward verifyable, structured monoliths that can be decomposed only when necessary.6 The ecosystem also embraces a major breaking change in JSON processing by adopting Jackson 3, which introduces a new package namespace (tools.jackson), signaling a clear break from legacy technical debt.7
+
+Additionally, this release introduces a first-party resilience API (`org.springframework.resilience`) with built-in `@Retryable`, `RetryTemplate`, and `@ConcurrencyLimit` annotations, replacing the external `spring-retry` dependency. Spring Boot 4.0's internal modularization breaks the monolithic `spring-boot-autoconfigure` jar into smaller, focused modules, reducing classpath bloat and improving startup time.
 
 This dossier provides an exhaustive analysis of these changes, dissecting the subsystems of Web, Data, Security, Observability, and Testing. It provides evidence-based guidance for backend architects to navigate migration, leverage new paradigms, and avoid significant pitfalls associated with this transition.
 
@@ -36,11 +38,30 @@ Understanding the dependency matrix is critical for platform engineering teams p
 | **JSON Processing** | Jackson 2.x (com.fasterxml) | **Jackson 3.x (tools.jackson)** | **Breaking Change:** Namespace migration required; immutable configuration via JsonMapper.8 |
 | **Security** | Spring Security 6.x | **Spring Security 7.0** | Complete removal of legacy chain APIs; mandatory Lambda DSL for configuration.11 |
 | **Testing** | JUnit 5 / Mockito 5 | **JUnit 6 / Mockito 5+** | Deprecation of @MockBean in favor of @MockitoBean to prevent context caching issues.12 |
+| **Resilience** | spring-retry (external) | **spring-core built-in (`org.springframework.resilience`)** | Native `@Retryable`, `RetryTemplate`, and `@ConcurrencyLimit` annotations; adopted by AMQP, Kafka, Integration, and Batch.36 |
 | **Build Tools** | Gradle 7.x / Maven 3.6 | **Gradle 8.14+ / Maven 3.6.3+** | Required for Kotlin 2.2 support and enhanced metadata processing.13 |
 
-### **1.2 The Release Cadence and Adoption Window**
+### **1.2 The Release Cadence and Adoption Window** [Updated 2026-03]
 
-The roadmap for Spring Boot 4 indicates a General Availability (GA) target around late November 2025, aligning with the release of Spring Framework 7.14 Organizations should treat the current Milestone (M1-M3) and Release Candidate (RC) phases as the critical window for library compatibility verification. The most significant friction points will likely be the Jackson 3 migration (due to the package rename) and the Jakarta EE 11 upgrades, which require compatible servlet containers like Tomcat 11 or Jetty 12.15
+Spring Boot 4.0.0 GA was released on November 20, 2025, and has since progressed through four patch releases: 4.0.1 (Dec 2025), 4.0.2 (Jan 22, 2026), 4.0.3 (Feb 19, 2026), and 4.0.4 (Mar 19, 2026). Spring Framework 7 is at version 7.0.6 (Mar 13, 2026). The patch releases have addressed over 240 combined bug fixes, dependency upgrades, and documentation improvements.
+
+**Notable CVEs fixed** in 4.0.4: CVE-2026-22731 (Authentication Bypass under Actuator Health groups paths) and CVE-2026-22733 (Authentication Bypass under Actuator CloudFoundry endpoints). Spring Framework 7.0.6 fixes CVE-2026-22735 (Server Sent Event stream corruption) and CVE-2026-22737 (Improper Path Limitation with Script View Templates).
+
+**Spring Boot 4.1** is in active milestone development (4.1.0-M3 released Mar 20, 2026) and introduces significant new features including: Spring gRPC support (server and client auto-configuration), AMQP 1.0 protocol support, enhanced OpenTelemetry configuration (SslBundles for OTLP export, fine-grained exemplar selection, sampler configuration properties, SDK disable toggle), File Rotation Support for Log4j, MongoDB Support for Spring Batch, and SSL Support for RabbitMQ Streams.
+
+The most significant migration friction points remain the Jackson 3 migration (package rename from `com.fasterxml.jackson` to `tools.jackson`, with changes to null handling for primitives) and the Jakarta EE 11 upgrades, which require compatible servlet containers like Tomcat 11 or Jetty 12.15
+
+---
+
+**1.3 Spring Boot 4 Internal Modularization** [Updated 2026-03]
+
+Spring Boot 4.0 introduces a fundamental shift in internal architecture: the monolithic `spring-boot-autoconfigure` jar (which had grown to over 2 MB in Boot 3.5) has been decomposed into smaller, focused modules. Each supported technology now has its own dedicated auto-configuration module (e.g., `spring-boot-kafka`, `spring-boot-mongodb`, `spring-boot-data-jpa`).
+
+**Impact for applications using Starter POMs**: Most dependencies are handled transparently through starter POMs, so typical applications require no changes. However, applications that directly referenced `spring-boot-autoconfigure` classes or imported specific auto-configuration features (e.g., the H2 console) may need to add the appropriate focused module dependency.37
+
+**Impact for framework/platform teams**: Organizations that build custom wrappers or internal starters on top of Spring Boot should review their dependency declarations. The modularization makes internal wrappers lighter and more transparent, as only the required auto-configuration modules are included.
+
+**New annotation**: `@ConfigurationPropertiesSource` provides more control over configuration property binding, complementing the existing `@ConfigurationProperties`.38
 
 ---
 
@@ -113,6 +134,21 @@ class UserFacade(private val userService: UserService) {
 }
 ```
 
+### **2.2 Sub-Project: Spring Core Resilience** [Updated 2026-03]
+
+**Purpose:** To provide first-party retry and concurrency throttling support directly in `spring-core`, eliminating the need for the external `spring-retry` library.
+
+Spring Framework 7 introduces a new `org.springframework.resilience` package with:
+
+- **`@Retryable`** — Declarative retry with configurable max attempts, backoff, and exception filtering. This is a new annotation in the `org.springframework.resilience.annotation` package, distinct from the old `spring-retry` `@Retryable`.
+- **`RetryTemplate`** — Programmatic retry for scenarios requiring fine-grained control beyond the declarative model.
+- **`@ConcurrencyLimit`** — Limits concurrent method invocations, particularly useful with Virtual Threads where there is no thread pool limit. Supports configurable throttle policies via `ConcurrencyLimit.ThrottlePolicy`.
+- **`@EnableResilientMethods`** — Enables processing of resilience annotations at the class or application level.
+
+These annotations are adopted across the Spring portfolio: Spring AMQP, Spring Kafka, Spring Integration, and Spring Batch all use the built-in retry API.36
+
+**Pitfalls:** The new resilience API has different attribute names and semantics than `spring-retry`. Code copied from pre-2025 tutorials referencing `spring-retry` will not compile. Applications should migrate to `org.springframework.resilience.annotation.Retryable` and remove the `spring-retry` dependency.
+
 ---
 
 **3. Deep Dive: Spring Web (MVC & Clients)**
@@ -128,7 +164,7 @@ The industry is moving away from manual URL path versioning toward built-in supp
 Pitfalls:
 The migration to Jackson 3 is the most dangerous aspect of the web layer upgrade. The package rename from com.fasterxml.jackson to tools.jackson is binary incompatible. Any custom Serializer, Deserializer, or Module implementation must be rewritten. Furthermore, the ObjectMapper is often replaced by JsonMapper and is now immutable, requiring the use of Builders for all configurations.8
 Performance:
-With Virtual Threads enabled, Spring MVC on Tomcat 11 (Servlet 6.1) shows throughput comparable to WebFlux on Netty for I/O-bound payloads, eliminating the need for the complexity of reactive chains.17
+With Virtual Threads enabled, Spring MVC on Tomcat 11 (Servlet 6.1) shows throughput comparable to WebFlux on Netty for I/O-bound payloads, eliminating the need for the complexity of reactive chains.17 Spring MVC in Framework 7.0 also benefits from targeted performance optimizations documented in the Spring blog (Feb 2026), reducing overhead in request dispatch and handler mapping.43
 Testing:
 Use RestTestClient for integration testing. This client is designed to test @HttpExchange interfaces and MVC endpoints without the overhead of a full server start in some contexts, or as a full integration tool.1
 
@@ -196,6 +232,8 @@ Pitfalls:
 When using StatelessSession, developers must remember that there is no dirty checking. Changes to entity objects will not be automatically flushed to the database upon transaction commit. Explicit update() or insert() calls are required. Furthermore, lazy loading does not work in a stateless context; all associations must be fetched eagerly or via explicit join queries.25
 Performance:
 Hibernate 7 on Java 25 (via Boot 4) shows significant improvements in startup time and query generation efficiency. The StatelessSession can reduce memory footprint by orders of magnitude during large batch jobs.22
+
+**Spring Data 2025.1** [Updated 2026-03]: Spring Data's "Moving beyond Strings" initiative (announced Feb 2026) introduces type-safe query and update programming models that reduce string-based column/field references in favor of compile-time-checked alternatives, improving refactoring safety and IDE support across Spring Data JPA, MongoDB, and other modules.44
 Testing:
 Integration tests should utilize @ServiceConnection (discussed in Section 7) to spin up ephemeral databases, ensuring that Hibernate 7 dialect features are tested against real database engines rather than H2 in-memory approximations.
 
@@ -257,6 +295,13 @@ Pitfalls:
 The removal of WebSecurityConfigurerAdapter (begun in version 5.7) is complete. Legacy documentation referencing this class is now obsolete. A common error during migration is attempting to use the deprecated .and() method to chain configuration blocks, which will cause compilation failures. Additionally, the default behavior of authorizeHttpRequests is "deny all" unless explicitly configured, which may cause seemingly "broken" endpoints upon upgrade.29
 Performance:
 The new filter chain mechanism in Spring Security 7 is optimized for virtual threads, reducing the overhead of context switching during authentication filters.
+
+**Module Consolidation** [Updated 2026-03]: Spring Security 7 incorporates two previously separate projects: **Spring Authorization Server** is now part of Spring Security (under the OAuth 2.0 Authorization Server section), and the **Spring Security Kerberos Extension** has been merged in as well. This means a single dependency for OAuth2 Client, Resource Server, and Authorization Server scenarios.
+
+**Multi-Factor Authentication** [Updated 2026-03]: One of the headline features of Spring Security 7 is built-in MFA support via `@EnableMultiFactorAuthentication`. The framework introduces `FactorGrantedAuthority` to track which authentication factors a user has completed. Supported factors include password, WebAuthn/Passkeys, and TOTP. Configuration is declarative, and Spring Security handles enforcement, factor-step redirection, and session management automatically.42
+
+**Passkeys/WebAuthn**: Spring Security 7 includes production-ready WebAuthn/Passkeys support, enabling passwordless FIDO2 authentication. The 7.0.4 patch added Jackson 3 mixins for `WebAuthnAuthentication` and fixes for `AuthenticationExtensionsClientOutputs` deserialization.
+
 Testing:
 Testing security rules requires the new @MockitoBean (replacing @MockBean) to mock dependencies within the security context without triggering context reloads.
 
@@ -329,6 +374,14 @@ Modulith verification is strict. It will fail the build if a developer creates a
 Performance:
 Modulith has zero runtime overhead for the application itself. The verification runs strictly during the test phase. However, the event externalization feature does introduce a database write for the event log, which must be accounted for in transaction sizing.
 
+**Spring Modulith 2.1 Milestones** [Updated 2026-03]:
+Spring Modulith 2.1 M2 (released Feb 19, 2026) introduces several significant features:
+- **Outbox-based event externalization** via Namastack Outbox, supporting multi-instance, order-preserving publication as an alternative to the built-in async listener-based approach.40
+- **Combination with Boot's slice test capabilities**: `@ApplicationModuleTest` can now be combined with Spring Boot's horizontal slice test annotations (e.g., `@WebMvcTest`, `@DataJpaTest`).
+- **Application-wide event visibility**: `PublishedEvents` and `Scenario` now capture events from all threads (previously thread-bound), enabling tests to see events published on background threads.
+- **JDBC event publication schema creation enabled by default**, simplifying initial setup.
+- **Observability support split** into separate API and core artifacts for finer dependency control.
+
 #### **Minimal Code Example**
 
 **Java: Module Verification Test**
@@ -355,14 +408,19 @@ class ArchitectureTest {
 
 Spring Boot 4 completes the transition from vendor-specific agents to a unified, open-standard observability stack based on OpenTelemetry (OTLP).
 
-### **7.1 Sub-Project: Spring Boot Actuator & Micrometer**
+### **7.1 Sub-Project: Spring Boot Actuator & Micrometer** [Updated 2026-03]
 
 **Purpose:** To provide production-grade insights (metrics, logs, traces) using a unified API that abstracts the underlying backend (Prometheus, Grafana Tempo, etc.).
 
 Best Practices:
-The recommendation for Spring Boot 4 is to use spring-boot-starter-opentelemetry. This starter configures Micrometer Tracing to export data in the OTLP format by default. This eliminates the need for sidecar agents in many Kubernetes deployments. "Zero-code" instrumentation means that RestClient and JdbcTemplate automatically propagate W3C trace context headers.32
+The recommendation for Spring Boot 4 is to use `spring-boot-starter-opentelemetry`. This is a dedicated starter that provides vendor-neutral observability **without requiring Spring Boot Actuator**. It configures OTLP export for traces, metrics, and logs with a single dependency. For applications that also need Actuator endpoints, the two can coexist but are now independently addressable.32
+
+The relationship between Micrometer and OpenTelemetry is complementary: Micrometer provides the Observation API (the facade you code against), while OpenTelemetry provides the export protocol (OTLP). Spring Boot 4.0.x ships with Micrometer 1.16.x. "Zero-code" instrumentation means that RestClient and JdbcTemplate automatically propagate W3C trace context headers.
+
+**Spring Boot 4.1 OpenTelemetry Enhancements** (in milestone): SslBundles support for OTLP traces, metrics, and logging export; fine-grained metric exemplar selection; configurable OpenTelemetry sampler via properties; a property to disable the OpenTelemetry SDK entirely; and auto-configuration for OTLP exemplars. Note: OpenTelemetry's `ZipkinSpanExporter` has been deprecated and will be removed in Spring Boot 4.2.39
+
 Pitfalls:
-A common confusion arises between "Micrometer" (the facade) and "OpenTelemetry" (the standard). In Boot 4, you use Micrometer APIs in your code (ObservationRegistry), but the data is exported via OpenTelemetry protocols. Do not mix legacy Sleuth configurations with the new OTLP setup.
+A common confusion arises between "Micrometer" (the facade) and "OpenTelemetry" (the standard). In Boot 4, you use Micrometer APIs in your code (ObservationRegistry), but the data is exported via OpenTelemetry protocols. Do not mix legacy Sleuth configurations with the new OTLP setup. When migrating from Micrometer Tracing to native OpenTelemetry, note that the two have different instrumentation approaches—Micrometer is a higher-level abstraction while OpenTelemetry provides direct access to spans and contexts.
 **Code Example: Configuration**
 
 ```properties
@@ -388,8 +446,12 @@ Best Practices:
 Use @ServiceConnection to simplify Testcontainers configuration. In Spring Boot 3.1+, developers had to manually register dynamic properties or use DynamicPropertyRegistry. Boot 4 standardizes @ServiceConnection, which automatically injects connection details (URL, user, password) from the container into the Spring context.34
 Replace @MockBean with @MockitoBean. The legacy @MockBean caused the Spring TestContext framework to cache a unique context for every test class that used a different set of mocks. This led to "Context Thrashing," where the application would restart dozens of times during a test suite run. @MockitoBean is implemented to allow context reuse more aggressively.12
 
+**RestTestClient** [Updated 2026-03]: Spring Boot 4 introduces `RestTestClient` as a unified HTTP testing client that works across both WebFlux and servlet-based MVC applications, replacing the need to choose between `MockMvc` and `WebTestClient` depending on the stack. Additionally, `MockMvcTester` provides an AssertJ-style fluent API for MVC test assertions.
+
+**Modular Test Starters** [Updated 2026-03]: Reflecting the broader modularization of Spring Boot 4, test dependencies are now organized into focused modules (e.g., `spring-boot-webmvc-test-autoconfigure`). Applications using Starter POMs are largely unaffected, but those directly referencing auto-configuration classes may need to update imports. JUnit 4 support has been fully retired.
+
 Pitfalls:
-Mixing @MockBean and @MockitoBean in the same suite can lead to unpredictable application context behavior. A full migration to @MockitoBean is required.
+Mixing @MockBean and @MockitoBean in the same suite can lead to unpredictable application context behavior. A full migration to @MockitoBean is required. The `@MockitoBean` annotation lives in `org.springframework.test.context.bean.override.mockito.MockitoBean` (Spring Framework), not in Spring Boot's test package.
 
 #### **Minimal Code Example**
 
@@ -429,6 +491,8 @@ class OrderIntegrationTest {
 2. **Strict Nullity:** Configure the IDE and build tools to treat JSpecify violations as errors. This is the only way to ensure robustness, particularly in mixed Java/Kotlin environments.4
 3. **Immutable Configuration:** With the changes in Jackson 3 and internal Spring optimizations, move away from mutable JavaBean-style configuration properties. Use Java Records (record) annotated with @ConfigurationProperties.
 4. **AOT Readiness:** Even if not compiling to Native Image immediately, write code that is AOT-friendly. Avoid unrestricted reflection and prefer the RuntimeHints API for dynamic capabilities. This ensures the application is future-proofed for serverless deployments where startup time is critical.
+5. **GraalVM 25 & Native Images** [Updated 2026-03]**:** Spring Framework 7.0 adopts GraalVM 25's unified reachability metadata format, producing leaner native images. Native image builds require GraalVM 25+ (Java 25 baseline). Spring Boot 4 applications compiled as native images show startup times under 100ms and memory footprints as low as 60 MB, compared to 8+ seconds and 512 MB on the JVM.41
+6. **Built-in Resilience:** Replace external `spring-retry` with the new `org.springframework.resilience` package. Use `@EnableResilientMethods` to activate `@Retryable` and `@ConcurrencyLimit` annotations natively.
 
 ---
 
@@ -459,7 +523,7 @@ src/main/java/com/company/app
 ```kotlin
 plugins {
     java
-    id("org.springframework.boot") version "4.0.0"
+    id("org.springframework.boot") version "4.0.4"
     id("io.spring.dependency-management") version "1.1.7"
     kotlin("jvm") version "2.2.0"
     kotlin("plugin.spring") version "2.2.0"
@@ -518,11 +582,13 @@ management.tracing.sampling.probability=1.0
 spring.docker.compose.enabled=true
 ```
 
-## **Conclusion**
+## **Conclusion** [Updated 2026-03]
 
-Spring Boot 4 is a rigorous modernization of the Java enterprise landscape. By enforcing strict boundaries through Modulith, strict typing through JSpecify, and simplified concurrency through Virtual Threads, it reduces the cognitive load required to build scalable systems. The migration cost—particularly regarding the Jackson 3 package rename and the Spring Security 7 Lambda DSL—is non-trivial and will require significant refactoring of legacy codebases. However, the resulting platform provides a stable, high-performance foundation optimized for the next decade of JVM innovation.
+Spring Boot 4 is a rigorous modernization of the Java enterprise landscape. Now four months post-GA with four patch releases delivered (4.0.4 as of March 2026), the platform has proven stable in production with an active cadence of security fixes and dependency upgrades. By enforcing strict boundaries through Modulith, strict typing through JSpecify, simplified concurrency through Virtual Threads, and first-party resilience through built-in retry/throttling, it reduces the cognitive load required to build scalable systems.
 
-#### **Works cited**
+The migration cost—particularly regarding the Jackson 3 package rename, the Spring Security 7 Lambda DSL, and the modularization of auto-configuration—is non-trivial and will require significant refactoring of legacy codebases. However, the resulting platform provides a stable, high-performance foundation optimized for the next decade of JVM innovation. The upcoming Spring Boot 4.1 release (with gRPC support, enhanced OpenTelemetry, and AMQP 1.0) further expands the ecosystem's capabilities.
+
+## References
 
 1. Spring Boot 4 and Spring Framework 7: Key Features and Changes - Loiane Groner, accessed December 18, 2025, [https://loiane.com/2025/08/spring-boot-4-spring-framework-7-key-features/](https://loiane.com/2025/08/spring-boot-4-spring-framework-7-key-features/)
 2. Spring Framework 7.0 Release Notes - GitHub, accessed December 18, 2025, [https://github.com/spring-projects/spring-framework/wiki/Spring-Framework-7.0-Release-Notes](https://github.com/spring-projects/spring-framework/wiki/Spring-Framework-7.0-Release-Notes)
@@ -559,3 +625,17 @@ Spring Boot 4 is a rigorous modernization of the Java enterprise landscape. By e
 33. Spring Boot 4 - OpenTelemetry Guide - Foojay.io, accessed December 18, 2025, [https://foojay.io/today/spring-boot-4-opentelemetry-explained/](https://foojay.io/today/spring-boot-4-opentelemetry-explained/)
 34. Spring Boot @ServiceConnection Example - Mkyong.com, accessed December 18, 2025, [https://mkyong.com/spring-boot/spring-boot-serviceconnection-example/](https://mkyong.com/spring-boot/spring-boot-serviceconnection-example/)
 35. Cannot find MockBean in Spring Boot 4.0.0 - Stack Overflow, accessed December 18, 2025, [https://stackoverflow.com/questions/79828472/cannot-find-mockbean-in-spring-boot-4-0-0](https://stackoverflow.com/questions/79828472/cannot-find-mockbean-in-spring-boot-4-0-0)
+36. Core Spring Resilience Features: @ConcurrencyLimit, @Retryable, and RetryTemplate - Spring Blog, accessed March 26, 2026, [https://spring.io/blog/2025/09/09/core-spring-resilience-features](https://spring.io/blog/2025/09/09/core-spring-resilience-features)
+37. Spring Boot 4 Modularization: Fix Auto-Configuration Issues After Upgrading - Dan Vega, accessed March 26, 2026, [https://www.danvega.dev/blog/spring-boot-4-modularization](https://www.danvega.dev/blog/spring-boot-4-modularization)
+38. Spring Boot 4 & Spring Framework 7 – What's New - Baeldung, accessed March 26, 2026, [https://www.baeldung.com/spring-boot-4-spring-framework-7](https://www.baeldung.com/spring-boot-4-spring-framework-7)
+39. Spring Boot 4.1.0-M3 Release Notes - GitHub, accessed March 26, 2026, [https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.1.0-M3-Release-Notes](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.1.0-M3-Release-Notes)
+40. Spring Modulith 2.1 M2, 2.0.4, and 1.4.8 released - Spring Blog, accessed March 26, 2026, [https://spring.io/blog/2026/02/19/spring-modulith-2-1-m2-2-0-3-and-1-4-8-released](https://spring.io/blog/2026/02/19/spring-modulith-2-1-m2-2-0-3-and-1-4-8-released)
+41. Spring Boot 4.0 Release Highlights - Spring.io, accessed March 26, 2026, [https://spring.io/projects/release-highlights](https://spring.io/projects/release-highlights)
+42. Spring Security 7 Multi-Factor Authentication: Complete Tutorial - Dan Vega, accessed March 26, 2026, [https://www.danvega.dev/blog/spring-security-7-multi-factor-authentication](https://www.danvega.dev/blog/spring-security-7-multi-factor-authentication)
+43. Optimizations in Spring MVC - Spring Blog, accessed March 26, 2026, [https://spring.io/blog](https://spring.io/blog) (Dave Syer, February 25, 2026)
+44. Moving beyond Strings in Spring Data - Spring Blog, accessed March 26, 2026, [https://spring.io/blog](https://spring.io/blog) (Mark Paluch, February 27, 2026)
+45. Spring Boot 4.0.4 available now - Spring Blog, accessed March 26, 2026, [https://spring.io/blog/2026/03/19/spring-boot-4-0-4-available-now](https://spring.io/blog/2026/03/19/spring-boot-4-0-4-available-now)
+46. Spring Framework 6.2.17 and 7.0.6 Available Now - Spring Blog, accessed March 26, 2026, [https://spring.io/blog/2026/03/13/spring-framework-6-2-17-and-7-0-6-available-now](https://spring.io/blog/2026/03/13/spring-framework-6-2-17-and-7-0-6-available-now)
+47. Spring Authorization Server moving to Spring Security 7.0 - Spring Blog, accessed March 26, 2026, [https://spring.io/blog/2025/09/11/spring-authorization-server-moving-to-spring-security-7-0](https://spring.io/blog/2025/09/11/spring-authorization-server-moving-to-spring-security-7-0)
+48. The Ultimate Guide to Spring Boot 4 Migration - Coding Steve, accessed March 26, 2026, [https://stevenpg.com/posts/ultimate-guide-spring-boot-4-migration/](https://stevenpg.com/posts/ultimate-guide-spring-boot-4-migration/)
+49. Spring Boot 4.0 Release Notes - GitHub Wiki, accessed March 26, 2026, [https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.0-Release-Notes](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-4.0-Release-Notes)
