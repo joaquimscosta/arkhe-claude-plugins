@@ -3,20 +3,40 @@ title: "Spring Boot 4 DDD Implementation: Technical Reference"
 version: "1.0.0"
 status: Published
 created: 2025-12-20
-last_updated: 2025-12-20
+last_updated: 2026-03-26
 ---
 
 # Spring Boot 4 DDD implementation: A complete technical reference
 
-Spring Boot 4.0.0, released November 20, 2025, fundamentally reshapes enterprise Java development with complete codebase modularization, Jakarta EE 11 alignment, and first-class JSpecify null safety. This report provides expert-level guidance for implementing Domain-Driven Design across the data access layer, web layer, and modular architecture—with production-ready code examples in both Java and Kotlin.
+## Executive Summary
+
+This document provides expert-level guidance for implementing Domain-Driven Design (DDD) patterns with Spring Boot 4 and Spring Framework 7, covering the data access layer, web layer, and modular architecture with production-ready code examples in both Java and Kotlin. Key findings include Spring Data JDBC's first-class aggregate support, Spring Modulith 2.0's event-driven bounded context isolation, and the significant migration requirements around Jackson 3 package relocation, restructured starter dependencies, and JSpecify null safety adoption. The report also tracks the latest ecosystem developments through March 2026, including Spring Data 2026.0's type-safe property references and Spring Modulith 2.1's outbox-based event externalization. Backend architects, senior developers, and DDD practitioners working with Spring Boot 4 will find actionable patterns, anti-pattern checklists, and a comprehensive version compatibility matrix.
+
+Spring Boot 4.0.0, released November 20, 2025 (latest: **4.0.4**, March 2026), fundamentally reshapes enterprise Java development with complete codebase modularization, Jakarta EE 11 alignment, and first-class JSpecify null safety. This report provides expert-level guidance for implementing Domain-Driven Design across the data access layer, web layer, and modular architecture—with production-ready code examples in both Java and Kotlin.
 
 The new modular architecture breaks Spring Boot into **focused, technology-specific JARs** that reduce artifact size dramatically (the old `spring-boot-autoconfigure` jar grew to 2 MiB). Java 17 remains the baseline, but **Java 25 is strongly recommended** for virtual thread support and optimal performance. Spring Framework 7 underpins all changes, bringing native API versioning, declarative retry with `@Retryable`, and a portfolio-wide transition to Jackson 3.
+
+> **Release cadence [Updated 2026-03]**: Spring Boot 4.0.x has maintained a rapid patch cadence — 4.0.1 (Dec 2025), 4.0.2 (Jan 2026, 62 fixes), 4.0.3 (Feb 2026, 47 fixes, Java 26 `JavaVersion` enum added), 4.0.4 (Mar 2026, 67 fixes, 2 CVE patches for Actuator authentication bypass). Spring Boot 4.1.0-M2 is the current milestone for the next feature release. Jackson 2 removal has been delayed until 4.3 at the earliest.
 
 ---
 
 ## Data access layer: Aggregates, repositories, and DDD patterns
 
 Spring Data JPA 2025.1 and Spring Data JDBC form the foundation for DDD-compliant persistence. Spring Data JDBC inherently aligns with DDD by treating **aggregates as first-class concepts**—everything reachable from an aggregate root through non-transient references belongs to that aggregate.
+
+> **Spring Data 2026.0 Preview [Updated 2026-03]**: The upcoming Spring Data 2026.0 release train (M2 released March 2026, targeting Spring Boot 4.1) introduces **type-safe property references** — a major DDD improvement that eliminates stringly-typed property paths in queries, sorts, and criteria. This enables compile-time validation of domain property references:
+>
+> ```java
+> // Before: fragile string references
+> Sort.by("firstName", "lastName");
+> // After: type-safe, refactoring-friendly
+> Sort.by(Person::getFirstName, Person::getLastName);
+>
+> // Kotlin syntax
+> PropertyPath.of(Person::address / Address::city)
+> ```
+>
+> Type-safe paths are available across Spring Data JPA (via `Expressions` utility for CriteriaBuilder), Spring Data JDBC/R2DBC (via `Criteria` and `Update` API), and Spring Data MongoDB. Spring Tools 5.2.0 adds automated refactoring from string-based to type-safe references.
 
 ### Repository patterns and Spring Boot 4 changes
 
@@ -409,6 +429,10 @@ class ProductApiTests {
 
 Spring Modulith 2.0 (for Spring Boot 4) provides an opinionated toolkit for building modular monolithic applications. Each module maps directly to a DDD bounded context, with **package conventions enforcing encapsulation** and **event-driven communication** maintaining loose coupling.
 
+> **Spring Modulith 2.0 GA and 2.1 Preview [Updated 2026-03]**: Modulith 2.0 GA (Nov 2025) shipped with major features: overhauled event publication lifecycle (Neo4j, MongoDB, JDBC, JPA), application-module-specific Flyway migrations, serialized event externalization, Jackson 3 support, jSpecify nullness migration, startup module verification, and `package-info.java` Javadoc extraction. Upgraded baselines to Spring Boot 4 / Framework 7.
+>
+> **Modulith 2.1 M2** (Feb 2026) adds: **outbox-based event externalization** via Namastack Outbox (multi-instance, order-preserving publication), combinable `@ApplicationModuleTest` with horizontal slice tests, application-wide event capture in `PublishedEvents`/`Scenario` (no longer thread-bound), and revamped observability metrics. Patch releases 2.0.4 and 1.4.8 also available.
+
 ### Module structure and boundaries
 
 The standard package layout defines module boundaries:
@@ -545,6 +569,17 @@ EventExternalizationConfiguration eventExternalization() {
 }
 ```
 
+#### Outbox-based event externalization [Updated 2026-03]
+
+Spring Modulith 2.1 introduces an alternative to the built-in asynchronous event-listener-based externalization: **outbox-based externalization via Namastack Outbox**. This approach supports multi-instance deployments and order-preserving event publication, which is critical for distributed DDD systems where event ordering matters:
+
+- Events are written to an outbox table within the same transaction as the domain change
+- A separate poller publishes events to Kafka/AMQP, ensuring at-least-once delivery
+- Multiple application instances can safely process events without duplication
+- Maintains strict ordering per aggregate/partition key
+
+Note that `PublishedEvents` and `Scenario` now capture events application-wide (not thread-bound), enabling tests to verify events published from independent thread pools such as the outbox poller.
+
 ---
 
 ## Spring Boot 4 migration essentials
@@ -553,9 +588,9 @@ EventExternalizationConfiguration eventExternalization() {
 
 **Removed technologies:** Undertow (incompatible with Servlet 6.1), Pulsar Reactive, embedded uber-jar launch scripts, Spring Session Hazelcast/MongoDB (now community-maintained).
 
-**Jackson 3 migration:** Packages relocated from `com.fasterxml.jackson` to `tools.jackson`. Annotations renamed: `@JsonComponent` → `@JacksonComponent`, `@JsonMixin` → `@JacksonMixin`. A Jackson 2 compatibility module (`spring-boot-jackson2`) eases migration.
+**Jackson 3 migration:** Packages relocated from `com.fasterxml.jackson` to `tools.jackson`. Annotations renamed: `@JsonComponent` → `@JacksonComponent`, `@JsonMixin` → `@JacksonMixin`. A Jackson 2 compatibility module (`spring-boot-jackson2`) eases migration. **[Updated 2026-03]**: Jackson 2 removal has been delayed until Spring Boot 4.3 at the earliest, providing a longer migration window.
 
-**Testing changes:** `@SpringBootTest` no longer auto-configures MockMvc—add `@AutoConfigureMockMvc` explicitly. WebClient and TestRestTemplate beans also require explicit configuration.
+**Testing changes:** `@SpringBootTest` no longer auto-configures MockMvc—add `@AutoConfigureMockMvc` explicitly. WebClient and TestRestTemplate beans also require explicit configuration. **[Updated 2026-03]**: The `spring-boot-starter-test-classic` includes the old behavior but has had compatibility issues with slice tests (fixed in 4.0.3).
 
 ### Starter dependencies restructured
 
@@ -647,6 +682,8 @@ public class UserService {
 - Reference other aggregates by ID, not direct object references
 - Use the Scenario API to test event flows across modules
 - Generate module documentation with `new Documenter(modules).writeDocumentation()`
+- [Updated 2026-03] For multi-instance deployments, use outbox-based event externalization (Modulith 2.1) instead of the default async listener for reliable, ordered event delivery
+- [Updated 2026-03] Leverage application-module-specific Flyway migrations (Modulith 2.0) to keep schema evolution aligned with module boundaries
 
 ### Configuration pitfalls
 
@@ -659,21 +696,22 @@ public class UserService {
 
 ---
 
-## Version compatibility matrix
+## Version compatibility matrix [Updated 2026-03]
 
-| Component | Spring Boot 4.0 Requirement |
-|-----------|----------------------------|
-| Java | 17+ (25 recommended) |
-| Kotlin | 2.2+ |
-| GraalVM | 25+ (for native) |
-| Spring Framework | 7.0 |
-| Jakarta EE | 11 |
-| Servlet | 6.1 |
-| Hibernate | 7.1 |
-| Jackson | 3.x |
-| Tomcat | 11+ |
-| Jetty | 12.1+ |
-| Spring Modulith | 2.0 |
+| Component | Spring Boot 4.0.4 Requirement | Notes |
+|-----------|-------------------------------|-------|
+| Java | 17+ (25 recommended) | Java 26 `JavaVersion` enum added in 4.0.3 |
+| Kotlin | 2.2+ | 2.3 recommended for latest Detekt/tooling |
+| GraalVM | 25+ (for native) | Native image Java version check improved in 4.0.3 |
+| Spring Framework | 7.0.x | |
+| Spring Data | 2025.1.x (4.0.x) / 2026.0.0-M2 (4.1.x) | Type-safe property paths in 2026.0 |
+| Jakarta EE | 11 | |
+| Servlet | 6.1 | |
+| Hibernate | 7.1 | |
+| Jackson | 3.x (Jackson 2 via compat module) | Jackson 2 removal delayed to 4.3+ |
+| Tomcat | 11+ | |
+| Jetty | 12.1+ | `jetty-ee11-servlets` no longer bundled (4.0.2) |
+| Spring Modulith | 2.0.4 (stable) / 2.1-M2 | Outbox support in 2.1 |
 
 ---
 
@@ -684,3 +722,32 @@ Spring Boot 4 represents a significant architectural evolution toward **modulari
 For DDD practitioners, the combination of Spring Data JDBC's aggregate-first design, Spring Modulith's event-driven inter-module communication, and the comprehensive JSpecify null safety creates a robust foundation for domain modeling. Migration from Spring Boot 3.x requires attention to Jackson 3 package changes, explicit test annotations, and the new starter naming conventions—but the classic starters provide a gradual transition path.
 
 Key adoption priorities: upgrade through 3.5.x to catch deprecation warnings, add technology-specific test starters, enable ProblemDetail globally, verify module structure with `ApplicationModules.verify()`, and embrace `@ApplicationModuleListener` for loosely coupled event handling across bounded contexts.
+
+### What's next [Updated 2026-03]
+
+The Spring ecosystem continues to evolve rapidly with DDD-relevant improvements:
+
+- **Spring Data 2026.0** (targeting Spring Boot 4.1): Type-safe property references eliminate stringly-typed queries — a significant DDD improvement for expressing domain queries safely
+- **Spring Modulith 2.1**: Outbox-based event externalization for production-grade distributed DDD systems, improved test observability with application-wide event capture
+- **Spring Boot 4.0.4**: Security patches (Actuator auth bypass CVEs), continued stabilization of the 4.0.x line
+- **Spring AI integration**: Anthropic Agent Skills support and agentic patterns (A2A protocol, subagent orchestration) added to the Spring AI project, enabling AI-augmented domain services
+- **Jackson 2 sunset extended**: Removal delayed to 4.3 at earliest, providing a longer migration window for large codebases
+- **CQRS/Event Sourcing**: Growing ecosystem support through Axon Framework integration with Spring Boot 4, hexagonal architecture patterns gaining traction as community best practices
+
+---
+
+## References
+
+- **Spring Boot 4.0** — Application framework providing auto-configuration, dependency management, and production-ready features. Latest: 4.0.4 (March 2026). https://spring.io/projects/spring-boot
+- **Spring Framework 7** — Core framework underpinning Spring Boot 4, introducing native API versioning, declarative retry with `@Retryable`, and JSpecify null safety. https://spring.io/projects/spring-framework
+- **Spring Data JPA 2025.1** — Data access abstraction for JPA with aggregate-first design, AOT repositories, and specification types (`PredicateSpecification`, `UpdateSpecification`, `DeleteSpecification`). https://spring.io/projects/spring-data-jpa
+- **Spring Data JDBC** — DDD-aligned persistence module treating aggregates as first-class concepts with automatic boundary enforcement. https://spring.io/projects/spring-data-jdbc
+- **Spring Data 2026.0** — Upcoming release train introducing type-safe property references eliminating stringly-typed property paths in queries and sorts. https://spring.io/projects/spring-data
+- **Spring Modulith 2.0 / 2.1** — Toolkit for modular monolithic applications providing bounded context enforcement, event-driven communication, and outbox-based event externalization (2.1). https://spring.io/projects/spring-modulith
+- **Jackson 3** — JSON processing library with relocated `tools.jackson` package namespace, immutable `JsonMapper` configuration, and breaking changes from Jackson 2. https://github.com/FasterXML/jackson
+- **Jakarta EE 11** — Enterprise Java specifications including Servlet 6.1, JPA 3.2, and Bean Validation 3.1 required by Spring Boot 4. https://jakarta.ee/
+- **Hibernate 7.1** — JPA implementation providing StatelessSession improvements and Jakarta Data integration. https://hibernate.org/orm/
+- **JSpecify** — Standardized null-safety annotations (`@Nullable`, `@NonNull`, `@NullMarked`) adopted portfolio-wide by Spring Framework 7. https://jspecify.dev/
+- **RFC 9457 / RFC 7807** — IETF standards for Problem Details for HTTP APIs, supported natively via `ProblemDetail` in Spring Framework 7. https://www.rfc-editor.org/rfc/rfc9457
+- **Kotlin 2.2** — JVM language with K2 compiler, strict null-safety translation from JSpecify annotations. https://kotlinlang.org/
+- **Axon Framework** — CQRS and Event Sourcing framework with growing Spring Boot 4 integration. https://www.axoniq.io/

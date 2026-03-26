@@ -1,10 +1,14 @@
 ---
 title: "Domain-Driven Design: A Practical Guide to Strategic and Tactical Patterns"
-version: "1.0.0"
+version: "1.1.0"
 status: Published
 created: 2025-12-18
-last_updated: 2025-12-18
+last_updated: 2026-03-26
 ---
+
+## Executive Summary
+
+This document provides a comprehensive guide to Domain-Driven Design (DDD), covering both strategic patterns (subdomains, bounded contexts, context mapping, Event Storming) and tactical patterns (entities, value objects, aggregates, domain services, repositories, domain events). It synthesizes two decades of DDD practice from Evans through Vernon and Brandolini, with significant updates for 2025-2026 including AI-assisted domain discovery, the industry consensus on modular monoliths as the default architecture, and the emerging intersection of DDD with agentic AI systems. The core recommendation is to prioritize strategic design -- understanding domain boundaries and ubiquitous language -- before reaching for tactical patterns, and to apply tactical DDD selectively only in core domains where genuine complexity demands it. This guide is intended for software architects, backend engineers, and technical leads working on complex business domains.
 
 # Domain-Driven Design: A practical guide to strategic and tactical patterns
 
@@ -57,6 +61,10 @@ Alberto Brandolini's **Event Storming** (2013) has become the dominant domain di
 The technique operates at three levels of zoom. **Big picture** sessions with 25-30 participants explore entire business lines, identifying boundaries and opportunities over 1-2 days. **Process modeling** focuses on specific business processes with more rigorous grammar. **Software design** adds aggregates and bounded contexts, bridging business and technical concerns.
 
 A critical technique is **reverse narrative**—working backward from events to discover hidden ones—which typically reveals 30-40% additional system behavior. The outcome provides shared understanding, discovered subdomain and bounded context boundaries, aggregate identification, and foundation for ubiquitous language.
+
+**AI-assisted Event Storming (2025-2026):** LLMs are increasingly used to accelerate domain discovery. AI can place domain events on a timeline from natural language descriptions, generate candidate read/write models, suggest aggregate boundaries, and even produce bounded context maps — turning what traditionally took days into hours. However, practitioners emphasize that AI-generated models are starting points, not substitutes for collaborative workshops with domain experts. The critical value of Event Storming — shared understanding across business and technical stakeholders — cannot be replicated by AI alone.
+
+**Complementary techniques gaining traction:** Example Mapping (for acceptance criteria discovery) and Domain Storytelling (pictographic narratives capturing domain knowledge) are increasingly combined with Event Storming in a three-ceremony approach that covers discovery, specification, and implementation design.
 
 ---
 
@@ -120,6 +128,8 @@ Each bounded context becomes a module with its own domain layer, application lay
 
 The modular monolith offers significant advantages over premature microservices: single deployment simplicity, no network latency for in-process calls, simpler transaction handling, faster initial development, lower infrastructure costs, and easier debugging. Choose modular monolith when the team is under 20 developers, domain boundaries aren't yet clear, time-to-market is critical, infrastructure budget is limited, or strong consistency requirements exist.
 
+**2026 industry consensus:** The modular monolith has become the recommended default starting architecture. As one practitioner summarized: "Every microservices project I've started from scratch was wrong" (Anto Semeraro, Mar 2026). The "monolith" label has been rehabilitated — what matters is whether boundaries are enforced, not how services are deployed. "If you do a physical split without a proper logical split, it ends poorly" (DO OK Engineering, Feb 2026). Multiple conference talks and industry articles through early 2026 converge on the same message: start modular, split later when you have evidence.
+
 A well-structured modular monolith is already prepared for future decomposition. The migration path involves establishing strict module boundaries, adding a message broker to replace in-memory events, extracting high-load modules as separate services using the Strangler Fig pattern, and adding anticorruption layers during transition.
 
 ### Microservices align to bounded contexts with important nuances
@@ -144,6 +154,8 @@ Strategies to work around these limitations include accepting compromises with p
 
 **Spring Data JDBC offers a DDD-friendly alternative** that enforces aggregate boundaries naturally—no lazy loading, automatic deletion of aggregate children, and reference-by-ID as the default. Document databases like MongoDB also fit naturally since they store aggregates as documents. Choose JPA when the team has expertise and complex queries are needed; choose Spring Data JDBC for clean DDD models on greenfield projects.
 
+**Spring Modulith (updated Mar 2026):** Spring Modulith has matured significantly as a framework for DDD-aligned modular monoliths. Version 2.1 M2 (Feb 2026) added outbox-based event externalization via Namastack Outbox, supporting multi-instance, order-preserving publication — a critical capability for production event-driven architectures. Spring Modulith enforces module boundaries at compile time, makes DDD building blocks explicit in code, and provides automatic documentation generation of module interactions. JetBrains IntelliJ IDEA now offers dedicated tooling support for Spring Modulith migrations (Feb 2026). Spring Boot 4.0 with Java 21 provides production-ready DDD scaffolding, with community templates emerging for rapid project setup.
+
 ### Event sourcing and CQRS add power and complexity
 
 **Event sourcing** stores aggregate state as a sequence of domain events rather than current state—the aggregate rebuilds by replaying events. This provides complete audit trails, time-travel debugging, and flexibility in creating projections. The pattern fits when audit or compliance requirements exist, the domain naturally thinks in events, historical state reconstruction is needed, or event-driven architecture is already in place.
@@ -153,6 +165,8 @@ Event sourcing is **not appropriate for simple CRUD, teams unfamiliar with the p
 **CQRS** separates the model for writes (commands with aggregates enforcing invariants) from the model for reads (optimized projections). The write side maintains the rich domain model; the read side provides denormalized DTOs for UI and reporting. CQRS can be implemented without event sourcing by publishing events after writes and updating read models through event listeners.
 
 Both patterns are **module-level decisions, not system-wide mandates**. Apply them within specific bounded contexts where the complexity is justified.
+
+**Tooling updates (2025-2026):** Axon Framework remains the dominant JVM framework for CQRS/ES, with continued Spring Boot integration for command handling, event storage, projections, and saga orchestration. EventStoreDB continues as the leading dedicated event store with TypeScript and Python SDK support. The `cqrs-es-spec-kit-js` project (2025) demonstrates AI-driven specification-driven development for CQRS/ES systems with DDD and GraphQL, representing the convergence of spec-driven development practices with event-sourced architectures.
 
 ### Frontend benefits from strategic DDD, not tactical patterns
 
@@ -200,6 +214,24 @@ Thought leaders beyond Evans have shaped modern practice. Vaughn Vernon's "Red B
 
 Key shifts include moving **from patterns to boundaries** ("It's Domain Driven Design, not pattern-driven design"), from tactical to strategic focus, from big design upfront to evolutionary modeling, from OO purism to pragmatism accepting functional approaches, and from single team scope to organizational alignment using DDD for team topology decisions.
 
+### DDD in the age of AI and agentic systems (2025-2026)
+
+The rise of LLM-powered agents has created a new intersection between DDD and AI engineering. Several developments are reshaping how DDD is applied:
+
+**Agents as bounded contexts.** Each AI agent operates within its own model of the domain. When an agent confuses "booking" (revenue) with "booking" (risk), the failure is a bounded context violation. DDD's strategic patterns — particularly bounded contexts, ubiquitous language, and anticorruption layers — provide the architectural vocabulary to prevent agents from "mashing" domain concepts across boundaries.
+
+**DDD for agentic codebases.** A February 2026 conference talk ("From Prompt Spaghetti to Bounded Contexts") demonstrated how DDD transforms agentic coding from "prompt spaghetti" into maintainable engineering. The key insight: the same boundary-drawing discipline that prevents monolithic code rot also prevents prompt and tool sprawl in AI systems.
+
+**AI accelerates DDD adoption, not replaces it.** LLMs can generate domain models, suggest aggregate boundaries, and produce bounded context maps from natural language descriptions. However, the collaborative aspects of DDD — shared understanding, ubiquitous language discovery, and strategic boundary decisions — remain fundamentally human activities. As one practitioner noted: "AI discovers correlation. DDD encodes intent." LLMs are brilliant at finding patterns but do not know what those patterns *mean* in a business context.
+
+**Domain-Driven Agent Design.** Russ Miles (Oct 2025) formalized the concept of agents that are domain-aware — understanding not just tools and tasks but the business context in which they operate. Agents without domain awareness produce technically correct but business-invalid results.
+
+### New DDD resources (2025-2026)
+
+- **"DDD Toolbox"** by Annegret Junker (2026) — A pocket guide connecting DDD strategic design with technical implementation, targeting the gap between high-level strategy and code.
+- **Explore DDD 2026** (Denver, Sep 2026) — Conference featuring workshops on essential DDD, microservice design, and collaborative modeling.
+- **KanDDDinsky 2026** (Berlin, Oct 2026) — Community-organized DDD conference focusing on collaboration, diversity, and learning.
+
 ---
 
 ## Conclusion: Strategic boundaries precede tactical patterns
@@ -208,4 +240,73 @@ The most actionable insight from twenty years of DDD practice is that **strategi
 
 Start with a modular monolith structured around bounded contexts rather than premature microservices. Apply tactical patterns selectively—only in core domains where complexity warrants the investment. Most supporting and generic subdomains are better served by simple CRUD or off-the-shelf solutions. The aggregate design rules matter: keep them small, reference by ID, and use eventual consistency between them.
 
-**The evolution from 2003 to 2025 reveals DDD's true purpose isn't about implementing repositories or domain events—it's about creating shared understanding between developers and domain experts that manifests in code.** Ubiquitous language and bounded contexts remain the most powerful tools in the DDD toolkit, valuable even in projects that never implement a single tactical pattern. The question isn't "how do we implement DDD?" but rather "where does complexity genuinely justify this investment?"
+**The evolution from 2003 to 2026 reveals DDD's true purpose isn't about implementing repositories or domain events—it's about creating shared understanding between developers and domain experts that manifests in code.** Ubiquitous language and bounded contexts remain the most powerful tools in the DDD toolkit, valuable even in projects that never implement a single tactical pattern.
+
+The emergence of AI-powered development in 2025-2026 has not diminished DDD's relevance — it has amplified it. AI agents that lack domain awareness produce technically correct but business-invalid results. Bounded contexts prevent agents from conflating domain concepts across boundaries. And the modular monolith, long championed by DDD practitioners, has become the consensus default architecture for 2026, vindicating the strategic-first approach that DDD has always advocated.
+
+The question isn't "how do we implement DDD?" but rather "where does complexity genuinely justify this investment?" — and increasingly, "how do we ensure our AI agents respect the domain boundaries we've carefully drawn?"
+
+---
+
+## References
+
+### Books
+
+- **Eric Evans** — *Domain-Driven Design: Tackling Complexity in the Heart of Software* (2003). The foundational text that introduced ubiquitous language, bounded contexts, aggregates, and strategic/tactical patterns.
+- **Vaughn Vernon** — *Implementing Domain-Driven Design* (2013). Known as the "Red Book," provides practical implementation focus and the canonical four aggregate design rules.
+- **Vaughn Vernon** — *Domain-Driven Design Distilled* (2016). A concise introduction to DDD strategic and tactical patterns.
+- **Vladik Khononov** — *Learning Domain-Driven Design* (2021). An accessible modern introduction to DDD for contemporary software teams.
+- **Annegret Junker** — *DDD Toolbox* (2026). A pocket guide connecting DDD strategic design with technical implementation.
+- **Robert C. Martin (Uncle Bob)** — *Clean Architecture* (2017). Defines the layered architecture pattern with the Dependency Rule that aligns with DDD's domain-centric approach.
+
+### Techniques and Methodologies
+
+- **Event Storming** — Alberto Brandolini (2013). Collaborative domain discovery technique using sticky notes to surface domain events, commands, actors, and aggregate boundaries. Operates at big picture, process modeling, and software design levels.
+- **Example Mapping** — Acceptance criteria discovery technique increasingly combined with Event Storming.
+- **Domain Storytelling** — Pictographic narrative technique for capturing domain knowledge, used alongside Event Storming.
+- **Context Mapping** — Eight integration patterns (Partnership, Shared Kernel, Customer-Supplier, Conformist, Anticorruption Layer, Open Host Service, Published Language, Separate Ways) governing relationships between bounded contexts.
+- **Reverse Narrative** — Event Storming technique of working backward from events; typically reveals 30-40% additional system behavior.
+
+### Architectural Patterns
+
+- **Hexagonal Architecture (Ports and Adapters)** — Alistair Cockburn (2005). Domain-centric architecture using ports and adapters for external integration.
+- **Onion Architecture** — Jeffrey Palermo (2008). Concentric layer architecture with Domain Model at the core.
+- **Clean Architecture** — Robert C. Martin. Entities, Use Cases, Interface Adapters, and Frameworks with inward dependency direction.
+- **Modular Monolith** — Single deployable application structured as independent modules per bounded context. Industry consensus default architecture for 2026.
+- **Strangler Fig Pattern** — Incremental migration strategy for decomposing monoliths into microservices.
+- **Saga Pattern** — Distributed transaction management across microservices.
+- **Outbox Pattern** — Reliable event publication ensuring events are persisted alongside aggregate state changes.
+
+### Frameworks and Tools
+
+- **Context Mapper DSL** — Domain-specific language for explicit bounded context specification with automated visualization.
+- **Spring Modulith** — Framework for DDD-aligned modular monoliths with compile-time boundary enforcement and event externalization. Version 2.1 M2 (Feb 2026) added Namastack Outbox support.
+- **Spring Data JDBC** — DDD-friendly persistence alternative to JPA that enforces aggregate boundaries naturally.
+- **Spring Boot 4.0** — Production-ready DDD scaffolding with Java 21 support.
+- **Axon Framework** — Dominant JVM framework for CQRS and Event Sourcing with Spring Boot integration.
+- **EventStoreDB** — Leading dedicated event store with TypeScript and Python SDK support.
+- **cqrs-es-spec-kit-js** (2025) — AI-driven specification-driven development for CQRS/ES systems with DDD and GraphQL.
+
+### People
+
+- **Eric Evans** — Creator of Domain-Driven Design (2003).
+- **Vaughn Vernon** — Author of *Implementing DDD*, formalized aggregate design rules.
+- **Alberto Brandolini** — Creator of Event Storming (2013).
+- **Greg Young** — Formalized CQRS and Event Sourcing patterns.
+- **Martin Fowler** — Identified the Anemic Domain Model anti-pattern (2003).
+- **Alistair Cockburn** — Creator of Hexagonal Architecture (2005).
+- **Jeffrey Palermo** — Creator of Onion Architecture (2008).
+- **Vladik Khononov** — Author of *Learning Domain-Driven Design*.
+- **Russ Miles** — Formalized Domain-Driven Agent Design for AI systems (Oct 2025).
+
+### Conferences
+
+- **Explore DDD 2026** (Denver, Sep 2026) — Workshops on essential DDD, microservice design, and collaborative modeling.
+- **KanDDDinsky 2026** (Berlin, Oct 2026) — Community-organized DDD conference focusing on collaboration, diversity, and learning.
+
+### Industry Sources
+
+- **Microsoft Documentation** — DDD approaches for complex microservices with significant business rules.
+- **Anto Semeraro** (Mar 2026) — "Every microservices project I've started from scratch was wrong."
+- **DO OK Engineering** (Feb 2026) — "If you do a physical split without a proper logical split, it ends poorly."
+- **JetBrains IntelliJ IDEA** (Feb 2026) — Dedicated tooling support for Spring Modulith migrations.

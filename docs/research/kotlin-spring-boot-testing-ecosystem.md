@@ -3,7 +3,7 @@ title: "Backend Testing Ecosystem for Kotlin + Spring Boot 4"
 version: "1.0.0"
 status: Published
 created: 2026-03-05
-last_updated: 2026-03-05
+last_updated: 2026-03-26
 slug: kotlin-spring-boot-testing-ecosystem
 aliases: ["spring-boot-4-testing", "kotlin-testing-libraries", "spring-modulith-testing"]
 tags: ["kotlin", "spring-boot", "testing", "junit5", "testcontainers", "spring-modulith", "mockk", "assertj", "kover", "mutation-testing", "contract-testing"]
@@ -76,6 +76,10 @@ sources:
 ---
 
 # Backend Testing Ecosystem for Kotlin + Spring Boot 4
+
+## Executive Summary
+
+This document provides a comprehensive evaluation of the testing ecosystem for Kotlin 2.2 + Spring Boot 4.0.1 + Java 21 projects as of March 2026. It covers nine categories -- assertions, test data generation, code coverage, property-based testing, API/controller testing, contract testing, database testing, mutation testing, and Spring Modulith testing -- with version-specific compatibility findings and adoption recommendations. The primary stack recommendation centers on AssertJ for assertions, Instancio for test data, Kover for Kotlin-native code coverage, jqwik for property-based testing, MockMvcTester for API tests, and Pact for contract testing. Key findings include REST Assured's incompatibility with Spring Boot 4 due to unresolved javax/jakarta namespace issues, Strikt and Kluent being unmaintained, and PIT mutation testing being best deferred until domain test coverage matures. This research is intended for backend developers and tech leads making tooling decisions for Spring Boot 4 Kotlin projects.
 
 ## Overview
 
@@ -591,3 +595,33 @@ These are zero-new-dependency additions or minimal-risk additions:
 _Add project-specific notes, implementation references, and team knowledge here._
 
 <!-- TEAM-NOTES: End -->
+
+## References
+
+- **AssertJ** (v3.27.7) -- Fluent assertion library for Java/Kotlin, bundled with Spring Boot starter-test. [GitHub releases](https://github.com/assertj/assertj-core/releases)
+- **Kotest** (v6.1.4) -- Kotlin-first testing framework with standalone assertions module. [GitHub releases](https://github.com/kotest/kotest/releases)
+- **Strikt** (v0.35.1) -- Type-safe Kotlin assertion library (unmaintained since mid-2024). [Maven Central](https://central.sonatype.com/artifact/io.strikt/strikt-core)
+- **Kluent** -- Kotlin assertion library, officially discontinued (2025).
+- **Instancio** (v5.4.1) -- Test data generator for JVM objects with JUnit 5 integration. [Getting started](https://instancio.org/getting-started), [GitHub releases](https://github.com/instancio/instancio/releases)
+- **kotlin-faker** (v2.0.0-rc.10) -- Kotlin port of Faker for locale-specific data generation. [Maven Central](https://central.sonatype.com/artifact/io.github.serpro69/kotlin-faker)
+- **Fixture Monkey** (v1.1.15) -- Property-based test data generator by Naver. [GitHub releases](https://github.com/naver/fixture-monkey/releases)
+- **EasyRandom** -- Random object generator (unmaintained since 2022).
+- **Kover** (v0.9.7) -- JetBrains Kotlin-native code coverage tool. [Gradle plugin](https://plugins.gradle.org/plugin/org.jetbrains.kotlinx.kover), [GitHub](https://github.com/Kotlin/kotlinx-kover)
+- **JaCoCo** -- Java code coverage library; poor handling of Kotlin inline functions and coroutines.
+- **jqwik** (v1.9.3) -- Property-based testing engine for JUnit 5 with dedicated Kotlin module. [Release notes](https://jqwik.net/release-notes.html)
+- **MockMvcTester** -- Spring Framework 6.2+ AssertJ-integrated controller testing (built into Spring Boot 4).
+- **RestTestClient** -- Spring Boot 4 typed response body testing via `spring-boot-starter-webmvc-test`.
+- **WebTestClient** -- Spring WebFlux test client; package relocated in Boot 4.0.
+- **REST Assured** -- HTTP API testing library; `spring-mock-mvc` module broken with jakarta namespace. [GitHub issue #1853](https://github.com/rest-assured/rest-assured/issues/1853)
+- **Spring REST Docs** -- Test-driven API documentation generator for Spring MVC.
+- **SpringDoc/OpenAPI** -- Runtime OpenAPI spec generation via annotation scanning.
+- **Spring Cloud Contract** -- Provider-driven contract testing within the Spring ecosystem.
+- **Pact** (pact-jvm v4.6.x) -- Consumer-driven contract testing supporting Java, Kotlin, TypeScript, and Swift.
+- **Testcontainers** -- Docker-based integration testing with reusable container support. [Reuse docs](https://java.testcontainers.org/features/reuse/)
+- **Database Rider** -- DBUnit wrapper with Spring integration issues (skipped).
+- **PIT / pitest** (v1.19.1) -- Mutation testing for JVM with Kotlin bytecode support. Uses `info.solidsoft.gradle.pitest` Gradle plugin.
+- **Spring Modulith** (v2.0.x) -- Module architecture verification with `@ApplicationModuleTest` and Scenario DSL. [Testing reference](https://docs.spring.io/spring-modulith/reference/testing.html)
+- **Spring Boot 4.0** -- Next Level Kotlin Support blog post. [Spring Blog](https://spring.io/blog/2025/12/18/next-level-kotlin-support-in-spring-boot-4)
+- **Rethinking Spring Application Integration Testing** -- Oliver Drotbohm. [Blog post](https://odrotbohm.de/2025/12/rethinking-spring-application-integration-testing/)
+- **MockMvcTester vs RestTestClient in Spring Boot 4** -- Dan Vega. [Blog post](https://www.danvega.dev/blog/mock-vs-rest)
+- **Testing Strategy for Multi-Tenant Web Applications Using TestContainers** -- CEUR Workshop Proceedings. [Paper (PDF)](https://ceur-ws.org/Vol-4077/paper3.pdf)

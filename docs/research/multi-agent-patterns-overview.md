@@ -3,12 +3,16 @@ title: "Multi-Agent Orchestration Patterns: Quick Reference"
 version: "1.0.0"
 status: Published
 created: 2026-03-19
-last_updated: 2026-03-19
+last_updated: 2026-03-26
 ---
 
 # Multi-Agent Orchestration Patterns: Quick Reference
 
 > Reusable patterns for any multi-agent system — skills, agents, workflows, or autonomous loops.
+
+## Executive Summary
+
+This document is a quick-reference catalog of 15 multi-agent orchestration patterns, designed for rapid lookup when designing or extending agent workflows. Patterns are organized into five categories: core architectural concepts (specialized roles, event-driven routing, completion promises, backpressure), multi-agent coordination (pipeline, critic-actor, adversarial review, supervisor-worker, rotating roles, scientific method), quality and confidence (confidence-gated completion, confession pattern, specification-first, documentation-first), state and persistence (persistent memory, task tracking, fresh context per iteration), and scaling and integration (human-in-the-loop, parallel execution). Each entry provides a concise description, "when to use" guidance, and an analogy for intuition. The document also includes a pattern composition table and a decision matrix for choosing the right pattern. For detailed implementations, Mermaid diagrams, and reference YAML configurations, see the companion deep-dive document.
 
 ---
 
@@ -179,3 +183,9 @@ These patterns compose naturally. Common combinations:
 | Context reliability | Fresh Context per Iteration |
 | Human judgment | Human-in-the-Loop |
 | Independent work streams | Parallel Execution |
+
+## References
+
+- **Multi-Agent Orchestration Patterns: Deep Dive** -- Companion document with full reference implementations, Mermaid diagrams, YAML configurations, and cross-domain application examples. See `docs/research/multi-agent-patterns-deep-dive.md`
+- **Ralph Orchestrator** -- Autonomous development loop system whose `ralph.yml` configuration and presets serve as the primary source for pattern implementations in the companion deep-dive.
+- **CLAUDE.md** -- Project-level configuration containing Ralph Tenets that inform the Backpressure and Fresh Context patterns.

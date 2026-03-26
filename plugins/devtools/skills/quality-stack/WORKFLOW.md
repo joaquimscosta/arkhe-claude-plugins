@@ -39,6 +39,7 @@ Cross-reference: detected tools vs recommended tools (per ecosystem)
     ▼
 Apply priority classification rules (per ecosystem)
   ├── JVM: Language-aware (Kotlin/Java/mixed), version-aware (Spring Boot 3.x/4.x)
+  │   └── Cross-reference BOTH JVM docs (see JVM Cross-Reference Checklist below)
   ├── Node.js: Framework-aware (Next.js/React/Vue), TypeScript strict audit
   ├── Python: Framework-aware (Django/FastAPI/Flask), dep manager aware
   └── Cross-cutting: Git hooks, CI/CD, dependency automation, security
@@ -50,23 +51,47 @@ Generate recommendation report (grouped by ecosystem)
 Present to user with AskUserQuestion (multiSelect: true, top NOW/SOON tools as options)
 ```
 
+### JVM Cross-Reference Checklist
+
+When JVM ecosystem is detected, cross-reference against BOTH research documents:
+
+1. **jvm-quality-tools-evaluation.md** — static analysis, coverage, build tools, security
+2. **kotlin-spring-boot-testing-ecosystem.md** — check the "Priority Actions" section for:
+   - [ ] MockMvcTester (Spring Boot 3.4+, built-in)
+   - [ ] @DataJpaTest slice tests (has JPA entities but no slice tests)
+   - [ ] Testcontainers reuse mode (has Testcontainers but no reuse config)
+   - [ ] Assertion library assessment (Kotest assertions vs AssertJ)
+   - [ ] Hamcrest exclusion (should be excluded from test classpath)
+   - [ ] Scenario DSL (if using Spring Modulith)
+
+Do NOT skip testing-ecosystem items even if the quality-tools doc already covers testing.
+The two docs have different scopes — quality-tools covers tool presence, testing-ecosystem
+covers testing patterns and practices.
+
 ## Phase 2: Setup
 
 ```
-USER selects tools via AskUserQuestion response (or types custom selection)
+Present recommendation report to user
     │
     ▼
-Read relevant research doc section for selected tool
+Multi-round tool selection (see Tool Selection Protocol in Recommendation Report Format below):
+  ├── Round 1: NOW tools per ecosystem (AskUserQuestion multiSelect)
+  ├── Round 2: Cross-cutting NOW tools (if any remain)
+  └── Round 3: SOON tools (if user wants more)
+    │
+    ▼
+Collect all selected tools across rounds
     │
     ▼
 For each selected tool:
-  ├── 1. Add Gradle plugin / Maven plugin declaration
-  ├── 2. Add test dependencies (if applicable)
-  ├── 3. Create config files (detekt.yml, .trivyignore, etc.)
-  └── 4. Add CI/CD workflow steps (if applicable)
+  ├── 1. Apply Setup Guards (see below) — resolve version, check compatibility
+  ├── 2. Add Gradle plugin / Maven plugin / npm package / config file
+  ├── 3. Add test dependencies (if applicable)
+  ├── 4. Add CI/CD workflow steps (if applicable)
+  └── 5. Run Post-Setup Verification (see below) — MUST pass before next tool
     │
     ▼
-Re-run scan_project.py to confirm detection
+Re-run scan_project.py to confirm all tools detected
     │
     ▼
 Report: "Added {N} tools. Scanner now detects: {list}"
@@ -119,17 +144,34 @@ When the project root contains no build file or is a monorepo:
 | LATER | {tool} | {category} | {reason} |
 | SKIP | {tool} | {category} | {reason} |
 
-### Ready to set up?
+### Tool Selection Protocol
 
-[AskUserQuestion — multiSelect: true]
-Question: "Which tools would you like me to configure?"
-Options (dynamically built from NOW + SOON recommendations):
-1. "{tool1} — {short reason}" (NOW items first)
-2. "{tool2} — {short reason}"
-3. "{tool3} — {short reason}"
-4. "Skip setup — I'll configure manually"
+Present tools in priority-ordered rounds. Each round uses AskUserQuestion (multiSelect: true).
+Include effort estimates in option descriptions.
 
-Include up to 4 highest-priority tools as options. User can select multiple or type custom choices via "Other".
+**Round 1 — NOW tools** (per ecosystem; if >3 NOW tools across ecosystems, split by ecosystem):
+
+Question: "Which NOW-priority {ecosystem} tools should I configure?"
+Options: Up to 3 NOW tools + "Skip {ecosystem} NOW tools"
+
+Example options:
+- "Detekt (5 min) — Kotlin static analysis with baseline"
+- "MockK (2 min) — add testImplementation dependency"
+- "EditorConfig (1 min) — create root .editorconfig"
+- "Skip JVM NOW tools"
+
+**Round 2 — Cross-cutting NOW tools** (if any remain after Round 1):
+
+Question: "Which cross-cutting tools should I configure?"
+Options: Up to 3 cross-cutting NOW tools + "Skip cross-cutting"
+
+**Round 3 — SOON tools** (if user wants more):
+
+Question: "Any SOON-priority tools to add? (These need minor setup)"
+Options: Top 3 SOON tools by impact + "Done — no more tools"
+
+**Collapse rule**: If only 1 ecosystem detected AND <=3 NOW tools total, collapse all
+rounds into a single AskUserQuestion with all NOW tools + "Skip setup".
 ```
 
 ## Priority Classification Rules
@@ -278,6 +320,9 @@ With `--recursive`, a sixth key is added:
     - Each entry has a `path` (relative to project root) and `tools` map
     - Only present when frontend tools are actually detected
     - Not used in recommendation phase — only consumed during Lefthook setup (Phase 2)
+14. `editor_config.subdirectory_configs` -> list of subdirectory `.editorconfig` files with `is_root` flag
+    - If any entry has `is_root: true`, warn: "Subdirectory {path}/.editorconfig has `root = true` — this blocks inheritance from the project root .editorconfig"
+    - Must be resolved before creating or modifying root `.editorconfig`
 
 ## Lefthook Setup Flow (Phase 2)
 
@@ -388,6 +433,77 @@ gitleaks version  # verify
 ### 5. Re-run Scanner
 
 Re-run `scan_project.py` to confirm `git_hooks` category now shows lefthook as `active`.
+
+---
+
+## Post-Setup Verification (Phase 2)
+
+After configuring EACH tool, perform these verification steps before moving to the next tool.
+
+### 1. Run the tool's check command
+
+| Tool | Verification Command |
+|------|---------------------|
+| Detekt | `./gradlew detekt` |
+| Kover | `./gradlew koverHtmlReport` (then check report exists) |
+| ktlint | `./gradlew ktlintCheck` |
+| ESLint | `npx eslint .` |
+| Prettier | `npx prettier --check .` |
+| Ruff | `ruff check .` |
+| mypy | `mypy .` |
+| Lefthook | `npx lefthook run pre-commit` |
+
+### 2. Verify patterns against codebase
+
+For tools with filter/exclusion patterns (Kover, Detekt, .gitignore additions):
+- List actual file/class paths that should match the pattern
+- Verify each path matches by testing the pattern logic
+- For Kover: check that `*` only matches within one package segment
+
+### 3. Check for config inheritance conflicts
+
+- EditorConfig: check `editor_config.subdirectory_configs` for `is_root: true` entries that block inheritance
+- Gradle: verify no `buildSrc` or convention plugin overrides the new plugin declaration
+- tsconfig: verify no `extends` chain overrides new strict settings
+
+### 4. If verification fails
+
+- Fix the issue immediately
+- Re-run the verification command
+- Do NOT move to the next tool until verification passes
+
+---
+
+## Setup Guards
+
+Before configuring any tool in Phase 2, apply these guards.
+
+### Version Resolution
+
+NEVER guess a tool version. Use this resolution order:
+
+1. Check the research doc's version compatibility table (if present)
+2. If research doc lacks the version, fetch the tool's releases page or Gradle Plugin Portal via WebFetch
+3. For JVM tools: verify Kotlin version compatibility before applying
+4. For Gradle plugins: verify the correct plugin ID (names change across major versions)
+
+### Tool-Specific Guards
+
+**Detekt**:
+- Kotlin 2.0.x → Detekt 1.23.x (plugin ID: `io.gitlab.arturbosch.detekt`)
+- Kotlin 2.1.x+ → Detekt 2.x (plugin ID: `dev.detekt`); may need Kotlin version pin in detekt config
+- Detekt 2.x config properties differ from 1.x (e.g., `threshold` → `allowedLines`, `thresholdInFiles` → `allowedFunctionsPerFile`)
+- When in doubt: run `./gradlew detektGenerateConfig` and modify the generated file
+
+**Kover**:
+- Filter pattern `*` matches characters within one package segment only (NOT across dots like Unix globs)
+- Use `annotatedBy("fully.qualified.Annotation")` for annotation-based exclusion
+- Recommended for Spring `@Configuration` classes: `annotatedBy("org.springframework.context.annotation.Configuration")`
+- Always test exclusion patterns against actual class paths: list matching classes and verify the pattern covers them
+
+**EditorConfig**:
+- Before creating root `.editorconfig`, check scanner output for `editor_config.subdirectory_configs`
+- If any subdirectory has `is_root: true`, it blocks inheritance — warn the user and offer to remove `root = true` from the subdirectory file
 
 ---
 
@@ -638,7 +754,7 @@ For projects with multiple ecosystems, the report groups by ecosystem:
 
 ---
 
-### Ready to set up?
+### Tool Selection
 
-[AskUserQuestion — multiSelect: true]
+Use the multi-round Tool Selection Protocol (see Recommendation Report Format above).
 ```

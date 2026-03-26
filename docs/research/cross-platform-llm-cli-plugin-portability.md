@@ -3,7 +3,7 @@ title: Cross-platform LLM CLI Plugin Portability
 version: "1.0.0"
 status: Published
 created: 2026-03-04
-last_updated: 2026-03-04
+last_updated: 2026-03-26
 slug: cross-platform-llm-cli-plugin-portability
 aliases: []
 tags: ["gemini-cli", "codex-cli", "mcp", "plugin-portability", "cross-platform", "agent-skills", "SKILL.md"]
@@ -14,6 +14,10 @@ sources: []
 
 <!-- AUTO-GENERATED: Start -->
 # Cross-platform LLM CLI Plugin Portability
+
+## Executive Summary
+
+This document evaluates cross-platform plugin portability across the three dominant AI coding CLIs of 2026: Anthropic's Claude Code, Google's Gemini CLI, and OpenAI's Codex CLI. The key finding is that Agent Skills (the SKILL.md open standard) and MCP servers provide the highest portability today, working unchanged across all three tools and 40+ additional platforms. Other components -- agents, commands, and hooks -- require format conversion or have no equivalents across tools. Teams seeking maximum reuse should adopt the `.agents/skills/` universal directory for skills, use STDIO MCP servers for tool connectivity, and configure context file aliasing for instruction portability. This guide is essential reading for plugin authors, platform engineers, and teams maintaining AI-assisted development tooling across multiple CLI environments.
 
 ## Overview
 

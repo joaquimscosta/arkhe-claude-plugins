@@ -200,15 +200,64 @@ def scan_commit_conventions(root: Path) -> List[dict]:
 # ---------------------------------------------------------------------------
 
 
+def _scan_subdir_editorconfigs(root: Path) -> List[dict]:
+    """Find .editorconfig files in subdirectories and check for root=true.
+
+    Scans two levels deep (e.g., apps/api/) to catch monorepo patterns.
+    """
+    configs: List[dict] = []
+
+    try:
+        for entry in root.iterdir():
+            if not entry.is_dir() or entry.name in SKIP_DIRS:
+                continue
+            ec_path = entry / ".editorconfig"
+            if ec_path.exists():
+                content = read_file_safe(ec_path)
+                is_root = bool(
+                    re.search(r"root\s*=\s*true", content or "", re.IGNORECASE)
+                )
+                configs.append({
+                    "path": str(entry.relative_to(root)),
+                    "is_root": is_root,
+                })
+            # Check one level deeper (apps/api/, packages/web/)
+            try:
+                for subentry in entry.iterdir():
+                    if not subentry.is_dir() or subentry.name in SKIP_DIRS:
+                        continue
+                    ec_path = subentry / ".editorconfig"
+                    if ec_path.exists():
+                        content = read_file_safe(ec_path)
+                        is_root = bool(
+                            re.search(
+                                r"root\s*=\s*true", content or "", re.IGNORECASE
+                            )
+                        )
+                        configs.append({
+                            "path": str(subentry.relative_to(root)),
+                            "is_root": is_root,
+                        })
+            except Exception:
+                pass
+    except Exception:
+        pass
+
+    return configs
+
+
 def scan_editor_config(root: Path) -> dict:
-    """Detect and audit EditorConfig setup."""
+    """Detect and audit EditorConfig setup, including subdirectory conflicts."""
     result = {
         "detected": False,
         "settings": {},
+        "subdirectory_configs": [],
     }
 
     content = read_file_safe(root / ".editorconfig")
     if content is None:
+        # Still scan subdirectories — they may have configs even without root
+        result["subdirectory_configs"] = _scan_subdir_editorconfigs(root)
         return result
 
     result["detected"] = True
@@ -235,6 +284,9 @@ def scan_editor_config(root: Path) -> dict:
     )
 
     result["settings"] = settings
+
+    # Scan subdirectories for .editorconfig files that may block inheritance
+    result["subdirectory_configs"] = _scan_subdir_editorconfigs(root)
     return result
 
 

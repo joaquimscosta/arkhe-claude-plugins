@@ -163,6 +163,77 @@ python3 --version
 
 Build file contains non-UTF-8 characters. The scanner uses `encoding="utf-8"`. If the project uses a different encoding, convert the file or report the issue.
 
+## Setup Issues
+
+### Detekt version not found on Gradle Plugin Portal
+
+**Symptom**: Build fails with "Plugin not found" or "Kotlin version mismatch" after adding Detekt
+
+**Root causes**:
+1. **Guessed version**: A version was used that doesn't exist (e.g., `v1.24.0`). NEVER guess versions — always verify against the Gradle Plugin Portal or the research doc.
+2. **Wrong plugin ID**: Detekt 2.x uses `dev.detekt`, not `io.gitlab.arturbosch.detekt` (1.x).
+3. **Kotlin version mismatch**: Detekt has strict Kotlin version compatibility.
+
+**Resolution**:
+
+| Kotlin Version | Detekt Version | Plugin ID |
+|----------------|----------------|-----------|
+| 2.0.x | 1.23.x | `io.gitlab.arturbosch.detekt` |
+| 2.1.x+ | 2.0.0-alpha.2+ | `dev.detekt` |
+
+For Kotlin 2.3.x with Detekt 2.x: you may need to pin the Kotlin version in the detekt configuration. If config errors occur, run `./gradlew detektGenerateConfig` to generate a valid config file for the current version.
+
+**Detekt 1.x → 2.x config property changes**:
+- `threshold` → `allowedLines`
+- `thresholdInFiles` → `allowedFunctionsPerFile`
+
+### Kover filter not matching expected classes
+
+**Symptom**: Kover report includes classes that should be excluded by filter patterns
+
+**Root cause**: Kover's `*` wildcard matches characters within ONE package segment only (does not cross dots). This differs from Unix glob behavior.
+
+**Examples**:
+```
+Pattern: "dev.skola.api.*.*Config"
+Matches: dev.skola.api.shared.JpaConfig          (2 segments after api)
+Misses:  dev.skola.api.shared.internal.JpaConfig  (3 segments — * can't cross the dot)
+```
+
+**Recommended approach**: Use annotation-based exclusion instead of class name patterns:
+```kotlin
+kover {
+    reports {
+        filters {
+            excludes {
+                annotatedBy("org.springframework.context.annotation.Configuration")
+            }
+        }
+    }
+}
+```
+
+This automatically excludes all `@Configuration` classes regardless of package depth.
+
+### Root .editorconfig ignored by subdirectory
+
+**Symptom**: Root `.editorconfig` settings have no effect in a subdirectory
+
+**Root cause**: The subdirectory has its own `.editorconfig` with `root = true`, which stops the editor from searching parent directories.
+
+**Detection**: The scanner reports this in `editor_config.subdirectory_configs`:
+```json
+{
+  "subdirectory_configs": [
+    {"path": "apps/api", "is_root": true}
+  ]
+}
+```
+
+**Resolution**: Remove `root = true` from the subdirectory `.editorconfig` to allow inheritance from the project root. If the subdirectory needs specific overrides, keep the file but remove only the `root = true` line.
+
+---
+
 ## Lefthook Issues
 
 ### `lefthook: command not found`
