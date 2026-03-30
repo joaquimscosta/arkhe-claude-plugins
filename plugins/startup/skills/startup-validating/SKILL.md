@@ -5,7 +5,7 @@ description: >
   and composable domain presets. Use when user runs /startup-validate command, wants to validate
   a startup idea, mentions "startup validation", "idea validation", "market validation",
   "feasibility analysis", or "go-to-market plan".
-argument-hint: "\"<idea>\" [--preset <name>]... [--fast] [--deep] [--from <N>] [--stage <N>] [--name <slug>]"
+argument-hint: "\"<idea>\" | @<file> [--preset <name>]... [--fast] [--deep] [--from <N>] [--stage <N>] [--name <slug>]"
 allowed-tools: Read, Write, Glob, Grep, Agent, AskUserQuestion
 ---
 
@@ -30,7 +30,8 @@ Parse from `$ARGUMENTS`:
 
 | Flag | Effect |
 |------|--------|
-| `"<idea>"` | The startup idea to validate (required) |
+| `"<idea>"` | The startup idea to validate (required — or use `@file`) |
+| `@<file>` | Provide idea description or research brief from a file |
 | `--preset <name>` | Load preset from `presets/` dir (composable) |
 | `--fast` | Skip decision gates, run all stages autonomously |
 | `--deep` | Spawn parallel sub-agents per stage + critic synthesis |
@@ -54,6 +55,7 @@ Reports are saved to `startup-validation/{slug}/` in the current project:
 ```
 startup-validation/{slug}/
 ├── idea.md
+├── pipeline-state.json          ← created on PAUSE, consumed on resume
 ├── stage-1-market-validation.md
 ├── stage-2-feasibility.md
 ├── stage-3-product-design.md

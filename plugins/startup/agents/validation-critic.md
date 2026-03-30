@@ -90,3 +90,4 @@ Write the final report to the file path provided, following the Stage Report For
 - Distinguish between "we researched this and found nothing" and "we didn't research this."
 - Your confessions should be specific, not generic. "Some assumptions were made" is useless.
   "Assumed the regulatory framework won't change in the next 2 years based on no evidence of pending legislation" is useful.
+- Consolidate all URLs cited by sub-agents into a unified Sources section. Deduplicate and note which sub-agent referenced each source. If no external sources were consulted by any sub-agent, state this explicitly.

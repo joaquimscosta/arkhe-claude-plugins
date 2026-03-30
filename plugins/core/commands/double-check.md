@@ -186,19 +186,19 @@ Merge all results into the final output.
 
 | Gate | Status | Details |
 |------|--------|---------|
-| Tests | :white_check_mark:/:x:/SKIP | ... |
-| Lint | :white_check_mark:/:x:/SKIP | ... |
-| Types | :white_check_mark:/:x:/SKIP | ... |
-| Build | :white_check_mark:/:x:/SKIP | ... |
+| Tests | ✅/❌/SKIP | ... |
+| Lint | ✅/❌/SKIP | ... |
+| Types | ✅/❌/SKIP | ... |
+| Build | ✅/❌/SKIP | ... |
 
 **Verification Summary:**
 
 | Angle | Status | Notes |
 |-------|--------|-------|
-| Completeness | :white_check_mark:/:x: | ... |
-| Correctness | :white_check_mark:/:x: | ... |
-| Integration | :white_check_mark:/:x: | ... |
-| Quality | :white_check_mark:/:x: | ... |
+| Completeness | ✅/❌ | ... |
+| Correctness | ✅/❌ | ... |
+| Integration | ✅/❌ | ... |
+| Quality | ✅/❌ | ... |
 
 **Issues (if any):**
 

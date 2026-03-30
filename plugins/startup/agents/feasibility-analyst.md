@@ -77,3 +77,5 @@ Write your report following the Stage Report Format. Include confidence score (0
 - Consider the founding team's likely resources (small team, limited budget)
 - If regulatory requirements are complex, outline the critical path to compliance
 - Flag any requirement that could take 6+ months to fulfill
+- Include a Confession section documenting assumptions made without verification, areas of genuine uncertainty, and data you could not find. Keep concise (3-5 bullet points). Be specific — "Assumed X because Y" is useful; "Some assumptions were made" is not.
+- Include a Sources section listing all URLs consulted via deep-research. For each source, note what information was obtained. If no external sources were consulted, state this explicitly.

@@ -32,6 +32,21 @@
 **Cause**: A previous run with the same name/slug exists.
 **Fix**: This is intentional — resume mode. Existing stage reports are preserved. New runs will overwrite only the stages being re-run. Use `--name` with a different slug for a fresh run.
 
+### Resuming a paused pipeline
+
+**Cause**: You chose PAUSE at a decision gate and want to continue later.
+**Fix**: Use `/startup-validate --from <next-stage> --name <slug>`. The orchestrator will auto-load `pipeline-state.json` from the output directory with your previous scores and settings. If the state file is missing but stage reports exist on disk, the pipeline will still work — it just won't have the saved scores context.
+
+### "Report lacks specific data" warning
+
+**Cause**: The orchestrator verification step found that a stage report contains few specific data points (numbers, dates, named entities).
+**Fix**: This is a quality warning, not an error. Consider re-running the stage with `--deep` mode for more thorough research, or check that the EXA deep-research skill is properly configured.
+
+### "No external sources consulted" warning
+
+**Cause**: The orchestrator found that the stage report's Sources section indicates no external URLs were consulted via deep-research.
+**Fix**: This means the analysis may rely on stale training data. Ensure the core plugin is installed and the EXA MCP server is configured. Re-running the stage should trigger deep-research with real-time data.
+
 ### Agent errors or timeouts
 
 **Cause**: Complex ideas with multiple presets may produce large context payloads.

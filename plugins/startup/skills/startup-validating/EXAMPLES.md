@@ -10,6 +10,22 @@
 
 Runs all 6 stages with human-in-the-loop decision gates. No presets — uses general knowledge.
 
+### Validate from a research brief
+
+```bash
+/startup-validate @research-brief.md
+```
+
+Reads the idea description and any research context from the file. The orchestrator extracts the idea and asks you to confirm mode and presets interactively.
+
+### Validate with file and flags
+
+```bash
+/startup-validate @idea.md --preset fintech --preset cape-verde --deep
+```
+
+Combines file-based idea input with explicit CLI flags. Since flags are provided, the orchestrator skips interactive confirmation for mode and presets.
+
 ### Validate with domain presets
 
 ```bash
@@ -65,5 +81,7 @@ Saves output to `startup-validation/pos-system/` instead of auto-generated slug.
 1. **First pass** (interactive): `/startup-validate "idea" --preset fintech`
 2. **Review Stage 1**: If market looks weak, PIVOT or refine the idea
 3. **Continue**: PROCEED through remaining stages
-4. **Deep dive on weak areas**: `/startup-validate "idea" --stage 2 --deep --name my-idea`
-5. **Final scorecard**: Check `startup-validation/my-idea/summary.md`
+4. **Pause for later**: At any decision gate, choose PAUSE to save progress
+5. **Resume later**: `/startup-validate --from 3 --name my-idea` (auto-loads saved state from `pipeline-state.json`)
+6. **Deep dive on weak areas**: `/startup-validate "idea" --stage 2 --deep --name my-idea`
+7. **Final scorecard**: Check `startup-validation/my-idea/summary.md`

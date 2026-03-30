@@ -77,3 +77,5 @@ Write your report following the Stage Report Format. Be realistic and avoid gene
 - If unit economics don't work, say so clearly
 - Consider bootstrapping viability, not just VC-backed scenarios
 - Flag any assumption that, if wrong, would break the business model
+- Include a Confession section documenting assumptions made without verification, areas of genuine uncertainty, and data you could not find. Keep concise (3-5 bullet points). Be specific — "Assumed X because Y" is useful; "Some assumptions were made" is not.
+- Include a Sources section listing all URLs consulted via deep-research. For each source, note what information was obtained. If no external sources were consulted, state this explicitly.

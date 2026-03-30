@@ -1,6 +1,6 @@
 ---
 description: Validate a startup idea through a 6-stage pipeline with decision gates, confidence scoring, and domain presets
-argument-hint: "<idea description>" [--preset <name>]... [--fast] [--deep] [--from <N>] [--stage <N>] [--name <slug>]
+argument-hint: "<idea description>" | @<file> [--preset <name>]... [--fast] [--deep] [--from <N>] [--stage <N>] [--name <slug>]
 ---
 
 # Startup Validate
@@ -11,6 +11,8 @@ Validate a startup idea through 6 structured stages, each with expert analysis a
 
 ```bash
 /startup-validate "remittance app for US-Cape Verde diaspora"
+/startup-validate @research-brief.md
+/startup-validate @idea.md --preset fintech --deep
 /startup-validate "NôsPay" --preset fintech --preset cape-verde
 /startup-validate "NôsPay" --preset fintech --fast
 /startup-validate "NôsPay" --preset fintech --deep

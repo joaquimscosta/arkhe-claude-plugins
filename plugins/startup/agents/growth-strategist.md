@@ -75,3 +75,5 @@ Write your report following the Stage Report Format. Focus on practical, low-bud
 - Consider the target market's media consumption and communication habits
 - Account for geographic and cultural context from presets
 - Every tactic should have a measurable success metric
+- Include a Confession section documenting assumptions made without verification, areas of genuine uncertainty, and data you could not find. Keep concise (3-5 bullet points). Be specific — "Assumed X because Y" is useful; "Some assumptions were made" is not.
+- Include a Sources section listing all URLs consulted via deep-research. For each source, note what information was obtained. If no external sources were consulted, state this explicitly.

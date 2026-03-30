@@ -6,14 +6,32 @@ Complete orchestration protocol for the 6-stage startup validation pipeline.
 
 ### 1.1 Parse Arguments
 
-Extract from `$ARGUMENTS`:
-- **idea**: The quoted idea description (required — if missing, ask the user)
+Determine the input shape of `$ARGUMENTS` before parsing:
+
+**Shape A — Well-formed CLI**: Contains a quoted idea string and/or recognized flags (`--preset`, `--fast`, `--deep`, `--from`, `--stage`, `--name`). Parse directly:
+- **idea**: The quoted idea description
 - **presets**: All `--preset <name>` values → list of preset names
 - **fast**: Boolean, true if `--fast` present
 - **deep**: Boolean, true if `--deep` present
 - **from_stage**: Integer N from `--from <N>` (default: 1)
 - **single_stage**: Integer N from `--stage <N>` (default: null)
 - **name**: String from `--name <slug>` (default: null)
+
+If all required fields are present (at minimum: idea or `--from`), skip 1.1b and proceed to 1.2.
+
+**Shape B — File content / unstructured text**: `$ARGUMENTS` contains multi-line content (from `@file` references), no recognized flags, or a block of text without quotes. Treat the content as the idea description or a research brief. Extract any embedded flags if present, then fall through to 1.1b.
+
+**Shape C — Empty or ambiguous**: `$ARGUMENTS` is empty, contains only flags without an idea, or does not clearly convey an idea description. Fall through to 1.1b.
+
+### 1.1b Interactive Confirmation
+
+**Only triggered for Shape B or Shape C inputs.** Use `AskUserQuestion` for a 3-step confirmation:
+
+1. **Confirm idea**: Present the extracted idea description (for Shape B) or ask for one (Shape C). Example: "I extracted the following idea: '{text}'. Is this correct, or would you like to refine it?"
+2. **Choose mode**: Standard (default, with decision gates), Deep (parallel specialists + critic), or Fast (autonomous, no gates).
+3. **Choose presets**: List available presets by reading `${CLAUDE_SKILL_DIR}/../../presets/*.md` filenames (without `.md` extension). Allow the user to select zero or more.
+
+If `$ARGUMENTS` contained Shape B content with research documents (not just an idea description), store the research content for injection in Phase 2 (see section 2.1, item 4).
 
 ### 1.2 Generate Slug
 
@@ -34,6 +52,8 @@ output_dir = startup-validation/{slug}/
 ```
 
 Create the directory if it doesn't exist. If it already exists (resume scenario), preserve existing files.
+
+**Resume from pipeline state**: If `--from` is used and `{output_dir}/pipeline-state.json` exists, read the state file and auto-populate: idea, mode, presets, completed stages, and prior scores. Log: "Resuming from pipeline state. Completed stages: {list}. Next: Stage {N}." Delete `pipeline-state.json` after successful load (it has been consumed).
 
 ### 1.4 Write idea.md
 
@@ -73,8 +93,9 @@ For each stage to run, execute the following protocol.
 Assemble the context payload for the stage agent:
 
 1. **Idea description** from idea.md
-2. **Preset content**: Concatenate all preset bodies whose `applies-to-stages` includes this stage number (or all presets if `applies-to-stages` is not set)
+2. **Preset content**: Concatenate all preset bodies whose `applies-to-stages` includes this stage number (or all presets if `applies-to-stages` is not set). Note: Presets provide domain context, not constraints. Agents should use relevant sections and ignore irrelevant ones (e.g., if a fintech preset includes remittance corridor data but the idea is about developer tools, the agent should focus on regulatory sections and disregard remittance-specific data).
 3. **Previous stage reports**: For stages 2+, read any existing `stage-{N}-*.md` files from the output directory. If `--from` was used and prior reports don't exist, warn: "Note: No prior stage reports found on disk. Agent will work without prior context." and proceed.
+4. **User-provided research**: If the user referenced files via `@file` or provided research documents during initialization (see 1.1b), include a "Research Context" section in the agent prompt. Summarize each document as a bullet-point list of key claims and data points (do not include full document content). Add the instruction: "Consider this prior research as context but stress-test its assumptions — do not accept claims at face value."
 
 ### 2.2 Standard Mode (no --deep)
 
@@ -96,6 +117,9 @@ Agent(
     ## Previous Stage Analysis
     {previous stage reports, or 'This is the first stage.' if stage 1}
 
+    ## Research Context (user-provided)
+    {bullet-point summaries of research docs, or omit this section if none}
+
     ## Instructions
     Analyze this idea from your expert perspective. Use the deep-research skill
     to search for real market data, competitors, regulations, and trends via EXA.
@@ -103,6 +127,7 @@ Agent(
     Produce a structured report following the Stage Report Format.
     Include a confidence score (0-100) and a verdict (STRONG / MODERATE / WEAK).
     End with a recommendation: PROCEED / PROCEED WITH CAVEATS / ITERATE / STOP.
+    Include a Confession section and a Sources section (see Stage Report Format).
 
     Write your report to: {output_dir}/stage-{N}-{stage-slug}.md
   "
@@ -119,6 +144,17 @@ Agent(
 | 4 | `business-strategist` | `business-model` |
 | 5 | `growth-strategist` | `go-to-market` |
 | 6 | `execution-planner` | `execution-roadmap` |
+
+### 2.2b Orchestrator Verification (Standard Mode)
+
+After the agent writes its report, verify report quality before proceeding to the decision gate:
+
+1. **File check**: Confirm the report file exists at the expected path.
+2. **Section check**: Read the report and verify these required sections are present: Confidence score and Verdict in the header, Analysis, Key Findings, Risks & Concerns, Confession, Sources, Decision Gate.
+3. **Sources check**: If the Sources section says "No external sources consulted" or is empty, log a warning: "Warning: Stage {N} report contains no external sources. Analysis may rely on stale training data."
+4. **Substance check**: If the report contains fewer than 3 specific data points (numbers, dates, named entities), log a warning: "Warning: Stage {N} report appears to lack specific data. Consider re-running with --deep."
+
+If any check fails, log the warning but still proceed to the decision gate. Never block the pipeline on verification warnings.
 
 ### 2.3 Deep Mode (--deep)
 
@@ -144,12 +180,16 @@ Agent(
     ## Previous Analysis
     {previous stage reports}
 
+    ## Research Context (user-provided)
+    {bullet-point summaries of research docs, or omit this section if none}
+
     ## Your Focus
     {sub-role-specific focus areas}
 
     Use the deep-research skill to search for real data via EXA.
     Produce a focused analysis document covering your area of expertise.
     Be critical, realistic, and evidence-based.
+    List all URLs consulted in a Sources section at the end.
   "
 )
 ```
@@ -193,6 +233,10 @@ Agent(
 )
 ```
 
+### 2.3b Orchestrator Verification (Deep Mode)
+
+After the validation-critic writes the synthesized report, run the same verification as 2.2b: file check, section check, sources check, and substance check. Log warnings but never block the pipeline.
+
 ### 2.4 Decision Gate
 
 After the stage report is written (standard or deep mode):
@@ -213,21 +257,43 @@ AskUserQuestion(
       { label: "PROCEED", description: "Move to Stage {N+1}" },
       { label: "ITERATE", description: "Re-run Stage {N} with the same idea" },
       { label: "PIVOT", description: "Refine the idea and re-run from this stage" },
+      { label: "PAUSE", description: "Save progress and resume later" },
       { label: "STOP", description: "End the pipeline and generate a partial summary" }
     ]
   }]
 )
 ```
 
+If approximate stage duration is available, include it in the presentation: "Stage completed in approximately N minutes."
+
 **Handle response:**
 - **PROCEED**: Continue to next stage
 - **ITERATE**: Re-run the current stage (go back to 2.1)
 - **PIVOT**: Ask the user for a refined idea description, update idea.md, re-run from this stage
+- **PAUSE**: Write `{output_dir}/pipeline-state.json` (see schema below), then jump to Phase 3 with `partial: true`. Display resume command: `/startup-validate --from {next_stage} --name {slug}`
 - **STOP**: Jump to Phase 3 (summary generation)
+
+**pipeline-state.json schema** (written on PAUSE):
+
+```json
+{
+  "slug": "{slug}",
+  "idea": "{idea description}",
+  "completed_stages": [1, 2],
+  "next_stage": 3,
+  "mode": "standard|deep|fast",
+  "presets": ["fintech", "cape-verde"],
+  "paused_at": "YYYY-MM-DD",
+  "scores": {
+    "1": { "confidence": 62, "verdict": "MODERATE" },
+    "2": { "confidence": 75, "verdict": "STRONG" }
+  }
+}
+```
 
 ## Phase 3: Summary Generation
 
-After all stages complete (or STOP is chosen):
+After all stages complete, STOP is chosen, or PAUSE is chosen:
 
 ### 3.1 Generate summary.md
 
@@ -254,6 +320,7 @@ Write `{output_dir}/summary.md`:
 | 6. Execution | {score}/100 | {verdict} |
 
 **Overall: {average}/100 — {overall verdict}**
+**Stages completed:** {N of 6} | **Mode:** {standard|deep|fast}
 
 ## Critical Risks
 1. {Highest risk from across all stage reports}
@@ -276,7 +343,9 @@ Write `{output_dir}/summary.md`:
 - 40-59: WEAK — SIGNIFICANT CONCERNS
 - Below 40: POOR — CONSIDER PIVOTING
 
-Only include rows for stages that were actually run. If pipeline was stopped early, note: "Pipeline stopped after Stage {N}. Remaining stages not evaluated."
+Only include rows for stages that were actually run. For early exits:
+- If paused: "Pipeline paused after Stage {N}. Resume with: `/startup-validate --from {next_stage} --name {slug}`"
+- If stopped: "Pipeline stopped after Stage {N}. Remaining stages not evaluated."
 
 ### 3.2 Update Index
 
@@ -285,9 +354,9 @@ Read or create `startup-validation/README.md`. Add/update an entry for this run:
 ```markdown
 # Startup Validation Runs
 
-| Run | Idea | Date | Stages | Overall | Link |
-|-----|------|------|--------|---------|------|
-| {slug} | {idea short} | {date} | {1-N} | {score}/100 | [View](./{slug}/summary.md) |
+| Run | Idea | Date | Stages | Overall | Status | Link |
+|-----|------|------|--------|---------|--------|------|
+| {slug} | {idea short} | {date} | {1-N} | {score}/100 | {Complete/In Progress/Stopped} | [View](./{slug}/summary.md) |
 ```
 
 ### 3.3 Present Results
@@ -322,11 +391,20 @@ All stage agents must produce reports following this structure:
 - {Risk 1 with severity assessment}
 - {Risk 2 with severity assessment}
 
-## Confession (deep mode only)
+## Confession
 
 - **Assumptions:** {what was assumed without verification}
 - **Uncertainties:** {areas where confidence is low}
 - **Missing Data:** {what couldn't be found via research}
+
+In standard mode, keep the Confession section concise (3-5 bullet points total). In deep mode, be comprehensive.
+
+## Sources
+
+- {URL 1} — {brief description of what was found}
+- {URL 2} — {brief description}
+
+_List all URLs consulted via deep-research. If no external sources were consulted, state: "No external sources consulted — analysis based on training data."_
 
 ## Decision Gate
 

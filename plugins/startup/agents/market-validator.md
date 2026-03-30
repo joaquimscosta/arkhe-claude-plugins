@@ -77,3 +77,5 @@ Write your report to the file path provided in your prompt, following the Stage 
 - Distinguish between verified facts and estimates/assumptions
 - If data is unavailable for a section, say so explicitly rather than guessing
 - Consider both the immediate opportunity and the 3-5 year trajectory
+- Include a Confession section documenting assumptions made without verification, areas of genuine uncertainty, and data you could not find. Keep concise (3-5 bullet points). Be specific — "Assumed X because Y" is useful; "Some assumptions were made" is not.
+- Include a Sources section listing all URLs consulted via deep-research. For each source, note what information was obtained. If no external sources were consulted, state this explicitly.
