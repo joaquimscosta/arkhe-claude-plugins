@@ -58,6 +58,22 @@
 
 ---
 
+## Confessions — Wave {N}
+
+### T-{XX}: {Task Title}
+- **Shortcuts**: {shortcuts taken or "None"}
+- **Assumptions**: {unverified beliefs the code depends on, or "None"}
+- **Uncertainties**: {areas where confidence is low, or "None"}
+- **Deviations**: {where implementation diverged from plan.md, or "None"}
+
+## Wave Critic Result
+
+**Verdict**: PASS | APPROVED WITH NOTES
+**Notes**: {critic notes if any, or "Clean pass"}
+**Fix cycles**: {0 or 1}
+
+---
+
 ## Next Wave: Wave {N+1}
 
 ### Tasks
