@@ -63,7 +63,7 @@ Parse from `$ARGUMENTS`:
 | Flag | Effect |
 |------|--------|
 | `--plan-only` | Stop after Phase 2 (save plan, don't implement) |
-| `--validate` | Enable deep validation with opus agent in Phase 4 |
+| `--validate` | Upgrade wave critic from sonnet to opus in Phase 4 |
 | `--phase=N` | Execute specific phase only |
 | `--auto` | Autonomous mode (no checkpoints) |
 | `@path/to/spec` | Resume existing plan or run verification from path |

@@ -57,9 +57,9 @@ Generate summary in this format:
 - `path/to/file3.ts` - [what changed]
 
 ### Validation Results
-- Quick check: [PASS/issues]
-- Deep validation: [score] (if --validate)
-- Code review: [findings addressed]
+- Quality gates: [PASS/issues per wave]
+- Wave critic: [verdicts and notes]
+- RULE ZERO: [N/6 checks passed]
 
 ### Verification Steps
 1. [How to test the feature]
@@ -137,7 +137,7 @@ Evaluate whether discoveries from this feature should persist as project memory.
 
 ## Verification Record (RULE ZERO)
 
-RULE ZERO was verified and approved at the Quality & Completion Gate (Step 4e) before entering Phase 5. This section records the confirmed state for audit purposes.
+RULE ZERO was verified and approved at the Quality & Completion Gate (Step 4.2) before entering Phase 5. This section records the confirmed state for audit purposes.
 
 **Verified at gate approval:**
 - [x] All tasks marked `completed` in TaskList
