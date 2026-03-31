@@ -36,6 +36,7 @@ Lightweight orchestrator for 6-phase software development lifecycle with progres
 - **Ask clarifying questions early** - Identify ambiguities before designing, not after
 - **Use TaskCreate/TaskUpdate** - Track all progress throughout every phase
 - **Load phases progressively** - Only read phase files when entering that phase
+- **Patterns drive Phase 4** - Backpressure (quality gates over prescription), Confession (builder records uncertainties), Critic-Actor (per-wave targeted review), Fresh Context (re-read from disk each wave)
 
 ## Quick Start
 
@@ -120,7 +121,7 @@ Load phase files **only when entering that phase**:
 | 2 | sonnet/opus | Architecture design |
 | 3 | haiku | Task breakdown |
 | 4 (implement) | sonnet | Code writing |
-| 4 (validate) | opus | Deep review (if `--validate`) |
+| 4 (wave critic) | sonnet | Targeted review (opus if `--validate`) |
 | 5 | - | Summary (no agent) |
 
 ## Spec Directory Structure
@@ -201,9 +202,9 @@ See [WORKFLOW.md](WORKFLOW.md) for the detailed execution flow diagram.
 
 Two mandatory Tier 1 gates (cannot skip, even with `--auto`):
 - **Phase 2c**: Architecture Decision
-- **Phase 4e**: Quality & Completion Gate (RULE ZERO + code review verification)
+- **Step 4.2**: Quality & Completion Gate (RULE ZERO + wave critic aggregation)
 
-All other checkpoints are Tier 2 (skippable with `--auto`), including the Domain Research gate (Phase 2a-res).
+All other checkpoints are Tier 2 (skippable with `--auto`), including the Domain Research gate (Phase 2a-res) and the Wave Critic (Step 4.1e).
 Conditional escalation to Tier 1 if: DB schema changes, security work, or breaking API changes.
 Conditional RFC creation offered at Phase 2d when escalation triggers are detected.
 
