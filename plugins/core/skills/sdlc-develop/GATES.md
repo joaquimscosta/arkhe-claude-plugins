@@ -23,10 +23,12 @@ Human-in-the-Loop gates ensure appropriate oversight at critical decision points
 | Phase 2c | Architecture Decision | ⛔ Tier 1 | Cannot skip, even with `--auto` |
 | Phase 2 → 3 | Plan Saved | ✅ Tier 3 | Auto-proceed, log only |
 | Phase 3 → 4 | Task Breakdown | ⚠️ Tier 2 | Validate before implementation |
-| Phase 4.0 | Ticket Selection | ⚠️ Tier 2 | Select tasks for session (skipped in RESUME + "All remaining tasks") |
-| Phase 4a.1 | Wave Confirmation | Conditional | Tier 3 auto-proceed when `selection_scope=ALL`; Tier 2 otherwise |
-| Phase 4a.3 | Wave Checkpoint | ⚠️ Tier 2 | Wave complete, continue or stop |
-| Phase 4e | Quality & Completion | ⛔ Tier 1 | Combined RULE ZERO + code review; VERIFY UI option available |
+| Step 4.0 | Ticket Selection | ⚠️ Tier 2 | Select tasks for session (skipped in RESUME + "All remaining tasks") |
+| Step 4.1b | Wave Confirmation | Conditional | Tier 3 auto-proceed when `selection_scope=ALL`; Tier 2 otherwise |
+| Step 4.1e | Wave Critic | ⚠️ Tier 2 | Bounded 1 retry; approve with notes after rejection |
+| Step 4.1f | Wave Checkpoint | ⚠️ Tier 2 | Wave complete, continue or stop |
+| Step 4.2 | Quality & Completion | ⛔ Tier 1 | Combined RULE ZERO + wave critic aggregation; VERIFY UI option available |
+| Phase 5.4 | Project Learnings | ✅ Tier 3 | Auto-skip with `--auto`; no memories saved |
 
 ---
 
@@ -127,7 +129,7 @@ Present combined quality review + RULE ZERO status, then use `AskUserQuestion`:
 ```json
 {
   "header": "Quality & Completion",
-  "question": "RULE ZERO: 6/6 checks passed. Validation: PASS. Code review: 0 issues. Mark implementation complete?",
+  "question": "RULE ZERO: 6/6 checks passed. Wave critics: 3 waves passed, 0 approved with notes. Mark implementation complete?",
   "options": [
     { "label": "APPROVE — Mark Complete", "description": "All checks pass, proceed to Phase 5 summary" },
     { "label": "REVIEW — Show diff & details", "description": "Show git diff and full validation report" },
@@ -166,6 +168,10 @@ Present wave completion metrics, then use `AskUserQuestion`:
   ]
 }
 ```
+
+### Example: Wave Critic Result
+
+The wave critic is an agent, not an AskUserQuestion gate. It returns PASS or ISSUES directly. If ISSUES are returned, the builder fixes them and the critic re-reviews (bounded to 1 retry). The result is recorded in wave-context.md, not presented as a user gate.
 
 ---
 
