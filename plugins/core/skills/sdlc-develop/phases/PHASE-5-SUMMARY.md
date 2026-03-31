@@ -88,6 +88,51 @@ Generate summary in this format:
 
 Update `{spec_path}/spec.md` status to "Complete".
 
+### 4. Save Project Learnings (Persistent Memory Pattern)
+
+Evaluate whether discoveries from this feature should persist as project memory.
+
+**Auto-evaluate candidates from:**
+- Architecture trade-offs from Phase 2 (why option A over B)
+- Gotchas discovered during implementation (framework limitations, API quirks)
+- Domain knowledge from research phase (if Step 2a-res was conducted)
+- Integration patterns established between existing and new code
+
+**Filter criteria (only save if):**
+- Not derivable from reading the code or git history
+- Would be useful for future features in this project
+- Represents a decision with non-obvious reasoning
+
+**If candidates found**, use `AskUserQuestion`:
+- **header**: "Project Learnings"
+- **question**: "{N} learnings identified from this feature. Save to project memory?"
+- **options**:
+  - { label: "Save all", description: "Write each as a project-type memory file" }
+  - { label: "Review first", description: "Show candidates, select which to save" }
+  - { label: "Skip", description: "Don't save any memories" }
+
+**Gate: Tier 3** (auto-skip with `--auto`; no memories saved in autonomous mode)
+
+**Response handling:**
+- **Save all**: For each learning, write a memory file:
+  ```markdown
+  ---
+  name: {feature-slug}-{learning-topic}
+  description: {one-line description}
+  type: project
+  ---
+
+  {Learning content}
+
+  **Why:** {motivation or constraint}
+  **How to apply:** {when this should shape future decisions}
+  ```
+  Then add a pointer to `MEMORY.md`.
+- **Review first**: Present each candidate, let user approve/reject individually, save approved ones
+- **Skip**: No memories saved
+
+**If no candidates found**: Skip silently, no user interaction.
+
 ---
 
 ## Verification Record (RULE ZERO)
@@ -119,5 +164,6 @@ Phase 5 produces:
 - Updated spec status
 - Verification steps
 - Next steps recommendations
+- Project learnings saved to memory (if applicable)
 
 **End of SDLC Pipeline**
