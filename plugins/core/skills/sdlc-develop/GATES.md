@@ -45,7 +45,7 @@ These auto-elevate ANY checkpoint to Tier 1:
 
 **Detection**: Check plan.md, spec.md, and implementation for keywords.
 
-**Note:** The Quality & Completion Gate (Phase 4e) is always Tier 1 regardless of triggers. The presence of conditional triggers is recorded in the gate log for audit purposes but does not change gate behavior.
+**Note:** The Quality & Completion Gate (Step 4.2) is always Tier 1 regardless of triggers. The presence of conditional triggers is recorded in the gate log for audit purposes but does not change gate behavior.
 
 ---
 

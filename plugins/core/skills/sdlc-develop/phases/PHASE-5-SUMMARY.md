@@ -27,7 +27,7 @@ Before verifying completion, synchronize task status to tasks.md:
 
 **Task tracking confirmation:**
 1. Use `TaskList` to verify all tasks are marked `completed`
-2. If any tasks remain `in_progress` or `pending` (should not occur after Phase 4e gate):
+2. If any tasks remain `in_progress` or `pending` (should not occur after Step 4.2 gate):
    - Use `TaskUpdate` to mark them completed if the work was verified during Phase 4
    - Log a warning if tasks were completed but not updated during implementation
 
