@@ -220,3 +220,99 @@ Files are not named according to Next.js App Router conventions, or are placed i
 
 ### Reference
 - [Next.js App Icons docs](https://nextjs.org/docs/app/api-reference/file-conventions/metadata/app-icons)
+
+---
+
+## SVG Looks Too Simple / Generic
+
+### Symptoms
+- Icon looks like basic clip-art or stock shapes
+- Output doesn't match the richness of the chosen style preset
+- Design feels flat and lifeless despite selecting a non-geometric preset
+
+### Cause
+The SVG generation is falling back to default geometric primitives instead of applying the style-specific techniques.
+
+### Solution
+
+Review against the style-to-SVG technique table in WORKFLOW.md:
+
+- **All styles**: Are you using cubic bezier `C` commands (not just straight lines `L`/`H`/`V`)?
+- **Organic**: Are bezier control points pulled off-axis to create irregular, non-circular curves?
+- **Illustrative**: Are there at least 3 layered `<g>` groups building a scene? Are color blocks distinct and overlapping?
+- **Symbolic**: Is there a negative-space element (`fill-rule="evenodd"`) or dual-meaning composition?
+- **Constellation**: Are nodes placed at varied sizes and irregular positions (not a grid)? Are connections curved, not straight?
+- **Depth enabled**: Are `<linearGradient>`/`<radialGradient>` defined in `<defs>` and referenced via `url(#id)`?
+
+If the output is still generic, regenerate with explicit reference to the SVG Path Techniques section in WORKFLOW.md.
+
+---
+
+## Gradients Not Rendering
+
+### Symptoms
+- SVG shows solid black or no fill where a gradient should be
+- Gradient works in some browsers/tools but not others
+- `rsvg-convert` or `magick` produces flat-colored output
+
+### Cause
+Common gradient definition issues in SVG.
+
+### Solution
+
+1. **Check `<defs>` placement** — Gradients must be defined inside `<defs>` within the `<svg>` element:
+   ```xml
+   <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+     <defs>
+       <linearGradient id="grad1" x1="0" y1="0" x2="0" y2="1">
+         <stop offset="0%" stop-color="#ff6b6b"/>
+         <stop offset="100%" stop-color="#e74c5e"/>
+       </linearGradient>
+     </defs>
+     <rect fill="url(#grad1)" width="100" height="100"/>
+   </svg>
+   ```
+
+2. **Check `url(#id)` reference** — The `fill` or `stroke` attribute must reference the gradient ID exactly: `fill="url(#grad1)"`. Missing the `#` or mismatched ID is a common mistake.
+
+3. **Avoid ID collisions** — If the master SVG and favicon SVG both define `id="grad1"`, they may conflict when embedded in the same page. Use unique prefixes (e.g., `id="master-grad1"`, `id="fav-grad1"`).
+
+4. **Prefer `rsvg-convert`** — ImageMagick's built-in SVG renderer has limited gradient support. Install librsvg for reliable gradient rendering:
+   ```bash
+   brew install librsvg
+   ```
+
+---
+
+## Icons Look Blurry at Small Sizes
+
+### Symptoms
+- Favicon or 16px/32px renders show anti-aliased blur
+- Edges look soft instead of crisp
+
+### Cause
+Sub-pixel coordinate misalignment. Filled shapes with non-integer coordinates cause the renderer to anti-alias across pixel boundaries.
+
+### Solution
+1. Ensure filled shape edges use integer coordinates (`x="20"`, not `x="20.3"`)
+2. For odd stroke widths (1, 3), offset coordinates by 0.5 (`cx="50.5"`)
+3. For even stroke widths (2, 4), use whole-number coordinates
+4. Reduce decimal precision to 1-2 places — extra precision adds file size with zero visual benefit at icon scale
+5. At the Glyph tier (16-32px), pixel alignment is critical. At Master tier (512+), it matters less
+
+---
+
+## SVGO Removes viewBox or Title
+
+### Symptoms
+- After optimization, SVG no longer scales properly (lost `viewBox`)
+- Screen reader no longer announces the icon (lost `<title>`)
+
+### Cause
+Older SVGO versions (v3 and earlier) had `removeViewBox` and `removeTitle` enabled by default.
+
+### Solution
+Use SVGO v4+ where these are no longer removed by default. If using an older version, explicitly override:
+```bash
+npx svgo --config='{"plugins":[{"name":"preset-default","params":{"overrides":{"removeViewBox":false,"removeTitle":false}}}]}'
+```

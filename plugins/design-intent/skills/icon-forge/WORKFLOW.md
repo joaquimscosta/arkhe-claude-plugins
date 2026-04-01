@@ -13,16 +13,45 @@ Complete process for generating brand icons and platform assets.
 | Identity | Brand name, tagline, industry/domain |
 | Concept | Visual metaphor, symbol, abstract vs literal |
 | Colors | Primary brand color (hex), secondary, accent |
-| Style | Minimal, playful, corporate, bold, elegant, techy |
+| Style | Style preset (Geometric, Organic, Illustrative, Symbolic, Constellation) + grid + depth |
 | References | Existing logo, competitor icons, inspiration images |
 | Constraints | Must work on dark backgrounds? Existing brand guidelines? |
+
+### Style Presets
+
+Present the style menu during discovery. Recommend a preset based on brand description if one fits naturally.
+
+| Preset | Visual Character | Best For |
+|--------|-----------------|----------|
+| **Geometric** | Clean shapes, mathematical precision, flat fills, perfect symmetry | Corporate, fintech, enterprise SaaS |
+| **Organic** | Flowing curves, irregular blobs, natural asymmetry, soft edges | Creative agencies, wellness, community platforms |
+| **Illustrative** | Layered scenes, color blocks, story-driven composition, hand-crafted feel | Education, kids brands, creative tools |
+| **Symbolic** | Dual-meaning line art, negative space tricks, conceptual merging | Studios, consultancies, language/communication tools |
+| **Constellation** | Connected nodes, network graphs, dot clusters, progressive complexity | Dev tools, data platforms, tech networks |
+
+### Grid Size
+
+After style selection, confirm the coordinate grid:
+
+- **100×100** (default): More coordinate space for complex brand icons with organic curves, bezier paths, and layered compositions. Recommended for Organic, Illustrative, and Constellation presets.
+- **24×24**: Industry-standard icon grid (Material Design, Feather, Heroicons). Aligns with the 8px spatial grid. Better for simple, UI-style marks where pixel-perfect alignment matters. Recommended for Geometric and Symbolic presets with simple geometry.
+
+If the user doesn't specify, default to 100×100. The `--grid 24` argument selects the 24×24 grid.
+
+### Depth Toggle
+
+After style selection, ask about depth preference:
+
+- **Flat** (default): Solid fills, no gradients. Clean, universal, safest for all renderers.
+- **Depth**: Subtle `<linearGradient>`/`<radialGradient>`, opacity layering, soft shadows via `<filter>`. Adds warmth and dimension but increases SVG complexity.
 
 ### Parsing $ARGUMENTS
 
 Extract from the user's arguments:
 - **Brand name**: First quoted string or capitalized word
 - **Color references**: Hex codes (`#2563eb`), named colors (`blue`, `coral`)
-- **Style keywords**: minimal, modern, bold, playful, corporate, techy, elegant
+- **Style keywords**: geometric, organic, illustrative, symbolic, constellation, flat, depth
+- **Grid**: `--grid 24` for 24×24 viewBox (default: 100×100)
 - **`--svg <path>`**: Path to existing SVG — skip to Phase 4
 
 ### Skip Conditions
@@ -41,38 +70,138 @@ Extract from the user's arguments:
    - Present text descriptions first for user direction
 
 2. **Generate SVG code** for chosen concept
-   - Start with simple geometric shapes
-   - Build up complexity only as needed
-   - Test mental model: "Would this be recognizable as a 16x16 favicon?"
+   - Apply the style preset's SVG technique guidance (see table below)
+   - Start with the Glyph tier silhouette (what 2-4 shapes survive at 16px?)
+   - Build up to Mark and Master complexity
 
 3. **SVG Structure Requirements**
    ```xml
-   <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-     <!-- No width/height attributes — CSS/props control size -->
-     <!-- Colors as CSS classes for dark mode adaptability -->
+   <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="icon-title">
+     <title id="icon-title">Brand Name</title>
      <style>
        .primary { fill: #2563eb; }
        .accent  { fill: #1e40af; }
      </style>
-     <!-- All paths use coordinates within 0-100 space -->
      <circle class="primary" cx="50" cy="50" r="40"/>
    </svg>
    ```
+   - No `width`/`height` attributes — CSS/props control size
+   - `<title>` must be the first child element (accessibility)
+   - `role="img"` prevents screen readers from traversing internal elements
 
 4. **Validation Checklist**
-   - [ ] `viewBox` is `0 0 100 100` (square)
+   - [ ] `viewBox` is square (`0 0 100 100` for brand icons, or `0 0 24 24` for UI-style marks)
    - [ ] No `width`/`height` attributes on root `<svg>`
    - [ ] No `<text>` elements (text doesn't survive 16px rendering)
-   - [ ] No strokes thinner than 2 units
-   - [ ] Maximum 3 distinct colors
+   - [ ] No strokes thinner than 2 units in Glyph/Mark tiers (Master may use 1.5+)
+   - [ ] Color count within preset limit (1-3 most presets; up to 5 for Illustrative/Constellation)
    - [ ] All paths are closed (end with `Z`)
    - [ ] `xmlns="http://www.w3.org/2000/svg"` attribute present
    - [ ] No embedded raster images (`<image>`)
    - [ ] No external references (`xlink:href` to URLs)
+   - [ ] `<title>` element as first child of `<svg>` with brand name
+   - [ ] `role="img"` on root `<svg>` element
+   - [ ] Filled shapes use integer coordinates (no sub-pixel blur)
+   - [ ] Decimal precision limited to 1-2 places
+
+### Style-to-SVG Technique Table
+
+This table is the core creative engine. Each preset maps to specific SVG elements and path strategies:
+
+| Preset | SVG Techniques |
+|--------|---------------|
+| Geometric | **Filled**. `<circle>`, `<rect>`, `<polygon>`, straight `<path>` L/H/V segments, `rx`/`ry` rounding, mathematical symmetry |
+| Organic | **Filled**. Cubic bezier `C`/`S` commands with off-axis control points, `<ellipse>` with unequal rx/ry, irregular blob `<path>` shapes, smooth joins, asymmetric composition |
+| Illustrative | **Filled**. Layered `<g>` groups for scene composition, flat color blocks as distinct `<path>` regions, overlapping shapes with opacity, warm multi-color palettes (up to 4-5 colors) |
+| Symbolic | **Stroked**. `clip-path` and `fill-rule="evenodd"` for negative space, `stroke="currentColor"` line art, stroke-width variation, boolean path operations |
+| Constellation | **Hybrid**. Filled `<circle>` nodes at varied sizes/positions, stroked cubic bezier `<path>` connections (`fill="none"`), `opacity` variation for depth layers, dot clusters |
+
+**Depth add-ons** (when depth toggle is enabled):
+- `<linearGradient>`/`<radialGradient>` defined in `<defs>`
+- `<filter>` with `feGaussianBlur` for soft glow or shadow effects
+- `opacity` layering on overlapping elements
+- Color stops that shift from brand primary to a lighter/darker variant
+
+### SVG Path Techniques by Style
+
+**Organic blob** — Use cubic bezier curves with control points pulled away from the straight path to create irregular, amoeba-like shapes:
+```xml
+<!-- Irregular blob shape — NOT a circle -->
+<path d="M 30,50 C 25,30 40,15 55,20 C 70,25 80,40 75,55 C 70,70 55,80 40,75 C 25,70 35,70 30,50 Z" class="primary"/>
+```
+
+**Constellation connection** — Curved paths between node circles, not straight lines:
+```xml
+<!-- Nodes at irregular positions -->
+<circle cx="25" cy="60" r="6" class="node"/>
+<circle cx="70" cy="35" r="9" class="node-lg"/>
+<!-- Curved connection — control points create a natural arc -->
+<path d="M 25,60 C 35,40 55,30 70,35" fill="none" stroke-width="2" class="connection"/>
+```
+
+**Illustrative layering** — Overlapping groups build a scene:
+```xml
+<g class="background">
+  <path d="M 0,60 C 20,50 40,55 60,50 C 80,45 100,55 100,100 L 0,100 Z" class="water"/>
+</g>
+<g class="midground">
+  <path d="M 45,25 L 50,60 L 40,60 Z" class="mast"/>
+  <path d="M 47,25 C 60,30 65,45 55,58 L 50,58 L 50,28 Z" class="sail"/>
+</g>
+```
+
+**Symbolic negative space** — `fill-rule="evenodd"` cuts inner shapes from outer shapes:
+```xml
+<!-- Outer speech bubble with inner cutout forming a star -->
+<path fill-rule="evenodd" d="
+  M 20,15 C 20,10 80,10 80,15 L 80,65 C 80,70 55,70 50,75 L 45,70 C 40,70 20,70 20,65 Z
+  M 50,30 L 53,40 L 63,40 L 55,46 L 58,56 L 50,50 L 42,56 L 45,46 L 37,40 L 47,40 Z
+" class="primary"/>
+```
+
+### Progressive Detail Tiers
+
+Design with three consumption tiers in mind:
+
+| Tier | Size Range | Complexity | Purpose |
+|------|-----------|------------|---------|
+| **Glyph** | 16-32px | 2-4 shapes, silhouette-grade | Favicon, browser tab |
+| **Mark** | 48-192px | Full logomark, moderate detail | App icons, PWA, nav bars |
+| **Master** | 512-1024px | Rich detail, gradients, fine curves | App store, hero images, splash |
+
+**Design approach**: Start at the Glyph tier — what 2-4 shapes capture the brand's essence when everything else is stripped away? This is the icon's skeleton. Then build up through Mark (add secondary shapes, color variation) to Master (add depth, decorative elements, fine bezier detail).
+
+For complex designs (e.g., Constellation with many nodes), optionally produce a separate `favicon-glyph.svg` with only the core shapes for the smallest sizes.
+
+### Pixel Alignment Rules
+
+Sub-pixel misalignment causes blur when SVGs are rasterized. Follow these rules, especially at the Glyph tier:
+
+- **Filled shapes**: Keep all edges on integer coordinates (`x="20"`, not `x="20.3"`)
+- **Even stroke widths** (2, 4): Align coordinates to whole numbers
+- **Odd stroke widths** (1, 3): Offset by 0.5 so the stroke straddles the pixel center (`cx="50.5"`)
+- **Decimal precision**: Limit to 1-2 decimal places. `d="M 30.12 50.65"` is visually identical to `d="M 30.123456 50.654321"` at icon scale, and reduces file size
+
+At the Master tier (512-1024px), sub-pixel alignment is less critical because each coordinate maps to multiple rendered pixels. Focus alignment effort on the Glyph tier shapes.
+
+### Fill vs Stroke Strategy
+
+Choose the right rendering approach per style preset:
+
+| Preset | Strategy | Rationale |
+|--------|----------|-----------|
+| **Geometric** | Filled paths | Mathematical shapes render crisply as filled regions; stroke scaling at small sizes is unpredictable |
+| **Organic** | Filled paths | Blob shapes are inherently filled regions; strokes would outline them awkwardly |
+| **Illustrative** | Filled paths | Color-block scenes use filled regions by definition |
+| **Symbolic** | **Stroked** paths | Line art and negative-space designs rely on stroke weight for visual character |
+| **Constellation** | Hybrid | Nodes are filled; connections are stroked with `fill="none"` |
+
+**Why filled paths are the default**: Filled paths bake line thickness into geometry, so they scale predictably from 16px to 1024px. Stroked paths scale proportionally — a 2-unit stroke at 100×100 becomes visually different at 16×16 vs 512×512. For Symbolic presets where stroke character matters, use `vector-effect: non-scaling-stroke` in the CSS if constant stroke width is desired at all sizes.
 
 5. **Present to user**
    - Save SVG to a temporary file and suggest opening in browser to preview
    - Describe the design in words alongside the code
+   - Show how the design simplifies across the three tiers
 
 6. **Iterate** based on user feedback until satisfied
 
@@ -103,7 +232,8 @@ All foreground-to-background color pairs must meet **WCAG 2.1 AA contrast ratio 
 ### Template
 
 ```xml
-<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="fav-title">
+  <title id="fav-title">Brand Name</title>
   <style>
     :root { color-scheme: light dark; }
     .bg { fill: #ffffff; }
@@ -123,6 +253,34 @@ All foreground-to-background color pairs must meet **WCAG 2.1 AA contrast ratio 
 
 ### Output
 - Save as `favicon.svg` in the project directory
+
+---
+
+## Phase 3b: Monochrome Variant
+
+### Purpose
+
+Generate a `currentColor` monochrome variant of the master SVG. This enables CSS-based theming — the icon inherits color from its parent element, making it usable in navbars, footers, documentation, and any context where brand colors aren't appropriate.
+
+### Process
+
+1. Duplicate the master SVG
+2. Replace all `fill` and `stroke` color values with `currentColor`
+3. Remove `<style>` blocks, gradients, and filters — the icon should be a single-color silhouette
+4. Keep the `<title>` and `role="img"` accessibility attributes
+
+### Template
+
+```xml
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="mono-title">
+  <title id="mono-title">Brand Name</title>
+  <path fill="currentColor" d="..."/>
+</svg>
+```
+
+### Output
+- Save as `monochrome.svg` in the project directory
+- Pass to generate_assets.py via `--mono-svg` if the script supports it, otherwise include in the output directory manually
 
 ---
 
@@ -187,6 +345,29 @@ uv run <absolute-path-to>/skills/icon-forge/scripts/generate_assets.py \
 | `_html-snippet.html` | — | HTML | Ready-to-paste `<link>` tags |
 
 > **With `--framework nextjs`:** `favicon.svg` → `icon.svg`, `apple-touch-icon.png` → `apple-icon.png`, `_html-snippet.html` → `_nextjs-guide.txt` (App Router placement instructions).
+
+### Optional: SVG Optimization
+
+Before asset generation, optimize the master SVG to reduce file size (typically 50-80% reduction). This is optional but recommended for production use.
+
+**SVGO** (Node.js, recommended):
+```bash
+npx svgo --multipass master-icon.svg -o master-icon.svg \
+  --config='{"plugins":[{"name":"preset-default","params":{"overrides":{"removeViewBox":false,"removeTitle":false}}},"sortAttrs"]}'
+```
+
+**scour** (Python):
+```bash
+pip install scour && scour -i master-icon.svg -o master-icon.svg \
+  --set-precision=2 --enable-viewboxing --enable-comment-stripping \
+  --shorten-ids --remove-metadata
+```
+
+Key optimization rules:
+- **Never remove `viewBox`** — it is what makes SVGs scalable
+- **Never remove `<title>`** — it provides accessibility
+- **Reduce decimal precision** to 2 places for 100×100 viewBox, 1 place for 24×24
+- **Strip editor metadata**, empty `<defs>`, identity transforms, and namespace attributes
 
 ### Verifying Output
 
@@ -255,8 +436,9 @@ Brand Icon Generation Complete
 Brand:            [name]
 Master SVG:       [path]
 Favicon SVG:      [path] (with dark mode)
+Monochrome SVG:   [path] (currentColor variant)
 Assets directory: [path]
-Files generated:  11
+Files generated:  11 + monochrome.svg
 
 Favicon package:
   - favicon.ico (16x16 + 32x32)
