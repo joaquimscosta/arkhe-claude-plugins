@@ -382,7 +382,36 @@ To provide a dark-mode variant: `/icon-forge --svg ./logo.svg --dark-svg ./logo-
 
 ---
 
-## Example 5: Geometric Preset (Corporate)
+## Example 5: Design Seed (`--base`)
+
+### User Input
+
+```
+/icon-forge --base ./old-logo.svg organic, depth
+```
+
+### Workflow
+
+The skill reads `old-logo.svg`, analyzes its structure, and presents:
+
+```
+Base SVG Analysis:
+  Shapes:  2 circles, 1 rect, 1 polygon
+  Colors:  #333333, #0066cc
+  Style:   Geometric — flat, symmetric, sharp edges
+  Issues:  No <title>, no role="img", viewBox is 0 0 512 512
+```
+
+Brand Discovery is abbreviated — colors and concept are already known from the base SVG. The user selected **Organic** preset with **depth** enabled. The skill presents:
+
+1. **Cleaned original** — same design with a11y, normalized to 100x100 viewBox, pixel-aligned
+2. **Organic reinterpretation** — same concept but with flowing bezier curves, irregular blobs replacing the circles, radial gradients on key shapes
+
+User picks the organic variant, iterates, then the normal pipeline continues (dark mode, monochrome, asset generation).
+
+---
+
+## Example 6: Geometric Preset (Corporate)
 
 ### User Input
 

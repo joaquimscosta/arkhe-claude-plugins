@@ -52,11 +52,13 @@ Extract from the user's arguments:
 - **Color references**: Hex codes (`#2563eb`), named colors (`blue`, `coral`)
 - **Style keywords**: geometric, organic, illustrative, symbolic, constellation, flat, depth
 - **Grid**: `--grid 24` for 24×24 viewBox (default: 100×100)
-- **`--svg <path>`**: Path to existing SVG — skip to Phase 4
+- **`--svg <path>`**: Path to existing SVG — skip to Phase 4 (asset generation only)
+- **`--base <path>`**: Path to existing SVG — use as design seed for Phase 2 iteration
 
 ### Skip Conditions
 
 - If `--svg <path>` provided: validate SVG exists, skip directly to Phase 4
+- If `--base <path>` provided: validate SVG exists, load it, proceed to Phase 1 (abbreviated) then Phase 2 with design seed workflow
 - If comprehensive description provided: minimize questions, confirm assumptions
 
 ---
@@ -68,6 +70,7 @@ Extract from the user's arguments:
 1. **Brainstorm 2-3 concepts** based on brand info
    - Describe each concept in 1-2 sentences before generating SVG
    - Present text descriptions first for user direction
+   - If `--base` was provided, see "Design Seed Workflow" below instead
 
 2. **Generate SVG code** for chosen concept
    - Apply the style preset's SVG technique guidance (see table below)
@@ -204,6 +207,46 @@ Choose the right rendering approach per style preset:
    - Show how the design simplifies across the three tiers
 
 6. **Iterate** based on user feedback until satisfied
+
+### Design Seed Workflow (`--base`)
+
+When `--base <path>` is provided, use the existing SVG as a starting point instead of designing from scratch.
+
+**Step 1: Analyze the base SVG**
+
+Read the file and extract:
+- **Shapes used**: circles, rects, paths, polygons — identify the current visual language
+- **Colors**: extract all fill/stroke color values
+- **Structure**: is it flat? layered `<g>` groups? uses gradients?
+- **Issues**: missing `<title>`, no `role="img"`, sub-pixel coordinates, hardcoded width/height, `<text>` elements
+
+Present the analysis to the user with a summary like:
+```
+Base SVG Analysis:
+  Shapes:  3 paths, 2 circles, 1 rect
+  Colors:  #2563eb (primary), #1e40af (accent)
+  Style:   Geometric — flat fills, symmetric layout
+  Issues:  Missing <title>, no role="img", viewBox is 0 0 512 512 (non-standard)
+```
+
+**Step 2: Abbreviated Brand Discovery**
+
+Skip questions that the base SVG already answers (colors, general concept). Only ask about:
+- **Style preset**: Does the user want to keep the current style or shift to a different preset?
+- **Depth**: Add gradients/depth to a currently flat icon?
+- **Grid**: Keep current viewBox or normalize to 100×100 or 24×24?
+
+**Step 3: Generate variations**
+
+Present the original SVG alongside 2 improved variations:
+1. **Cleaned original** — same design, but with a11y attributes, normalized viewBox, pixel-aligned coordinates, and any issues fixed
+2. **Style-shifted variant** — the same concept redesigned with the chosen style preset's techniques (e.g., organic blobs instead of circles, curved connections instead of straight lines)
+
+Let the user choose which direction to take, then iterate from there.
+
+**Step 4: Continue normal pipeline**
+
+Once the user approves a design, proceed to Phase 3 (dark mode), Phase 3b (monochrome), Phase 4 (assets), and Phase 5 (integration) as normal.
 
 ### Output
 - Save as `master-icon.svg` in the project directory

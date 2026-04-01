@@ -2,7 +2,7 @@
 name: icon-forge
 description: Generate brand icons as SVG and produce all platform assets including favicon package (ICO, SVG with dark mode, apple-touch-icon), PWA manifest icons, and mobile app icons. Use when user runs /icon-forge, requests "brand icon", "favicon generation", "app icon", or "svg logo" for a project.
 allowed-tools: Bash(uv run *)
-argument-hint: "[brand description or --svg <path>]"
+argument-hint: "[brand description or --svg <path> or --base <path>]"
 ---
 
 # Icon Forge
@@ -11,7 +11,7 @@ Generate brand icons as SVG and produce all required platform assets from a sing
 
 ## Quick Start
 
-Follow these phases in order. Skip to Phase 4 if user provides `--svg <path>`.
+Follow these phases in order. Skip to Phase 4 if user provides `--svg <path>`. Use `--base <path>` to load an existing SVG as a design seed for Phase 2 iteration.
 
 ### Phase 1: Brand Discovery
 
@@ -32,6 +32,8 @@ If `$ARGUMENTS` contains a brand description, extract info and minimize question
 ### Phase 2: Design Master SVG
 
 Generate 2-3 concept variations as SVG. Apply the chosen style preset's SVG techniques from [WORKFLOW.md](WORKFLOW.md) (see Style-to-SVG Technique Table). Design for three progressive detail tiers: Glyph (16px, 2-4 shapes), Mark (192px, full logomark), Master (1024px, rich detail). Present concepts, let user choose, iterate.
+
+**If `--base <path>` was provided**: Read the existing SVG, analyze its shapes/colors/structure, and use it as a starting point instead of generating from scratch. Present the original alongside 2 improved variations that apply the chosen style preset. See [WORKFLOW.md](WORKFLOW.md) "Design Seed Workflow" for details.
 
 **SVG structure requirements:**
 ```xml
