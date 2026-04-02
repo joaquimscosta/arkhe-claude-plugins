@@ -29,6 +29,12 @@
 #### Technical Notes
 {Implementation hints, patterns to follow, gotchas}
 
+#### Verification
+```bash
+{verification command — how to objectively prove this task is complete}
+```
+**Expected:** {expected output, exit code, or observable behavior}
+
 ---
 
 ### T-02: {Task Title}
@@ -50,6 +56,12 @@
 
 #### Technical Notes
 {Implementation hints}
+
+#### Verification
+```bash
+{verification command — how to objectively prove this task is complete}
+```
+**Expected:** {expected output, exit code, or observable behavior}
 
 ---
 
@@ -74,6 +86,12 @@
 
 #### Technical Notes
 {Implementation hints}
+
+#### Verification
+```bash
+{verification command — how to objectively prove this task is complete}
+```
+**Expected:** {expected output, exit code, or observable behavior}
 
 ---
 

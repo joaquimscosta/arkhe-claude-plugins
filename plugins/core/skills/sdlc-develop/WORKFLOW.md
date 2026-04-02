@@ -39,13 +39,16 @@ START
   |   +-- For each wave (Step 4.1):
   |       +-- 4.1a: Context Refresh (re-read spec, plan, tasks from disk)
   |       +-- 4.1b: Wave Confirmation
-  |       +-- 4.1c: Implementation (quality gates, not prescription)
+  |       +-- 4.1c: Implementation (evidence-based quality gates, TDD recommended)
+  |       |       +-- [--subagent] Per-task: dispatch implementer -> two-stage review -> confession
   |       +-- 4.1d: Confession Recording
-  |       +-- 4.1e: Wave Critic (sonnet/opus agent, 1 retry bound)
+  |       +-- 4.1e: Two-Stage Wave Review (skip if --subagent, already done per task)
+  |       |       +-- Stage 1: Spec Compliance (pass required)
+  |       |       +-- Stage 2: Code Quality (only if Stage 1 passes)
   |       +-- 4.1f: Wave Checkpoint -> CONTINUE or STOP
   |           +-- [CONTINUE] -> Next wave (4.1a)
   |           +-- [STOP] -> Save context, exit Phase 4
-  |   +-- Step 4.2: Quality & Completion Gate (Tier 1 - mandatory)
+  |   +-- Step 4.2: Quality & Completion Gate (Tier 1 - mandatory, evidence-based)
   |
   +-- Read PHASE-5-SUMMARY.md
       +-- Execute Phase 5 -> Complete

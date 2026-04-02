@@ -58,7 +58,7 @@ Generate summary in this format:
 
 ### Validation Results
 - Quality gates: [PASS/issues per wave]
-- Wave critic: [verdicts and notes]
+- Wave review: [verdicts and notes from both stages]
 - RULE ZERO: [N/6 checks passed]
 
 ### Verification Steps
@@ -137,21 +137,22 @@ Evaluate whether discoveries from this feature should persist as project memory.
 
 ## Verification Record (RULE ZERO)
 
-RULE ZERO was verified and approved at the Quality & Completion Gate (Step 4.2) before entering Phase 5. This section records the confirmed state for audit purposes.
+RULE ZERO was verified with **fresh evidence** at the Quality & Completion Gate (Step 4.2) before entering Phase 5. This section records the confirmed state for audit purposes.
 
-**Verified at gate approval:**
-- [x] All tasks marked `completed` in TaskList
-- [x] All FR-XXX requirements have corresponding implementation
-- [x] Acceptance criteria are testable
-- [x] Files actually modified (git diff check)
-- [x] Tests pass (if applicable)
-- [x] No placeholder code (`TODO`, `UnsupportedOperationException`)
-- [x] Subagent recommendations were implemented (not just analyzed)
+**Evidence-verified at gate approval (all fresh, not cached):**
+- [x] All tasks marked `completed` in tasks.md (read from disk)
+- [x] All FR-XXX requirements have file:line implementation evidence
+- [x] Acceptance criteria mapped to code with file:line references
+- [x] Files actually modified — `git diff --stat` output captured
+- [x] Tests pass — test suite output captured with pass/fail counts
+- [x] No placeholder code — grep output: 0 matches for TODO/FIXME/NotImplementedError
+- [x] Subagent/review recommendations implemented (not just analyzed)
 
-**Evidence recorded:**
-- `git diff` output reviewed at Quality & Completion gate
-- Test results confirmed
-- File read-back confirmed modifications persisted
+**Evidence artifacts:**
+- `git diff --stat` output at gate approval
+- Test suite output at gate approval (pass/fail counts, exit code)
+- Placeholder grep output at gate approval
+- Two-stage wave review verdicts with file:line references
 
 _If any items were noted as exceptions during gate approval, they are documented in the gate log._
 
