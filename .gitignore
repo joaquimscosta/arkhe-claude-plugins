@@ -59,6 +59,9 @@ socialmedia
 external-repos/
 internal-repos
 
+# Worktrees
+.worktrees/
+
 # Reviews
 reviews
 

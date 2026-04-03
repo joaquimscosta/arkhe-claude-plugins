@@ -1,6 +1,6 @@
 ---
 description: Run documentation health checks (freshness, links, drift, cross-doc consistency)
-argument-hint: "scan | check <path> | links | drift <path> | cross-doc | claude-md | onboard | report"
+argument-hint: "scan | check <path> | links | drift <path> | cross-doc | claude-md | onboard | report | setup"
 ---
 
 # Documentation Health
@@ -19,6 +19,7 @@ Unified documentation health analysis. Detects stale docs, broken links, version
 | `report` | Full scan + persist report |
 | `claude-md` | CLAUDE.md structural drift detection |
 | `onboard` | Suggest/apply tracking frontmatter to docs |
+| `setup` | Scaffold GitHub Actions workflow for automated doc health CI |
 | _(none)_ | Same as `scan` |
 
 ## Examples
@@ -32,6 +33,7 @@ Unified documentation health analysis. Detects stale docs, broken links, version
 /doc:health claude-md
 /doc:health onboard
 /doc:health report
+/doc:health setup
 ```
 
 ## Integration

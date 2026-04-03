@@ -251,3 +251,74 @@ last_updated: 2026-03-26
 ```
 
 **Note**: Research docs keep their full 5-field template (`title`, `version`, `status`, `created`, `last_updated`). The onboard script only targets general docs that have no frontmatter at all.
+
+## Example 8: Setup CI Workflow
+
+**Command**: `/doc:health setup`
+
+**Interaction**:
+
+```
+> Which documentation health checks should run on every PR?
+  [x] links — Broken internal links and missing anchors
+  [x] versions — Version references vs ground truth
+  [x] staleness — Git-based documentation age scoring
+  [ ] claude-md — CLAUDE.md structural drift
+  [ ] cross-doc — Cross-document version conflicts
+  [ ] frontmatter — Missing tracking frontmatter
+
+> When should the workflow fail?
+  (x) errors — Fail on broken links and critical mismatches
+  ( ) warnings — Also fail on staleness and minor version drift
+  ( ) none — Advisory only, never fail
+```
+
+**Generated file** (`.github/workflows/docs-health.yml`):
+
+```yaml
+name: Documentation Health
+
+on:
+  pull_request:
+    paths:
+      - '**/*.md'
+      - 'package.json'
+      - '.nvmrc'
+      - '.python-version'
+      - 'pyproject.toml'
+      - 'go.mod'
+      - 'Cargo.toml'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  docs-health:
+    name: Documentation Health
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run documentation health checks
+        uses: joaquimscosta/docs-health-action@v1
+        with:
+          checks: 'links,versions,staleness'
+          fail-on: 'errors'
+```
+
+**Output**:
+
+```
+Workflow created at .github/workflows/docs-health.yml
+
+Next steps:
+1. Commit the workflow file: git add .github/workflows/docs-health.yml
+2. Push to trigger on your next PR
+3. The action will post a comment on PRs with documentation issues
+
+To customize further, see: https://github.com/joaquimscosta/docs-health-action
+```

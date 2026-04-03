@@ -11,6 +11,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: write
 
 jobs:
   detect-changes:
@@ -167,3 +168,22 @@ jobs:
         run: |
           python3 .claude/skills/plugin-release-checker/scripts/validate_reference_staleness.py \
             --format text
+
+  doc-freshness:
+    name: Doc Freshness (Action)
+    needs: detect-changes
+    if: needs.detect-changes.outputs.docs == 'true'
+    runs-on: ubuntu-latest
+    # PHASE 1: advisory-only (remove continue-on-error once validated)
+    continue-on-error: true
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run documentation health checks
+        uses: joaquimscosta/docs-health-action@v1
+        with:
+          checks: 'links,versions,staleness,claude-md'
+          fail-on: 'errors'
