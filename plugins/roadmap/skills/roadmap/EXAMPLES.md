@@ -262,3 +262,114 @@ The skill adapts to any project structure:
 ## Project Status Dashboard
 ...
 ```
+
+---
+
+## Example 9: Plan Scaffold
+
+**Input:** `/roadmap:roadmap plan scaffold`
+
+**Output:**
+
+```
+## Context Discovery
+[Standard context discovery — found .arkhe.yaml, PROJECT-STATUS.md, 2 roadmaps, 1 backlog]
+
+## Planning Artifacts Found
+- docs/PROJECT-STATUS.md — 14 phases, 26 specs in pipeline, 10 ADRs
+- docs/skrebe/roadmap.md — 9 backlog themes
+- docs/papia-asr/roadmap.md — 6 backlog themes
+- arkhe/specs/ — 26 spec directories scanned
+
+## Hybrid Linking Results
+
+### Confirmed (from existing docs)
+- Spec 01 → Phase 1c [MANUAL] — listed in PROJECT-STATUS.md "PR #6"
+- Spec 022-025 → Phase 3e [MANUAL] — listed in PROJECT-STATUS.md
+- ADR-0007 → Phase ASR-1 [MANUAL] — referenced in papia-asr/roadmap.md
+  (22 specs + 8 ADRs confirmed from docs)
+
+### Auto-Detected (from git history)
+- Spec 020 → Phase 3d [AUTO-LINKED] — created 2026-03-08, during Phase 3d window
+- ADR-0010 → Phase 3b [AUTO-LINKED] — created 2026-03-01
+
+### Unlinked
+- Spec 000 (Trust Guards) → ? [UNLINKED] — predates defined phases
+
+Review the proposed plan. Adjust any linkages? (Type corrections or 'approve')
+> Spec 000 → Phase 0. Otherwise approve.
+
+Writing to docs/PROJECT-PLAN.md...
+Plan created with 14 phases, 26 specs linked, 10 ADRs linked, 9 backlog themes.
+```
+
+---
+
+## Example 10: Plan Show
+
+**Input:** `/roadmap:roadmap plan`
+
+**Output:**
+
+```
+## Project Plan Summary
+_Source: docs/PROJECT-PLAN.md (last synced: 2026-04-03)_
+
+### Timeline
+| Phase | Status | Specs | ADRs |
+|-------|--------|-------|------|
+| 0 | Done | 1 | 2 |
+| 1a-b | Done | 2 | 1 |
+| 1c | Done | 1 | 0 |
+| 1d | Done | 1 | 0 |
+| 1e | Done | 3 | 0 |
+| 2 | Done | 3 | 0 |
+| 3a-f | Done | 6 | 2 |
+| 4 | In Progress | 0 | 0 |
+| ASR-1 | Done | 1 | 1 |
+| ASR-2 | Not Started | 0 | 0 |
+
+### Progress
+- Phases: 13/16 complete (81%)
+- Specs: 26/26 linked to phases
+- ADRs: 10/10 linked to phases
+- Backlog: 9 themes (1 active)
+
+### Active Phase(s)
+**Phase 4: TM + Eval** — TM core shipped (PR #35); eval harness + fuzzy UX remaining
+
+### Next Up
+Backlog Theme 5: Word List Quality (High priority, no blockers)
+```
+
+---
+
+## Example 11: Plan Sync
+
+**Input:** `/roadmap:roadmap plan sync`
+
+**Output:**
+
+```
+## What Changed Since Last Sync
+_Last sync: 2026-04-01 (bb4804d), 3 commits ago_
+
+1. **CI Workflow** (PR #37, ci:) — new GitHub Actions workflow
+2. **TM Case Fix + F1 Selector** (PR #38, fix:) — bug fixes in TM matching
+3. **Docs updates** (docs:) — PROJECT-STATUS.md, roadmap sync
+
+## Auto-Detection
+- No new specs found
+- No new ADRs found
+- Phase 4: no completion signal (still In Progress)
+
+## Proposed Updates to docs/PROJECT-PLAN.md
+
+  ~ Phase 4 evidence: added "PR #38 — case-insensitive TM matching"
+  ~ Timeline last-synced date: 2026-04-01 → 2026-04-03
+
+Apply updates to docs/PROJECT-PLAN.md? (y/N)
+> y
+
+Plan document updated. 2 changes applied.
+```

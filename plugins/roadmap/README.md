@@ -30,7 +30,7 @@ Each capability is available as both a **skill** (quick analysis in chat) and an
 | Skill | Modes | Description |
 |-------|-------|-------------|
 | `pm` | `stories`, `prioritize`, `scope`, `validate`, `needs`, `compare`, `next` | Feature analysis from user perspective |
-| `roadmap` | `status`, `gaps`, `next`, `delta`, `blockers`, `risks`, `update`, `specs` | Project health and progress tracking |
+| `roadmap` | `status`, `gaps`, `next`, `delta`, `blockers`, `risks`, `update`, `specs`, `plan` | Project health and progress tracking |
 | `architect` | `module`, `api`, `data-model`, `boundaries`, `patterns`, `decisions`, `review`, `frontend` | System architecture analysis |
 | `refresh` | `init`, `check`, `all`, `project`, `architecture`, `documents` | Context directory scaffolding and drift detection |
 
@@ -74,6 +74,7 @@ roadmap:
   output_dir: arkhe/roadmap              # Where artifacts are written (default: arkhe/roadmap)
   context_dir: .arkhe/roadmap            # Where context files live (default: .arkhe/roadmap)
   status_file: docs/PROJECT-STATUS.md    # Status doc path (default: docs/PROJECT-STATUS.md)
+  plan_file: docs/PROJECT-PLAN.md        # Plan doc path (default: docs/PROJECT-PLAN.md)
 ```
 
 ### `.arkhe/roadmap/` — Rich Context Files
@@ -128,8 +129,13 @@ All components use a shared vocabulary for assessing module maturity:
 /roadmap:roadmap blockers
 
 # Roadmap skill (deep -- 3 parallel perspectives + cross-reference synthesis)
-/roadmap:roadmap --deep health
+/roadmap:roadmap --deep status
 /roadmap:roadmap --deep risks
+
+# Plan lifecycle
+/roadmap:roadmap plan scaffold        # Create initial plan from existing docs
+/roadmap:roadmap plan                 # Show consolidated plan view
+/roadmap:roadmap plan sync            # Update plan from git history
 
 # Architect skill (light)
 /roadmap:architect module payments
