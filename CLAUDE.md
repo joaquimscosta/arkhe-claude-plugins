@@ -607,6 +607,7 @@ For complete technical specifications:
 - **Best Practices**: `docs/reference/BEST_PRACTICES.md`
 - **Installation Guide**: `INSTALLATION.md`
 - **Main README**: `README.md`
+- **Docs Health Action**: [`joaquimscosta/docs-health-action`](https://github.com/joaquimscosta/docs-health-action) — GitHub Action extracted from `doc-freshness` skill scripts. See its `SYNC.md` for script sync mapping.
 
 ## External Resources
 
