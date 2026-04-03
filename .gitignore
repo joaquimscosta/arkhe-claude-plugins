@@ -62,7 +62,8 @@ internal-repos
 # Worktrees
 .worktrees/
 
-# Reviews
-reviews
+# Reviews (generated review reports — not skill template files)
+/reviews
+docs/reviews
 
 docs/superpowers
