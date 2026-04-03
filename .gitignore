@@ -64,6 +64,5 @@ internal-repos
 
 # Reviews (generated review reports — not skill template files)
 /reviews
-docs/reviews
 
 docs/superpowers
