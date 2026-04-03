@@ -8,7 +8,41 @@ Usage examples across different project types.
 
 **Output:**
 
+The `stories` mode auto-runs a scope assessment as a preamble before generating stories. If scope passes, stories follow immediately.
+
 ```
+## Scope Assessment
+
+### User Value
+Authentication is foundational — users cannot access any protected
+feature without it. Every persona (new user, returning user, admin)
+depends on a working auth system.
+
+### Project Fit
+Aligns with Phase 1 MVP goals. Auth is listed as a prerequisite
+for dashboard, profile, and admin features.
+
+### Dependencies
+- Database user table (exists)
+- Email service for verification (not yet configured)
+
+### Effort Estimate
+**Medium (1-3 days)** — Standard email/password flow with session
+management. Email verification adds ~0.5 day.
+
+### Risks
+- Email deliverability issues could block sign-up verification
+- Password reset flow not yet scoped
+
+### Recommendation
+**Build now** — Core prerequisite for all protected features.
+
+---
+
+## User Stories
+
+### Must Have
+
 ### US-1: Sign Up with Email
 
 **As a** new user,
@@ -40,6 +74,53 @@ Usage examples across different project types.
 - **Given** I enter incorrect credentials
   **When** I submit the form
   **Then** I see an error message and can retry
+```
+
+## Example 1b: Stories Skipped — Scope Returns "Needs Research"
+
+**Input:** `/roadmap:pm stories ai-powered-recommendations`
+
+**Output:**
+
+When the scope preamble returns "Needs research" or "Reject", story generation is skipped entirely.
+
+```
+## Scope Assessment
+
+### User Value
+Personalized recommendations could increase engagement, but user
+research has not validated demand. No data on current browsing
+patterns exists.
+
+### Project Fit
+Not in Phase 1 or Phase 2 roadmap. Would require ML infrastructure
+that does not exist in the current stack.
+
+### Dependencies
+- User behavior tracking (does not exist)
+- ML model training pipeline (does not exist)
+- Product catalog with tagging/metadata (partial)
+
+### Effort Estimate
+**XL (2+ weeks)** — New infrastructure, model training, A/B testing
+framework, and recommendation UI.
+
+### Risks
+- Cold-start problem with insufficient user data
+- ML infrastructure cost and maintenance burden
+- Recommendations may not improve engagement without validated demand
+
+### Recommendation
+**Needs research** — User demand is unvalidated and the technical
+prerequisites do not exist. Recommend: (1) add basic analytics to
+measure browsing patterns, (2) survey users on recommendation
+interest, (3) revisit after Phase 2 when data is available.
+
+---
+
+Story generation skipped. The scope assessment identified unresolved
+prerequisites and unvalidated user demand. Address the research
+items above before generating stories for this feature.
 ```
 
 ## Example 2: Prioritization Matrix

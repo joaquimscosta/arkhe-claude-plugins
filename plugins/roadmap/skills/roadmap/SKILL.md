@@ -6,7 +6,7 @@ description: >
   comparing plan vs reality, documenting risks, or planning next milestones.
   Triggers: "roadmap", "project status", "blockers", "risks", "progress", "next milestone",
   "gaps", "what's done".
-argument-hint: "[--deep] status | gaps | next | delta | blockers | risks | update | specs | plan [scaffold|show|sync]"
+argument-hint: "[--deep] status | gaps | next | delta | blockers | risks | update [--incremental] | specs | plan [scaffold|show|sync]"
 allowed-tools: Read, Glob, Grep, Write, Bash
 ---
 
@@ -30,7 +30,7 @@ Parse from `$ARGUMENTS`:
 | `delta` | What changed since last assessment |
 | `blockers` | Blocking chain analysis |
 | `risks` | Risk register with likelihood/impact |
-| `update` | Git-history-aware status document update (Phase A: what shipped + Phase B: full scan) |
+| `update` | Git-history-aware status document update (Phase A: what shipped + Phase B: full scan). Add `--incremental` for targeted post-sprint sync (Phase A + targeted edits only) |
 | `specs` | Spec pipeline status verification |
 | `plan` | Consolidated project plan — scaffold, show, or sync phases/specs/ADRs |
 | _(none)_ | Full dashboard (combines status + gaps + next) |
@@ -197,13 +197,16 @@ See [WORKFLOW.md](WORKFLOW.md) § `plan` for detailed execution protocol.
 - **Tabular** — use tables for at-a-glance status; prose for analysis
 - **Actionable** — always end with recommended next actions
 - **Honest** — distinguish between "verified working" and "files exist but untested"
-- `update` and `plan scaffold`/`plan sync` write files after user confirmation; all other modes output to chat
+- `update` and `plan scaffold`/`plan sync` show unified diff preview (using `+`/`-`/`~` markers) and require explicit confirmation before writing
+- `--deep` reports are saved by default to `{output_dir}/reports/`; user can opt out
 
 ## Deep Mode (`--deep`)
 
 When `$ARGUMENTS` contains `--deep`, run the full multi-agent pipeline with **parallel cross-perspective analysis**. Three Sonnet agents analyze the project simultaneously from PM, Architect, and Roadmap perspectives, then a synthesizer merges findings and surfaces contradictions.
 
 See [WORKFLOW.md](WORKFLOW.md) § Deep Pipeline for the 5-phase execution protocol.
+
+Phase 4 produces a **Confidence Scoreboard** table with independent scores per finding. Findings below 70 are removed; 70-89 are tagged `[NEEDS VALIDATION]`.
 
 **Patterns applied**: Pipeline, Supervisor-Worker, Parallel Execution, Confession, Confidence-Gated Completion.
 

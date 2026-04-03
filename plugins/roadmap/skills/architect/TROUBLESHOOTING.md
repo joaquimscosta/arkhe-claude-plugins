@@ -79,12 +79,12 @@ Common issues and fixes for the System Architect skill.
 1. Ensure the framework config file is at the project root (`nuxt.config.ts`, `svelte.config.js`, etc.)
 2. Specify framework in `.arkhe/roadmap/architecture.md`
 
-## Review Mode Takes Too Long
+## Module Analysis Takes Too Long
 
-**Symptom:** `review <module>` seems to read excessive files.
+**Symptom:** `module <name>` seems to read excessive files.
 
-**Cause:** Module has many files and the skill reads all of them.
+**Cause:** Module has many files and the skill reads all of them for the full analysis (structure + quality assessment + recommendations).
 
 **Fix:**
-1. Use `module <name>` for a lighter analysis (skips quality checks)
-2. For focused reviews, ask about specific aspects: `api payments` or `boundaries`
+1. For focused analysis, ask about specific aspects: `api payments` or `boundaries`
+2. Use `patterns` for a cross-module pattern check without deep per-module analysis

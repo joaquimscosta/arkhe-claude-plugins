@@ -373,3 +373,54 @@ Apply updates to docs/PROJECT-PLAN.md? (y/N)
 
 Plan document updated. 2 changes applied.
 ```
+
+---
+
+## Example 12: Incremental Update (Post-Sprint Sync)
+
+**Input:** `/roadmap:roadmap update --incremental`
+
+**Context:** After completing Sprint 010 using `/core:develop`. Wave context files exist.
+
+**Output:**
+
+```
+## Wave Context
+Found wave-context-3.md from /core:develop session (2026-04-02).
+Features built: offline sync engine, conflict resolution UI, service worker.
+
+## What Shipped Since Last Update (2026-03-28, 8 commits ago)
+
+1. **Offline Sync Engine** (PR #38, feat:, specs 027-029)
+   - 4 services, 2 hooks, 8 test files
+2. **Conflict Resolution UI** (PR #39, feat:, spec 030)
+   - 3 components, 1 hook, 4 test files
+3. **Service Worker Registration** (PR #40, fix:)
+   - Updated PWA config, added cache strategies
+
+## Proposed Updates to docs/PROJECT-STATUS.md
+
+### Header
+  ~ Last updated: 2026-03-28 -> 2026-04-02
+  ~ Commits: 144 -> 152
+  ~ Branch hash: a1b2c3d -> e4f5g6h
+
+### Module Maturity
+  ~ offline-sync: Service Layer -> Tested
+  ~ conflict-resolution: Stub -> Service Layer
+
+### Phases
+  ~ Phase 2 (Offline-First): In Progress -> Done
+
+### Specs
+  + Spec 027: Sync Engine Core -> Complete
+  + Spec 028: Conflict Detection -> Complete
+  + Spec 029: Background Sync -> Complete
+  + Spec 030: Conflict Resolution UI -> Complete
+
+Apply updates to docs/PROJECT-STATUS.md? (y/N)
+> y
+
+Status document updated. 9 changes applied.
+Phase status changed. Run `/roadmap plan sync` to update the project plan.
+```

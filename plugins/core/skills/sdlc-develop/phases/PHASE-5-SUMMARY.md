@@ -133,6 +133,21 @@ Evaluate whether discoveries from this feature should persist as project memory.
 
 **If no candidates found**: Skip silently, no user interaction.
 
+### 5. Status Document Sync Suggestion
+
+After the completion summary, check if the project has roadmap status documents:
+
+1. Glob for `docs/PROJECT-STATUS.md` or check `.arkhe.yaml` for `roadmap.status_file`
+2. If a status document is found, append to the completion summary:
+
+```markdown
+### Status Documents
+Project status documents may need updating after this feature.
+Run `/roadmap:roadmap update --incremental` to sync PROJECT-STATUS.md.
+```
+
+This is a suggestion only — do NOT auto-execute the roadmap update.
+
 ---
 
 ## Verification Record (RULE ZERO)

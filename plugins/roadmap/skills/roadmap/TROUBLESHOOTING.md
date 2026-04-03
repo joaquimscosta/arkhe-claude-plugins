@@ -131,6 +131,17 @@ Use `delta` when you want to **see** what's stale without changing anything. Use
    ```
 2. These constraints inform risk scoring (tight deadline = higher impact for delays)
 
+## When to Use `update` vs `update --incremental`
+
+| Mode | What it does | Speed | Best for |
+|------|-------------|-------|----------|
+| `update` | Phase A (git history) + Phase B (full codebase scan) → writes full status doc | Slow (~5 min) | Monthly health checks, first-time setup, correcting accumulated drift |
+| `update --incremental` | Phase A (git history) + targeted edits only → surgical updates | Fast (~1 min) | Post-sprint sync, after `/core:develop`, quick status updates |
+
+Use `--incremental` when you know what changed (just finished a sprint) and want to quickly record it. Use full `update` when you suspect the document has drifted and need a comprehensive reconciliation.
+
+**Note:** `--incremental` reads wave-context files from `/core:develop` if available, but works with git-only when they aren't present.
+
 ## Plan Scaffold Produces Empty Phases
 
 **Symptom:** Timeline section has few or no phases after scaffolding.
