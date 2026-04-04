@@ -13,6 +13,7 @@ Developer tooling setup and management plugin for Claude Code.
 | `code-env-setup` | `/devtools:code-env-setup` | Interactive Claude Code environment setup wizard |
 | `quality-stack` | `/devtools:quality-stack` | JVM project quality/testing tooling audit and setup |
 | `taskfile-setup` | `/devtools:taskfile-setup` | Install Taskfile and scaffold/audit Taskfile.yml |
+| `coding-standards` | `/devtools:coding-standards` | Bootstrap, update, or audit coding standards from centralized repository |
 
 ## Claude Code Setup
 
@@ -49,3 +50,15 @@ Scans JVM projects (Gradle/Maven) to detect configured quality and testing tools
 2. **Setup** — User selects tools from the report, skill configures build files, creates config files, and verifies detection
 
 Run `/devtools:quality-stack` to audit your project's tooling.
+
+## Coding Standards
+
+Bootstrap, update, or audit project configuration against a centralized [coding-standards](https://github.com/deznode/coding-standards) repository. Copies Claude rules, config templates, and hooks into projects with ecosystem-aware selection and path customization.
+
+### Three Operations
+
+1. **Bootstrap** — First-time setup: detect ecosystem (JVM/Node.js), copy relevant templates, customize paths
+2. **Update** — Sync existing project with latest templates: diff, select, apply
+3. **Audit** — Read-only compliance check: score, per-file status, drift detection
+
+Run `/devtools:coding-standards` to get started.

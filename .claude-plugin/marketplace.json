@@ -70,7 +70,7 @@
     {
       "name": "devtools",
       "source": "./plugins/devtools",
-      "description": "Developer tooling setup and management (SOPS secrets encryption, Claude Code environment setup, multi-ecosystem quality stack for JVM/Node.js/Python, Taskfile task runner setup and audit)"
+      "description": "Developer tooling setup and management (SOPS secrets encryption, Claude Code environment setup, multi-ecosystem quality stack for JVM/Node.js/Python, Taskfile task runner setup and audit, coding-standards bootstrapping and audit)"
     },
     {
       "name": "startup",
