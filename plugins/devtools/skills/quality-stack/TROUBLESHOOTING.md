@@ -432,3 +432,41 @@ python3 scan_project.py --recursive /path/to/monorepo
 - Repository is private (raw.githubusercontent.com requires public repo or auth token)
 
 **Fallback**: Proceed with scanner results + LLM knowledge. The research docs enrich recommendations with specific versions and sourced rationale but are not required for the audit to work.
+
+## Android-Specific Issues
+
+### Android plugins not detected
+
+**Symptom**: Scanner reports `android_project_type: "unknown"` or no Android ecosystem detected.
+
+**Causes**:
+- Convention plugins in `build-logic/` apply AGP plugins indirectly — the scanner reads `build.gradle.kts` files directly and may not find `com.android.application` in them
+- AGP declared only in the version catalog `[plugins]` section
+
+**Fix**: The scanner also checks `gradle/libs.versions.toml` for Android plugin IDs. If still not detected, use `--ecosystem android` to force:
+```bash
+python3 scan_project.py --ecosystem android /path/to/project
+```
+
+### Compose detected as Views project
+
+**Symptom**: `ui_toolkit: "views"` on a Compose project.
+
+**Causes**:
+- Compose dependencies declared in version catalog but not applied in module build files
+- Compose BOM imported but no `@Composable` functions or Compose dependencies in detected modules
+
+**Fix**: Check that the actual app/feature modules have Compose dependencies. The scanner checks both `build.gradle.kts` content and `res/layout/*.xml` file presence.
+
+### KMP not detected
+
+**Symptom**: `is_kmp: false` on a KMP project.
+
+**Causes**:
+- `kotlin.multiplatform` plugin applied in a submodule, not at the project root
+- Using `com.android.kotlin.multiplatform.library` in convention plugins only
+
+**Fix**: Use `--recursive` to scan submodules, or point the scanner at the KMP module directly:
+```bash
+python3 scan_android.py /path/to/project/shared
+```

@@ -867,3 +867,101 @@ pre-commit:
       run: ruff format {staged_files}
       stage_fixed: true
 ```
+
+## Example: Android KMP Project with Compose
+
+### Scanner Output (Android ecosystem)
+
+```json
+{
+  "ecosystem": "android",
+  "project": {
+    "agp_version": "9.0.0",
+    "compose_bom_version": "2024.12.01",
+    "android_project_type": "kmp-library",
+    "ui_toolkit": "compose",
+    "is_kmp": true,
+    "kotlin_version": "2.2.21",
+    "compile_sdk": "36",
+    "min_sdk": "26",
+    "target_sdk": "35",
+    "has_version_catalog": true,
+    "has_convention_plugins": true,
+    "main_file_count": 27,
+    "test_file_count": 1,
+    "android_test_file_count": 0,
+    "common_main_file_count": 11,
+    "common_test_file_count": 2
+  },
+  "detected_tools": {
+    "build_config": [
+      {"name": "agp-application", "status": "active", "source": "version-catalog"},
+      {"name": "agp-kmp-library", "status": "active", "source": "version-catalog"},
+      {"name": "kotlin-multiplatform", "status": "active", "source": "version-catalog"}
+    ],
+    "compose": [
+      {"name": "compose-compiler", "status": "active", "source": "version-catalog"}
+    ],
+    "static_analysis": [],
+    "testing": [
+      {"name": "turbine", "status": "active", "source": "version-catalog"}
+    ],
+    "screenshot_testing": [],
+    "database": [
+      {"name": "sqldelight", "status": "active", "source": "version-catalog"}
+    ],
+    "database_testing": [
+      {"name": "sqldelight-jvm-driver", "status": "active", "source": "build-file"}
+    ],
+    "network_testing": [
+      {"name": "ktor-mock-engine", "status": "active", "source": "build-file"}
+    ],
+    "dependency_injection": [],
+    "performance": []
+  },
+  "config_files": {
+    "lint.xml": false,
+    "baseline-prof.txt": false,
+    "build-logic/": true
+  },
+  "tool_config": {
+    "compose_stability_config": false,
+    "has_lint_config": false,
+    "has_baseline_profile": false,
+    "has_include_android_resources": false
+  }
+}
+```
+
+### Recommendation Report
+
+```markdown
+## Tooling Audit Report
+
+### Android Ecosystem
+
+#### Project Profile
+- **AGP**: 9.0.0 | **Compose BOM**: 2024.12.01 | **KMP**: Yes | **UI**: Compose
+- **Kotlin**: 2.2.21 | **compileSdk**: 36 | **minSdk**: 26
+
+#### Current Stack
+| Category | Tools | Status |
+|----------|-------|--------|
+| Build Config | AGP 9.0, KMP, Compose Compiler | active |
+| Testing | Turbine | active |
+| Screenshot Testing | (none) | — |
+| Database | SQLDelight, JVM driver | active |
+| Network Testing | Ktor MockEngine | active |
+| Static Analysis | (none — check JVM ecosystem) | — |
+| Performance | (none) | — |
+
+#### Recommendations
+| Priority | Tool | Category | Why |
+|----------|------|----------|-----|
+| NOW | Compose UI testing | UI Testing | Has Compose deps but no `ui-test-junit4` |
+| NOW | Android Lint baseline | Static Analysis | No `lint.xml` configured |
+| NOW | Robolectric | Testing | Enable JVM-based Android tests |
+| SOON | Roborazzi | Screenshot Testing | Compose project needs visual regression |
+| SOON | Baseline Profiles | Performance | No `baseline-prof.txt` in app module |
+| LATER | Compose stability config | Compose | Optimize recomposition skipping |
+```

@@ -21,6 +21,7 @@ Output:
 import argparse
 import json
 import os
+import re
 import sys
 from pathlib import Path
 from typing import Dict, List, Optional, Set
@@ -37,6 +38,13 @@ from shared import SKIP_DIRS
 JVM_MARKERS = {"build.gradle.kts", "build.gradle", "pom.xml"}
 NODE_MARKERS = {"package.json"}
 PYTHON_MARKERS = {"pyproject.toml", "setup.py", "setup.cfg", "requirements.txt", "Pipfile"}
+
+# Android plugin patterns to detect in Gradle build files
+ANDROID_BUILD_PATTERNS = [
+    r"com\.android\.application",
+    r"com\.android\.library",
+    r"com\.android\.kotlin\.multiplatform\.library",
+]
 
 
 def detect_ecosystems(root: Path) -> List[Dict[str, str]]:
@@ -64,6 +72,51 @@ def detect_ecosystems(root: Path) -> List[Dict[str, str]]:
 
         if entries & JVM_MARKERS:
             found.append({"ecosystem": "jvm", "root": rel_path})
+
+            # Check if this JVM project is also an Android project
+            _android_detected = False
+            for gradle_name in ["build.gradle.kts", "build.gradle"]:
+                gradle_file = directory / gradle_name
+                if gradle_file.exists():
+                    try:
+                        gradle_content = gradle_file.read_text(encoding="utf-8")
+                        for pattern in ANDROID_BUILD_PATTERNS:
+                            if re.search(pattern, gradle_content):
+                                _android_detected = True
+                                break
+                    except Exception:
+                        pass
+                if _android_detected:
+                    break
+
+            # Also check version catalog for AGP plugins
+            if not _android_detected:
+                catalog = directory / "gradle" / "libs.versions.toml"
+                if catalog.exists():
+                    try:
+                        cat_content = catalog.read_text(encoding="utf-8")
+                        for pattern in ANDROID_BUILD_PATTERNS:
+                            if re.search(pattern, cat_content):
+                                _android_detected = True
+                                break
+                    except Exception:
+                        pass
+
+            # Check for AndroidManifest.xml as fallback
+            if not _android_detected:
+                manifest_globs = [
+                    "src/main/AndroidManifest.xml",
+                    "*/src/main/AndroidManifest.xml",
+                    "app/src/main/AndroidManifest.xml",
+                    "androidApp/src/main/AndroidManifest.xml",
+                ]
+                for glob_pat in manifest_globs:
+                    if list(directory.glob(glob_pat)):
+                        _android_detected = True
+                        break
+
+            if _android_detected:
+                found.append({"ecosystem": "android", "root": rel_path})
 
         if entries & NODE_MARKERS:
             # Only count as Node ecosystem if it has actual source files
@@ -174,6 +227,24 @@ def run_python_scanner(root: Path, project_root: str) -> Optional[dict]:
         return {"ecosystem": "python", "root": project_root, "error": str(e)}
 
 
+def run_android_scanner(root: Path, project_root: str, recursive: bool) -> Optional[dict]:
+    """Run the Android scanner on a directory."""
+    try:
+        from scan_android import scan
+        result = scan(root, recursive=recursive)
+        if result is not None:
+            result["root"] = project_root
+        return result
+    except ImportError:
+        return {
+            "ecosystem": "android",
+            "root": project_root,
+            "error": "Android scanner not yet available (scan_android.py)",
+        }
+    except Exception as e:
+        return {"ecosystem": "android", "root": project_root, "error": str(e)}
+
+
 def run_cross_cutting_scanner(root: Path) -> dict:
     """Run the cross-cutting scanner."""
     try:
@@ -220,7 +291,7 @@ def scan_project(
 
         return {
             "error": "no_ecosystem_detected",
-            "message": f"No JVM, Node.js, or Python project detected at: {root}",
+            "message": f"No JVM, Android, Node.js, or Python project detected at: {root}",
             "hint": "Try --recursive flag or pass a subproject path directly",
             "nearby_project_files": hint_files,
         }
@@ -234,6 +305,8 @@ def scan_project(
 
         if eco_type == "jvm":
             result = run_jvm_scanner(eco_root, eco_root_str, recursive)
+        elif eco_type == "android":
+            result = run_android_scanner(eco_root, eco_root_str, recursive)
         elif eco_type == "node":
             result = run_node_scanner(eco_root, eco_root_str)
         elif eco_type == "python":
@@ -270,7 +343,7 @@ def scan_project(
 def main():
     """Main entry point."""
     parser = argparse.ArgumentParser(
-        description="Multi-Ecosystem Project Scanner — auto-detects and scans JVM, Node.js, Python"
+        description="Multi-Ecosystem Project Scanner — auto-detects and scans JVM, Android, Node.js, Python"
     )
     parser.add_argument("project_root", help="Path to the project root directory")
     parser.add_argument(
@@ -280,7 +353,7 @@ def main():
     )
     parser.add_argument(
         "--ecosystem",
-        choices=["jvm", "node", "python"],
+        choices=["jvm", "android", "node", "python"],
         help="Force scanning a specific ecosystem (skip auto-detection)",
     )
     args = parser.parse_args()

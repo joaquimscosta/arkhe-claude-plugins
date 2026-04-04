@@ -15,6 +15,10 @@ Run scan_project.py on project root (auto-detects ecosystems)
     ▼
 For each detected ecosystem in output.ecosystems[]:
     │
+    ├── Android detected? → fetch Android research docs via WebFetch
+    │   ├── android-ecosystem-tooling.md
+    │   └── android-testing-ecosystem.md
+    │
     ├── JVM detected? → fetch JVM research docs via WebFetch
     │   ├── jvm-quality-tools-evaluation.md
     │   └── kotlin-spring-boot-testing-ecosystem.md
@@ -38,6 +42,8 @@ Cross-reference: detected tools vs recommended tools (per ecosystem)
     │
     ▼
 Apply priority classification rules (per ecosystem)
+  ├── Android: UI-toolkit-aware (Compose/Views), KMP-aware, AGP version-aware
+  │   └── Cross-reference BOTH Android docs (see Android Cross-Reference Checklist below)
   ├── JVM: Language-aware (Kotlin/Java/mixed), version-aware (Spring Boot 3.x/4.x)
   │   └── Cross-reference BOTH JVM docs (see JVM Cross-Reference Checklist below)
   ├── Node.js: Framework-aware (Next.js/React/Vue), TypeScript strict audit
@@ -67,6 +73,23 @@ When JVM ecosystem is detected, cross-reference against BOTH research documents:
 Do NOT skip testing-ecosystem items even if the quality-tools doc already covers testing.
 The two docs have different scopes — quality-tools covers tool presence, testing-ecosystem
 covers testing patterns and practices.
+
+### Android Cross-Reference Checklist
+
+When Android ecosystem is detected, cross-reference against BOTH Android research documents:
+
+1. **android-ecosystem-tooling.md** — AGP version, Compose BOM, Jetpack libraries, build config
+2. **android-testing-ecosystem.md** — check the testing stack for:
+   - [ ] Compose UI testing (has Compose dependencies but no `ui-test-junit4`)
+   - [ ] Screenshot testing (Roborazzi for Compose, Paparazzi for Views)
+   - [ ] Turbine for Flow/StateFlow testing (has coroutines/Flow but no Turbine)
+   - [ ] Robolectric for fast integration tests (running instrumented tests on JVM)
+   - [ ] In-memory database testing (Room `inMemoryDatabaseBuilder` or SQLDelight JVM driver)
+   - [ ] MainDispatcherRule for ViewModel tests (has ViewModels but no test dispatcher setup)
+   - [ ] KMP commonTest coverage (has KMP but tests only in androidTest)
+
+Do NOT skip testing-ecosystem items even if the tooling doc covers some testing tools.
+The two docs have different scopes — tooling covers build configuration, testing covers patterns and practices.
 
 ## Phase 2: Setup
 
@@ -271,6 +294,117 @@ rounds into a single AskUserQuestion with all NOW tools + "Skip setup".
 | @DataJpaTest | Has JPA entities, no slice tests | NOW |
 | Testcontainers reuse | Has Testcontainers, no reuse config | NOW |
 
+## Android Classification Rules
+
+### Category: Build Configuration
+
+| Tool | When to Recommend | Priority |
+|------|------------------|----------|
+| Version catalog (`libs.versions.toml`) | Not using version catalog | NOW |
+| Convention plugins (`build-logic/`) | Multi-module project without them | SOON |
+| Compose stability config | Has Compose but no stability config | LATER |
+| R8 full mode | Has ProGuard rules but not using R8 full mode | LATER |
+
+### Category: Static Analysis (Android)
+
+| Tool | Condition | Priority |
+|------|-----------|----------|
+| Android Lint baseline | No `lint.xml` configured | NOW |
+| Custom lint rules | Large project (>50 modules) | LATER |
+| Detekt | Not detected (shared with JVM) | NOW |
+| ktlint | Not detected (shared with JVM) | NOW |
+
+### Category: UI Testing
+
+| Tool | When to Recommend | Priority |
+|------|------------------|----------|
+| Compose UI testing | Has Compose deps but no `ui-test-junit4` | NOW |
+| Roborazzi | Compose project, no screenshot testing | SOON |
+| Paparazzi | Views-based project, no screenshot testing | SOON |
+| Compose Preview Screenshot | Simple preview validation needed | LATER |
+| Espresso | Compose project | SKIP (prefer Compose UI test) |
+| Espresso | Views-based project, no UI tests | SOON |
+
+### Category: Unit Testing (Android)
+
+| Tool | When to Recommend | Priority |
+|------|------------------|----------|
+| Turbine | Has Flow/StateFlow, no Turbine | NOW |
+| Robolectric | Running many instrumented tests that could be JVM | NOW |
+| kotlin.test (KMP) | KMP project, no commonTest setup | NOW |
+| Kotest assertions | When team wants Kotlin DSL assertions | SOON |
+| Truth | Google stack, instrumented tests | SOON |
+| JUnit 5 (android-junit5) | Still on JUnit 4 only | SOON |
+
+### Category: Database Testing (Android)
+
+| Tool | When to Recommend | Priority |
+|------|------------------|----------|
+| Room in-memory testing | Has Room, no in-memory test DB | NOW |
+| SQLDelight JVM driver | KMP + SQLDelight, no JVM test driver | NOW |
+| Migration testing | Has Room with version > 1 or SQLDelight migrations | SOON |
+
+### Category: Network Testing (Android)
+
+| Tool | When to Recommend | Priority |
+|------|------------------|----------|
+| Ktor MockEngine | KMP + Ktor, no mock engine | NOW |
+| MockWebServer | Retrofit/OkHttp, no mock server | SOON |
+| WireMock | Complex API stubbing needed | LATER |
+
+### Category: Coverage (Android)
+
+| Tool | When to Recommend | Priority |
+|------|------------------|----------|
+| Kover | No coverage tool (shared with JVM) | NOW |
+| JaCoCo | Need SonarQube compat | LATER |
+
+### Category: Performance
+
+| Tool | When to Recommend | Priority |
+|------|------------------|----------|
+| Baseline Profiles | No `baseline-prof.txt` in app module | SOON |
+| Macrobenchmark | Performance-critical app, no benchmarks | LATER |
+
+### Category: Dependency Injection
+
+| Tool | When to Recommend | Priority |
+|------|------------------|----------|
+| Hilt | No DI framework detected, Google stack | SOON |
+| Koin | KMP project, no DI framework | SOON |
+
+### Android Version-Aware Rules
+
+| AGP Version | Implications |
+|-------------|-------------|
+| < 8.0 | Major migration needed; suggest AGP Upgrade Assistant |
+| 8.x | Standard recommendations apply; warn about AGP 9 breaking changes |
+| 9.0+ | Built-in Kotlin, new variant API; can use KMP library plugin |
+
+| Compose BOM | Implications |
+|-------------|-------------|
+| < 2024.01 | Outdated; suggest BOM upgrade |
+| 2024.x | Stable; M3 1.2-1.3 |
+| 2025.09+ | M3 1.4.0 (Material Expressive), Compose UI 1.8+ (strong skipping) |
+
+### Android Scanner Output Interpretation
+
+The Android scanner JSON has these key fields:
+
+1. `project.android_project_type` -> determines scope (`application`, `library`, `kmp-library`)
+2. `project.ui_toolkit` -> determines UI testing recommendations (`compose`, `views`, `mixed`)
+3. `project.is_kmp` -> enables KMP-specific recommendations (commonTest, expect/actual)
+4. `project.agp_version` -> determines version-aware rules
+5. `project.compose_bom_version` -> determines Compose version-aware recommendations
+6. `detected_tools.screenshot_testing` -> check for Roborazzi/Paparazzi/Preview Screenshot
+7. `detected_tools.testing` -> check for Compose UI test, Robolectric, Turbine
+8. `config_files["lint.xml"]` -> missing means no Android Lint configuration
+9. `config_files["baseline-prof.txt"]` -> missing in app module suggests Baseline Profiles
+10. `tool_config.compose_stability_config` -> whether stability config is present
+11. `tool_config.has_include_android_resources` -> needed for Roborazzi/Robolectric
+
+---
+
 ## Version-Aware Rules
 
 | Spring Boot Version | Implications |
@@ -359,6 +493,18 @@ pre-commit:
     detekt:
       glob: "**/*.{kt,kts}"
       run: ./gradlew detekt
+
+    # --- Android hooks (include if android ecosystem detected) ---
+
+    # Include if android-lint detected
+    android-lint:
+      glob: "**/*.{kt,kts,java,xml}"
+      run: ./gradlew lint
+
+    # Include if roborazzi screenshot testing detected
+    screenshot-verify:
+      glob: "**/*.{kt,kts}"
+      run: ./gradlew verifyRoborazziDebug
 
     # --- Frontend hooks (include if frontend_tools detected) ---
 
@@ -452,6 +598,10 @@ After configuring EACH tool, perform these verification steps before moving to t
 | Ruff | `ruff check .` |
 | mypy | `mypy .` |
 | Lefthook | `npx lefthook run pre-commit` |
+| Compose UI Test | `./gradlew testDebugUnitTest` (with Robolectric) or `./gradlew connectedDebugAndroidTest` |
+| Roborazzi | `./gradlew verifyRoborazziDebug` |
+| Android Lint | `./gradlew lint` |
+| Baseline Profiles | `./gradlew :app:generateBaselineProfile` |
 
 ### 2. Verify patterns against codebase
 
@@ -504,6 +654,20 @@ NEVER guess a tool version. Use this resolution order:
 **EditorConfig**:
 - Before creating root `.editorconfig`, check scanner output for `editor_config.subdirectory_configs`
 - If any subdirectory has `is_root: true`, it blocks inheritance — warn the user and offer to remove `root = true` from the subdirectory file
+
+**AGP / Compose BOM**:
+- Always check AGP <-> Gradle <-> Kotlin compatibility matrix before upgrades
+- Compose BOM pins all Compose library versions — never specify individual Compose versions alongside a BOM
+- AGP 9.x removes `applicationVariants` — verify no build scripts use the old API
+
+**Roborazzi**:
+- Requires `testOptions { unitTests { isIncludeAndroidResources = true } }` in the android block
+- Requires Robolectric as a runtime dependency
+- Screenshot goldens go in `src/test/screenshots/` — add to git, add to `.gitattributes` as binary
+
+**Compose UI Testing**:
+- Requires `debugImplementation("androidx.compose.ui:ui-test-manifest")` in addition to `androidTestImplementation("ui-test-junit4")`
+- The test manifest enables activity launching in instrumented tests
 
 ---
 
