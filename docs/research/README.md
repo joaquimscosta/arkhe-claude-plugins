@@ -23,3 +23,8 @@ See [TEMPLATE.md](TEMPLATE.md) for the standard format when creating new researc
 | [Cross-Cutting Developer Tools Evaluation](cross-cutting-devtools-evaluation.md) | 1.0.0 | Published | 2026-03-25 | 2026-03-25 |
 | [Superpowers Agentic Patterns: Quick Reference](superpowers-patterns-overview.md) | 1.0.0 | Published | 2026-04-02 | 2026-04-02 |
 | [Superpowers Agentic Patterns: Deep Dive](superpowers-patterns-deep-dive.md) | 1.0.0 | Published | 2026-04-02 | 2026-04-02 |
+| [Android Development Ecosystem & Tooling (2025-2026)](android-ecosystem-tooling.md) | 1.0.0 | Published | 2026-04-04 | 2026-04-04 |
+| [Jetpack Compose Advanced Patterns & Best Practices](jetpack-compose-patterns.md) | 1.0.0 | Published | 2026-04-04 | 2026-04-04 |
+| [Kotlin Multiplatform (KMP) Production Architecture & Patterns](kotlin-multiplatform-production-patterns.md) | 1.0.0 | Published | 2026-04-04 | 2026-04-04 |
+| [Offline-First Mobile Architecture: Patterns & Implementation](offline-first-mobile-architecture.md) | 1.0.0 | Published | 2026-04-04 | 2026-04-04 |
+| [Android Testing Ecosystem: Libraries, Patterns & Strategies](android-testing-ecosystem.md) | 1.0.0 | Published | 2026-04-04 | 2026-04-04 |
