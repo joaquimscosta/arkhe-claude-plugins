@@ -130,3 +130,33 @@ Use `delta` when you want to **see** what's stale without changing anything. Use
    - Budget: limited cloud spend
    ```
 2. These constraints inform risk scoring (tight deadline = higher impact for delays)
+
+## When to Use `update` vs `update --incremental`
+
+| Mode | What it does | Speed | Best for |
+|------|-------------|-------|----------|
+| `update` | Phase A (git history) + Phase B (full codebase scan) → writes full status doc | Slow (~5 min) | Monthly health checks, first-time setup, correcting accumulated drift |
+| `update --incremental` | Phase A (git history) + targeted edits only → surgical updates | Fast (~1 min) | Post-sprint sync, after `/core:develop`, quick status updates |
+
+Use `--incremental` when you know what changed (just finished a sprint) and want to quickly record it. Use full `update` when you suspect the document has drifted and need a comprehensive reconciliation.
+
+**Note:** `--incremental` reads wave-context files from `/core:develop` if available, but works with git-only when they aren't present.
+
+## Plan Scaffold Produces Empty Phases
+
+**Symptom:** Timeline section has few or no phases after scaffolding.
+
+**Cause:** No status document or roadmap files with phase tables found. The scaffold requires at least one source of phase information.
+
+**Fix:**
+1. Ensure `{status_file}` exists and contains a phase table (run `/roadmap update` to create one)
+2. Or ensure `docs/**/roadmap.md` files exist with phase lists
+3. If starting from scratch, create a minimal phase table in your status doc first, then scaffold
+
+## Plan Sync Says "No Changes" But Plan Seems Stale
+
+**Symptom:** `/roadmap plan sync` reports no changes, but the plan document has incorrect or outdated data.
+
+**Cause:** The plan doc was recently synced (git shows no gap between sync and HEAD), but content was already wrong at last sync time.
+
+**Fix:** Run `/roadmap plan scaffold` to regenerate from current state. Scaffold always rebuilds from scratch (with overwrite confirmation), while sync only applies incremental changes from git history since the last sync.

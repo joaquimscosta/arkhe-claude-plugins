@@ -16,6 +16,8 @@ Read the saved plan.md for implementation phases from Phase 2.
 
 Convert each phase into discrete tasks with full ticket metadata.
 
+For each task, include a **verification command** that can objectively prove the task is complete (e.g., a test command, curl request, or grep check). This should be a CLI command that produces observable output. The verification section is optional for tasks where no single command can verify completion (e.g., pure refactoring tasks).
+
 ### 3. Organize into Parallel Waves
 
 Group tasks based on dependencies:
@@ -126,6 +128,12 @@ What needs to be done - clear, actionable description.
 
 ### Technical Notes
 Implementation hints, patterns to follow, gotchas.
+
+### Verification (optional)
+```bash
+{command to verify this task is complete}
+```
+**Expected:** {expected output or exit code}
 ```
 
 ---

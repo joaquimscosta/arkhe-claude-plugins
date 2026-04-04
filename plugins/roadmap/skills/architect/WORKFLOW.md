@@ -26,6 +26,23 @@ Run the shared context discovery protocol in [CONTEXT_DISCOVERY.md](../../refere
    - Dependencies (imports from other modules)
    - Maturity assessment using shared scale
    - Specific recommendations
+5. Assess code quality:
+   - Complexity hotspots (large files, deeply nested logic)
+   - Code duplication across the module
+6. Evaluate test coverage:
+   - Ratio of test files to source files
+   - Identify untested areas
+7. Check API design quality:
+   - RESTful convention adherence
+   - Naming consistency
+   - Error handling patterns
+8. Check module isolation:
+   - Import graph violations (imports from other modules' internals)
+   - Shared mutable state
+9. Produce prioritized recommendations table:
+   - **Fix Now** — critical issues affecting correctness or stability
+   - **Improve** — quality issues worth addressing soon
+   - **Nice to Have** — enhancements for long-term health
 
 ### `api <feature>`
 
@@ -108,21 +125,6 @@ Run the shared context discovery protocol in [CONTEXT_DISCOVERY.md](../../refere
    - Search codebase for implementation evidence
    - Classify: Implemented / Partially Implemented / Not Implemented / Superseded
 4. Produce traceability table
-
-### `review <module>`
-
-1. Run full `module <name>` analysis
-2. Additionally assess:
-   - Code quality indicators (complexity, duplication)
-   - Test coverage (ratio of test files to source files)
-   - API design quality (RESTful conventions, consistency)
-   - Data model quality (normalization, indexing)
-   - Module isolation (boundary violations)
-   - Event handling (if applicable)
-3. Produce structured review:
-   - Per-area assessment table
-   - Prioritized recommendations (fix now / improve / nice to have)
-   - Risks and trade-offs
 
 ### `frontend <feature>`
 

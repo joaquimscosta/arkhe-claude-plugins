@@ -21,3 +21,5 @@ See [TEMPLATE.md](TEMPLATE.md) for the standard format when creating new researc
 | [Node.js/TypeScript Quality Tools Evaluation](node-quality-tools-evaluation.md) | 1.0.0 | Published | 2026-03-25 | 2026-03-25 |
 | [Python Quality Tools Evaluation](python-quality-tools-evaluation.md) | 1.0.0 | Published | 2026-03-25 | 2026-03-25 |
 | [Cross-Cutting Developer Tools Evaluation](cross-cutting-devtools-evaluation.md) | 1.0.0 | Published | 2026-03-25 | 2026-03-25 |
+| [Superpowers Agentic Patterns: Quick Reference](superpowers-patterns-overview.md) | 1.0.0 | Published | 2026-04-02 | 2026-04-02 |
+| [Superpowers Agentic Patterns: Deep Dive](superpowers-patterns-deep-dive.md) | 1.0.0 | Published | 2026-04-02 | 2026-04-02 |

@@ -11,13 +11,21 @@ Run the shared context discovery protocol in [CONTEXT_DISCOVERY.md](../../refere
 ### `stories <feature>`
 
 1. Run context discovery
-2. Identify personas from project context
-3. Identify the target feature area in the codebase
-4. Generate user stories grouped by priority:
+2. **Scope preamble** — Auto-run a scope assessment before generating stories. Present under a `## Scope Assessment` heading:
+   - **User Value** — How does this feature serve end users?
+   - **Project Fit** — Does it align with project goals and current phase?
+   - **Dependencies** — What existing modules/features does it depend on?
+   - **Effort Estimate** — Rough sizing (S / M / L / XL)
+   - **Risks** — What could go wrong?
+   - **Recommendation** — Build now / Defer / Needs research / Reject
+3. **Gate** — If the scope recommendation is **Reject** or **Needs research**, stop here. Present the scope assessment and explain why story generation is premature. Do NOT proceed to story generation.
+4. Identify personas from project context
+5. Identify the target feature area in the codebase
+6. Generate user stories grouped by priority:
    - **Must Have** — Core functionality
    - **Should Have** — Important but not critical
    - **Could Have** — Nice to have
-5. For each story, include:
+7. For each story, include:
    - Persona, action, benefit
    - Given/When/Then acceptance criteria
    - Edge cases relevant to the project domain

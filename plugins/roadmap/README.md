@@ -29,9 +29,9 @@ Each capability is available as both a **skill** (quick analysis in chat) and an
 
 | Skill | Modes | Description |
 |-------|-------|-------------|
-| `pm` | `stories`, `prioritize`, `scope`, `validate`, `needs`, `compare`, `next` | Feature analysis from user perspective |
-| `roadmap` | `status`, `gaps`, `next`, `delta`, `blockers`, `risks`, `update`, `specs` | Project health and progress tracking |
-| `architect` | `module`, `api`, `data-model`, `boundaries`, `patterns`, `decisions`, `review`, `frontend` | System architecture analysis |
+| `pm` | `stories`, `prioritize`, `scope`, `validate`, `needs`, `compare`, `next` | Feature analysis from user perspective. `stories` auto-runs scope assessment as preamble |
+| `roadmap` | `status`, `gaps`, `next`, `delta`, `blockers`, `risks`, `update` (`--incremental`), `specs`, `plan` | Project health and progress tracking. `--incremental` for fast post-sprint sync |
+| `architect` | `module`, `api`, `data-model`, `boundaries`, `patterns`, `decisions`, `frontend` | System architecture analysis with optional file persistence |
 | `refresh` | `init`, `check`, `all`, `project`, `architecture`, `documents` | Context directory scaffolding and drift detection |
 
 ### Agents (Write Artifacts)
@@ -40,7 +40,6 @@ Each capability is available as both a **skill** (quick analysis in chat) and an
 |-------|-----------------|-------------|
 | `product-manager` | `{output_dir}/requirements/` | User stories, scope docs, prioritization artifacts |
 | `system-architect` | `{output_dir}/architecture/` | Design documents, ADRs, boundary analysis |
-| `roadmap-analyst` | Report output | Comprehensive 6-phase project health report |
 | `roadmap-critic` | N/A (read-only) | Quality reviewer for `--deep` pipelines. Scores artifacts using Confession Pattern |
 
 ### `--deep` Mode (Multi-Agent Pipelines)
@@ -51,7 +50,7 @@ Each skill supports `--deep` for a full multi-agent orchestration pipeline:
 |-------|-------------------|---------------|
 | `pm --deep` | Context Gatherer (Haiku) -> PM Analyst + Confession (Sonnet) -> Architect Feasibility (Haiku) -> Confidence Scoring (Haiku) | Pipeline, Confession, Critic-Actor, Specification-First |
 | `architect --deep` | Context Gatherer (Haiku) -> Architecture Analyst + Confession (Sonnet) -> **Red Team Adversary** (Sonnet) -> Confidence Scoring (Haiku) | Pipeline, Confession, Adversarial Review |
-| `roadmap --deep` | 2 Parallel Context Agents (Haiku) -> **3 Parallel Perspectives**: PM + Architect + Roadmap (Sonnet) -> Cross-Reference Synthesis (Sonnet) -> Confidence Scoring (Haiku) | Pipeline, Supervisor-Worker, Parallel Execution, Confession |
+| `roadmap --deep` | 2 Parallel Context Agents (Haiku) -> Compression (Haiku) -> **3 Parallel Perspectives**: PM + Architect + Roadmap (Sonnet) -> Cross-Reference Synthesis (Sonnet) -> Independent Confidence Scoring (Haiku) | Pipeline, Supervisor-Worker, Parallel Execution, Confession |
 
 All `--deep` pipelines filter findings below confidence threshold (70) and tag uncertain findings with `[NEEDS VALIDATION]`.
 
@@ -74,6 +73,7 @@ roadmap:
   output_dir: arkhe/roadmap              # Where artifacts are written (default: arkhe/roadmap)
   context_dir: .arkhe/roadmap            # Where context files live (default: .arkhe/roadmap)
   status_file: docs/PROJECT-STATUS.md    # Status doc path (default: docs/PROJECT-STATUS.md)
+  plan_file: docs/PROJECT-PLAN.md        # Plan doc path (default: docs/PROJECT-PLAN.md)
 ```
 
 ### `.arkhe/roadmap/` — Rich Context Files
@@ -128,10 +128,18 @@ All components use a shared vocabulary for assessing module maturity:
 /roadmap:roadmap blockers
 
 # Roadmap skill (deep -- 3 parallel perspectives + cross-reference synthesis)
-/roadmap:roadmap --deep health
+/roadmap:roadmap --deep status
 /roadmap:roadmap --deep risks
 
-# Architect skill (light)
+# Incremental status update (fast post-sprint sync)
+/roadmap:roadmap update --incremental
+
+# Plan lifecycle
+/roadmap:roadmap plan scaffold        # Create initial plan from existing docs
+/roadmap:roadmap plan                 # Show consolidated plan view
+/roadmap:roadmap plan sync            # Update plan from git history
+
+# Architect skill (light — now includes quality assessment + optional save)
 /roadmap:architect module payments
 /roadmap:architect boundaries
 

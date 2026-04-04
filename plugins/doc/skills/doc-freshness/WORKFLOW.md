@@ -184,6 +184,104 @@ Step 3: Write to {output_dir}/{YYYY-MM-DD}-freshness.md
 Step 4: Confirm file written
 ```
 
+### `setup`
+
+Scaffold a GitHub Actions workflow for automated documentation health checks using `joaquimscosta/docs-health-action`.
+
+#### Step 1: Check existing setup
+
+```bash
+ls .github/workflows/docs-health.yml 2>/dev/null
+```
+
+- If file exists: "A docs-health workflow already exists at `.github/workflows/docs-health.yml`. Overwrite / skip?"
+- If `.github/workflows/` doesn't exist: create it with `mkdir -p`
+
+#### Step 2: Gather preferences
+
+Use `AskUserQuestion` with two questions:
+
+**Question 1** (multiSelect): "Which documentation health checks should run on every PR?"
+- `links` — Broken internal links and missing anchors (Recommended)
+- `versions` — Version references vs ground truth (.nvmrc, package.json, etc.)
+- `staleness` — Git-based documentation age scoring
+- `claude-md` — CLAUDE.md structural drift (Claude Code projects only)
+- `cross-doc` — Cross-document version conflicts
+- `frontmatter` — Missing tracking frontmatter
+
+Default selection: links, versions, staleness.
+
+**Question 2** (single): "When should the workflow fail?"
+- `errors` — Fail on broken links and critical mismatches (Recommended)
+- `warnings` — Also fail on staleness and minor version drift
+- `none` — Advisory only, never fail
+
+#### Step 3: Generate workflow file
+
+Use the template below, substituting `{checks}` and `{fail_on}` from user selections:
+
+```yaml
+name: Documentation Health
+
+on:
+  pull_request:
+    paths:
+      - '**/*.md'
+      - 'package.json'
+      - '.nvmrc'
+      - '.python-version'
+      - 'pyproject.toml'
+      - 'go.mod'
+      - 'Cargo.toml'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  docs-health:
+    name: Documentation Health
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run documentation health checks
+        uses: joaquimscosta/docs-health-action@v1
+        with:
+          checks: '{checks}'
+          fail-on: '{fail_on}'
+```
+
+If `staleness` is NOT in the selected checks, remove `fetch-depth: 0` (shallow clone is faster).
+
+If `claude-md` is in the selected checks and a `CLAUDE.md` exists, add `'CLAUDE.md'` to the paths filter.
+
+#### Step 4: Present and confirm
+
+Show the generated file content and ask: "Write to `.github/workflows/docs-health.yml`? (y/N)"
+
+On confirmation, write the file.
+
+#### Step 5: Post-setup guidance
+
+After writing, print:
+
+```
+Workflow created at .github/workflows/docs-health.yml
+
+Next steps:
+1. Commit the workflow file: git add .github/workflows/docs-health.yml
+2. Push to trigger on your next PR
+3. The action will post a comment on PRs with documentation issues
+
+To customize further, see: https://github.com/joaquimscosta/docs-health-action
+```
+
+---
+
 ## Output Templates
 
 ### Summary Table

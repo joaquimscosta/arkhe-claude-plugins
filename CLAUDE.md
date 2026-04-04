@@ -95,7 +95,7 @@ Claude + Google Stitch workflow toolkit with MCP integration.
 
 ### Git Plugin
 Git workflow automation for commits, pull requests, branching, changelog generation, releases, and Dependabot triage.
-- **Commands**: `/commit`, `/create-pr`, `/create-branch`, `/changelog`, `/release`, `/resolve-review`, `/stale-branches`, `/cleanup-branches`
+- **Commands**: `/commit`, `/create-pr`, `/create-branch`, `/changelog`, `/release`, `/resolve-review`, `/stale-branches`, `/cleanup-branches`, `/worktree`
 - **Skills**: 9 skills (4 auto-invoke: `generating-changelog`, `listing-stale-branches`, `cleaning-up-branches`, `resolving-pr-issues`; 5 command-invoke: `creating-branch`, `creating-commit`, `creating-pr`, `releasing`, `dependabot-review`)
 - **Use**: Git commits, PRs, branches, changelogs, semantic versioning releases, release pipeline scaffolding, Dependabot PR triage
 
@@ -132,9 +132,9 @@ Autonomous development loop with fresh context per iteration and Hat-lite builde
 
 ### Roadmap Plugin
 Product management, roadmap analysis, and solution architecture with multi-agent orchestration.
-- **Agents**: `product-manager`, `system-architect`, `roadmap-analyst`, `roadmap-critic`
-- **Skills**: `pm` (auto-invoke, `--deep` for multi-agent pipeline), `roadmap` (auto-invoke, `--deep` for cross-perspective analysis), `architect` (auto-invoke, `--deep` for adversarial review), `refresh` (command-invoke)
-- **Use**: User stories, scope assessments, prioritization, project status, gap analysis, risk mapping, module design, API design, boundary analysis. `--deep` mode adds: confidence scoring, Confession Pattern, cross-agent validation, adversarial architecture review
+- **Agents**: `product-manager`, `system-architect`, `roadmap-critic`
+- **Skills**: `pm` (auto-invoke, `--deep` for multi-agent pipeline), `roadmap` (auto-invoke, `--deep` for cross-perspective analysis, `--incremental` for fast post-sprint update), `architect` (auto-invoke, `--deep` for adversarial review, now with Write permission), `refresh` (command-invoke)
+- **Use**: User stories, scope assessments, prioritization, project status, gap analysis, risk mapping, module design, API design, boundary analysis, plan lifecycle management. `--deep` mode adds: confidence scoring, Confession Pattern, cross-agent validation, adversarial architecture review
 
 ### Devtools Plugin
 Developer tooling setup and management.
@@ -596,7 +596,7 @@ See [docs/README.md](docs/README.md) "Maintaining This Documentation" section fo
 
 ## Plugin Versions
 
-Plugin versions: core 2.1.0, ai 1.0.0, doc 1.11.0, design-intent 2.2.0, git 1.0.0, google-stitch 2.0.0, lang 1.0.0, playwright 1.0.0, spring-boot 1.2.0, ralph 2.0.0, roadmap 2.0.0, review 2.0.0, devtools 2.1.0, startup 1.0.0. When making breaking changes, increment the major version and update `plugin.json`.
+Plugin versions: core 2.1.0, ai 1.0.0, doc 1.11.0, design-intent 2.2.0, git 1.0.0, google-stitch 2.0.0, lang 1.0.0, playwright 1.0.0, spring-boot 1.2.0, ralph 2.0.0, roadmap 2.1.0, review 2.0.0, devtools 2.1.0, startup 1.0.0. When making breaking changes, increment the major version and update `plugin.json`.
 
 ## Related Documentation
 
@@ -607,6 +607,7 @@ For complete technical specifications:
 - **Best Practices**: `docs/reference/BEST_PRACTICES.md`
 - **Installation Guide**: `INSTALLATION.md`
 - **Main README**: `README.md`
+- **Docs Health Action**: [`joaquimscosta/docs-health-action`](https://github.com/joaquimscosta/docs-health-action) — GitHub Action extracted from `doc-freshness` skill scripts. See its `SYNC.md` for script sync mapping.
 
 ## External Resources
 

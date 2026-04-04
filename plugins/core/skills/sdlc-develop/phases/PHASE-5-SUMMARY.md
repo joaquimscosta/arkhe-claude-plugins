@@ -27,7 +27,7 @@ Before verifying completion, synchronize task status to tasks.md:
 
 **Task tracking confirmation:**
 1. Use `TaskList` to verify all tasks are marked `completed`
-2. If any tasks remain `in_progress` or `pending` (should not occur after Phase 4e gate):
+2. If any tasks remain `in_progress` or `pending` (should not occur after Step 4.2 gate):
    - Use `TaskUpdate` to mark them completed if the work was verified during Phase 4
    - Log a warning if tasks were completed but not updated during implementation
 
@@ -57,9 +57,9 @@ Generate summary in this format:
 - `path/to/file3.ts` - [what changed]
 
 ### Validation Results
-- Quick check: [PASS/issues]
-- Deep validation: [score] (if --validate)
-- Code review: [findings addressed]
+- Quality gates: [PASS/issues per wave]
+- Wave review: [verdicts and notes from both stages]
+- RULE ZERO: [N/6 checks passed]
 
 ### Verification Steps
 1. [How to test the feature]
@@ -88,25 +88,86 @@ Generate summary in this format:
 
 Update `{spec_path}/spec.md` status to "Complete".
 
+### 4. Save Project Learnings (Persistent Memory Pattern)
+
+Evaluate whether discoveries from this feature should persist as project memory.
+
+**Auto-evaluate candidates from:**
+- Architecture trade-offs from Phase 2 (why option A over B)
+- Gotchas discovered during implementation (framework limitations, API quirks)
+- Domain knowledge from research phase (if Step 2a-res was conducted)
+- Integration patterns established between existing and new code
+
+**Filter criteria (only save if):**
+- Not derivable from reading the code or git history
+- Would be useful for future features in this project
+- Represents a decision with non-obvious reasoning
+
+**If candidates found**, use `AskUserQuestion`:
+- **header**: "Project Learnings"
+- **question**: "{N} learnings identified from this feature. Save to project memory?"
+- **options**:
+  - { label: "Save all", description: "Write each as a project-type memory file" }
+  - { label: "Review first", description: "Show candidates, select which to save" }
+  - { label: "Skip", description: "Don't save any memories" }
+
+**Gate: Tier 3** (auto-skip with `--auto`; no memories saved in autonomous mode)
+
+**Response handling:**
+- **Save all**: For each learning, write a memory file:
+  ```markdown
+  ---
+  name: {feature-slug}-{learning-topic}
+  description: {one-line description}
+  type: project
+  ---
+
+  {Learning content}
+
+  **Why:** {motivation or constraint}
+  **How to apply:** {when this should shape future decisions}
+  ```
+  Then add a pointer to `MEMORY.md`.
+- **Review first**: Present each candidate, let user approve/reject individually, save approved ones
+- **Skip**: No memories saved
+
+**If no candidates found**: Skip silently, no user interaction.
+
+### 5. Status Document Sync Suggestion
+
+After the completion summary, check if the project has roadmap status documents:
+
+1. Glob for `docs/PROJECT-STATUS.md` or check `.arkhe.yaml` for `roadmap.status_file`
+2. If a status document is found, append to the completion summary:
+
+```markdown
+### Status Documents
+Project status documents may need updating after this feature.
+Run `/roadmap:roadmap update --incremental` to sync PROJECT-STATUS.md.
+```
+
+This is a suggestion only — do NOT auto-execute the roadmap update.
+
 ---
 
 ## Verification Record (RULE ZERO)
 
-RULE ZERO was verified and approved at the Quality & Completion Gate (Step 4e) before entering Phase 5. This section records the confirmed state for audit purposes.
+RULE ZERO was verified with **fresh evidence** at the Quality & Completion Gate (Step 4.2) before entering Phase 5. This section records the confirmed state for audit purposes.
 
-**Verified at gate approval:**
-- [x] All tasks marked `completed` in TaskList
-- [x] All FR-XXX requirements have corresponding implementation
-- [x] Acceptance criteria are testable
-- [x] Files actually modified (git diff check)
-- [x] Tests pass (if applicable)
-- [x] No placeholder code (`TODO`, `UnsupportedOperationException`)
-- [x] Subagent recommendations were implemented (not just analyzed)
+**Evidence-verified at gate approval (all fresh, not cached):**
+- [x] All tasks marked `completed` in tasks.md (read from disk)
+- [x] All FR-XXX requirements have file:line implementation evidence
+- [x] Acceptance criteria mapped to code with file:line references
+- [x] Files actually modified — `git diff --stat` output captured
+- [x] Tests pass — test suite output captured with pass/fail counts
+- [x] No placeholder code — grep output: 0 matches for TODO/FIXME/NotImplementedError
+- [x] Subagent/review recommendations implemented (not just analyzed)
 
-**Evidence recorded:**
-- `git diff` output reviewed at Quality & Completion gate
-- Test results confirmed
-- File read-back confirmed modifications persisted
+**Evidence artifacts:**
+- `git diff --stat` output at gate approval
+- Test suite output at gate approval (pass/fail counts, exit code)
+- Placeholder grep output at gate approval
+- Two-stage wave review verdicts with file:line references
 
 _If any items were noted as exceptions during gate approval, they are documented in the gate log._
 
@@ -119,5 +180,6 @@ Phase 5 produces:
 - Updated spec status
 - Verification steps
 - Next steps recommendations
+- Project learnings saved to memory (if applicable)
 
 **End of SDLC Pipeline**

@@ -59,7 +59,10 @@ socialmedia
 external-repos/
 internal-repos
 
-# Reviews
-reviews
+# Worktrees
+.worktrees/
+
+# Reviews (generated review reports — not skill template files)
+/reviews
 
 docs/superpowers

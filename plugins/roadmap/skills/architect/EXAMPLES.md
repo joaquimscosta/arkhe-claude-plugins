@@ -49,12 +49,30 @@ payments/
 Payment processing logic exists but controllers have TODOs for
 webhook handling and refund flows.
 
+### Quality Assessment
+
+| Area | Rating | Notes |
+|------|--------|-------|
+| Code Quality | Moderate | `StripeAdapter.ts` is 450 lines with deeply nested error handling |
+| Test Coverage | Low | 2 test files for 5 source files; no error scenario tests |
+| API Design | Good | RESTful, consistent with other modules |
+| Module Isolation | Good | Uses IDs for cross-module references |
+
 ### Recommendations
-1. **Add webhook handler** — Stripe requires webhooks for payment confirmation
-2. **Add refund flow** — No refund endpoint exists
-3. **Add idempotency keys** — Payment creation should be idempotent
-4. **Increase test coverage** — No tests for error scenarios
+
+| Priority | Recommendation | Rationale |
+|----------|---------------|-----------|
+| **Fix Now** | Add webhook handler | Stripe requires webhooks for payment confirmation; currently no handler exists |
+| **Fix Now** | Add idempotency keys | Payment creation without idempotency risks duplicate charges |
+| **Improve** | Add refund flow | No refund endpoint exists; customer support requires manual DB intervention |
+| **Improve** | Split `StripeAdapter.ts` | 450-line file with mixed concerns; extract webhook and refund logic |
+| **Nice to Have** | Add integration tests | No route-level tests; only unit tests for `PaymentService` |
+| **Nice to Have** | Add retry logic for Stripe calls | Network failures currently surface as 500 errors |
 ```
+
+> **Note:** The `review <module>` mode has been merged into `module <name>`. Running
+> `module payments` now includes quality assessment and prioritized recommendations
+> that were previously only available via `review payments`.
 
 ## Example 2: API Design
 

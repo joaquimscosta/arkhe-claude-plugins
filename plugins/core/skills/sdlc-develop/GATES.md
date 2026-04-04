@@ -23,10 +23,12 @@ Human-in-the-Loop gates ensure appropriate oversight at critical decision points
 | Phase 2c | Architecture Decision | ⛔ Tier 1 | Cannot skip, even with `--auto` |
 | Phase 2 → 3 | Plan Saved | ✅ Tier 3 | Auto-proceed, log only |
 | Phase 3 → 4 | Task Breakdown | ⚠️ Tier 2 | Validate before implementation |
-| Phase 4.0 | Ticket Selection | ⚠️ Tier 2 | Select tasks for session (skipped in RESUME + "All remaining tasks") |
-| Phase 4a.1 | Wave Confirmation | Conditional | Tier 3 auto-proceed when `selection_scope=ALL`; Tier 2 otherwise |
-| Phase 4a.3 | Wave Checkpoint | ⚠️ Tier 2 | Wave complete, continue or stop |
-| Phase 4e | Quality & Completion | ⛔ Tier 1 | Combined RULE ZERO + code review; VERIFY UI option available |
+| Step 4.0 | Ticket Selection | ⚠️ Tier 2 | Select tasks for session (skipped in RESUME + "All remaining tasks") |
+| Step 4.1b | Wave Confirmation | Conditional | Tier 3 auto-proceed when `selection_scope=ALL`; Tier 2 otherwise |
+| Step 4.1e | Two-Stage Wave Review | ⚠️ Tier 2 | Stage 1: spec compliance, Stage 2: code quality; 1 retry bound across both stages |
+| Step 4.1f | Wave Checkpoint | ⚠️ Tier 2 | Wave complete, continue or stop |
+| Step 4.2 | Quality & Completion | ⛔ Tier 1 | Combined RULE ZERO + wave review aggregation; VERIFY UI option available |
+| Phase 5.4 | Project Learnings | ✅ Tier 3 | Auto-skip with `--auto`; no memories saved |
 
 ---
 
@@ -43,7 +45,7 @@ These auto-elevate ANY checkpoint to Tier 1:
 
 **Detection**: Check plan.md, spec.md, and implementation for keywords.
 
-**Note:** The Quality & Completion Gate (Phase 4e) is always Tier 1 regardless of triggers. The presence of conditional triggers is recorded in the gate log for audit purposes but does not change gate behavior.
+**Note:** The Quality & Completion Gate (Step 4.2) is always Tier 1 regardless of triggers. The presence of conditional triggers is recorded in the gate log for audit purposes but does not change gate behavior.
 
 ---
 
@@ -78,6 +80,47 @@ Proceed automatically, log for post-review:
 - Documentation updates
 - Code formatting
 - Template generation
+
+---
+
+## Evidence Requirements
+
+All quality gates and review stages must produce **fresh verification evidence**. No completion claim without fresh command output in the current context.
+
+### Per-Gate Required Evidence
+
+| # | Gate | Required Evidence | NOT Sufficient |
+|---|------|-------------------|----------------|
+| 1 | Task completion | tasks.md content read from disk | "I updated it earlier", TaskList memory |
+| 2 | File evidence | Fresh `git diff --stat` output | "I know which files I changed" |
+| 3 | Tests green | Fresh test output with pass/fail counts | Previous run, "should pass", linter output |
+| 4 | No placeholders | Fresh grep output (should be empty) | "I didn't add any" |
+| 5 | Acceptance criteria | file:line reference per criterion | "The code implements it" |
+| 6 | Confessions recorded | wave-context.md content | "I'll write them later" |
+
+### Rationalization Prevention
+
+| Rationalization | Reality |
+|----------------|---------|
+| "Should work because I only changed X" | Run the verification. Side effects exist. |
+| "I'm confident this passes" | Confidence is not evidence. |
+| "Just this once we can skip" | No exceptions. Every gate, every wave. |
+| "The linter passed" | Linter is not the test suite. |
+| "The agent reported success" | Verify independently. |
+| "Partial check is enough" | Partial proves nothing about the whole. |
+
+### Escalation Paths
+
+Gates are not strictly binary. When a gate cannot be evaluated:
+
+| Status | Meaning | Action |
+|--------|---------|--------|
+| **PASS** | Fresh evidence confirms pass | Proceed |
+| **FAIL** | Fresh evidence shows failure | Fix and re-check with fresh output |
+| **BLOCKED** | Cannot produce evidence (no test framework, CI unavailable) | Escalate to user. Do not force-pass. |
+| **NEEDS_CONTEXT** | Missing information to evaluate | Escalate to user with specific question. Do not assume. |
+
+See [EVIDENCE-GATES.md](EVIDENCE-GATES.md) for the full rationalization prevention guide and evidence capture format.
 
 ---
 
@@ -127,7 +170,7 @@ Present combined quality review + RULE ZERO status, then use `AskUserQuestion`:
 ```json
 {
   "header": "Quality & Completion",
-  "question": "RULE ZERO: 6/6 checks passed. Validation: PASS. Code review: 0 issues. Mark implementation complete?",
+  "question": "RULE ZERO: 6/6 checks passed. Wave reviews: 3 waves passed, 0 approved with notes. Mark implementation complete?",
   "options": [
     { "label": "APPROVE — Mark Complete", "description": "All checks pass, proceed to Phase 5 summary" },
     { "label": "REVIEW — Show diff & details", "description": "Show git diff and full validation report" },
@@ -166,6 +209,10 @@ Present wave completion metrics, then use `AskUserQuestion`:
   ]
 }
 ```
+
+### Example: Two-Stage Wave Review Result
+
+The two-stage wave review is an agent workflow, not an AskUserQuestion gate. Stage 1 (spec compliance) runs first; if it passes, Stage 2 (code quality) runs. Each stage returns PASS or ISSUES directly. If ISSUES are returned, the builder fixes them and the reviewer re-reviews (bounded to 1 retry across both stages combined). After 1 rejection, approve with notes. The result is recorded in wave-context.md, not presented as a user gate.
 
 ---
 
