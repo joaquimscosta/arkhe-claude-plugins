@@ -101,6 +101,7 @@ Git workflow automation for commits, pull requests, branching, changelog generat
 
 ### Design Intent Plugin
 Design Intent for UI development that combines AI-assisted implementation with persistent pattern memory.
+- **Agents**: `design-reviewer`, `ui-architect`, `ui-explorer`
 - **Commands**: `/setup`, `/design-intent`, `/save-patterns`, `/diary`, `/prototype`
 - **Skills**: `design-intent-specialist` (auto-invoked), `stitch-to-react` (auto-invoked), `icon-forge` (command-invoke), `prototype` (command-invoke)
 - **Use**: Build React prototypes from Figma/screenshots, capture proven patterns, maintain design-intent diaries, generate brand icon assets

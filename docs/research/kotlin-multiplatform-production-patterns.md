@@ -16,7 +16,7 @@ sources: []
 
 # Kotlin Multiplatform (KMP) Production Architecture & Patterns
 
-## Overview
+## Executive Summary
 
 Kotlin Multiplatform (KMP) reached Stable status in November 2023 and has matured significantly through 2024-2025. It enables sharing Kotlin code across Android, iOS, JVM (backend), JS, and native targets while allowing platform-specific implementations where needed. Unlike full cross-platform solutions (Flutter, React Native), KMP takes a "share logic, keep native UI" approach — a key reason Google, Netflix, and many enterprise teams have adopted it.
 

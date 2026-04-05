@@ -16,7 +16,7 @@ sources: []
 
 # Offline-First Mobile Architecture: Patterns & Implementation
 
-## Overview
+## Executive Summary
 
 Offline-first mobile architecture treats the network as an enhancement, not a requirement. Rather than trying to handle connectivity loss as an exception, the local database is the source of truth and all reads and writes happen locally first. The network is used purely to synchronise state with a backend when convenient.
 

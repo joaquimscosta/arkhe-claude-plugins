@@ -16,7 +16,7 @@ sources: []
 
 # Android Testing Ecosystem: Libraries, Patterns & Strategies
 
-## Overview
+## Executive Summary
 
 The Android testing ecosystem in 2025-2026 has matured significantly, driven by Kotlin Multiplatform (KMP) adoption, Jetpack Compose's dominance for UI, and tooling that increasingly blurs the line between JVM and device tests. The central goal is the same as in any modern backend stack: fast feedback loops, high confidence, and maintainable test suites.
 

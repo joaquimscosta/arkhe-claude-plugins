@@ -16,7 +16,7 @@ sources: []
 
 # Jetpack Compose Advanced Patterns & Best Practices
 
-## Overview
+## Executive Summary
 
 Jetpack Compose (stable since 1.0 in 2021) has matured into the primary Android UI toolkit, with the ecosystem converging on well-understood architectural patterns. As of 2025-2026, the state of the art is defined by: type-safe navigation (Compose Navigation 2.8+), strong skipping mode (default in Kotlin 2.2+ / Compose 1.8+), MVI as the dominant event-handling pattern, Material3 with dynamic color, and Circuit/Molecule as higher-level architecture abstractions. Kotlin Multiplatform (KMP) has also elevated Compose to the cross-platform space, making navigation and state patterns increasingly important to design with portability in mind.
 
