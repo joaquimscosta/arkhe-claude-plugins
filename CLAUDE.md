@@ -138,8 +138,8 @@ Product management, roadmap analysis, and solution architecture with multi-agent
 
 ### Devtools Plugin
 Developer tooling setup and management.
-- **Skills**: `sops-setup` (command-invoke), `sops-encrypt` (command-invoke), `sops-decrypt` (command-invoke), `sops-add-key` (command-invoke), `code-env-setup` (command-invoke), `quality-stack` (command-invoke), `taskfile-setup` (command-invoke), `coding-standards` (command-invoke)
-- **Use**: SOPS + age encryption for .env files, Claude Code environment setup wizard (Global CLAUDE.md, project scaffolding, MCP servers, hooks, custom agents, keybindings, settings), multi-ecosystem quality/testing tooling audit and setup (JVM, Node.js/TypeScript, Python), Taskfile task runner setup and audit, coding-standards bootstrapping/updating/auditing against centralized templates
+- **Skills**: `sops-setup` (command-invoke), `sops-encrypt` (command-invoke), `sops-decrypt` (command-invoke), `sops-add-key` (command-invoke), `code-env-setup` (command-invoke), `quality-stack` (command-invoke), `taskfile-setup` (command-invoke)
+- **Use**: SOPS + age encryption for .env files, Claude Code environment setup wizard (Global CLAUDE.md, project scaffolding, MCP servers, hooks, custom agents, keybindings, settings), multi-ecosystem quality/testing tooling audit and setup (JVM, Node.js/TypeScript, Python), Taskfile task runner setup and audit
 
 ### Startup Plugin
 Startup idea validation pipeline with 6-stage analysis, decision gates, and domain presets.
