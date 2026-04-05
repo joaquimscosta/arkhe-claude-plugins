@@ -101,6 +101,7 @@ Git workflow automation for commits, pull requests, branching, changelog generat
 
 ### Design Intent Plugin
 Design Intent for UI development that combines AI-assisted implementation with persistent pattern memory.
+- **Agents**: `design-reviewer`, `ui-architect`, `ui-explorer`
 - **Commands**: `/setup`, `/design-intent`, `/save-patterns`, `/diary`, `/prototype`
 - **Skills**: `design-intent-specialist` (auto-invoked), `stitch-to-react` (auto-invoked), `icon-forge` (command-invoke), `prototype` (command-invoke)
 - **Use**: Build React prototypes from Figma/screenshots, capture proven patterns, maintain design-intent diaries, generate brand icon assets
@@ -596,7 +597,7 @@ See [docs/README.md](docs/README.md) "Maintaining This Documentation" section fo
 
 ## Plugin Versions
 
-Plugin versions: core 2.1.0, ai 1.0.0, doc 1.11.0, design-intent 2.2.0, git 1.0.0, google-stitch 2.0.0, lang 1.0.0, playwright 1.0.0, spring-boot 1.2.0, ralph 2.0.0, roadmap 2.1.0, review 2.0.0, devtools 2.1.0, startup 1.0.0. When making breaking changes, increment the major version and update `plugin.json`.
+Plugin versions: core 2.1.0, ai 1.0.0, doc 1.11.0, design-intent 2.2.0, git 1.0.0, google-stitch 2.0.0, lang 1.0.0, playwright 1.0.0, spring-boot 1.2.0, ralph 2.0.0, roadmap 2.1.0, review 2.0.0, devtools 2.2.0, startup 1.0.0. When making breaking changes, increment the major version and update `plugin.json`.
 
 ## Related Documentation
 
