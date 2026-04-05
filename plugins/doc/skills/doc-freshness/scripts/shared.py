@@ -191,6 +191,45 @@ _BACKTICK_PATH_RE = re.compile(
     r'`([a-zA-Z0-9_./-]+\.[a-zA-Z0-9]+)`'
 )
 
+# Patterns that look like file paths but are not
+_NON_FILE_PREFIXES = re.compile(
+    r'^(?:'
+    r'(?:feature|fix|release|hotfix|bugfix|chore|dependabot)/'  # git branches
+    r'|roles/'                                                    # IAM roles
+    r')',
+    re.IGNORECASE,
+)
+
+# Known code file extensions (for owner/repo disambiguation)
+_CODE_EXTENSIONS = {
+    "md", "py", "js", "ts", "tsx", "jsx", "go", "rs", "java",
+    "kt", "kts", "rb", "php", "c", "h", "cpp", "hpp", "cs", "swift",
+    "yaml", "yml", "json", "toml", "xml", "html", "css", "scss",
+    "sql", "sh", "bash", "zsh", "ps1", "bat", "cmd",
+    "txt", "cfg", "ini", "conf", "env", "lock", "sum",
+    "vue", "svelte", "astro", "mdx", "png", "jpg", "svg", "gif",
+    "gradle", "properties", "sq",
+}
+
+
+def _is_likely_file_path(path: str) -> bool:
+    """Heuristic: does this backtick-quoted string look like a file path?
+
+    Returns False for git branches, IAM roles, runtime URLs, and owner/repo refs.
+    """
+    if _NON_FILE_PREFIXES.match(path):
+        return False
+
+    # Skip owner/repo patterns: exactly 2 segments with non-code extension
+    # e.g. "deznode/skola.dev" (TLD), but keep "src/main.py" (code extension)
+    segments = path.split("/")
+    if len(segments) == 2 and "." not in segments[0] and "." in segments[1]:
+        ext = segments[1].rsplit(".", 1)[-1].lower()
+        if ext not in _CODE_EXTENSIONS:
+            return False
+
+    return True
+
 
 def parse_markdown_links(content: str) -> List[Dict[str, object]]:
     """Extract all links from markdown content.
@@ -259,8 +298,8 @@ def extract_backtick_paths(content: str) -> List[Dict[str, object]]:
 
         for match in _BACKTICK_PATH_RE.finditer(line):
             path = match.group(1)
-            # Only include paths with a directory separator (likely file refs)
-            if "/" in path:
+            # Only include paths with a directory separator that look like files
+            if "/" in path and _is_likely_file_path(path):
                 paths.append({
                     "path": path,
                     "line": line_num,
