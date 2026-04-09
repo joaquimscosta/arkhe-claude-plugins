@@ -14,7 +14,8 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from shared import extract_frontmatter, read_file_safe, read_json_safe
+from shared import extract_frontmatter, git_last_modified, read_file_safe, read_json_safe
+from shared import _is_fence_line
 
 
 # ---------------------------------------------------------------------------
@@ -222,7 +223,7 @@ def extract_doc_versions(
 
     for line_num, line in enumerate(lines, start=1):
         stripped = line.strip()
-        if stripped.startswith("```"):
+        if _is_fence_line(stripped):
             in_code_block = not in_code_block
             continue
         if in_code_block:
@@ -240,14 +241,16 @@ def extract_doc_versions(
 
 
 def check_versions(
-    doc_path: Path, project_root: Path, ground_truth: Dict[str, str]
+    doc_path: Path, project_root: Path, ground_truth: Dict[str, str],
+    content: Optional[str] = None,
 ) -> List[Dict[str, object]]:
     """Check version references in a doc against ground truth.
 
     Returns list of findings with keys:
         doc, line, name, doc_value, actual, source, status.
     """
-    content = read_file_safe(doc_path)
+    if content is None:
+        content = read_file_safe(doc_path)
     if content is None:
         return []
 
@@ -307,12 +310,11 @@ def check_all_versions(
     minor = 0
 
     for doc_path in doc_paths:
-        # Count total version references in this doc
         content = read_file_safe(doc_path)
         if content:
             total_refs += len(extract_doc_versions(content))
 
-        findings = check_versions(doc_path, project_root, truth)
+        findings = check_versions(doc_path, project_root, truth, content)
         for f in findings:
             if f["status"] == "mismatch":
                 mismatches += 1
@@ -339,8 +341,6 @@ def check_last_updated(
     Only applies to deep-tier docs (those with last_updated in frontmatter).
     Returns a finding dict if the dates differ by >7 days, or None.
     """
-    import subprocess
-
     content = read_file_safe(doc_path)
     if content is None:
         return None
@@ -349,9 +349,7 @@ def check_last_updated(
     if not fm or "last_updated" not in fm:
         return None
 
-    last_updated_str = fm["last_updated"]
-    # Parse frontmatter date (YYYY-MM-DD)
-    date_match = re.match(r'(\d{4}-\d{2}-\d{2})', last_updated_str)
+    date_match = re.match(r'(\d{4}-\d{2}-\d{2})', fm["last_updated"])
     if not date_match:
         return None
 
@@ -361,22 +359,16 @@ def check_last_updated(
     except ValueError:
         return None
 
-    # Get git last modified date
     rel_doc = str(doc_path.relative_to(project_root))
-    try:
-        result = subprocess.run(
-            ["git", "log", "-1", "--format=%aI", "--", rel_doc],
-            capture_output=True, text=True, timeout=10,
-            cwd=str(project_root),
-        )
-        if result.returncode != 0 or not result.stdout.strip():
-            return None
-        git_date_str = result.stdout.strip()[:10]
-        git_date = datetime.strptime(git_date_str, "%Y-%m-%d")
-    except (subprocess.TimeoutExpired, FileNotFoundError, ValueError):
+    iso_date = git_last_modified(rel_doc, str(project_root))
+    if not iso_date:
         return None
 
-    # Compare dates
+    try:
+        git_date_str = iso_date[:10]
+        git_date = datetime.strptime(git_date_str, "%Y-%m-%d")
+    except ValueError:
+        return None
     diff_days = abs((git_date - fm_date).days)
     if diff_days > 7:
         return {

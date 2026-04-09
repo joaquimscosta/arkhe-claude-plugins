@@ -18,14 +18,13 @@ Output:
 import argparse
 import json
 import re
-import subprocess
 import sys
 from datetime import date
 from pathlib import Path
 from typing import Dict, List, Optional
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from shared import extract_frontmatter, read_file_safe
+from shared import extract_frontmatter, git_last_modified, read_file_safe
 
 
 # ---------------------------------------------------------------------------
@@ -104,19 +103,11 @@ def _extract_title(content: str) -> Optional[str]:
 
 
 def _git_last_date(path: Path, project_root: Path) -> str:
-    """Get the last commit date for a file via git log."""
+    """Get the last commit date (YYYY-MM-DD) for a file via git log."""
     rel = str(path.relative_to(project_root))
-    try:
-        result = subprocess.run(
-            ["git", "log", "-1", "--format=%ai", "--", rel],
-            capture_output=True, text=True, timeout=5,
-            cwd=str(project_root),
-        )
-        if result.returncode == 0 and result.stdout.strip():
-            # Extract just the date part (YYYY-MM-DD)
-            return result.stdout.strip()[:10]
-    except (subprocess.TimeoutExpired, FileNotFoundError):
-        pass
+    iso_date = git_last_modified(rel, str(project_root))
+    if iso_date:
+        return iso_date[:10]
     return date.today().isoformat()
 
 

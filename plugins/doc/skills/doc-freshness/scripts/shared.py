@@ -348,7 +348,7 @@ def heading_to_slug(text: str) -> str:
     """
     slug = text.lower()
     slug = re.sub(r'[^a-z0-9\s-]', '', slug)
-    slug = re.sub(r'\s', '-', slug)
+    slug = re.sub(r'[\s]+', '-', slug)
     slug = slug.strip('-')
     return slug
 
@@ -445,3 +445,36 @@ def discover_markdown_files(
                     found.add(path)
 
     return sorted(found)
+
+
+# ---------------------------------------------------------------------------
+# Severity helpers (shared across formatters)
+# ---------------------------------------------------------------------------
+
+# Severity ordering (higher = more severe)
+SEVERITY_ORDER: Dict[str, int] = {
+    "critical": 3,
+    "error": 3,      # Treat "error" same as "critical"
+    "warning": 2,
+    "info": 1,
+}
+
+
+def normalize_severity(raw: str) -> str:
+    """Normalize severity string to one of: error, warning, info.
+
+    Maps 'critical', 'ERROR', 'broken', 'mismatch' etc. to canonical levels.
+    """
+    lower = raw.lower().strip()
+    if lower in ("critical", "error", "broken", "mismatch"):
+        return "error"
+    if lower in ("warning", "warn", "minor_mismatch", "outdated_frontmatter"):
+        return "warning"
+    return "info"
+
+
+def severity_meets_threshold(severity: str, threshold: str) -> bool:
+    """Check if a severity meets the minimum threshold."""
+    sev_rank = SEVERITY_ORDER.get(severity, 0)
+    thr_rank = SEVERITY_ORDER.get(threshold, 0)
+    return sev_rank >= thr_rank
