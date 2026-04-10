@@ -96,7 +96,7 @@ Claude + Google Stitch workflow toolkit with MCP integration.
 ### Git Plugin
 Git workflow automation for commits, pull requests, branching, changelog generation, releases, and Dependabot triage.
 - **Commands**: `/commit`, `/create-pr`, `/create-branch`, `/changelog`, `/release`, `/resolve-review`, `/stale-branches`, `/cleanup-branches`, `/worktree`
-- **Skills**: 9 skills (4 auto-invoke: `generating-changelog`, `listing-stale-branches`, `cleaning-up-branches`, `resolving-pr-issues`; 5 command-invoke: `creating-branch`, `creating-commit`, `creating-pr`, `releasing`, `dependabot-review`)
+- **Skills**: 10 skills (4 auto-invoke: `generating-changelog`, `listing-stale-branches`, `cleaning-up-branches`, `resolving-pr-issues`; 6 command-invoke: `creating-branch`, `creating-commit`, `creating-pr`, `creating-worktree`, `releasing`, `dependabot-review`)
 - **Use**: Git commits, PRs, branches, changelogs, semantic versioning releases, release pipeline scaffolding, Dependabot PR triage
 
 ### Design Intent Plugin

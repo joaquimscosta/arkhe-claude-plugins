@@ -1,61 +1,42 @@
 ---
 description: Create a git worktree in the .worktrees/ directory for isolated parallel development
-argument-hint: <name>
+argument-hint: [description]
 ---
 
 # Worktree Command
 
-Creates an isolated git worktree in `.worktrees/<name>` for parallel development.
+Creates isolated git worktrees with intelligent branch naming and auto-incrementing.
 
-## Workflow
-
-### 1. Parse Arguments
-
-Extract the worktree name from `$ARGUMENTS`. If no name is provided, ask the user for one.
-
-### 2. Validate
-
-- Check that the name is not empty
-- Check that `.worktrees/<name>` doesn't already exist (run `ls .worktrees/<name> 2>/dev/null`)
-
-If it already exists, report the conflict and stop.
-
-### 3. Safety Check
-
-Verify `.worktrees/` is git-ignored to prevent accidentally committing worktree contents:
+## Usage
 
 ```bash
-git check-ignore -q .worktrees 2>/dev/null
+# Create from description
+/worktree <description>
+
+# Auto-generate from uncommitted changes
+/worktree
 ```
 
-If NOT ignored, add `.worktrees/` to `.gitignore` before proceeding:
+## Examples
 
 ```bash
-echo '\n# Worktrees\n.worktrees/' >> .gitignore
-git add .gitignore && git commit -m "chore: add .worktrees/ to .gitignore"
+/worktree add user authentication
+# Worktree: .worktrees/user-authentication
+# Branch:   feat/003-user-authentication
+
+/worktree fix login bug
+# Worktree: .worktrees/login-bug
+# Branch:   fix/004-login-bug
+
+/worktree
+# Auto-detected from changes: .worktrees/authentication-system
+# Branch: feat/005-authentication-system
 ```
 
-### 4. Ask Base Branch
+## Implementation
 
-Use AskUserQuestion to ask which branch to base the worktree on:
+Invoke the Skill tool with skill name "git:creating-worktree" and arguments: $ARGUMENTS
 
-- **main (Recommended)** — Create from the main branch
-- **Current branch** — Create from the currently checked out branch
-- **Other** — User specifies a different branch name
+The skill will handle commit type detection, branch naming, auto-increment numbering, base branch selection, and gitignore safety checks.
 
-### 5. Create Worktree
-
-```bash
-mkdir -p .worktrees
-git worktree add .worktrees/<name> -b <name> <base-branch>
-```
-
-Where `<base-branch>` is `main`, `HEAD`, or the user-specified branch.
-
-### 6. Confirm Success
-
-Report:
-- Path: `.worktrees/<name>`
-- Branch: `<name>` (based on `<base-branch>`)
-- List worktrees: `git worktree list`
-- Remove when done: `git worktree remove .worktrees/<name>`
+For detailed documentation, see `git/skills/creating-worktree/SKILL.md`.
