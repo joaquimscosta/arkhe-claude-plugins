@@ -114,7 +114,7 @@ jobs:
 
       - name: Validate research documents
         run: |
-          python3 .claude/skills/plugin-release-checker/scripts/validate_research_docs.py \
+          python3 plugins/doc/skills/research-frontmatter/scripts/validate_research_docs.py \
             --format text
 
   validate-cross-references:
@@ -161,7 +161,7 @@ jobs:
 
       - name: Check research doc staleness
         run: |
-          python3 .claude/skills/plugin-release-checker/scripts/validate_research_docs.py \
+          python3 plugins/doc/skills/research-frontmatter/scripts/validate_research_docs.py \
             --staleness-only --format text
 
       - name: Check reference doc staleness
