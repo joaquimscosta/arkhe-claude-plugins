@@ -42,18 +42,52 @@ Run the shared context discovery protocol in [CONTEXT_DISCOVERY.md](../../refere
 
 ### `next`
 
-1. Run full context discovery (thorough)
-2. Collect all open items:
-   - Unclosed gaps
-   - Unstarted specs
-   - Module maturity imbalances
-   - Frontend-backend parity issues
-3. If `{plan_file}` exists, also consult:
-   - The Backlog section for prioritized themes with dependencies
-   - The Timeline for the next "Not Started" phase
-   - Use these as additional inputs when ranking
-4. Rank by: impact, effort, dependencies, urgency
-5. Recommend 3-5 prioritized next actions
+Git-aware cached recommendations. Avoids full recalculation when the project hasn't meaningfully changed.
+
+1. Read `.arkhe.yaml` for `output_dir` path (default: `arkhe/roadmap`)
+2. Check if `{output_dir}/next-actions.md` exists
+   - If no: skip to step 5 (full calculation)
+   - If `--force` flag present: skip to step 5
+3. Check git drift since last save:
+   ```
+   git log -1 --format="%H %ai" -- {output_dir}/next-actions.md
+   git log {hash}..HEAD --oneline --no-merges | grep -cE "^[a-f0-9]+ (feat|fix):"
+   ```
+4. If <3 feat/fix commits: display cached file with header:
+   ```
+   ## Recommended Next Actions
+   _Cached from {date}. {N} feat/fix commits since — below recalculation threshold._
+   _Run `/roadmap next --force` to recalculate._
+
+   {cached content}
+   ```
+   Stop here.
+5. **Full calculation** (first run, stale cache, `--force`, or cache invalidated):
+   1. Run full context discovery (thorough)
+   2. Collect all open items:
+      - Unclosed gaps
+      - Unstarted specs
+      - Module maturity imbalances
+      - Frontend-backend parity issues
+   3. If `{plan_file}` exists, also consult:
+      - The Backlog section for prioritized themes with dependencies
+      - The Timeline for the next "Not Started" phase
+      - Use these as additional inputs when ranking
+   4. Rank by: impact, effort, dependencies, urgency
+   5. Recommend 3-5 prioritized next actions
+6. **Save**: Write recommendations to `{output_dir}/next-actions.md` with metadata header:
+   ```markdown
+   ---
+   generated: {ISO date}
+   commit: {HEAD short hash}
+   source: /roadmap next
+   ---
+
+   ## Recommended Next Actions
+
+   {ranked recommendations}
+   ```
+7. Display the saved content with "Saved to `{output_dir}/next-actions.md`."
 
 ### `delta`
 
@@ -171,6 +205,7 @@ Run the shared context discovery protocol in [CONTEXT_DISCOVERY.md](../../refere
     2. Execute the `plan sync` workflow (§ `plan sync` below) using the same Phase A git history already gathered. Skip re-scanning git — reuse the "What Shipped" data from the `update` Phase A.
     3. The `plan sync` flow handles its own diff preview and confirmation gate ("Apply updates to `{plan_file}`? y/N").
     4. If user declines the plan sync, present proposed changes as a code block (standard `plan sync` behavior). Do NOT fail the overall `update` — the status doc was already written.
+11. Delete `{output_dir}/next-actions.md` if it exists — status doc changes invalidate cached recommendations. Next `/roadmap next` invocation will trigger full recalculation.
 
 ### `update --incremental`
 
@@ -214,7 +249,7 @@ Use the same unified diff format as the full `update` (see § `update` Phase B s
 - "Apply updates to `{status_file}`? (y/N)"
 - If no: present as code block for manual application
 
-#### Step 5: Write + Plan Sync
+#### Step 5: Write + Plan Sync + Cache Invalidation
 
 - Write if confirmed
 - If `{plan_file}` exists and phase status changed, auto-chain into `plan sync`:
@@ -222,6 +257,7 @@ Use the same unified diff format as the full `update` (see § `update` Phase B s
   2. Execute the `plan sync` workflow reusing the Phase A git history from Step 2. Skip redundant git scan.
   3. Plan sync handles its own diff preview and confirmation gate.
   4. If user declines plan sync, present as code block. Do NOT fail the overall update.
+- Delete `{output_dir}/next-actions.md` if it exists — cached recommendations are stale after status changes.
 
 ### `specs`
 

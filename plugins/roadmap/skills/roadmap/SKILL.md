@@ -6,7 +6,7 @@ description: >
   comparing plan vs reality, documenting risks, or planning next milestones.
   Triggers: "roadmap", "project status", "blockers", "risks", "progress", "next milestone",
   "gaps", "what's done".
-argument-hint: "[--deep] status | gaps | next | delta | blockers | risks | update [--incremental] | specs | plan [scaffold|show|sync]"
+argument-hint: "[--deep] status | gaps | next [--force] | delta | blockers | risks | update [--incremental] | specs | plan [scaffold|show|sync]"
 allowed-tools: Read, Glob, Grep, Write, Bash
 ---
 
@@ -24,7 +24,9 @@ Run the shared context discovery protocol in [CONTEXT_DISCOVERY.md](../../refere
 | `specs` | 1, 5 | Light — config + doc scan for spec files |
 | `gaps` | 1, 3, 5 | Light — config, rich context, docs |
 | `delta` | 1, 5, 7 | Medium — config, docs, codebase scan |
-| `status`, `next`, `blockers`, `risks` | 1-7 | Thorough — full protocol |
+| `next` (cached) | 1 (config) | None — reads cached file + git drift check |
+| `next` (recalc) | 1-7 | Thorough — full protocol |
+| `status`, `blockers`, `risks` | 1-7 | Thorough — full protocol |
 | `update`, `update --incremental` | 1-7 | Thorough — full protocol |
 | `plan scaffold`, `plan sync` | 1-7 | Thorough — full protocol |
 
@@ -38,7 +40,7 @@ Parse from `$ARGUMENTS`:
 |------|-------------|
 | `status` | Overall dashboard — modules, phases, completion + drift detection |
 | `gaps` | Gap analysis status — open/closed/in-progress with evidence |
-| `next` | Prioritized 3-5 actions from gaps, specs, maturity imbalances |
+| `next` | Prioritized recommendations with caching. Saves to `{output_dir}/next-actions.md`. Returns cached results if <3 feat/fix commits since last calculation; otherwise full recalculation. Invalidated after `update`/`update --incremental`. Add `--force` to skip cache |
 | `delta` | What changed since last assessment (read-only comparison) |
 | `blockers` | Blocking chain analysis with critical path |
 | `risks` | Risk register with likelihood/impact scoring |
@@ -65,7 +67,13 @@ Cross-reference all gap analysis documents. For each gap: original report, curre
 
 ### `next`
 
-Prioritized recommendations combining: unclosed gaps, unstarted specs, module maturity imbalances, frontend-backend parity gaps. If `{plan_file}` exists, also consult backlog themes and timeline.
+Prioritized recommendations with git-aware caching. See [WORKFLOW.md](WORKFLOW.md) § `next` for the cache check + full calculation protocol.
+
+Key behaviors:
+- Saves recommendations to `{output_dir}/next-actions.md`
+- Returns cached results if <3 feat/fix commits since last calculation
+- Full recalculation on first run, stale cache, or `--force`
+- Combines: unclosed gaps, unstarted specs, maturity imbalances, plan backlog themes
 
 ### `delta`
 
@@ -88,6 +96,7 @@ Key behaviors:
 - Diff preview with `+`/`-`/`~` markers, requires confirmation before writing
 - Checks CHANGELOG.md for gaps (offers to add entries)
 - Auto-chains into `plan sync` when phase/spec status changes detected
+- Invalidates `next-actions.md` cache (recommendations likely shifted after status changes)
 - `--incremental` variant: surgical targeted edits only (skips Phase B full scan)
 
 ### `specs`

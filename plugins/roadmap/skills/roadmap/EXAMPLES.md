@@ -460,3 +460,56 @@ Apply updates to docs/PROJECT-PLAN.md? (y/N)
 
 Project plan updated. 5 changes applied.
 ```
+
+---
+
+## Example 13: Cached Next Actions
+
+**Input (first run):** `/roadmap:roadmap next`
+
+**Output:**
+
+```
+## Recommended Next Actions
+_Generated: 2026-04-11 (commit e4f5g6h)_
+
+1. **Translation Memory Eval Harness** — Phase 4 blocker; specs ready, no implementation
+2. **Expand LLM Golden Pairs** — 5 → 10-15 pairs for accuracy benchmarking
+3. **Word List Quality Pipeline** — High priority backlog theme, no blockers
+4. **API Rate Limiting** — Open gap from security review, pre-launch blocker
+
+Saved to arkhe/roadmap/next-actions.md.
+```
+
+**Input (second run, 1 commit later):** `/roadmap:roadmap next`
+
+**Output:**
+
+```
+## Recommended Next Actions
+_Cached from 2026-04-11. 1 feat/fix commit since — below recalculation threshold._
+_Run `/roadmap next --force` to recalculate._
+
+1. **Translation Memory Eval Harness** — Phase 4 blocker; specs ready, no implementation
+2. **Expand LLM Golden Pairs** — 5 → 10-15 pairs for accuracy benchmarking
+3. **Word List Quality Pipeline** — High priority backlog theme, no blockers
+4. **API Rate Limiting** — Open gap from security review, pre-launch blocker
+```
+
+**Input (after `/roadmap update`):** `/roadmap:roadmap next`
+
+**Output:**
+
+```
+[Cache invalidated by recent status update — recalculating...]
+
+## Recommended Next Actions
+_Generated: 2026-04-12 (commit a1b2c3d)_
+
+1. **Expand LLM Golden Pairs** — 5 → 10-15 pairs (TM Eval shipped)
+2. **Word List Quality Pipeline** — High priority, no blockers
+3. **API Rate Limiting** — Open gap, pre-launch blocker
+4. **Offline Sync Polish** — New Phase 3 ready after Phase 2 completion
+
+Saved to arkhe/roadmap/next-actions.md.
+```

@@ -160,3 +160,14 @@ Use `--incremental` when you know what changed (just finished a sprint) and want
 **Cause:** The plan doc was recently synced (git shows no gap between sync and HEAD), but content was already wrong at last sync time.
 
 **Fix:** Run `/roadmap plan scaffold` to regenerate from current state. Scaffold always rebuilds from scratch (with overwrite confirmation), while sync only applies incremental changes from git history since the last sync.
+
+## Next Actions Seem Outdated
+
+**Symptom:** `/roadmap next` returns recommendations that don't reflect recent work.
+
+**Cause:** Cache hasn't been invalidated. The threshold is 3+ feat/fix commits, so 1-2 changes won't trigger recalculation.
+
+**Fix:**
+1. Force recalculation: `/roadmap next --force`
+2. Or run `/roadmap update` first — this auto-invalidates the cache
+3. Or delete manually: `rm arkhe/roadmap/next-actions.md`
