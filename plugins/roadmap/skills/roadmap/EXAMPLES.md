@@ -231,6 +231,25 @@ Apply updates to PROJECT-STATUS.md? (y/N)
 Add CHANGELOG entries for 3 shipped features under [Unreleased]? (y/N)
 ```
 
+**After CHANGELOG (if plan exists and phase changed):**
+
+```
+Phase status changed — syncing project plan...
+
+## Proposed Updates to docs/PROJECT-PLAN.md
+
+### Phases
+  + Phase 3e: Glossary Management + Dictionary Browser -> Done
+
+### Spec Traceability
+  + Spec 022-025 -> linked to Phase 3e [MANUAL]
+
+### ADR Traceability
+  + ADR 0010: skrebe.app redirect -> linked to Phase 3f [AUTO-LINKED]
+
+Apply updates to docs/PROJECT-PLAN.md? (y/N)
+```
+
 ## Example 8: Status with Drift Warning
 
 **Input:** `/roadmap status`
@@ -422,5 +441,22 @@ Apply updates to docs/PROJECT-STATUS.md? (y/N)
 > y
 
 Status document updated. 9 changes applied.
-Phase status changed. Run `/roadmap plan sync` to update the project plan.
+
+Phase status changed — syncing project plan...
+
+## Proposed Updates to docs/PROJECT-PLAN.md
+
+### Timeline
+  ~ Phase 2 (Offline-First): In Progress -> Done
+
+### Spec Traceability
+  + Spec 027: Sync Engine Core -> linked to Phase 2 [AUTO-LINKED]
+  + Spec 028: Conflict Detection -> linked to Phase 2 [AUTO-LINKED]
+  + Spec 029: Background Sync -> linked to Phase 2 [AUTO-LINKED]
+  + Spec 030: Conflict Resolution UI -> linked to Phase 2 [AUTO-LINKED]
+
+Apply updates to docs/PROJECT-PLAN.md? (y/N)
+> y
+
+Project plan updated. 5 changes applied.
 ```

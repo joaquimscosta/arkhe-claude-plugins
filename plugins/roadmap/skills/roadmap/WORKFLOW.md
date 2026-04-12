@@ -166,7 +166,11 @@ Run the shared context discovery protocol in [CONTEXT_DISCOVERY.md](../../refere
 8. If CHANGELOG gaps were found in Phase A, suggest: "CHANGELOG.md is missing entries for {N} features. Add them? (y/N)"
    - On confirmation, add entries under `[Unreleased]` with appropriate categories
 9. Report changes made
-10. If `{plan_file}` exists and updates included phase status changes or new specs completed, suggest: "Phase status changed. Run `/roadmap plan sync` to update the project plan."
+10. If `{plan_file}` exists and updates included phase status changes or new specs completed, auto-chain into `plan sync`:
+    1. Announce: "Phase status changed — syncing project plan..."
+    2. Execute the `plan sync` workflow (§ `plan sync` below) using the same Phase A git history already gathered. Skip re-scanning git — reuse the "What Shipped" data from the `update` Phase A.
+    3. The `plan sync` flow handles its own diff preview and confirmation gate ("Apply updates to `{plan_file}`? y/N").
+    4. If user declines the plan sync, present proposed changes as a code block (standard `plan sync` behavior). Do NOT fail the overall `update` — the status doc was already written.
 
 ### `update --incremental`
 
@@ -210,10 +214,14 @@ Use the same unified diff format as the full `update` (see § `update` Phase B s
 - "Apply updates to `{status_file}`? (y/N)"
 - If no: present as code block for manual application
 
-#### Step 5: Write + Plan Sync Suggestion
+#### Step 5: Write + Plan Sync
 
 - Write if confirmed
-- If `{plan_file}` exists and phase status changed, suggest: "Phase status changed. Run `/roadmap plan sync` to update the project plan."
+- If `{plan_file}` exists and phase status changed, auto-chain into `plan sync`:
+  1. Announce: "Phase status changed — syncing project plan..."
+  2. Execute the `plan sync` workflow reusing the Phase A git history from Step 2. Skip redundant git scan.
+  3. Plan sync handles its own diff preview and confirmation gate.
+  4. If user declines plan sync, present as code block. Do NOT fail the overall update.
 
 ### `specs`
 
