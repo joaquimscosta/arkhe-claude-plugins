@@ -40,8 +40,7 @@ Run these commands to understand the current state:
 !`git diff --stat`
 !`git log -5 --oneline`
 
-If specific files were identified in the error:
-!`git diff -- <file>` and !`git log -3 --oneline -- <file>` for each
+If specific files were identified in the error, run `git diff -- <file>` and `git log -3 --oneline -- <file>` for each relevant file.
 
 ### 1c. Ecosystem Detection
 
@@ -98,7 +97,7 @@ Search the codebase for patterns related to the issue. This step runs in both mo
 2. **Compare working vs broken**: Read working examples and note structural differences from the broken code
 
 3. **Search for similar errors**: Grep the codebase for the same error message or similar error patterns
-   !`git log --all --oneline --grep="<relevant keyword>" -5 2>/dev/null || true`
+   Run `git log --all --oneline --grep="<keyword>" -5` for relevant keywords from the error.
 
 4. **Check related commits**: Look for recent commits that touched related files or functionality
 
