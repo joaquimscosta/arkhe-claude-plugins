@@ -65,8 +65,8 @@ plugin-name/
 
 ### Core Plugin
 Quality control and workflow orchestration utilities.
-- **Agents**: `deep-think-partner`, `deep-researcher`, `code-explorer`, `code-architect`, `code-reviewer`
-- **Commands**: `/discuss`, `/double-check` (`--deep` for multi-agent review), `/develop`, `/debug`, `/think`, `/research`
+- **Agents**: `deep-think-partner`, `deep-researcher`, `code-explorer`, `code-architect`, `code-reviewer`, `systematic-debugger`
+- **Commands**: `/discuss`, `/double-check` (`--deep` for multi-agent review), `/develop`, `/debug` (`--deep` for agent-assisted), `/think`, `/research`
 - **Skills**: `sdlc-develop` (command-invoke), `deep-research` (auto-invoke), `workflow-orchestration` (auto-invoke)
 
 ### AI Plugin
