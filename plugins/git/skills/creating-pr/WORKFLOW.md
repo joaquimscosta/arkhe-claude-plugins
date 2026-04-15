@@ -720,4 +720,185 @@ For troubleshooting, see [TROUBLESHOOTING.md](TROUBLESHOOTING.md).
 
 ---
 
+## Bash Implementation Reference
+
+The following bash snippets provide the reference implementation for each workflow step.
+
+### Argument Parsing
+
+```bash
+SCOPE=""
+DRAFT_FLAG=""
+BASE_BRANCH="main"
+
+# Example parsing:
+# "root --draft" → SCOPE="root", DRAFT_FLAG="--draft", BASE_BRANCH="main"
+# "--base staging" → SCOPE="", DRAFT_FLAG="", BASE_BRANCH="staging"
+# "my-service --draft --base develop" → SCOPE="my-service", DRAFT_FLAG="--draft", BASE_BRANCH="develop"
+```
+
+### Repository Context Detection
+
+```bash
+# Find monorepo root (handles submodules)
+if SUPERPROJECT=$(git rev-parse --show-superproject-working-tree 2>/dev/null) && [ -n "$SUPERPROJECT" ]; then
+    MONOREPO_ROOT="$SUPERPROJECT"
+else
+    MONOREPO_ROOT=$(git rev-parse --show-toplevel)
+fi
+
+CURRENT_DIR=$(pwd)
+
+if [ -n "$SCOPE" ]; then
+    if [ "$SCOPE" = "root" ]; then
+        REPO_PATH="$MONOREPO_ROOT"
+    else
+        REPO_PATH="$MONOREPO_ROOT/$SCOPE"
+    fi
+else
+    if [[ "$CURRENT_DIR" == "$MONOREPO_ROOT" ]]; then
+        REPO_PATH="$MONOREPO_ROOT"
+    else
+        REPO_PATH=$(git -C "$CURRENT_DIR" rev-parse --show-toplevel)
+    fi
+fi
+
+if [ ! -d "$REPO_PATH/.git" ]; then
+    echo "❌ Error: Not a valid git repository: $REPO_PATH" >&2
+    exit 1
+fi
+```
+
+### Branch Validation
+
+```bash
+cd "$REPO_PATH"
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+
+if [ "$CURRENT_BRANCH" = "main" ] || [ "$CURRENT_BRANCH" = "master" ]; then
+    echo "❌ Cannot create PR from protected branch: $CURRENT_BRANCH" >&2
+    echo "Please create a feature branch first:" >&2
+    echo "  git checkout -b feature/your-feature-name" >&2
+    exit 1
+fi
+
+UNCOMMITTED=$(git status --porcelain)
+if [ -n "$UNCOMMITTED" ]; then
+    echo "❌ Error: You have uncommitted changes" >&2
+    git status --short
+    exit 1
+fi
+
+COMMITS_AHEAD=$(git rev-list --count "$BASE_BRANCH..HEAD" 2>/dev/null || echo "0")
+if [ "$COMMITS_AHEAD" = "0" ]; then
+    echo "❌ Error: No commits to create PR from" >&2
+    exit 1
+fi
+```
+
+### Push Branch to Remote
+
+```bash
+REMOTE_BRANCH=$(git ls-remote --heads origin "$CURRENT_BRANCH" 2>/dev/null)
+
+if [ -z "$REMOTE_BRANCH" ]; then
+    git push -u origin "$CURRENT_BRANCH" || { echo "❌ Failed to push" >&2; exit 1; }
+else
+    LOCAL_HASH=$(git rev-parse HEAD)
+    REMOTE_HASH=$(git rev-parse "origin/$CURRENT_BRANCH" 2>/dev/null || echo "")
+    if [ "$LOCAL_HASH" != "$REMOTE_HASH" ]; then
+        git push origin "$CURRENT_BRANCH" || { echo "❌ Failed to push" >&2; exit 1; }
+    fi
+fi
+```
+
+### Existing PR Detection
+
+```bash
+EXISTING_PR=$(gh pr view "$CURRENT_BRANCH" --json number,title,url 2>/dev/null || echo "")
+
+if [ -n "$EXISTING_PR" ]; then
+    PR_NUMBER=$(echo "$EXISTING_PR" | jq -r '.number')
+    PR_URL=$(echo "$EXISTING_PR" | jq -r '.url')
+    # Offer to update or view existing PR
+fi
+```
+
+### PR Title Generation (Conventional Commits)
+
+```bash
+COMMITS=$(git log "$BASE_BRANCH..HEAD" --oneline)
+LATEST_COMMIT=$(git log -1 --pretty=%B)
+
+if echo "$LATEST_COMMIT" | grep -qE '^(feat|fix|docs|refactor|test|chore|perf|ci|build):'; then
+    COMMIT_TYPE=$(echo "$LATEST_COMMIT" | grep -oE '^[a-z]+' | head -1)
+    COMMIT_DESC=$(echo "$LATEST_COMMIT" | sed -E 's/^[a-z]+(\([^)]+\))?:\s*//')
+else
+    ALL_COMMITS=$(git log "$BASE_BRANCH..HEAD" --pretty=%B)
+    if echo "$ALL_COMMITS" | grep -qi "fix\|bug"; then COMMIT_TYPE="fix"
+    elif echo "$ALL_COMMITS" | grep -qi "feat\|feature\|add"; then COMMIT_TYPE="feat"
+    elif echo "$ALL_COMMITS" | grep -qi "docs\|documentation"; then COMMIT_TYPE="docs"
+    elif echo "$ALL_COMMITS" | grep -qi "refactor"; then COMMIT_TYPE="refactor"
+    elif echo "$ALL_COMMITS" | grep -qi "test"; then COMMIT_TYPE="test"
+    else COMMIT_TYPE="feat"
+    fi
+    COMMIT_DESC=$(echo "$LATEST_COMMIT" | head -1 | sed 's/^\s*//')
+fi
+
+PR_TITLE="$COMMIT_TYPE: $COMMIT_DESC"
+```
+
+### PR Body Generation
+
+```bash
+PR_BODY="## Summary
+
+"
+if [ "$COMMIT_COUNT" -eq 1 ]; then
+    PR_BODY+="$LATEST_COMMIT
+
+"
+else
+    PR_BODY+="This PR includes $COMMIT_COUNT commits:
+
+"
+    while IFS= read -r commit; do
+        PR_BODY+="- $commit
+"
+    done <<< "$COMMITS"
+fi
+
+PR_BODY+="## Test Plan
+
+- [ ] Code builds successfully
+- [ ] Tests pass
+- [ ] Manual testing completed
+- [ ] Documentation updated (if needed)
+
+## Changes
+
+"
+CHANGED_FILES=$(git diff --name-only "$BASE_BRANCH..HEAD")
+while IFS= read -r file; do
+    PR_BODY+="- \`$file\`
+"
+done <<< "$CHANGED_FILES"
+```
+
+### PR Creation and Update
+
+```bash
+# Create new PR
+GH_CMD="gh pr create --title \"$PR_TITLE\" --body \"$PR_BODY\" --base \"$BASE_BRANCH\""
+if [ "$DRAFT_FLAG" = "--draft" ]; then
+    GH_CMD+=" --draft"
+fi
+eval "$GH_CMD"
+
+# Or update existing PR
+gh pr edit "$PR_NUMBER" --title "$PR_TITLE" --body "$PR_BODY"
+```
+
+---
+
 *Last Updated: 2025-10-27*

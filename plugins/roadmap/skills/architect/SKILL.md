@@ -1,11 +1,6 @@
 ---
 name: architect
-description: >
-  Analyze system architecture, module structure, API contracts, data models, and code patterns.
-  Use when designing systems, reviewing module boundaries, evaluating API designs, analyzing
-  data models, checking pattern conformance, tracing decisions, or reviewing frontend architecture.
-  Triggers: "architecture", "module design", "API design", "data model", "boundaries",
-  "patterns", "decisions", "frontend architecture".
+description: "Analyze system architecture, module structure, API contracts, data models, and code patterns. Use when designing systems, reviewing module boundaries, evaluating API designs, analyzing data models, checking pattern conformance, tracing architectural decisions, or reviewing frontend architecture. Triggers: architecture, module design, API design, data model, boundaries, patterns, decisions, frontend architecture."
 argument-hint: "[--deep] module <name> | api <feature> | data-model <feature> | boundaries | patterns | decisions | frontend <feature>"
 allowed-tools: Read, Glob, Grep, Write
 ---
@@ -14,17 +9,29 @@ allowed-tools: Read, Glob, Grep, Write
 
 Analyze system architecture, module boundaries, API contracts, data models, and code patterns.
 
-## Context Discovery
+## Workflow
 
-Run the shared context discovery protocol in [CONTEXT_DISCOVERY.md](../../references/CONTEXT_DISCOVERY.md). Execute all phases in order (use deep scan mode for Phase 7). Also glob for architecture-specific documents:
+### Step 1: Context Discovery
+
+Run the shared context discovery protocol in [CONTEXT_DISCOVERY.md](../../references/CONTEXT_DISCOVERY.md) (all phases, deep scan for Phase 7). Also glob for architecture-specific documents:
 
 ```
 docs/adr/**/*.md, docs/architecture/**/*.md, docs/design/**/*.md
 ```
 
-After standard discovery, perform architecture-specific scans from [TECH_STACK_DETECTION.md](../../references/TECH_STACK_DETECTION.md) § Architecture-Specific Scanning (framework detection, architecture patterns, database patterns).
+Then perform architecture-specific scans from [TECH_STACK_DETECTION.md](../../references/TECH_STACK_DETECTION.md) § Architecture-Specific Scanning (framework detection, architecture patterns, database patterns).
 
-## Arguments
+### Step 2: Validate Discovery
+
+Before proceeding, verify sufficient context was gathered:
+
+- **Tech stack detected** — at least one primary language/framework identified
+- **Source structure mapped** — module or directory layout is clear
+- **Existing patterns found** — at least one architectural pattern (layering, naming, API style) identified
+
+If any check fails, report what is missing and ask the user for clarification before continuing. Do not guess at architecture when the codebase lacks sufficient artifacts.
+
+### Step 3: Parse Arguments
 
 Parse from `$ARGUMENTS`:
 
@@ -39,7 +46,7 @@ Parse from `$ARGUMENTS`:
 | `frontend <feature>` | Frontend architecture guidance |
 | _(none)_ | Ask what the user needs architectural guidance on |
 
-## Mode Execution
+### Step 4: Execute Mode
 
 | Mode | Produces |
 |------|----------|
@@ -53,15 +60,15 @@ Parse from `$ARGUMENTS`:
 
 See [WORKFLOW.md](WORKFLOW.md) for detailed execution steps per mode.
 
-## Output Rules
+### Step 5: Present Output
 
-- **Conversational with optional file persistence** — analysis in chat, offer to save
+- **Conversational with optional file persistence** — deliver analysis in chat, offer to save
 - **Diagram-friendly** — use Mermaid diagrams when they clarify relationships
 - **Pattern-consistent** — always reference existing codebase patterns
-- **Practical** — recommendations should be implementable
-- **Scoped** — answer the specific question; don't redesign the whole system
+- **Practical** — recommendations must be implementable
+- **Scoped** — answer the specific question; do not redesign the whole system
 
-## File Persistence
+### Step 6: Offer File Persistence
 
 After producing the analysis, ask the user:
 
@@ -93,6 +100,6 @@ See the System Architect section of [LANE_DISCIPLINE.md](../../references/LANE_D
 
 ## References
 
-- [WORKFLOW.md](WORKFLOW.md) — Detailed pattern analysis workflows
+- [WORKFLOW.md](WORKFLOW.md) — Detailed mode execution workflows
 - [EXAMPLES.md](EXAMPLES.md) — Usage examples
 - [TROUBLESHOOTING.md](TROUBLESHOOTING.md) — Common issues and fixes
