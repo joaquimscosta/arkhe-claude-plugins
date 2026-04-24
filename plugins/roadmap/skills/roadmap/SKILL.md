@@ -40,7 +40,7 @@ Parse from `$ARGUMENTS`:
 |------|-------------|
 | `status` | Overall dashboard — modules, phases, completion + drift detection |
 | `gaps` | Gap analysis status — open/closed/in-progress with evidence |
-| `next` | Prioritized recommendations with caching. Saves to `{output_dir}/next-actions.md`. Returns cached results if <3 feat/fix commits since last calculation; otherwise full recalculation. Invalidated after `update`/`update --incremental`. Add `--force` to skip cache |
+| `next` | Prioritized recommendations with caching and smart merge. Saves to `{output_dir}/next-actions.md`. Returns cached results if <3 feat/fix commits and status doc unchanged; otherwise merge-based recalculation that preserves uncompleted items and user additions. Add `--force` to recalculate (still merges; delete file manually for clean slate) |
 | `delta` | What changed since last assessment (read-only comparison) |
 | `blockers` | Blocking chain analysis with critical path |
 | `risks` | Risk register with likelihood/impact scoring |
@@ -67,12 +67,14 @@ Cross-reference all gap analysis documents. For each gap: original report, curre
 
 ### `next`
 
-Prioritized recommendations with git-aware caching. See [WORKFLOW.md](WORKFLOW.md) § `next` for the cache check + full calculation protocol.
+Prioritized recommendations with git-aware caching and smart merge. See [WORKFLOW.md](WORKFLOW.md) § `next` for the full merge protocol.
 
 Key behaviors:
 - Saves recommendations to `{output_dir}/next-actions.md`
-- Returns cached results if <3 feat/fix commits since last calculation
-- Full recalculation on first run, stale cache, or `--force`
+- Returns cached results if <3 feat/fix commits and status doc unchanged since last calculation
+- On recalculation, merges new recommendations with existing items — preserves uncompleted items, removes items with completion evidence
+- User-added items in `### User-Added` section always preserved across recalculations
+- Shows merge diff preview with `+`/`-`/`~`/`=` markers before writing (confirmation required)
 - Combines: unclosed gaps, unstarted specs, maturity imbalances, plan backlog themes
 
 ### `delta`
@@ -96,7 +98,7 @@ Key behaviors:
 - Diff preview with `+`/`-`/`~` markers, requires confirmation before writing
 - Checks CHANGELOG.md for gaps (offers to add entries)
 - Auto-chains into `plan sync` when phase/spec status changes detected
-- Invalidates `next-actions.md` cache (recommendations likely shifted after status changes)
+- Next `/roadmap next` will detect status doc changes and trigger merge-based recalculation (preserves uncompleted items)
 - `--incremental` variant: surgical targeted edits only (skips Phase B full scan)
 
 ### `specs`
