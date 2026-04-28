@@ -1,8 +1,9 @@
 ---
 description: >
-  Generate a terse, copy-paste-ready context block from the current conversation
-  for cold-starting a new session. Produces freeform prose optimized for pasting
-  into a new session's first message. Optionally focus on specific topics.
+  Generate a highly structured, copy-paste-ready context block from the current
+  conversation for cold-starting a new session. Produces a structured Markdown
+  block optimized for an LLM/AI to quickly gain situational awareness.
+  Optionally focus on specific topics.
 argument-hint: "[topic to focus on]"
 ---
 
@@ -21,7 +22,7 @@ argument-hint: "[topic to focus on]"
 
 ## Instructions
 
-Analyze the current conversation and produce a terse context block that can be pasted into a new session for immediate situational awareness.
+Analyze the current conversation and produce a highly structured context block that can be pasted into a new session for immediate situational awareness by another AI assistant.
 
 ### What to extract
 
@@ -35,26 +36,23 @@ Review the conversation for:
 
 ### Output constraints
 
-Produce **1-3 short paragraphs of freeform prose** directly in the console.
+Produce a **Markdown-formatted** context block using the following headers. The output must be optimized for an LLM to quickly parse and understand the situation.
 
-**Length:** 2-5 sentences per paragraph. The entire block should be readable in 15 seconds.
+Use bullet points and concise statements rather than long paragraphs.
 
-**Tone:** Direct and factual. Write as a terse briefing. Assume the reader is technical and familiar with the project.
-
-**Content priorities (in order):**
-1. What we're doing and why (one sentence of orientation)
-2. Where things stand right now (current state, blockers)
-3. What to do next (concrete actions, not vague direction)
-4. Key decisions or constraints the next session must respect
+**Required Sections:**
+1. **## Objective:** What we are trying to achieve and why.
+2. **## Current State:** Where things stand right now, including what's working and any current blockers.
+3. **## Key Decisions & Constraints:** Technical decisions made, architectural rules, or constraints the next session must respect.
+4. **## Relevant Files:** Key files, variables, or functions that are critical to the current work.
+5. **## Next Steps:** Concrete actions or open questions to tackle next.
 
 **Do NOT include:**
-- Preamble ("Here's your context...")
-- Headers, bullet points, or markdown formatting
-- Code blocks or file paths unless critical
-- Anything obvious from the codebase itself
+- Preamble ("Here is the context...")
 - A closing remark or offer to help
+- Anything outside the Markdown structure itself
 
-Output the prose block directly. Nothing before it, nothing after it.
+Output the Markdown block directly. Nothing before it, nothing after it.
 
 ### Save option
 
