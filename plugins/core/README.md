@@ -28,6 +28,8 @@ Quality control and workflow orchestration utilities for Claude Code.
 
 - **code-reviewer**: Expert code reviewer for bugs, logic errors, security vulnerabilities, and project convention adherence. Uses confidence-based filtering to report only high-priority issues.
 
+- **systematic-debugger**: Systematic debugging specialist using a 4-phase evidence-based methodology (evidence gathering, pattern analysis, hypothesis testing, resolution). Enforces root cause investigation before fixes, with red flag detection and architecture escalation. Uses Opus model with sequential-thinking MCP.
+
 ### Commands
 
 - **/discuss**: Facilitates thorough technical discussions about code, architecture, and implementation decisions. Helps you think through problems by asking focused questions.
@@ -36,7 +38,7 @@ Quality control and workflow orchestration utilities for Claude Code.
 
 - **/develop**: Unified SDLC command with 6-phase pipeline (Discovery, Requirements, Architecture, Workstreams, Implementation, Summary). Supports plan persistence, resume mode (`@path/to/plan.md`), and configurable interaction (`--auto` for autonomous). Includes mandatory Phase 0 existing system analysis. Flags: `--plan-only`, `--validate`, `--phase=N`, `--auto`.
 
-- **/debug**: Systematic debugging assistant that walks through structured troubleshooting steps. Analyzes issues with a framework covering problem definition, environment assessment, error investigation, hypothesis formation, and testing strategy.
+- **/debug**: Systematic debugging with automated evidence gathering and 4-phase methodology (investigate, analyze patterns, diagnose, resolve). Default mode runs inline investigation and diagnosis. `--deep` mode dispatches the `systematic-debugger` agent for autonomous debugging with root cause enforcement.
 
 - **/think**: Invokes the deep-think-partner agent for collaborative reasoning on complex problems. Can be called with a specific problem or to analyze the current conversation context.
 

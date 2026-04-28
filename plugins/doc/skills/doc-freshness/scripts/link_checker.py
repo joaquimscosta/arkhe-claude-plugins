@@ -150,7 +150,6 @@ def check_all_links(
     warnings = 0
 
     for doc_path in doc_paths:
-        # Count total links in this doc for accurate summary
         content = read_file_safe(doc_path)
         if content:
             total_links += len(parse_markdown_links(content))

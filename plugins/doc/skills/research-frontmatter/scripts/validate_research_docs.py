@@ -3,7 +3,7 @@
 Research document validator.
 
 Validates YAML frontmatter, required sections, index accuracy, and staleness
-for research documents in docs/research/.
+for research documents. Supports JD-aware path resolution via .jd-config.json.
 
 Checks:
   RD001  Missing YAML frontmatter
@@ -24,7 +24,7 @@ Checks:
   RD016  Stale last_updated (older than git modification date)
 
 Usage:
-    validate_research_docs.py [--staleness-only] [--format text|json] [--min-severity ...]
+    validate_research_docs.py [--staleness-only] [--research-dir DIR] [--format text|json]
 """
 
 import re
@@ -34,11 +34,12 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from validation_utils import (
+from shared import (
     ERROR, WARNING, SUGGESTION, Issue,
     find_project_root, parse_frontmatter, git_last_modified,
     parse_date, is_valid_date_format, is_valid_semver,
     filter_issues, format_output, has_errors, standard_argparse,
+    resolve_research_path,
 )
 
 VALID_STATUSES = {"Draft", "Published", "Living Document"}
@@ -94,7 +95,7 @@ def parse_index_table(readme_path: Path) -> List[Dict[str, str]]:
 
 def validate_frontmatter(doc_path: Path, fm: Optional[Dict], research_dir: Path) -> List[Issue]:
     """Validate frontmatter fields (RD001-RD010)."""
-    issues = []
+    issues = []  # type: List[Issue]
     rel_path = str(doc_path.relative_to(research_dir))
 
     if fm is None:
@@ -138,7 +139,7 @@ def validate_frontmatter(doc_path: Path, fm: Optional[Dict], research_dir: Path)
 
 def validate_sections(doc_path: Path, body: str, research_dir: Path) -> List[Issue]:
     """Validate required sections (RD011-RD012)."""
-    issues = []
+    issues = []  # type: List[Issue]
     rel_path = str(doc_path.relative_to(research_dir))
 
     if not re.search(r"^##\s+Executive\s+Summary", body, re.MULTILINE | re.IGNORECASE):
@@ -157,7 +158,7 @@ def validate_index(
     research_dir: Path,
 ) -> List[Issue]:
     """Validate index accuracy (RD013-RD015)."""
-    issues = []
+    issues = []  # type: List[Issue]
 
     # Build set of indexed file paths
     indexed_files = {entry["file"] for entry in index_entries}
@@ -166,7 +167,7 @@ def validate_index(
     for doc_path in docs:
         rel_path = str(doc_path.relative_to(research_dir))
         if rel_path not in indexed_files:
-            issues.append(Issue("RD013", ERROR, f"Not listed in README.md index", rel_path))
+            issues.append(Issue("RD013", ERROR, "Not listed in README.md index", rel_path))
 
     # RD014: Index metadata mismatch
     for entry in index_entries:
@@ -193,7 +194,7 @@ def validate_index(
     for entry in index_entries:
         file_path = research_dir / entry["file"]
         if not file_path.exists():
-            issues.append(Issue("RD015", WARNING, f"Index references missing file", entry["file"]))
+            issues.append(Issue("RD015", WARNING, "Index references missing file", entry["file"]))
 
     return issues
 
@@ -204,7 +205,7 @@ def validate_staleness(
     research_dir: Path,
 ) -> List[Issue]:
     """Check if last_updated is stale compared to git (RD016)."""
-    issues = []
+    issues = []  # type: List[Issue]
     rel_path = str(doc_path.relative_to(research_dir))
 
     if fm is None:
@@ -238,16 +239,29 @@ def validate_staleness(
 
 
 def main():
-    parser = standard_argparse("Validate research documents in docs/research/")
+    parser = standard_argparse("Validate research documents")
     parser.add_argument("--staleness-only", action="store_true",
                         help="Only check staleness (RD016)")
+    parser.add_argument("--research-dir", type=str, default=None,
+                        help="Explicit research directory path (overrides JD resolution)")
+    parser.add_argument("--project-root", type=str, default=None,
+                        help="Project root directory (default: auto-detect)")
     args = parser.parse_args()
 
-    root = find_project_root()
-    research_dir = root / "docs" / "research"
+    root = find_project_root(
+        Path(args.project_root) if args.project_root else None
+    )
+
+    if args.research_dir:
+        research_dir = Path(args.research_dir)
+        if not research_dir.is_absolute():
+            research_dir = root / research_dir
+    else:
+        resolved = resolve_research_path(root)
+        research_dir = root / resolved["path"]
 
     if not research_dir.is_dir():
-        print("No docs/research/ directory found.", file=sys.stderr)
+        print(f"No research directory found at {research_dir}", file=sys.stderr)
         sys.exit(0)
 
     docs = find_research_docs(research_dir)
@@ -255,8 +269,8 @@ def main():
         print("No research documents found.", file=sys.stderr)
         sys.exit(0)
 
-    all_issues: List[Issue] = []
-    doc_frontmatters: Dict[str, Dict] = {}
+    all_issues = []  # type: List[Issue]
+    doc_frontmatters = {}  # type: Dict[str, Dict]
 
     # Parse all documents
     for doc_path in docs:

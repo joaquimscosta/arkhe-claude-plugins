@@ -7,7 +7,8 @@ MANUAL_FILES=(claude_md_checker.py frontmatter_onboard.py)
 
 # ── Paths ──────────────────────────────────────────────────────────────
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PLUGIN_SCRIPTS="$SCRIPT_DIR"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+PLUGIN_SCRIPTS="$REPO_ROOT/plugins/doc/skills/doc-freshness/scripts"
 
 ACTION_REPO=""
 YES_FLAG=false

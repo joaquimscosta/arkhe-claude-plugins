@@ -160,3 +160,33 @@ Use `--incremental` when you know what changed (just finished a sprint) and want
 **Cause:** The plan doc was recently synced (git shows no gap between sync and HEAD), but content was already wrong at last sync time.
 
 **Fix:** Run `/roadmap plan scaffold` to regenerate from current state. Scaffold always rebuilds from scratch (with overwrite confirmation), while sync only applies incremental changes from git history since the last sync.
+
+## Next Actions Seem Outdated
+
+**Symptom:** `/roadmap next` returns recommendations that don't reflect recent work.
+
+**Cause:** Cache hasn't been invalidated. Recalculation triggers when either: 3+ feat/fix commits since last save, or the status doc was updated more recently than next-actions.md. If neither condition is met, the cached file is served.
+
+**Fix:**
+1. Force recalculation with merge: `/roadmap next --force`
+2. Or run `/roadmap update` first — the status drift check will trigger merge-based recalculation on next `/roadmap next`
+3. For a completely fresh start (discard all existing items): `rm arkhe/roadmap/next-actions.md` then run `/roadmap next`
+
+## Merge Matched Wrong Items
+
+**Symptom:** During merge, the diff preview shows an item being updated (`~`) when it should be a different item, or two unrelated items were matched.
+
+**Cause:** The title-based matching found a false positive (similar titles referencing different work).
+
+**Fix:**
+1. Decline the merge at the confirmation gate ("Apply merged recommendations? N")
+2. Manually edit `next-actions.md` to correct item titles or content
+3. Run `/roadmap next --force` again — the corrected titles will produce better matches
+
+## User-Added Items Keep Accumulating
+
+**Symptom:** The `### User-Added` section in `next-actions.md` grows with items that are no longer relevant.
+
+**Cause:** User-added items are always preserved across recalculations. The merge will flag items that appear completed (with `?` in the diff preview), but never auto-removes them.
+
+**Fix:** Manually edit `next-actions.md` and remove completed or irrelevant items from the `### User-Added` section. The next merge will not re-add them.

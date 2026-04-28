@@ -231,6 +231,25 @@ Apply updates to PROJECT-STATUS.md? (y/N)
 Add CHANGELOG entries for 3 shipped features under [Unreleased]? (y/N)
 ```
 
+**After CHANGELOG (if plan exists and phase changed):**
+
+```
+Phase status changed — syncing project plan...
+
+## Proposed Updates to docs/PROJECT-PLAN.md
+
+### Phases
+  + Phase 3e: Glossary Management + Dictionary Browser -> Done
+
+### Spec Traceability
+  + Spec 022-025 -> linked to Phase 3e [MANUAL]
+
+### ADR Traceability
+  + ADR 0010: skrebe.app redirect -> linked to Phase 3f [AUTO-LINKED]
+
+Apply updates to docs/PROJECT-PLAN.md? (y/N)
+```
+
 ## Example 8: Status with Drift Warning
 
 **Input:** `/roadmap status`
@@ -422,5 +441,142 @@ Apply updates to docs/PROJECT-STATUS.md? (y/N)
 > y
 
 Status document updated. 9 changes applied.
-Phase status changed. Run `/roadmap plan sync` to update the project plan.
+
+Phase status changed — syncing project plan...
+
+## Proposed Updates to docs/PROJECT-PLAN.md
+
+### Timeline
+  ~ Phase 2 (Offline-First): In Progress -> Done
+
+### Spec Traceability
+  + Spec 027: Sync Engine Core -> linked to Phase 2 [AUTO-LINKED]
+  + Spec 028: Conflict Detection -> linked to Phase 2 [AUTO-LINKED]
+  + Spec 029: Background Sync -> linked to Phase 2 [AUTO-LINKED]
+  + Spec 030: Conflict Resolution UI -> linked to Phase 2 [AUTO-LINKED]
+
+Apply updates to docs/PROJECT-PLAN.md? (y/N)
+> y
+
+Project plan updated. 5 changes applied.
+```
+
+---
+
+## Example 13: Cached Next Actions with Smart Merge
+
+**Input (first run):** `/roadmap:roadmap next`
+
+**Output:**
+
+```
+## Recommended Next Actions
+_Generated: 2026-04-11 (commit e4f5g6h)_
+
+1. **Translation Memory Eval Harness** — Phase 4 blocker; specs ready, no implementation
+2. **Expand LLM Golden Pairs** — 5 → 10-15 pairs for accuracy benchmarking
+3. **Word List Quality Pipeline** — High priority backlog theme, no blockers
+4. **API Rate Limiting** — Open gap from security review, pre-launch blocker
+
+Saved to arkhe/roadmap/next-actions.md.
+```
+
+**Input (second run, 1 commit later):** `/roadmap:roadmap next`
+
+**Output:**
+
+```
+## Recommended Next Actions
+_Cached from 2026-04-11. 1 feat/fix commit since — below recalculation threshold._
+_Run `/roadmap next --force` to recalculate._
+
+1. **Translation Memory Eval Harness** — Phase 4 blocker; specs ready, no implementation
+2. **Expand LLM Golden Pairs** — 5 → 10-15 pairs for accuracy benchmarking
+3. **Word List Quality Pipeline** — High priority backlog theme, no blockers
+4. **API Rate Limiting** — Open gap from security review, pre-launch blocker
+```
+
+**Input (after `/roadmap update`):** `/roadmap:roadmap next`
+
+**Output:**
+
+```
+[Status doc updated since last calculation — recalculating with merge...]
+
+## Proposed Updates to next-actions.md
+
+  - **Translation Memory Eval Harness** — removed (completed: PR #45, spec 026 done)
+  ~ **Expand LLM Golden Pairs** — 5 → 10-15 pairs (refreshed: now top priority after TM Eval shipped)
+  = **Word List Quality Pipeline** — carried (still open, no completion evidence)
+  = **API Rate Limiting** — carried (still open, pre-launch blocker)
+  + **Offline Sync Polish** — new recommendation (Phase 3 ready after Phase 2 completion)
+
+Apply merged recommendations? (y/N)
+> y
+
+Saved to arkhe/roadmap/next-actions.md.
+```
+
+---
+
+## Example 14: User-Added Items Surviving Merge
+
+A user manually adds an item to the `### User-Added` section of `next-actions.md`:
+
+**File before recalculation:**
+
+```markdown
+---
+generated: 2026-04-11
+commit: e4f5g6h
+source: /roadmap next
+---
+
+## Recommended Next Actions
+
+1. **Translation Memory Eval Harness** — Phase 4 blocker; specs ready, no implementation
+2. **Expand LLM Golden Pairs** — 5 → 10-15 pairs for accuracy benchmarking
+
+### User-Added
+- **Review onboarding UX with beta testers** — schedule before Phase 5 launch
+- **Set up CI/CD pipeline** — needed for automated releases
+```
+
+**Input:** `/roadmap:roadmap next --force`
+
+**Output:**
+
+```
+## Proposed Updates to next-actions.md
+
+  - **Translation Memory Eval Harness** — removed (completed: spec 026 done, PR #45)
+  ~ **Expand LLM Golden Pairs** — refreshed (still 5 pairs, now top priority)
+  + **Word List Quality Pipeline** — new recommendation (high priority backlog theme)
+  + **API Rate Limiting** — new recommendation (open gap from security review)
+  = **Review onboarding UX with beta testers** (user-added, preserved)
+  ? **Set up CI/CD pipeline** (user-added; CI/CD pipeline appears shipped in PR #48 — remove? keep?)
+
+Apply merged recommendations? (y/N)
+> y
+
+Saved to arkhe/roadmap/next-actions.md.
+```
+
+**Resulting file:**
+
+```markdown
+---
+generated: 2026-04-15
+commit: b2c3d4e
+source: /roadmap next
+---
+
+## Recommended Next Actions
+
+1. **Expand LLM Golden Pairs** — 5 → 10-15 pairs for accuracy benchmarking
+2. **Word List Quality Pipeline** — High priority backlog theme, no blockers
+3. **API Rate Limiting** — Open gap from security review, pre-launch blocker
+
+### User-Added
+- **Review onboarding UX with beta testers** — schedule before Phase 5 launch
 ```

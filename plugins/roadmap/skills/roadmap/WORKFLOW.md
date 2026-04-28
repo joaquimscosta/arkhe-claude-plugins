@@ -42,18 +42,104 @@ Run the shared context discovery protocol in [CONTEXT_DISCOVERY.md](../../refere
 
 ### `next`
 
-1. Run full context discovery (thorough)
-2. Collect all open items:
-   - Unclosed gaps
-   - Unstarted specs
-   - Module maturity imbalances
-   - Frontend-backend parity issues
-3. If `{plan_file}` exists, also consult:
-   - The Backlog section for prioritized themes with dependencies
-   - The Timeline for the next "Not Started" phase
-   - Use these as additional inputs when ranking
-4. Rank by: impact, effort, dependencies, urgency
-5. Recommend 3-5 prioritized next actions
+Git-aware cached recommendations with smart merge. Preserves uncompleted items and user additions across recalculations.
+
+1. Read `.arkhe.yaml` for `output_dir` path (default: `arkhe/roadmap`)
+2. Check if `{output_dir}/next-actions.md` exists
+   - If no: skip to step 6 (full calculation, first run)
+   - If `--force` flag present: skip to step 5 (parse existing, then recalculate with merge)
+3. **Check staleness** (either condition triggers recalculation):
+   1. **Git drift**: count `feat:`/`fix:` commits since last next-actions.md save:
+      ```
+      git log -1 --format="%H %ai" -- {output_dir}/next-actions.md
+      git log {hash}..HEAD --oneline --no-merges | grep -cE "^[a-f0-9]+ (feat|fix):"
+      ```
+   2. **Status drift**: compare `generated` date in next-actions.md frontmatter against last `{status_file}` commit date:
+      ```
+      git log -1 --format="%ai" -- {status_file}
+      ```
+      If `{status_file}` was committed more recently than the `generated` date, treat as stale.
+   - If neither condition met (<3 feat/fix commits AND status doc not newer): proceed to step 4 (serve cache)
+   - If either condition met: proceed to step 5 (parse existing for merge)
+4. **Serve cache**: display cached file with header:
+   ```
+   ## Recommended Next Actions
+   _Cached from {date}. {N} feat/fix commits since — below recalculation threshold._
+   _Run `/roadmap next --force` to recalculate._
+
+   {cached content}
+   ```
+   Stop here.
+5. **Parse existing file** (before recalculation, for merge):
+   1. Read `{output_dir}/next-actions.md`
+   2. Extract generated items (numbered list under `## Recommended Next Actions`)
+   3. Extract user-added items (bullets under `### User-Added` section, if present)
+   4. Extract frontmatter metadata (`generated` date for carry annotations)
+   5. If file is empty or structure is unrecognizable: warn user and offer three options:
+      - Merge best-effort (treat all content as generated items)
+      - Overwrite (ignore existing, generate fresh)
+      - Abort
+   6. Legacy files without a `### User-Added` section: treat everything as generated items, create the section on write
+6. **Full calculation** (first run, stale cache, `--force`):
+   1. Run full context discovery (thorough)
+   2. Collect all open items:
+      - Unclosed gaps
+      - Unstarted specs
+      - Module maturity imbalances
+      - Frontend-backend parity issues
+   3. If `{plan_file}` exists, also consult:
+      - The Backlog section for prioritized themes with dependencies
+      - The Timeline for the next "Not Started" phase
+      - Use these as additional inputs when ranking
+   4. Rank by: impact, effort, dependencies, urgency
+   5. Recommend 3-5 prioritized next actions
+   6. If no existing file was parsed (first run): skip to step 9 (write directly)
+7. **Merge** (when existing file was parsed in step 5):
+   1. **Match** new recommendations against existing items by bold title. Normalize titles (lowercase, strip punctuation) for comparison.
+   2. **Second pass** for unmatched items: topic-match by shared key terms (spec IDs, gap references, module names). If a new recommendation shares 2+ significant terms with an unmatched existing item AND references the same spec/gap/module, treat as a match.
+   3. **Classify** each item:
+      - `+` ADD — new recommendation not in existing file
+      - `~` UPDATE — matched existing item; refresh rationale with new context
+      - `=` CARRY — existing generated item not in new recommendations, no completion evidence found (closed gap, completed spec, shipped feature) → keep with _(carried from {original_date})_ annotation
+      - `-` REMOVE — existing generated item with completion evidence (gap closed, spec completed, feature shipped in commits)
+      - `?` SUGGEST REMOVAL — user-added item that appears to match completed work → flag but do NOT auto-remove
+   4. **Carry staleness**: if an item has been carried for 60+ days, flag in the diff preview: `"carried from {date}, {N} days ago — still relevant?"`
+   5. **All completed, no new**: if all existing items are completed and no new recommendations, output: "All previous recommendations have been completed. No new actions recommended at this time." and write an empty recommendations section (preserving any user-added items).
+   6. **Reorder**: place items in priority order — new and updated items ranked by the calculation in step 6, carried items appended after in their original relative order.
+8. **Diff preview and confirmation** (mandatory when merging; skipped on first run):
+   ```
+   ## Proposed Updates to next-actions.md
+
+     + **New Item** — rationale (new recommendation)
+     ~ **Existing Item** — updated rationale (refreshed)
+     = **Carried Item** — rationale (carried from 2026-04-11)
+     - **Completed Item** — removed (closed: spec 027 complete)
+     = **Custom user item** (user-added, preserved)
+     ? **User CI/CD item** (user-added; CI/CD appears shipped in PR #37 — remove? keep?)
+
+   Apply merged recommendations? (y/N)
+   ```
+   - If declined: present the full merged content as a code block for manual application. Stop here.
+9. **Save**: Write to `{output_dir}/next-actions.md` with metadata header:
+   ```markdown
+   ---
+   generated: {ISO date}
+   commit: {HEAD short hash}
+   source: /roadmap next
+   ---
+
+   ## Recommended Next Actions
+
+   1. **Item A** — rationale
+   2. **Item B** — rationale _(carried from 2026-04-11)_
+   3. **Item C** — rationale
+
+   ### User-Added
+   - **Custom item** — user's notes
+   ```
+   - On first run (no merge): omit `### User-Added` section if empty
+   - Carried items include the _(carried from {date})_ annotation
+10. Display the saved content with "Saved to `{output_dir}/next-actions.md`."
 
 ### `delta`
 
@@ -166,7 +252,12 @@ Run the shared context discovery protocol in [CONTEXT_DISCOVERY.md](../../refere
 8. If CHANGELOG gaps were found in Phase A, suggest: "CHANGELOG.md is missing entries for {N} features. Add them? (y/N)"
    - On confirmation, add entries under `[Unreleased]` with appropriate categories
 9. Report changes made
-10. If `{plan_file}` exists and updates included phase status changes or new specs completed, suggest: "Phase status changed. Run `/roadmap plan sync` to update the project plan."
+10. If `{plan_file}` exists and updates included phase status changes or new specs completed, auto-chain into `plan sync`:
+    1. Announce: "Phase status changed — syncing project plan..."
+    2. Execute the `plan sync` workflow (§ `plan sync` below) using the same Phase A git history already gathered. Skip re-scanning git — reuse the "What Shipped" data from the `update` Phase A.
+    3. The `plan sync` flow handles its own diff preview and confirmation gate ("Apply updates to `{plan_file}`? y/N").
+    4. If user declines the plan sync, present proposed changes as a code block (standard `plan sync` behavior). Do NOT fail the overall `update` — the status doc was already written.
+11. Leave `{output_dir}/next-actions.md` in place. The status drift check in `/roadmap next` step 3 will detect that `{status_file}` is newer and trigger a merge-based recalculation on next invocation, preserving uncompleted items and user additions.
 
 ### `update --incremental`
 
@@ -210,10 +301,15 @@ Use the same unified diff format as the full `update` (see § `update` Phase B s
 - "Apply updates to `{status_file}`? (y/N)"
 - If no: present as code block for manual application
 
-#### Step 5: Write + Plan Sync Suggestion
+#### Step 5: Write + Plan Sync
 
 - Write if confirmed
-- If `{plan_file}` exists and phase status changed, suggest: "Phase status changed. Run `/roadmap plan sync` to update the project plan."
+- If `{plan_file}` exists and phase status changed, auto-chain into `plan sync`:
+  1. Announce: "Phase status changed — syncing project plan..."
+  2. Execute the `plan sync` workflow reusing the Phase A git history from Step 2. Skip redundant git scan.
+  3. Plan sync handles its own diff preview and confirmation gate.
+  4. If user declines plan sync, present as code block. Do NOT fail the overall update.
+- Leave `{output_dir}/next-actions.md` in place. The status drift check in `/roadmap next` step 3 will detect that `{status_file}` is newer and trigger a merge-based recalculation, preserving uncompleted items and user additions.
 
 ### `specs`
 

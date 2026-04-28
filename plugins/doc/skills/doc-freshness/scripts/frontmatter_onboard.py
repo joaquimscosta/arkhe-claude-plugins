@@ -46,6 +46,8 @@ CANDIDATE_PATTERNS: List[str] = [
     "docs/PLAYWRIGHT_CLI.md",
     "docs/README.md",
     "docs/research/README.md",
+    # JD-organized research READMEs (e.g. docs/30-research/)
+    "docs/*-research/README.md",
 ]
 
 

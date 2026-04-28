@@ -1,0 +1,65 @@
+---
+description: >
+  Generate a highly structured, copy-paste-ready context block from the current
+  conversation for cold-starting a new session. Produces a structured Markdown
+  block optimized for an LLM/AI to quickly gain situational awareness.
+  Optionally focus on specific topics.
+argument-hint: "[topic to focus on]"
+---
+
+# Context Prime
+
+## Usage
+
+- `/context-prime` - Summarize the entire conversation
+- `/context-prime <TOPIC>` - Focus on specific topics (e.g., `/context-prime the auth refactor and DB migration`)
+
+## Context
+
+**Topic focus (if provided):** $ARGUMENTS
+
+**If no arguments provided:** Summarize the entire conversation.
+
+## Instructions
+
+Analyze the current conversation and produce a highly structured context block that can be pasted into a new session for immediate situational awareness by another AI assistant.
+
+### What to extract
+
+Review the conversation for:
+- What is being worked on (project, feature, problem domain)
+- Key decisions made and their rationale
+- Current state — what's done, what's in progress, what's blocked
+- Immediate next steps or open questions
+
+**If a topic focus was provided**, narrow the analysis to only the conversation aspects relevant to that topic. Ignore unrelated threads.
+
+### Output constraints
+
+Produce a **Markdown-formatted** context block using the following headers. The output must be optimized for an LLM to quickly parse and understand the situation.
+
+Use bullet points and concise statements rather than long paragraphs.
+
+**Required Sections:**
+1. **## Objective:** What we are trying to achieve and why.
+2. **## Current State:** Where things stand right now, including what's working and any current blockers.
+3. **## Key Decisions & Constraints:** Technical decisions made, architectural rules, or constraints the next session must respect.
+4. **## Relevant Files:** Key files, variables, or functions that are critical to the current work.
+5. **## Next Steps:** Concrete actions or open questions to tackle next.
+
+**Do NOT include:**
+- Preamble ("Here is the context...")
+- A closing remark or offer to help
+- Anything outside the Markdown structure itself
+
+Output the Markdown block directly. Nothing before it, nothing after it.
+
+### Save option
+
+After outputting the context block, use the AskUserQuestion tool to ask the user if they want to save it to a file. Provide these options:
+
+1. **No, I'll copy it** — Do nothing further.
+2. **Save to .claude/context/** — Save to `.claude/context/context-YYYY-MM-DD.md` (create directory if needed). Use the current date.
+3. **Save to custom path** — Let the user specify a path.
+
+If the user chooses to save, write the context block to the chosen path using the Write tool.

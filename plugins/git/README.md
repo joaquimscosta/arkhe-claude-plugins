@@ -12,7 +12,7 @@ The Git plugin provides intelligent Git workflow automation with context-aware r
 
 ## Components
 
-### Commands (8)
+### Commands (9)
 
 #### 1. /commit
 Context-aware Git commit assistant with smart pre-commit checks and submodule support.
@@ -261,7 +261,41 @@ Automate semantic versioning releases or scaffold release infrastructure.
 
 ---
 
-### Skills (7)
+#### 9. /worktree
+Create isolated git worktrees with intelligent branch naming for parallel development.
+
+**Features**:
+- Intelligent branch naming from natural language descriptions
+- Auto-generate from uncommitted changes (no arguments)
+- Commit type detection (feat/fix/refactor/chore/docs)
+- Sequential numbering (shared with `/create-branch`)
+- Base branch selection (main, current, other)
+- Automatic `.worktrees/` gitignore safety check
+- SDLC-develop spec integration
+
+**Dual Naming**:
+- Worktree directory: `.worktrees/{keywords}` (tab-completion friendly)
+- Git branch: `{type}/{number}-{keywords}` (conventional format)
+
+**Usage**:
+```bash
+/worktree add user authentication          # .worktrees/user-authentication, feat/001-user-authentication
+/worktree fix login bug                    # .worktrees/login-bug, fix/002-login-bug
+/worktree refactor auth service            # .worktrees/auth-service, refactor/003-auth-service
+/worktree                                  # Auto-generate from uncommitted changes
+```
+
+**Management**:
+```bash
+git worktree list                          # List all worktrees
+git worktree remove .worktrees/<name>      # Remove when done
+```
+
+**Skill**: `git/skills/creating-worktree/` (creating-worktree)
+
+---
+
+### Skills (8)
 
 All commands are implemented as **Skills** - slash commands delegate to skills that contain inline Bash workflows executed by Claude.
 
@@ -362,6 +396,22 @@ Automates semantic versioning releases and scaffolds release infrastructure for 
 
 **Documentation**: See `skills/releasing/` directory for WORKFLOW, EXAMPLES, and TROUBLESHOOTING guides.
 
+#### 8. creating-worktree
+
+Creates isolated git worktrees with intelligent branch naming and auto-incrementing.
+
+**Location**: `skills/creating-worktree/`
+**Implementation**: Inline Bash workflow in SKILL.md
+**Invoked by**: `/worktree` command
+
+**Delivers**:
+1. **Intelligent Naming** - Type detection, keyword extraction, sequential numbering
+2. **Worktree Isolation** - Independent working directory in `.worktrees/`
+3. **Safety Checks** - Gitignore verification, directory conflict detection
+4. **Base Branch Selection** - Choose main, current, or custom base
+
+**Documentation**: See `skills/creating-worktree/` directory for WORKFLOW, EXAMPLES, and TROUBLESHOOTING guides.
+
 ---
 
 ## Installation
@@ -394,6 +444,7 @@ When no command conflicts exist:
 /release 1.6.0
 /stale-branches
 /cleanup-branches
+/worktree add user authentication
 ```
 
 ### Namespaced Invocation
@@ -408,6 +459,7 @@ When command name conflicts exist with other plugins:
 /git:release 1.6.0
 /git:stale-branches
 /git:cleanup-branches
+/git:worktree add user authentication
 ```
 
 ## Configuration
@@ -491,6 +543,10 @@ Each skill contains workflow documentation and inline Bash:
 - `WORKFLOW.md`, `EXAMPLES.md`, `TROUBLESHOOTING.md`
 - `scripts/` - Scaffold templates (release.sh, helper scripts)
 - `templates/` - GitHub Actions workflow template
+
+**skills/creating-worktree/**
+- `SKILL.md` - Complete inline Bash workflow for worktree creation
+- `WORKFLOW.md`, `EXAMPLES.md`, `TROUBLESHOOTING.md`
 
 ### Key Features
 

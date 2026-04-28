@@ -125,9 +125,10 @@ Detailed process flows for the deep-research skill.
 ┌─────────────────────────────────────────────────────────────────┐
 │              3. WRITE TO PROJECT DOCS                           │
 │                                                                 │
-│  Path: docs/research/{slug}.md                                  │
+│  Path: JD-resolved or docs/research/{slug}.md                   │
+│  (checks .jd-config.json for research area, e.g. 30-research)  │
 │                                                                 │
-│  Create docs/research/ if doesn't exist                         │
+│  Create directory if doesn't exist                              │
 │  Add promoted_at timestamp to frontmatter                       │
 └─────────────────────────────────────────────────────────────────┘
                               │
@@ -181,7 +182,7 @@ Detailed process flows for the deep-research skill.
 ┌─────────────────────────────────────────────────────────────────┐
 │         3. CHECK FOR PROMOTED VERSION                           │
 │                                                                 │
-│  Path: docs/research/{slug}.md                                  │
+│  Path: JD-resolved or docs/research/{slug}.md                   │
 │                                                                 │
 │  If exists → Update Tier 2                                      │
 │  If not → Done                                                  │
@@ -249,7 +250,8 @@ Detailed process flows for the deep-research skill.
 ### Tier 2 Promoted Entry
 
 ```
-docs/research/{slug}.md
+docs/research/{slug}.md          (default)
+docs/30-research/{slug}.md       (JD-aware, if .jd-config.json exists)
 
 ---
 slug: domain-driven-design

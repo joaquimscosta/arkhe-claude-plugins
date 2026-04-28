@@ -45,13 +45,55 @@ def get_cache_dir() -> Path:
     return DEFAULT_CACHE_DIR
 
 
+def _resolve_jd_research_path() -> Optional[Path]:
+    """Try to resolve research path via .jd-config.json (minimal, self-contained)."""
+    try:
+        result = subprocess.run(
+            ["git", "rev-parse", "--show-toplevel"],
+            capture_output=True, text=True, timeout=5,
+        )
+        if result.returncode != 0:
+            return None
+        git_root = Path(result.stdout.strip())
+    except Exception:
+        return None
+
+    config_path = git_root / ".jd-config.json"
+    if not config_path.exists():
+        return None
+
+    try:
+        config = json.loads(config_path.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, IOError):
+        return None
+
+    root = config.get("root", "docs")
+    areas = config.get("areas", {})
+
+    for prefix, name in areas.items():
+        if "research" in name.lower():
+            return Path(root) / f"{prefix}-{name}"
+
+    return None
+
+
 def get_docs_dir(override: Optional[str] = None) -> Path:
-    """Get docs directory from argument, environment, or default."""
+    """Get docs directory from argument, environment, or default.
+
+    Resolution order:
+      1. Explicit override argument
+      2. RESEARCH_DOCS_DIR environment variable
+      3. JD-aware path from .jd-config.json (if present)
+      4. Default: docs/research
+    """
     if override:
         return Path(override)
     env_dir = os.environ.get("RESEARCH_DOCS_DIR")
     if env_dir:
         return Path(env_dir)
+    jd_path = _resolve_jd_research_path()
+    if jd_path is not None:
+        return jd_path
     return DEFAULT_DOCS_DIR
 
 

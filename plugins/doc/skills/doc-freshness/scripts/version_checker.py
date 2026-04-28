@@ -15,7 +15,7 @@ from typing import Dict, List, Optional, Tuple
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from shared import extract_frontmatter, git_last_modified, read_file_safe, read_json_safe
-from shared import _is_fence_line
+from shared import _update_fence_state
 
 
 # ---------------------------------------------------------------------------
@@ -188,24 +188,26 @@ def collect_ground_truth(root: Path) -> Dict[str, str]:
 # ---------------------------------------------------------------------------
 
 # Common patterns for version references in docs
+# Group 1 = operator prefix (>=, >, or empty), Group 2 = version digits,
+# Group 3 = "+" suffix (minimum indicator) or empty
 _VERSION_PATTERNS: List[Tuple[str, re.Pattern]] = [
     ("node", re.compile(
-        r'(?:Node(?:\.js)?|node)\s*(?:>=?\s*)?v?(\d+(?:\.\d+)*)', re.IGNORECASE
+        r'(?:Node(?:\.js)?|node)\s*(>=?\s*)?v?(\d+(?:\.\d+)*)(\+)?', re.IGNORECASE
     )),
     ("python", re.compile(
-        r'(?:Python|python)\s*(?:>=?\s*)?(\d+\.\d+(?:\.\d+)?)', re.IGNORECASE
+        r'(?:Python|python)\s*(>=?\s*)?(\d+\.\d+(?:\.\d+)?)(\+)?', re.IGNORECASE
     )),
     ("java", re.compile(
-        r'(?:Java|JDK|java)\s*(?:>=?\s*)?(\d+)(?:\.\d+)?', re.IGNORECASE
+        r'(?:Java|JDK|java)\s*(>=?\s*)?(\d+)(?:\.\d+)?(\+)?', re.IGNORECASE
     )),
     ("go", re.compile(
-        r'(?:Go|golang)\s*(?:>=?\s*)?v?(\d+\.\d+(?:\.\d+)?)', re.IGNORECASE
+        r'(?:Go|golang)\s*(>=?\s*)?v?(\d+\.\d+(?:\.\d+)?)(\+)?', re.IGNORECASE
     )),
     ("ruby", re.compile(
-        r'(?:Ruby|ruby)\s*(?:>=?\s*)?(\d+\.\d+(?:\.\d+)?)', re.IGNORECASE
+        r'(?:Ruby|ruby)\s*(>=?\s*)?(\d+\.\d+(?:\.\d+)?)(\+)?', re.IGNORECASE
     )),
     ("rust", re.compile(
-        r'(?:Rust|rust)\s*(?:>=?\s*)?(\d+\.\d+(?:\.\d+)?)', re.IGNORECASE
+        r'(?:Rust|rust)\s*(>=?\s*)?(\d+\.\d+(?:\.\d+)?)(\+)?', re.IGNORECASE
     )),
 ]
 
@@ -215,26 +217,34 @@ def extract_doc_versions(
 ) -> List[Dict[str, object]]:
     """Extract version references from markdown content.
 
-    Returns list of dicts with keys: name, value, line.
+    Returns list of dicts with keys: name, value, line, is_minimum.
+    ``is_minimum`` is True when the doc uses ``>=``, ``>``, or ``+``
+    notation (e.g. "Node.js 18+" or "Python >= 3.10").
     """
     found: List[Dict[str, object]] = []
     lines = content.splitlines()
     in_code_block = False
+    open_fence = ""
 
     for line_num, line in enumerate(lines, start=1):
         stripped = line.strip()
-        if _is_fence_line(stripped):
-            in_code_block = not in_code_block
-            continue
-        if in_code_block:
+        prev_state = in_code_block
+        in_code_block, open_fence = _update_fence_state(
+            stripped, in_code_block, open_fence
+        )
+        if in_code_block or prev_state != in_code_block:
             continue
 
         for name, pattern in _VERSION_PATTERNS:
             for match in pattern.finditer(line):
+                operator = (match.group(1) or "").strip()
+                suffix = match.group(3) or ""
+                is_minimum = bool(operator) or suffix == "+"
                 found.append({
                     "name": name,
-                    "value": match.group(1),
+                    "value": match.group(2),
                     "line": line_num,
+                    "is_minimum": is_minimum,
                 })
 
     return found
@@ -265,10 +275,28 @@ def check_versions(
 
         doc_value = str(ref["value"])
         actual = ground_truth[name]
+        is_minimum = bool(ref.get("is_minimum", False))
 
         # Compare major version at minimum
-        doc_major = doc_value.split(".")[0]
-        actual_major = actual.split(".")[0]
+        try:
+            doc_major = int(doc_value.split(".")[0])
+            actual_major = int(actual.split(".")[0])
+        except ValueError:
+            continue
+
+        # For minimum-version references (>=, +), only flag when
+        # the actual version is BELOW the documented minimum
+        if is_minimum:
+            if actual_major < doc_major:
+                findings.append({
+                    "doc": rel_doc,
+                    "line": ref["line"],
+                    "name": name,
+                    "doc_value": doc_value,
+                    "actual": actual,
+                    "status": "mismatch",
+                })
+            continue
 
         if doc_major != actual_major:
             findings.append({
@@ -341,6 +369,8 @@ def check_last_updated(
     Only applies to deep-tier docs (those with last_updated in frontmatter).
     Returns a finding dict if the dates differ by >7 days, or None.
     """
+    from datetime import datetime
+
     content = read_file_safe(doc_path)
     if content is None:
         return None
@@ -353,7 +383,6 @@ def check_last_updated(
     if not date_match:
         return None
 
-    from datetime import datetime
     try:
         fm_date = datetime.strptime(date_match.group(1), "%Y-%m-%d")
     except ValueError:
@@ -369,6 +398,7 @@ def check_last_updated(
         git_date = datetime.strptime(git_date_str, "%Y-%m-%d")
     except ValueError:
         return None
+
     diff_days = abs((git_date - fm_date).days)
     if diff_days > 7:
         return {
