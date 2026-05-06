@@ -1,0 +1,30 @@
+{
+  "_comment": "Per-plugin versioning. Each plugin owns its own version. Use --check after editing a single plugin to confirm only that plugin moved. Gemini (.gemini-extensions/<p>/gemini-extension.json) and Codex (.codex-marketplace/<p>/plugin.json) paths are added by T-09 once shims exist.",
+  "files": [
+    { "path": "plugins/ai/.claude-plugin/plugin.json", "field": "version" },
+    { "path": "plugins/core/.claude-plugin/plugin.json", "field": "version" },
+    { "path": "plugins/design-intent/.claude-plugin/plugin.json", "field": "version" },
+    { "path": "plugins/devtools/.claude-plugin/plugin.json", "field": "version" },
+    { "path": "plugins/doc/.claude-plugin/plugin.json", "field": "version" },
+    { "path": "plugins/git/.claude-plugin/plugin.json", "field": "version" },
+    { "path": "plugins/google-stitch/.claude-plugin/plugin.json", "field": "version" },
+    { "path": "plugins/lang/.claude-plugin/plugin.json", "field": "version" },
+    { "path": "plugins/playwright/.claude-plugin/plugin.json", "field": "version" },
+    { "path": "plugins/ralph/.claude-plugin/plugin.json", "field": "version" },
+    { "path": "plugins/review/.claude-plugin/plugin.json", "field": "version" },
+    { "path": "plugins/roadmap/.claude-plugin/plugin.json", "field": "version" },
+    { "path": "plugins/spring-boot/.claude-plugin/plugin.json", "field": "version" },
+    { "path": "plugins/startup/.claude-plugin/plugin.json", "field": "version" }
+  ],
+  "audit": {
+    "exclude": [
+      "CHANGELOG.md",
+      "RELEASE-NOTES.md",
+      "node_modules",
+      ".git",
+      ".version-bump.json",
+      "scripts/bump-version.sh",
+      "external-repos"
+    ]
+  }
+}
