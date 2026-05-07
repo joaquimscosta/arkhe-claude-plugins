@@ -1,0 +1,5 @@
+{
+  "name": "core",
+  "description": "Quality control and workflow orchestration utilities",
+  "version": "2.2.0"
+}
