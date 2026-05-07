@@ -3,7 +3,8 @@
 Detect Tilt installation and audit Tiltfile configurations.
 
 Outputs JSON report of installed tools, kubectl context, existing Tiltfile,
-modular .tilt/ layout, detected ecosystems, and audit violations.
+modular `tilt/` layout (also recognizes legacy `.tilt/`), detected ecosystems,
+and audit violations.
 Used by tilt-setup skill.
 
 Uses only standard library (no external dependencies).
@@ -248,12 +249,10 @@ def detect_tiltfile(project_root):
     return info
 
 
-def detect_tilt_layout(project_root, tiltfile_info):
-    """Detect modular .tilt/ layout (config.star, services.star, YAMLs)."""
+def detect_tilt_layout(project_root):
+    """Detect modular `tilt/` layout (also recognizes legacy `.tilt/`)."""
     root = Path(project_root)
-    tilt_dir_candidates = [root / ".tilt"]
-    if tiltfile_info.get("path", "").startswith("tilt/"):
-        tilt_dir_candidates.append(root / "tilt" / ".tilt")
+    tilt_dir_candidates = [root / "tilt", root / ".tilt"]
 
     for tilt_dir in tilt_dir_candidates:
         if tilt_dir.is_dir():
@@ -609,7 +608,7 @@ def audit_tiltfile(project_root, tiltfile_info, tilt_layout, tiltignore_info,
         violations.append(_violation(
             "TILT020", "INFO",
             f"Tiltfile is {tiltfile_info['line_count']} lines with no .star modules",
-            "Extract service deployment logic to .tilt/services.star and config to .tilt/config.star",
+            "Extract service deployment logic to tilt/services.star and config to tilt/config.star",
         ))
 
     # ----- TILT022: Hardcoded service list (no YAML config) -----
@@ -619,10 +618,11 @@ def audit_tiltfile(project_root, tiltfile_info, tilt_layout, tiltignore_info,
         and not any(f.endswith(".yaml") or f.endswith(".yml")
                     for f in tilt_layout.get("yaml_files", []))
     ):
+        layout_path = tilt_layout.get("path", "tilt")
         violations.append(_violation(
             "TILT022", "INFO",
             "Modular layout exists but no YAML config files for service definitions",
-            "Extract service definitions to .tilt/service-config.yaml and "
+            f"Extract service definitions to {layout_path}/service-config.yaml and "
             "load via read_yaml() for cleaner configuration",
         ))
 
@@ -690,7 +690,7 @@ def _summarize(violations):
 def detect(project_root, audit=True):
     """Run all detection checks and return structured results."""
     tiltfile_info = detect_tiltfile(project_root)
-    tilt_layout = detect_tilt_layout(project_root, tiltfile_info)
+    tilt_layout = detect_tilt_layout(project_root)
     tiltignore_info = detect_tiltignore(project_root)
     tilt_config_info = detect_tilt_config_json(project_root)
     ecosystems = detect_ecosystems(project_root)

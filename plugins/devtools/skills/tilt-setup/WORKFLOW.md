@@ -76,7 +76,7 @@ Display detection results as a formatted table:
 | tilt binary      | installed   | v0.37.0 at /opt/homebrew/bin/tilt              |
 | kubectl context  | safe        | docker-desktop                                 |
 | Tiltfile         | found       | ./Tiltfile (320 lines)                         |
-| Modular layout   | yes         | .tilt/ (config.star, services.star, *.yaml)    |
+| Modular layout   | yes         | tilt/ (config.star, services.star, *.yaml)     |
 | Ecosystems       | 3 detected  | java-gradle (Spring Boot), nextjs, infra       |
 | Service count    | 12 services | k8s_resource calls in Tiltfile                 |
 | Safety guard     | yes         | manual validate_cluster_safety()               |
@@ -244,9 +244,9 @@ live_update=[
 
 #### TILT020 — Tiltfile > 300 lines, no modularization
 
-Extract to `.tilt/`:
+Extract to `tilt/`:
 ```
-.tilt/
+tilt/
   config.star          # CLI parsing, env loading
   services.star        # deploy_service() helper
   service-config.yaml  # service definitions
@@ -258,8 +258,8 @@ Then in Tiltfile:
 load('ext://namespace', 'namespace_create')         # Extensions: root only
 load('ext://restart_process', 'docker_build_with_restart')
 
-load('.tilt/config.star', 'parse_config', 'load_service_config')
-load('.tilt/services.star', 'deploy_service')
+load('tilt/config.star', 'parse_config', 'load_service_config')
+load('tilt/services.star', 'deploy_service')
 
 cfg = parse_config()
 svcs = load_service_config()
@@ -269,7 +269,7 @@ for name in cfg.get("services", []):
 
 #### TILT022 — Hardcoded service list
 
-Move services to `.tilt/service-config.yaml`:
+Move services to `tilt/service-config.yaml`:
 ```yaml
 services:
   postgres:
@@ -283,7 +283,7 @@ services:
     dependencies: [postgres]
 ```
 
-Load via `read_yaml(".tilt/service-config.yaml")`.
+Load via `read_yaml("tilt/service-config.yaml")`.
 
 #### TILT023 — Deprecated `restart_container()`
 
@@ -340,8 +340,8 @@ Use `AskUserQuestion` to present options:
 - Recommended threshold: < 200 lines
 
 **Modular** (4+ services, 2+ ecosystems, or 2+ environment presets):
-- Root `Tiltfile` + `.tilt/config.star` + `.tilt/services.star`
-- `.tilt/service-config.yaml` (service definitions) + `.tilt/environments.yaml` (presets)
+- Root `Tiltfile` + `tilt/config.star` + `tilt/services.star`
+- `tilt/service-config.yaml` (service definitions) + `tilt/environments.yaml` (presets)
 - Better separation of concerns; team-friendly
 
 ### Step 2: Choose Features (multiSelect)
@@ -433,7 +433,7 @@ project/
 ├── Tiltfile
 ├── .tiltignore
 ├── tilt_config.json
-├── .tilt/
+├── tilt/
 │   ├── config.star
 │   ├── services.star
 │   ├── service-config.yaml
@@ -453,8 +453,8 @@ load('ext://namespace', 'namespace_create')
 load('ext://restart_process', 'docker_build_with_restart')
 
 # Sub-modules
-load('.tilt/config.star', 'parse_config', 'load_service_config', 'load_environments')
-load('.tilt/services.star', 'deploy_service')
+load('tilt/config.star', 'parse_config', 'load_service_config', 'load_environments')
+load('tilt/services.star', 'deploy_service')
 
 # ----- Safety -----
 def validate_cluster_safety():
@@ -511,7 +511,7 @@ def main():
 main()
 ```
 
-### `.tilt/config.star`
+### `tilt/config.star`
 
 ```python
 def parse_config():
@@ -529,15 +529,15 @@ def parse_config():
 
 
 def load_service_config():
-    return read_yaml(".tilt/service-config.yaml")
+    return read_yaml("tilt/service-config.yaml")
 
 
 def load_environments():
-    data = read_yaml(".tilt/environments.yaml")
+    data = read_yaml("tilt/environments.yaml")
     return data.get("environments", {})
 ```
 
-### `.tilt/services.star`
+### `tilt/services.star`
 
 ```python
 def deploy_service(name, cfg, namespace, debug=False):
@@ -724,7 +724,7 @@ spec:
     )
 ```
 
-### `.tilt/service-config.yaml`
+### `tilt/service-config.yaml`
 
 ```yaml
 services:
@@ -767,7 +767,7 @@ services:
     label: frontend
 ```
 
-### `.tilt/environments.yaml`
+### `tilt/environments.yaml`
 
 ```yaml
 environments:
@@ -1015,8 +1015,8 @@ After scaffold or audit fixes:
    |---------------|---------------------------------|-------------|
    | Tool          | tilt v0.37.0                    | installed   |
    | Tiltfile      | scaffolded (modular)            | created     |
-   | Files         | .tilt/{config,services}.star   | created     |
-   | Files         | .tilt/{service-config,environments}.yaml | created |
+   | Files         | tilt/{config,services}.star    | created     |
+   | Files         | tilt/{service-config,environments}.yaml | created |
    | Safety        | manual context guard            | enabled     |
    | .tiltignore   | created                         | yes         |
    ```
@@ -1025,4 +1025,4 @@ After scaffold or audit fixes:
    - `tilt up` to start the development environment
    - `tilt up -- --environment=minimal` for the lightest preset
    - Open the Tilt UI at http://localhost:10350
-   - Commit `Tiltfile`, `.tilt/`, `.tiltignore`, `tilt_config.json` to git
+   - Commit `Tiltfile`, `tilt/`, `.tiltignore`, `tilt_config.json` to git

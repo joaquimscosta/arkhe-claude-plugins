@@ -124,7 +124,7 @@ Required features (`docker_build_with_restart`, `helm_resource`, native OrbStack
 ```python
 # Tiltfile (root)
 load('ext://restart_process', 'docker_build_with_restart')
-load('.tilt/services.star', 'deploy_service')
+load('tilt/services.star', 'deploy_service')
 
 deploy_service('myapp', cfg, namespace, _build_with_restart=docker_build_with_restart)
 ```
@@ -284,19 +284,19 @@ update_settings(
 
 ---
 
-## Modular `.tilt/` Issues
+## Modular `tilt/` Issues
 
 ### `read_yaml` fails with "no such file"
 
-**Symptom**: `read_yaml(".tilt/service-config.yaml")` errors.
+**Symptom**: `read_yaml("tilt/service-config.yaml")` errors.
 
 **Cause**: Path is relative to the **root Tiltfile location**, not the loading `.star` file.
 
 **Fix**: Always use paths relative to the Tiltfile root:
 ```python
-# In .tilt/config.star
+# In tilt/config.star
 def load_service_config():
-    return read_yaml(".tilt/service-config.yaml")    # Correct
+    return read_yaml("tilt/service-config.yaml")    # Correct
     # NOT: return read_yaml("./service-config.yaml")
 ```
 
@@ -310,13 +310,13 @@ def load_service_config():
 ```python
 # Tiltfile (root)
 load('ext://restart_process', 'docker_build_with_restart')
-load('.tilt/services.star', 'deploy_with_restart')
+load('tilt/services.star', 'deploy_with_restart')
 
 deploy_with_restart('myapp', _build=docker_build_with_restart)
 ```
 
 ```python
-# .tilt/services.star
+# tilt/services.star
 def deploy_with_restart(name, _build):
     _build(name, '.', entrypoint=['./app'], live_update=[...])
 ```

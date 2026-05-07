@@ -13,7 +13,7 @@ Developer tooling setup and management plugin for Claude Code.
 | `code-env-setup` | `/devtools:code-env-setup` | Interactive Claude Code environment setup wizard |
 | `quality-stack` | `/devtools:quality-stack` | JVM project quality/testing tooling audit and setup |
 | `taskfile-setup` | `/devtools:taskfile-setup` | Install Taskfile and scaffold/audit Taskfile.yml |
-| `tilt-setup` | `/devtools:tilt-setup` | Install Tilt and scaffold/audit Tiltfile + .tilt/ for local Kubernetes development |
+| `tilt-setup` | `/devtools:tilt-setup` | Install Tilt and scaffold/audit Tiltfile + tilt/ for local Kubernetes development |
 
 ## Claude Code Setup
 
@@ -42,7 +42,7 @@ Run `/devtools:taskfile-setup` to get started.
 
 ## Tilt Setup
 
-Install [Tilt](https://tilt.dev/) and scaffold or audit `Tiltfile` + `.tilt/` configurations for local Kubernetes development. Auto-detects Java/Gradle (Spring Boot), Next.js, Python/uv, and external infrastructure; recommends single-file or modular `.tilt/*.star + service-config.yaml + environments.yaml` patterns based on project complexity.
+Install [Tilt](https://tilt.dev/) and scaffold or audit `Tiltfile` + `tilt/` configurations for local Kubernetes development. Auto-detects Java/Gradle (Spring Boot), Next.js, Python/uv, and external infrastructure; recommends single-file or modular `tilt/*.star + service-config.yaml + environments.yaml` patterns based on project complexity.
 
 ### Two-Phase Workflow
 

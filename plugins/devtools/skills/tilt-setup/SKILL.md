@@ -1,10 +1,10 @@
 ---
 name: tilt-setup
 description: >-
-  Install Tilt and scaffold or audit Tiltfile + .tilt/ configurations with
+  Install Tilt and scaffold or audit Tiltfile + tilt/ configurations with
   ecosystem-aware templates. Auto-detects Java/Gradle (Spring Boot), Next.js,
   Python/uv, and external infrastructure; recommends single-file or modular
-  .tilt/*.star + service-config.yaml + environments.yaml patterns based on
+  tilt/*.star + service-config.yaml + environments.yaml patterns based on
   project complexity. Bakes in production-context safety guards, PVC persistence
   toggles, JDWP debug ports, and optional Prometheus/Grafana/Traefik scaffolds.
   Use when user runs /devtools:tilt-setup, mentions "tilt setup", "setup tilt",
@@ -16,7 +16,7 @@ argument-hint: "[project-path]"
 
 # Tilt Setup
 
-Install [Tilt](https://tilt.dev/) and scaffold or audit `Tiltfile` + `.tilt/` configurations for local Kubernetes development with ecosystem-aware templates.
+Install [Tilt](https://tilt.dev/) and scaffold or audit `Tiltfile` + `tilt/` configurations for local Kubernetes development with ecosystem-aware templates.
 
 ## Pre-flight
 
@@ -25,7 +25,7 @@ Run the detection script to understand current state:
 python3 ${CLAUDE_SKILL_DIR}/scripts/detect_tilt.py <project-root>
 ```
 
-The detector reports: tilt/kubectl binaries, current kubectl context (with production-pattern matching), existing Tiltfile and `.tilt/` modular layout, `.tiltignore`, `tilt_config.json`, ecosystems detected (Java/Gradle, Next.js, Python, infra), local cluster tools available, and audit violations (`TILT001`–`TILT025`) when a Tiltfile exists.
+The detector reports: tilt/kubectl binaries, current kubectl context (with production-pattern matching), existing Tiltfile and `tilt/` modular layout (also recognizes legacy `.tilt/`), `.tiltignore`, `tilt_config.json`, ecosystems detected (Java/Gradle, Next.js, Python, infra), local cluster tools available, and audit violations (`TILT001`–`TILT025`) when a Tiltfile exists.
 
 ## Decision Flow
 
@@ -50,7 +50,7 @@ Run detector
    | tilt binary | installed/missing | version, path |
    | kubectl context | safe/production | current context, classification |
    | Tiltfile | found/not found | path, line count |
-   | Modular layout | yes/no | `.tilt/` files (config.star, services.star, *.yaml) |
+   | Modular layout | yes/no | `tilt/` files (config.star, services.star, *.yaml) |
    | Ecosystems | N detected | java-gradle, nextjs, python, infra |
    | Service count | N services | `k8s_resource` calls |
    | Safety guard | yes/no | `allow_k8s_contexts` or manual guard |
@@ -79,7 +79,7 @@ Run detector
 
 4. **Choose Tiltfile pattern** — use `AskUserQuestion`:
    - **Single-file** (`Tiltfile` only) — recommended for 1–3 services, single ecosystem
-   - **Modular** (`Tiltfile` + `.tilt/config.star` + `.tilt/services.star` + `.tilt/service-config.yaml` + `.tilt/environments.yaml`) — recommended for 4+ services, 2+ ecosystems, or 2+ environment presets
+   - **Modular** (`Tiltfile` + `tilt/config.star` + `tilt/services.star` + `tilt/service-config.yaml` + `tilt/environments.yaml`) — recommended for 4+ services, 2+ ecosystems, or 2+ environment presets
 
 5. **Choose features** — use `AskUserQuestion` (multiSelect: true):
 
@@ -103,13 +103,13 @@ Run detector
 
 ## Key Rules
 
-- **Never overwrite** existing `Tiltfile` or `.tilt/` files without asking. Offer merge/replace/skip.
+- **Never overwrite** existing `Tiltfile` or `tilt/` files without asking. Offer merge/replace/skip.
 - **Detect first** — skip steps already configured.
 - **Use `AskUserQuestion`** for every decision. Do not assume user preferences.
 - **Always start with safety guard** — refuse to scaffold without one. The cost of accidental prod deployment is too high.
 - **Use `ext://restart_process` not `restart_container()`** — the latter is deprecated.
 - **Load extensions only from root Tiltfile** — Starlark `load()` of `ext://` from sub-files fails.
-- **Externalize service definitions to YAML** for modular layouts — `read_yaml(".tilt/service-config.yaml")` keeps config team-editable.
+- **Externalize service definitions to YAML** for modular layouts — `read_yaml("tilt/service-config.yaml")` keeps config team-editable.
 - **PVC persistence pattern** — create persistent PVCs via `local("kubectl apply")` outside Tilt's lifecycle so they survive `tilt down`.
 - **Per-ecosystem live_update**:
   - Spring Boot: `custom_build` + `local_resource` compile + `sync` of `.class` files

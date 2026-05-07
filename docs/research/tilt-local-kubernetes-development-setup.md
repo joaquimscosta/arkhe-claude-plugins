@@ -70,7 +70,7 @@ sources:
 - **`docker_build`** is the standard choice; use **`custom_build`** when a non-Docker tool (Jib, Bazel, Gradle) produces the image or when you need a shell-level build pipeline.
 - **`live_update`** is the core DX accelerator: `sync()` + `run()` + optional `restart_container()` (via `ext://restart_process`) replaces image rebuild + redeploy cycles.
 - **Production safety** requires either `allow_k8s_contexts(['docker-desktop', 'kind-...'])` or a manual guard that reads `kubectl config current-context` and calls `fail()` on blocked patterns.
-- **Modular layout** (`.tilt/config.star`, `.tilt/services.star`, external YAML loaded via `read_yaml`) is strongly preferred for projects with 3+ services, 2+ ecosystems, or multiple environment presets.
+- **Modular layout** (`tilt/config.star`, `tilt/services.star`, external YAML loaded via `read_yaml`) is strongly preferred for projects with 3+ services, 2+ ecosystems, or multiple environment presets.
 - **YAML config externalization** (`read_yaml()` / `decode_yaml()` for service definitions and environment presets) is widely adopted in large projects and validated by the sellabella pattern.
 - **`k8s_resource`** wires together port forwards, labels, `resource_deps`, and `trigger_mode`; always call it after `k8s_yaml` and `docker_build`.
 - **`watch_settings(ignore=[...])`** and `.tiltignore` prevent build churn from `build/`, `.gradle/`, `node_modules/`, and test output directories.
@@ -81,7 +81,7 @@ sources:
 
 ## Decision Matrix: Single-File vs. Modular Tiltfile
 
-| Dimension | Single `Tiltfile` | Modular `.tilt/*.star` |
+| Dimension | Single `Tiltfile` | Modular `tilt/*.star` |
 |---|---|---|
 | Number of services | 1–3 | 4+ |
 | Number of ecosystems | 1 | 2+ (e.g., Java + Node + Python) |
@@ -91,7 +91,7 @@ sources:
 | Tiltfile lines | < 200 | > 200 or growing |
 | Recommendation | Simple — keep it flat | Modularize immediately |
 
-**Rule of thumb**: When the Tiltfile exceeds ~200 lines or has more than one logical section repeated per service, extract to `.tilt/`.
+**Rule of thumb**: When the Tiltfile exceeds ~200 lines or has more than one logical section repeated per service, extract to `tilt/`.
 
 **When NOT to split**: Splitting `.star` files has a key constraint — `load('ext://...')` cannot be called from `load()`-ed or `include()`-ed sub-files (resolved in Tilt >= v0.25 for most cases, but extensions must be loaded from the root `Tiltfile`). Load extensions at the top of `Tiltfile`, then pass imported symbols into sub-modules as function arguments.
 
@@ -356,14 +356,14 @@ k8s_yaml('k8s/')
 k8s_resource('myapp', port_forwards='8080', labels=['services'])
 ```
 
-### Pattern 2: Modular `.tilt/` Layout (4+ services)
+### Pattern 2: Modular `tilt/` Layout (4+ services)
 
 ```
 project/
 ├── Tiltfile                      # Root orchestrator
 ├── .tiltignore                   # Global file watch ignores
 ├── tilt_config.json              # Default CLI arg values
-├── .tilt/
+├── tilt/
 │   ├── config.star               # CLI arg parsing, .env loading, env preset merging
 │   ├── services.star             # Service deployment logic (build + manifest + k8s_resource)
 │   ├── service-config.yaml       # Service definitions (type, ports, deps, env_vars, resources)
@@ -377,12 +377,12 @@ project/
 ```python
 # In config.star
 def load_environments():
-    return read_yaml(".tilt/environments.yaml").get("environments", {})
+    return read_yaml("tilt/environments.yaml").get("environments", {})
 
 # In Tiltfile — load extensions at root, then call sub-modules
 load('ext://namespace', 'namespace_create')
-load('.tilt/config.star', 'parse_config', 'load_service_config')
-load('.tilt/services.star', 'deploy_service')
+load('tilt/config.star', 'parse_config', 'load_service_config')
+load('tilt/services.star', 'deploy_service')
 ```
 
 **`service-config.yaml` schema** (sellabella pattern):
@@ -766,9 +766,9 @@ The following rules should be detected by the `tilt-setup` skill's audit phase. 
 | TILT017 | INFO | No `links=[]` on services with Web UI | Services like Grafana, Traefik, or app UIs have no `links=` in `k8s_resource` | Add `links=[link('http://localhost:PORT', 'UI')]` |
 | TILT018 | INFO | PVC managed by Tilt for stateful service | Stateful services (postgres, kafka) use `k8s_yaml(pvc)` without a persistence toggle | Add persistence toggle: create PVC via `local("kubectl apply")` to survive `tilt down` |
 | TILT019 | INFO | Debug port not forwarded when debug enabled | Service has JDWP env vars but no debug port in `k8s_resource(port_forwards=)` | Add debug port forward e.g. `'5005:5005'` when debug mode is active |
-| TILT020 | SUGGESTION | Tiltfile > 300 lines with no modularization | Single `Tiltfile` exceeds 300 lines with no `load('.tilt/...')` calls | Extract service logic to `.tilt/services.star` and config to `.tilt/config.star` |
+| TILT020 | SUGGESTION | Tiltfile > 300 lines with no modularization | Single `Tiltfile` exceeds 300 lines with no `load('tilt/...')` calls | Extract service logic to `tilt/services.star` and config to `tilt/config.star` |
 | TILT021 | SUGGESTION | No environment preset system | Project has 4+ services but no `config.define_string("environment")` / preset groups | Add environment presets via `config.parse()` and a service groups dict |
-| TILT022 | SUGGESTION | Hardcoded service list | Services are listed inline rather than loaded from YAML | Extract to `.tilt/service-config.yaml` + `read_yaml()` |
+| TILT022 | SUGGESTION | Hardcoded service list | Services are listed inline rather than loaded from YAML | Extract to `tilt/service-config.yaml` + `read_yaml()` |
 | TILT023 | SUGGESTION | `restart_container()` used directly | Tiltfile uses deprecated `restart_container()` in `live_update` | Replace with `ext://restart_process` → `docker_build_with_restart()` |
 | TILT024 | SUGGESTION | No `auto_init=False` for heavy optional services | Monitoring services (Prometheus, Grafana) start on every `tilt up` with no opt-in | Add `k8s_resource('prometheus', auto_init=False)` for optional-by-default services |
 | TILT025 | SUGGESTION | No `tilt_config.json` for team defaults | No `tilt_config.json` in project root with sensible defaults | Create `tilt_config.json` with default environment/feature flags |
@@ -824,7 +824,7 @@ k8s_resource(
 )
 ```
 
-### Template 2: Modular `.tilt/` Layout (Minimal-Viable)
+### Template 2: Modular `tilt/` Layout (Minimal-Viable)
 
 **`Tiltfile`** (root):
 ```python
@@ -836,8 +836,8 @@ load('ext://namespace', 'namespace_create')
 load('ext://restart_process', 'docker_build_with_restart')
 
 # Sub-modules
-load('.tilt/config.star', 'parse_config', 'load_service_config')
-load('.tilt/services.star', 'deploy_service')
+load('tilt/config.star', 'parse_config', 'load_service_config')
+load('tilt/services.star', 'deploy_service')
 
 watch_settings(ignore=[
     '**/build/**', '**/.gradle/**', '**/node_modules/**',
@@ -867,7 +867,7 @@ def main():
 main()
 ```
 
-**`.tilt/config.star`**:
+**`tilt/config.star`**:
 ```python
 def parse_config():
     config.define_string_list("services", usage="Services to run")
@@ -881,10 +881,10 @@ def parse_config():
     }
 
 def load_service_config():
-    return read_yaml(".tilt/service-config.yaml")
+    return read_yaml("tilt/service-config.yaml")
 ```
 
-**`.tilt/services.star`**:
+**`tilt/services.star`**:
 ```python
 def deploy_service(name, cfg, namespace, debug=False):
     svc_type = cfg.get("type", "external")
@@ -917,7 +917,7 @@ def deploy_service(name, cfg, namespace, debug=False):
     )
 ```
 
-**`.tilt/service-config.yaml`**:
+**`tilt/service-config.yaml`**:
 ```yaml
 services:
   postgres:
@@ -1019,6 +1019,6 @@ helm_resource('kube-prometheus-stack',
 <!-- TEAM-NOTES: Start -->
 ## Team Context
 
-_Add project-specific notes, implementation references, and team knowledge here._
+**Subdirectory naming**: We scaffold the modular layout into `tilt/` (visible directory) rather than `.tilt/`. The Tilt project itself only mandates `Tiltfile`, `.tiltignore`, and `tilt_config.json` filenames — the subdirectory name is project-defined. The `.tilt/` form appears in the sellabella codebase but is not an official or community convention. Visible naming makes the team-editable YAML files (`service-config.yaml`, `environments.yaml`) easier to discover. The `tilt-setup` skill's auditor still recognizes legacy `.tilt/` directories so existing projects audit cleanly.
 
 <!-- TEAM-NOTES: End -->

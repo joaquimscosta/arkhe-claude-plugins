@@ -148,7 +148,7 @@ __pycache__/
 
 **`Tiltfile`** (root): see WORKFLOW.md "Modular Template → Tiltfile" — same content.
 
-**`.tilt/service-config.yaml`**:
+**`tilt/service-config.yaml`**:
 
 ```yaml
 services:
@@ -200,7 +200,7 @@ services:
     dependencies: [api]
 ```
 
-**`.tilt/environments.yaml`**:
+**`tilt/environments.yaml`**:
 
 ```yaml
 environments:
@@ -305,8 +305,9 @@ tilt up -- --environment=full-stack
 |---------|------------------------------------------------------------------|-------------------------------------------|
 | TILT011 | k8s_yaml() without k8s_resource() (note: may be in services.star)| Verify k8s_resource calls in sub-modules  |
 
-Note: This Tiltfile uses modular .tilt/ layout. The detector parses only the
-root Tiltfile, so k8s_resource calls in services.star are not counted.
+Note: This Tiltfile uses the legacy `.tilt/` directory (sellabella convention; the
+detector recognizes both `tilt/` and `.tilt/`). The detector parses only the root
+Tiltfile, so k8s_resource calls in services.star are not counted.
 ```
 
 **User selects**: TILT002 to fix. Skips TILT011 (false positive — modular layout).
