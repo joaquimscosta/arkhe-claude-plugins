@@ -64,7 +64,7 @@ sources:
 
 # Tilt Local Kubernetes Development Setup
 
-## TL;DR
+## Executive Summary
 
 - **Tilt** is a local Kubernetes development tool that watches source files, builds images, applies YAML, and live-updates running containers — all from a single `Tiltfile` written in Starlark (Python subset).
 - **`docker_build`** is the standard choice; use **`custom_build`** when a non-Docker tool (Jib, Bazel, Gradle) produces the image or when you need a shell-level build pipeline.
