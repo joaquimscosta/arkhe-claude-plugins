@@ -1,15 +1,28 @@
 #!/usr/bin/env bash
 #
-# bump-version.sh — bump version numbers across all declared files,
+# bump-version.sh — bump version numbers across declared files,
 # with drift detection and repo-wide audit for missed files.
 #
-# Adopted from external-repos/superpowers/scripts/bump-version.sh.
+# Adopted from external-repos/superpowers/scripts/bump-version.sh, extended
+# with per-plugin scoping for arkhe's per-plugin versioning model.
+#
 # Requires: jq.
 #
 # Usage:
-#   bump-version.sh <new-version>   Bump all declared files to new version
-#   bump-version.sh --check         Report current versions (detect drift)
-#   bump-version.sh --audit         Check + grep repo for old version strings
+#   bump-version.sh [flags] <new-version>   Bump matching files to new version
+#   bump-version.sh [flags] --check         Report current versions (detect drift)
+#   bump-version.sh [flags] --audit         Check + grep repo for old version strings
+#
+# Flags:
+#   --plugin <name>   Filter to a single plugin's manifests
+#   --skip-shims      Exclude .gemini-extensions/ and .codex-marketplace/ paths
+#                     (Claude-only mode for backward compat)
+#
+# Examples:
+#   bump-version.sh --plugin core 2.3.0          # Bump core's 3 manifests
+#   bump-version.sh --plugin core --skip-shims 2.3.0   # Bump core Claude only
+#   bump-version.sh --check                       # All declared paths
+#   bump-version.sh --plugin core --check         # Just core's paths
 #
 set -euo pipefail
 
@@ -26,6 +39,44 @@ if ! command -v jq >/dev/null 2>&1; then
   echo "error: jq is required (brew install jq)" >&2
   exit 1
 fi
+
+# --- flag parsing ---
+
+FILTER_PLUGIN=""
+FILTER_SKIP_SHIMS=0
+POSITIONAL=()
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --plugin)
+      [[ -n "${2:-}" ]] || { echo "error: --plugin requires a value" >&2; exit 1; }
+      FILTER_PLUGIN="$2"
+      shift 2
+      ;;
+    --plugin=*)
+      FILTER_PLUGIN="${1#--plugin=}"
+      shift
+      ;;
+    --skip-shims)
+      FILTER_SKIP_SHIMS=1
+      shift
+      ;;
+    --check|--audit|--help|-h)
+      POSITIONAL+=("$1")
+      shift
+      ;;
+    --*)
+      echo "error: unknown flag '$1'" >&2
+      exit 1
+      ;;
+    *)
+      POSITIONAL+=("$1")
+      shift
+      ;;
+  esac
+done
+
+set -- "${POSITIONAL[@]:-}"
 
 # --- helpers ---
 
@@ -47,10 +98,20 @@ write_json_field() {
   jq "$jq_path = \"$value\"" "$file" > "$tmp" && mv "$tmp" "$file"
 }
 
-# Read the list of declared files from config.
+# Read declared files from config, applying --plugin and --skip-shims filters.
 # Outputs lines of "path<TAB>field"
 declared_files() {
-  jq -r '.files[] | "\(.path)\t\(.field)"' "$CONFIG"
+  local jq_filter='.files[]'
+
+  if [[ -n "$FILTER_PLUGIN" ]]; then
+    jq_filter="$jq_filter | select(.plugin == \"$FILTER_PLUGIN\")"
+  fi
+
+  if [[ "$FILTER_SKIP_SHIMS" -eq 1 ]]; then
+    jq_filter="$jq_filter | select((.platform // \"claude\") == \"claude\")"
+  fi
+
+  jq -r "$jq_filter | \"\(.path)\t\(.field)\"" "$CONFIG"
 }
 
 # Read the audit exclude patterns from config.
@@ -71,15 +132,36 @@ expand_path() {
     done )
 }
 
+# Validate that --plugin matched at least one file.
+validate_plugin_filter() {
+  if [[ -z "$FILTER_PLUGIN" ]]; then
+    return 0
+  fi
+  local count
+  count=$(declared_files | wc -l | tr -d ' ')
+  if [[ "$count" -eq 0 ]]; then
+    echo "error: --plugin '$FILTER_PLUGIN' matched no entries in $CONFIG" >&2
+    echo "Available plugins:" >&2
+    jq -r '.files[].plugin' "$CONFIG" 2>/dev/null | sort -u | sed 's/^/  /' >&2
+    exit 1
+  fi
+}
+
 # --- commands ---
 
 cmd_check() {
+  validate_plugin_filter
+
   # Each arkhe plugin owns its own version, so cross-plugin "drift" is
   # informational, not an error. Only missing files count as real errors.
   local has_error=0
   local versions=()
 
-  echo "Version check:"
+  if [[ -n "$FILTER_PLUGIN" ]]; then
+    echo "Version check (plugin: $FILTER_PLUGIN, skip-shims: $FILTER_SKIP_SHIMS):"
+  else
+    echo "Version check:"
+  fi
   echo ""
 
   while IFS=$'\t' read -r raw_path field; do
@@ -107,6 +189,13 @@ cmd_check() {
   local unique
   unique=$(printf '%s\n' "${versions[@]}" | sort -u | wc -l | tr -d ' ')
   if [[ "$unique" -gt 1 ]]; then
+    if [[ -n "$FILTER_PLUGIN" ]]; then
+      echo "error: plugin '$FILTER_PLUGIN' has version drift across its manifests:" >&2
+      printf '%s\n' "${versions[@]}" | sort | uniq -c | sort -rn | while read -r count ver; do
+        echo "  $ver ($count files)" >&2
+      done
+      return 1
+    fi
     echo "Per-plugin versions (informational; each plugin owns its release cycle):"
     printf '%s\n' "${versions[@]}" | sort | uniq -c | sort -rn | while read -r count ver; do
       echo "  $ver ($count files)"
@@ -119,7 +208,8 @@ cmd_check() {
 }
 
 cmd_audit() {
-  cmd_check || true
+  local check_status=0
+  cmd_check || check_status=$?
   echo ""
 
   local current_version
@@ -183,6 +273,8 @@ cmd_audit() {
     echo "Review the above files — if they should be bumped, add them to .version-bump.json"
     echo "If they should be skipped, add them to the audit.exclude list."
   fi
+
+  return $((check_status | found_undeclared))
 }
 
 cmd_bump() {
@@ -193,7 +285,21 @@ cmd_bump() {
     exit 1
   fi
 
-  echo "Bumping all declared files to $new_version..."
+  validate_plugin_filter
+
+  if [[ -n "$FILTER_PLUGIN" ]]; then
+    if [[ "$FILTER_SKIP_SHIMS" -eq 1 ]]; then
+      echo "Bumping plugin '$FILTER_PLUGIN' (Claude only) to $new_version..."
+    else
+      echo "Bumping plugin '$FILTER_PLUGIN' to $new_version..."
+    fi
+  else
+    if [[ "$FILTER_SKIP_SHIMS" -eq 1 ]]; then
+      echo "Bumping all Claude manifests to $new_version..."
+    else
+      echo "Bumping all declared files to $new_version..."
+    fi
+  fi
   echo ""
 
   while IFS=$'\t' read -r raw_path field; do
@@ -226,16 +332,25 @@ case "${1:-}" in
     cmd_audit
     ;;
   --help|-h|"")
-    echo "Usage: bump-version.sh <new-version> | --check | --audit"
-    echo ""
-    echo "  <new-version>  Bump all declared files to the given version"
-    echo "  --check        Show current versions, detect drift"
-    echo "  --audit        Check + scan repo for undeclared version references"
+    cat <<'EOF'
+Usage: bump-version.sh [flags] <new-version> | [flags] --check | [flags] --audit
+
+Commands:
+  <new-version>     Bump matching files to the given version
+  --check           Show current versions, detect drift
+  --audit           Check + scan repo for undeclared version references
+
+Flags:
+  --plugin <name>   Filter to a single plugin's manifests
+  --skip-shims      Exclude .gemini-extensions/ and .codex-marketplace/ paths
+                    (Claude-only mode for backward compat)
+
+Examples:
+  bump-version.sh --plugin core 2.3.0
+  bump-version.sh --plugin core --skip-shims 2.3.0
+  bump-version.sh --plugin core --check
+EOF
     exit 0
-    ;;
-  --*)
-    echo "error: unknown flag '$1'" >&2
-    exit 1
     ;;
   *)
     cmd_bump "$1"
