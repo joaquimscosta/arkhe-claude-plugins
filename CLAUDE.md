@@ -61,6 +61,33 @@ plugin-name/
 └── README.md                     # Plugin documentation
 ```
 
+### Cross-Platform Notes
+
+Arkhe plugins now ship to **Claude Code**, **Gemini CLI**, and **Codex CLI** from a single repo. Generated shims live at the repo root:
+
+```
+.gemini-extensions/<plugin>/      # Gemini extensions (per-plugin, generated)
+│   ├── gemini-extension.json     # Manifest
+│   ├── GEMINI.md                 # Skill index + bootstrap pointer
+│   ├── commands/*.toml           # Claude .md commands transpiled to Gemini TOML
+│   └── skills/  ─────────────► ../../plugins/<plugin>/skills/   (symlink)
+
+.codex-marketplace/<plugin>/      # Codex marketplace entries (per-plugin, generated)
+│   ├── plugin.json               # Manifest
+│   ├── AGENTS.md                 # Skill index + commands as trigger phrases
+│   └── skills/  ─────────────► ../../plugins/<plugin>/skills/   (symlink)
+```
+
+**Canonical sources stay in `plugins/<plugin>/`.** Skills are the universal payload (one source of truth, symlinked into both shim trees). Commands are transpiled per platform. Agents stay Claude-only and degrade by inlining their prompt body into Gemini/Codex command outputs (with a banner) for the 6 commands that depend on them.
+
+**Regeneration:** Run `bash scripts/build-shims.sh` after editing any canonical content (skill description, command body, plugin manifest version, marketplace metadata). The CI `shim-drift` job in `.github/workflows/validate-pr.yml` fails the build on any uncommitted regeneration.
+
+**Version sync:** Each plugin's three manifests (Claude/Gemini/Codex) are kept in lockstep by `scripts/bump-version.sh --plugin <name> <version>`. Use `--skip-shims` for Claude-only releases. The CI job runs `--check` per plugin to catch intra-plugin drift.
+
+**Bootstrap skill:** `plugins/core/skills/using-arkhe-skills/SKILL.md` is loaded by every plugin's `GEMINI.md` and the top of every Codex `AGENTS.md`. It maps Claude-only primitives (`AskUserQuestion`, `TaskCreate`, `EnterPlanMode`, the `Skill` tool, the `Agent` tool with `subagent_type`) to platform equivalents.
+
+For per-platform install steps, see [INSTALLATION.md](INSTALLATION.md). For the cross-platform requirements spec, see `arkhe/specs/004-cross-platform-portability/`.
+
 ## Available Plugins
 
 ### Core Plugin

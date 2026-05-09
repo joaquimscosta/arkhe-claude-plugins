@@ -37,6 +37,24 @@
 
 ---
 
+## :globe_with_meridians: Supported Platforms
+
+Arkhe plugins now ship as a single repo with per-platform shims. The same skills payload runs on all three CLIs; commands and agents degrade gracefully where the platform lacks the primitive.
+
+| Component | Claude Code | Gemini CLI | Codex CLI |
+| :--- | :---: | :---: | :---: |
+| **Skills** (60 total) | ✅ Native | ✅ Symlinked from canonical source | ✅ Symlinked + `--enable skills` |
+| **Slash commands** (37 total) | ✅ Native `.md` | ✅ Transpiled to `.toml` | ✅ Surfaced as trigger phrases in `AGENTS.md` |
+| **Subagents** (29 total) | ✅ Native dispatch | ⚠️ Inlined in command body (degraded) | ⚠️ Inlined in command body (degraded) |
+| **Hooks** | n/a (none in arkhe today) | n/a | n/a |
+| **MCP servers** | n/a (none in arkhe today) | n/a | n/a |
+
+The `using-arkhe-skills` bootstrap skill (in the `core` plugin) maps Claude-only primitives — `AskUserQuestion`, `TaskCreate`/`TaskUpdate`, `EnterPlanMode`/`ExitPlanMode`, the `Skill` tool, the `Agent` tool with `subagent_type` — to Gemini and Codex equivalents at session start. Install `core` first on any platform.
+
+See [INSTALLATION.md](./INSTALLATION.md) for per-platform install steps and each plugin's README for plugin-specific notes.
+
+---
+
 ## :electric_plug: Available Plugins
 
 | Plugin | Description | Key Components | Docs |
