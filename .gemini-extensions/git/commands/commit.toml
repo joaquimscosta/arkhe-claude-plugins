@@ -1,5 +1,5 @@
 description = "Context-aware Git commit assistant with smart pre-commit checks"
-prompt = """
+prompt = '''
 # Commit Command
 
 Context-aware Git commit assistant that automatically detects root repository and submodules, runs smart pre-commit checks, and generates conventional commit messages.
@@ -31,4 +31,4 @@ Invoke the Skill tool with skill name "git:creating-commit" and arguments: `{{ar
 The skill will handle repository detection, pre-commit checks, commit message generation, and submodule reference updates.
 
 For detailed documentation, see `git/skills/creating-commit/SKILL.md`.
-"""
+'''

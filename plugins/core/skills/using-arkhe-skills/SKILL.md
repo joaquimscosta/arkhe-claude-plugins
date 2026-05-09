@@ -29,6 +29,18 @@ arkhe SKILL.md files reference five Claude-specific primitives. On Gemini and Co
 | Skill tool (`Skill`) | Use `activate_skill` with the skill name. | Skill content is already inlined in `AGENTS.md`; follow it directly. |
 | Agent tool with `subagent_type` | No native equivalent. Inline the agent's system prompt into the current session and proceed sequentially. Loses parallelism. | Same — agent prompt is pre-inlined in the affected commands; run inline. |
 
+## Command Naming Across Platforms
+
+Commands ship from the same `plugins/<plugin>/commands/<name>.md` source on every platform, but the slash-command syntax differs:
+
+| Platform | Form | Example |
+|---|---|---|
+| Claude Code | `/<plugin>:<command>` (plugin-namespaced) | `/core:think` |
+| Gemini CLI | `/<command>` (no extension prefix) | `/think` |
+| Codex CLI | Trigger phrase in chat (no slash) | "think through whether to use Postgres or Redis" |
+
+When this skill or other arkhe docs refer to `core:think`, `core:debug`, etc., resolve them through this table — same command, platform-specific invocation.
+
 ## Subagent-Heavy Commands
 
 Six arkhe commands dispatch subagents on Claude Code. On Gemini and Codex they run inline with the agent's prompt collapsed into the command body. Behavior is functionally equivalent for single-pass workflows but loses parallel sub-execution.

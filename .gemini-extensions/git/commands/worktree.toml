@@ -1,5 +1,5 @@
 description = "Create a git worktree in the .worktrees/ directory for isolated parallel development"
-prompt = """
+prompt = '''
 # Worktree Command
 
 Creates isolated git worktrees with intelligent branch naming and auto-incrementing.
@@ -37,4 +37,4 @@ Invoke the Skill tool with skill name "git:creating-worktree" and arguments: {{a
 The skill will handle commit type detection, branch naming, auto-increment numbering, base branch selection, and gitignore safety checks.
 
 For detailed documentation, see `git/skills/creating-worktree/SKILL.md`.
-"""
+'''

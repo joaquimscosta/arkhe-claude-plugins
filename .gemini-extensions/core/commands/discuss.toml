@@ -1,5 +1,5 @@
 description = "Thorough technical discussion with context-aware clarifying questions"
-prompt = """
+prompt = '''
 # Discuss: {{args}}
 
 ## Step 1: Quick Context Scan
@@ -48,4 +48,4 @@ After gathering sufficient context through discussion:
 - Keep batches to 3 questions maximum for focus
 - Use structured choices (AskUserQuestion) when there are clear options to pick from
 - Stay focused on the topic; don't go on tangents
-"""
+'''

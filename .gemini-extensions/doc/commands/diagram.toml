@@ -1,5 +1,5 @@
 description = "Create Mermaid or ASCII diagrams for flowcharts, architecture, ERDs, C4 models, mindmaps, and more"
-prompt = """
+prompt = '''
 # Diagram Command
 
 Create professional diagrams for documentation, architecture, and visualization.
@@ -18,4 +18,4 @@ Create professional diagrams for documentation, architecture, and visualization.
 ## Integration
 
 Invoke the Skill tool with skill name "doc:diagramming" and arguments: `{{args}}`
-"""
+'''

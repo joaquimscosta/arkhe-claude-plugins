@@ -1,5 +1,5 @@
 description = "Unified 6-phase SDLC with plan persistence, resume mode, and autonomous execution"
-prompt = """
+prompt = '''
 # Develop
 
 Guided feature development through a 6-phase SDLC pipeline with plan persistence.
@@ -35,4 +35,4 @@ Invoke the Skill tool with skill name "core:sdlc-develop" and arguments: `{{args
 The skill handles all six phases: Discovery → Requirements → Architecture → Workstreams → Implementation → Summary.
 
 For detailed phase documentation, see `core/skills/sdlc-develop/SKILL.md`.
-"""
+'''

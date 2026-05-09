@@ -1,5 +1,5 @@
 description = "Initialize design intent project structure with templates for memory, patterns, and session diary"
-prompt = """
+prompt = '''
 # /setup
 
 **Purpose**: Initialize the Design Intent project structure in your project with smart auto-detection
@@ -212,4 +212,4 @@ When auto-detection cannot determine a setting:
 - Server/client component decisions
 - Route organization patterns
 - Data fetching strategies
-"""
+'''

@@ -1,5 +1,5 @@
 description = "Refresh Spring Boot research docs and check which skills need updating for the latest Spring Boot version"
-prompt = """
+prompt = '''
 # Spring Boot Skill Refresh
 
 Check Spring Boot skill freshness and update content when needed.
@@ -37,4 +37,4 @@ The skill supports three modes:
 /spring-refresh refresh                      # Update research docs + check
 /spring-refresh update spring-boot-security  # Update a specific skill
 ```
-"""
+'''

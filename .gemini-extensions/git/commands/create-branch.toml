@@ -1,5 +1,5 @@
 description = "Create a new feature branch with optimized short naming, or auto-generate from uncommitted changes"
-prompt = """
+prompt = '''
 # Branch Creation Command
 
 Creates feature branches with intelligent naming and auto-incrementing.
@@ -34,4 +34,4 @@ Invoke the Skill tool with skill name "git:creating-branch" and arguments: `{{ar
 The skill will handle commit type detection, branch naming, auto-increment numbering, and can auto-generate from uncommitted changes when no arguments are provided.
 
 For detailed documentation, see `git/skills/creating-branch/SKILL.md`.
-"""
+'''

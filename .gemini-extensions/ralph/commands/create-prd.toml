@@ -1,5 +1,5 @@
 description = "Create PRD and set up project for Ralph autonomous development loop"
-prompt = """
+prompt = '''
 # Create PRD Command
 
 Interactive wizard to create a Product Requirements Document and set up your project for Ralph.
@@ -177,4 +177,4 @@ If not specified, default to:
 - Keep scope tight for v1 (defer nice-to-haves)
 - Success criteria should be testable
 - Task set names should be descriptive and kebab-case
-"""
+'''

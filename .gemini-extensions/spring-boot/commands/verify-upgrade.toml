@@ -1,5 +1,5 @@
 description = "Verify Spring Boot project upgrade readiness with parallel multi-skill analysis"
-prompt = """
+prompt = '''
 > **Note:** On Gemini, this command runs inline; the agent it would invoke on Claude has been collapsed into the prompt body. Behavior is degraded — no parallel sub-execution.
 
 # Spring Boot Upgrade Verification
@@ -193,4 +193,4 @@ Sort findings by severity (Critical > Error > Warning). Every CRITICAL finding m
 4. **Workers read skill docs first** — Each verifier reads SKILL.md before checking
 5. **CRITICAL = actionable** — Every critical finding must include a concrete migration path
 
-"""
+'''

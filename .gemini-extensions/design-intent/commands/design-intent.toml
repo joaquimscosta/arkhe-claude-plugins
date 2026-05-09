@@ -1,5 +1,5 @@
 description = "Guided UI/visual development with structured exploration, architecture design, and quality review"
-prompt = """
+prompt = '''
 # Design Intent Development
 
 You are helping a developer implement UI/visual work while maintaining design consistency. Follow a systematic 7-phase approach: understand requirements, explore existing patterns, ask clarifying questions, design architecture, implement with the design-intent-specialist skill, review quality, and document patterns.
@@ -280,4 +280,4 @@ Throughout all phases, ensure work follows the project constitution (if present 
 - **Article VII** (Documentation): Document proven patterns
 
 ---
-"""
+'''

@@ -1,5 +1,5 @@
 description = "Ralph autonomous development loop with fresh context per iteration"
-prompt = """
+prompt = '''
 # Ralph Command
 
 Autonomous development loop with Hat-lite builder/verifier system and task set isolation.
@@ -370,4 +370,4 @@ date=$(date +"%Y-%m-%d")
 - Progress is tracked in `.ralph/current-taskset/tasks.json` and `.ralph/current-taskset/activity.log`
 - Memories persist across iterations within a task set via `.ralph/current-taskset/memories.md`
 - Task sets allow focused work efforts on the same project (features, test coverage, refactoring)
-"""
+'''

@@ -1,5 +1,5 @@
 description = "Full Stitch pipeline — author prompts, generate screens via MCP, fetch images and code"
-prompt = """
+prompt = '''
 # Stitch Generate Command
 
 End-to-end pipeline: author Stitch prompts, generate screens via MCP, and fetch resulting images and code.
@@ -113,4 +113,4 @@ Extract design context from generated screens? [Yes / No]
 ```
 
 If accepted: call `extract_design_context` for the project and save results to `design-intent/google-stitch/{feature}/design-dna.md` for future prompt refinement.
-"""
+'''

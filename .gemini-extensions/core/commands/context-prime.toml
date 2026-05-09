@@ -1,5 +1,5 @@
 description = "Generate a highly structured, copy-paste-ready context block from the current conversation for cold-starting a new session. Produces a structured Markdown block optimized for an LLM/AI to quickly gain situational awareness. Optionally focus on specific topics."
-prompt = """
+prompt = '''
 # Context Prime
 
 ## Usage
@@ -56,4 +56,4 @@ After outputting the context block, use the AskUserQuestion tool to ask the user
 3. **Save to custom path** — Let the user specify a path.
 
 If the user chooses to save, write the context block to the chosen path using the Write tool.
-"""
+'''

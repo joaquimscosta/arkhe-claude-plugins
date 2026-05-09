@@ -1,5 +1,5 @@
 description = "Manage architecture RFCs (create, review, list, update)"
-prompt = """
+prompt = '''
 # RFC Command
 
 Manage architecture RFCs: create new proposals, review existing ones, list the pipeline, or update sections.
@@ -16,4 +16,4 @@ Manage architecture RFCs: create new proposals, review existing ones, list the p
 ## Integration
 
 Invoke the Skill tool with skill name "doc:rfc" and arguments: `{{args}}`
-"""
+'''

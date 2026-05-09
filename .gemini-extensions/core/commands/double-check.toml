@@ -1,5 +1,5 @@
 description = "Comprehensive verification with automated quality gates, confession gathering, and confidence-based issue filtering. Default: self-review with gates. --deep: multi-agent review via code-reviewer agent. Use before committing, after fixing bugs, or to validate feature completeness."
-prompt = """
+prompt = '''
 > **Note:** On Gemini, this command runs inline; the agent it would invoke on Claude has been collapsed into the prompt body. Behavior is degraded — no parallel sub-execution.
 
 # Double-Check Verification
@@ -252,4 +252,4 @@ Group issues by severity (Critical vs Important). If no high-confidence issues e
 
 Structure your response for maximum actionability - developers should know exactly what to fix and why.
 
-"""
+'''

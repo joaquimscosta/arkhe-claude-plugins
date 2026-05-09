@@ -1,5 +1,5 @@
 description = "Guided setup and verification of Stitch MCP server connection"
-prompt = """
+prompt = '''
 # Stitch Setup Command
 
 Set up and verify the Stitch MCP server connection for automated screen generation.
@@ -367,4 +367,4 @@ npx @_davideast/stitch-mcp doctor
 # Debug mode for verbose logging
 npx @_davideast/stitch-mcp proxy --debug
 ```
-"""
+'''

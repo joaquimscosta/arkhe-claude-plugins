@@ -1,5 +1,5 @@
 description = "Verify Playwright CLI installation and create a .playwright/cli.config.json configuration file. Use when setting up browser automation, configuring Playwright, or user mentions \"setup playwright\", \"configure browser testing\", \"install playwright\"."
-prompt = """
+prompt = '''
 # /playwright-setup
 
 Verify Playwright CLI installation and interactively create a `.playwright/cli.config.json` configuration file.
@@ -132,4 +132,4 @@ Mention that CLI flags override environment variables, which override `.playwrig
 ```
 CLI flags > Environment variables > .playwright/cli.config.json
 ```
-"""
+'''

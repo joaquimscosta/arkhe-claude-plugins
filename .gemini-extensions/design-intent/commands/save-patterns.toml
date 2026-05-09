@@ -1,5 +1,5 @@
 description = "Analyze recent work and suggest design patterns that should be preserved as design intent"
-prompt = """
+prompt = '''
 # /save-patterns
 
 **Purpose**: Analyze recent work and suggest design patterns that should be preserved as design intent
@@ -108,4 +108,4 @@ Only patterns you explicitly approve will be documented using the **design inten
 - Standard design tokens (colors, typography scales)
 - Default component behaviors from Fluent UI
 - Standard responsive breakpoints
-"""
+'''

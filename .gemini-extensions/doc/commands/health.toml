@@ -1,5 +1,5 @@
 description = "Run documentation health checks (freshness, links, drift, cross-doc consistency)"
-prompt = """
+prompt = '''
 # Documentation Health
 
 Unified documentation health analysis. Detects stale docs, broken links, version drift, and cross-document inconsistencies.
@@ -36,4 +36,4 @@ Unified documentation health analysis. Detects stale docs, broken links, version
 ## Integration
 
 Invoke the Skill tool with skill name "doc:doc-freshness" and arguments: `{{args}}`
-"""
+'''

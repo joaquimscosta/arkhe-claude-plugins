@@ -160,10 +160,19 @@ def escape_basic_string(value: str) -> str:
 def render_toml(description: str, prompt: str) -> str:
     """Render the two-key TOML output."""
     desc_line = f'description = "{escape_basic_string(description)}"\n'
-    # Use multi-line basic string for prompt; close marker on its own line.
-    # Escape any triple-quote sequences in the body to avoid premature close.
-    safe_prompt = prompt.replace('"""', '\\"""')
-    prompt_block = f'prompt = """\n{safe_prompt}\n"""\n'
+    # Use TOML literal multi-line strings ('''...''') for the prompt — they
+    # perform no escape processing, so raw backslashes (e.g. regex like \d,
+    # \[tool\.pytest) pass through verbatim. Basic strings ("""...""") would
+    # reject unescaped backslashes.
+    if "'''" in prompt:
+        # No source body currently contains '''. If one ever does, fall back
+        # to basic strings with full escaping rather than emit broken TOML.
+        safe_prompt = (
+            prompt.replace("\\", "\\\\").replace('"""', '\\"""')
+        )
+        prompt_block = f'prompt = """\n{safe_prompt}\n"""\n'
+    else:
+        prompt_block = f"prompt = '''\n{prompt}\n'''\n"
     return desc_line + prompt_block
 
 

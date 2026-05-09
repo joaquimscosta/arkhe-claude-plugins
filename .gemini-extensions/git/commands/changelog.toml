@@ -1,5 +1,5 @@
 description = "Generate comprehensive changelogs from git commit history with semantic versioning analysis and conventional commit support"
-prompt = """
+prompt = '''
 # Changelog
 
 Generate professional changelogs from git commit history with automatic categorization and semantic versioning.
@@ -35,4 +35,4 @@ Invoke the Skill tool with skill name "git:generating-changelog" and arguments: 
 The skill will handle git history analysis, commit categorization, semantic versioning detection, and multiple output formats.
 
 For detailed documentation, see `git/skills/generating-changelog/SKILL.md`.
-"""
+'''

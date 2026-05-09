@@ -1,5 +1,5 @@
 description = "Context-aware GitHub Pull Request creation and update assistant"
-prompt = """
+prompt = '''
 # Create Pull Request Command
 
 Context-aware GitHub Pull Request assistant that automatically detects root repository and submodules, handles existing PRs, and generates conventional PR titles and descriptions.
@@ -34,4 +34,4 @@ The skill will handle repository detection, existing PR handling, branch pushing
 **Requirements**: GitHub CLI (`gh`) installed and authenticated
 
 For detailed documentation, see `git/skills/creating-pr/SKILL.md`.
-"""
+'''

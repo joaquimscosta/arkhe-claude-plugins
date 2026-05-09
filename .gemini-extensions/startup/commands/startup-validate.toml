@@ -1,5 +1,5 @@
 description = "Validate a startup idea through a 6-stage pipeline with decision gates, confidence scoring, and domain presets"
-prompt = """
+prompt = '''
 # Startup Validate
 
 Validate a startup idea through 6 structured stages, each with expert analysis and a decision gate.
@@ -41,4 +41,4 @@ Validate a startup idea through 6 structured stages, each with expert analysis a
 ## Implementation
 
 Invoke the Skill tool with skill name `startup:startup-validating` and arguments: `{{args}}`
-"""
+'''

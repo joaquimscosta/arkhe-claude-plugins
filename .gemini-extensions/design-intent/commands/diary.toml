@@ -1,5 +1,5 @@
 description = "Create a session diary entry to document development progress, decisions, and handoff context"
-prompt = """
+prompt = '''
 # /diary
 
 This command creates a session diary entry to document development progress, decisions, and handoff context.
@@ -142,4 +142,4 @@ This entry provides context for:
 4. **Actionable**: Make priorities concrete and specific
 5. **Honest**: Document both successes and known issues
 6. **Pattern-aware**: Note design decisions that affect consistency
-"""
+'''

@@ -1,5 +1,5 @@
 description = "Analyze, verify, and resolve review suggestions from a GitHub PR or local code-review report"
-prompt = """
+prompt = '''
 # PR Issue Resolver
 
 Multi-agent review resolution with trust-but-verify methodology and confidence-based filtering.
@@ -25,4 +25,4 @@ Multi-agent review resolution with trust-but-verify methodology and confidence-b
 Invoke the Skill tool with skill name "git:resolving-pr-issues" and arguments: `{{args}}`
 
 For detailed documentation, see `git/skills/resolving-pr-issues/SKILL.md`.
-"""
+'''

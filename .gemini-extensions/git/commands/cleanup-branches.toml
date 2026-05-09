@@ -1,5 +1,5 @@
 description = "Delete merged branches and flag stale unmerged branches for cleanup"
-prompt = """
+prompt = '''
 # Cleanup Branches
 
 Delete local (and optionally remote) branches that are merged into the base branch, and flag stale unmerged branches for manual review.
@@ -34,4 +34,4 @@ Invoke the Skill tool with skill name "git:cleaning-up-branches" and arguments: 
 The skill will delete merged branches (with user confirmation), flag stale unmerged branches, and produce a cleanup summary. It never deletes unmerged branches automatically.
 
 For detailed documentation, see `git/skills/cleaning-up-branches/SKILL.md`.
-"""
+'''

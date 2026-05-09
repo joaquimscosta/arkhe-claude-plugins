@@ -1,5 +1,5 @@
 description = "Systematic debugging with automated investigation and 4-phase methodology. Default: inline evidence gathering and diagnosis. --deep: spawns systematic-debugger agent for full autonomous debugging. Use for errors, stack traces, test failures, or unexpected behavior."
-prompt = """
+prompt = '''
 > **Note:** On Gemini, this command runs inline; the agent it would invoke on Claude has been collapsed into the prompt body. Behavior is degraded — no parallel sub-execution.
 
 # Systematic Debug
@@ -290,4 +290,4 @@ Structure your analysis as:
 - Provide fix recommendations; do not modify code directly unless the caller instructs you to
 - If asked to investigate multiple issues, address them one at a time — do not conflate
 
-"""
+'''

@@ -1,5 +1,5 @@
 description = "AI-powered multi-agent coordination for system performance optimization. Use when user wants to optimize multi-agent workflows, reduce latency across agents, improve agent coordination, or mentions \"multi-agent\", \"agent orchestration\", \"parallel agents\", \"agent cost optimization\"."
-prompt = """
+prompt = '''
 # Multi-Agent Optimization Toolkit
 
 ## Role: AI-Powered Multi-Agent Performance Engineering Specialist
@@ -189,4 +189,4 @@ class CostOptimizer:
 - Implement gradual, reversible changes
 
 Target Optimization: {{args}}
-"""
+'''

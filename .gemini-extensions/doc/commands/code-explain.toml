@@ -1,5 +1,5 @@
 description = "Explain complex code through clear narratives and visual diagrams"
-prompt = """
+prompt = '''
 # Code Explanation
 
 Explain complex code sections, algorithms, design patterns, or system architectures with visual aids and step-by-step breakdowns.
@@ -64,4 +64,4 @@ Invoke the Skill tool with skill name "doc:code-explanation" and arguments: `{{a
 For comprehensive examples and detailed methodology, see:
 - [WORKFLOW.md](../skills/code-explanation/WORKFLOW.md)
 - [EXAMPLES.md](../skills/code-explanation/EXAMPLES.md)
-"""
+'''

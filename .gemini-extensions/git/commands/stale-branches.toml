@@ -1,5 +1,5 @@
 description = "List stale git branches that are candidates for cleanup (merged or inactive)"
-prompt = """
+prompt = '''
 # Stale Branches
 
 List local and remote git branches that are candidates for cleanup — merged but not deleted, and inactive branches with no recent commits.
@@ -33,4 +33,4 @@ Invoke the Skill tool with skill name "git:listing-stale-branches" and arguments
 The skill will detect merged branches, inactive unmerged branches, and optionally analyze remote branches. It is read-only and never deletes branches.
 
 For detailed documentation, see `git/skills/listing-stale-branches/SKILL.md`.
-"""
+'''

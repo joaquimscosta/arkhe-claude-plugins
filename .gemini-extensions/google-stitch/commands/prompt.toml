@@ -1,5 +1,5 @@
 description = "Generate Google Stitch-ready prompts from briefs or spec files using the authoring skill"
-prompt = """
+prompt = '''
 # Prompt Command
 
 Convert natural-language descriptions, revision notes, or spec files into Stitch-optimized prompts. This command gathers your preferences before generating to ensure the output matches your vision.
@@ -195,4 +195,4 @@ Claude: [Generates with smart defaults]
 User: /prompt "change the header to sticky and add a search bar"
 Claude: [Skips questions, generates revision prompt directly]
 ```
-"""
+'''

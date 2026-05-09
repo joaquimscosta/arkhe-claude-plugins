@@ -1,5 +1,5 @@
 description = "Deep research on technical topics with intelligent caching. Supports: research, promote, refresh, and list operations. Example: \"/research domain-driven design\" or \"/research promote ddd\""
-prompt = """
+prompt = '''
 > **Note:** On Gemini, this command runs inline; the agent it would invoke on Claude has been collapsed into the prompt body. Behavior is degraded — no parallel sub-execution.
 
 # Research
@@ -147,4 +147,4 @@ After completing research, report:
 3. Path to cached file
 4. Suggestion to promote if valuable
 
-"""
+'''

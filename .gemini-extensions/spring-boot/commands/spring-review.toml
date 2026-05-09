@@ -1,5 +1,5 @@
 description = "Comprehensive Spring Boot implementation review with smart skill detection and parallel execution"
-prompt = """
+prompt = '''
 > **Note:** On Gemini, this command runs inline; the agent it would invoke on Claude has been collapsed into the prompt body. Behavior is degraded — no parallel sub-execution.
 
 # Spring Boot Review
@@ -156,4 +156,4 @@ Sort findings by severity (Critical > Error > Warning). If no issues found acros
 4. **Workers read skill docs first** — Each reviewer reads SKILL.md before reviewing
 5. **Report only** — Never apply fixes; include copy-paste suggestions instead
 
-"""
+'''

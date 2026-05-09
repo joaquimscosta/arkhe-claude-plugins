@@ -1,5 +1,5 @@
 description = "Automate semantic versioning releases or scaffold release infrastructure"
-prompt = """
+prompt = '''
 # Release Command
 
 Automate the full release process: validate CHANGELOG, update comparison links, commit, trigger GitHub Actions workflow, and monitor completion. Or scaffold release infrastructure for new projects.
@@ -31,4 +31,4 @@ Automate the full release process: validate CHANGELOG, update comparison links, 
 Invoke the Skill tool with skill name "git:releasing" and arguments: {{args}}
 
 The skill handles version validation, CHANGELOG checks, comparison link management, commit/push, workflow triggering, and monitoring.
-"""
+'''
