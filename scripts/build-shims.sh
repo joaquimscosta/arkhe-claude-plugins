@@ -17,6 +17,7 @@ GEMINI_ROOT="$REPO_ROOT/.gemini-extensions"
 CODEX_ROOT="$REPO_ROOT/.codex-marketplace"
 TRANSPILE="$REPO_ROOT/scripts/transpile-commands.py"
 CODEX_GEN="$REPO_ROOT/scripts/generate-codex-agents-md.py"
+READMES_GEN="$REPO_ROOT/scripts/update-plugin-readmes.py"
 
 err() { printf 'build-shims: %s\n' "$*" >&2; exit 1; }
 
@@ -25,10 +26,12 @@ command -v jq >/dev/null 2>&1 || err "jq is required (brew install jq)"
 command -v python3 >/dev/null 2>&1 || err "python3 is required"
 [[ -x "$TRANSPILE" ]] || err "transpile-commands.py not executable: $TRANSPILE"
 [[ -x "$CODEX_GEN" ]] || err "generate-codex-agents-md.py not executable: $CODEX_GEN"
+[[ -x "$READMES_GEN" ]] || err "update-plugin-readmes.py not executable: $READMES_GEN"
 
 # Step 1: run Python generators (idempotent; they write their own outputs).
 python3 "$TRANSPILE"
 python3 "$CODEX_GEN"
+python3 "$READMES_GEN"
 
 # Atomic write: render to temp file, only move into place if content differs.
 # Keeps mtimes stable across runs and prevents partial files on crash.
