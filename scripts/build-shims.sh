@@ -109,7 +109,13 @@ render_gemini_md() {
                     }
                 }
             ' "$skill_md")
-            printf -- '- **%s** — %s\n' "$skill_name" "${skill_desc:-(no description)}"
+            # Escape '@' in description text. Gemini's ImportProcessor parses
+            # bare `@token` patterns as filesystem imports (e.g., Java
+            # annotations like @RestController in spring-boot skill descriptions
+            # cause ENOENT errors). HTML entity &#64; survives this preprocessor
+            # and renders identically for the model.
+            local desc_safe="${skill_desc//@/&#64;}"
+            printf -- '- **%s** — %s\n' "$skill_name" "${desc_safe:-(no description)}"
         done
         printf '\n'
     fi
