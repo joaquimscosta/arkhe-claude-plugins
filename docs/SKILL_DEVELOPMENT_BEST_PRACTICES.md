@@ -166,12 +166,16 @@ Every Skill requires a `SKILL.md` file with YAML frontmatter between `---` marke
 |-------|-------------|---------|
 | `allowed-tools` | Tools Claude can use without permission when Skill is active | `Read, Grep, Glob` |
 | `model` | Model to use when Skill is active | `claude-sonnet-4-20250514` |
+| `effort` | Effort level when Skill is active. Overrides session effort. | `low`, `medium`, `high`, `xhigh`, `max` |
 | `context` | Set to `fork` to run in isolated sub-agent context | `fork` |
 | `agent` | Agent type when `context: fork` is set | `Explore`, `Plan`, `general-purpose`, or custom agent name |
 | `hooks` | Skill-scoped lifecycle hooks | See [Advanced Patterns](#skill-scoped-hooks) |
 | `user-invocable` | Set to `false` to hide from slash command menu | `false` |
 | `disable-model-invocation` | Set to `true` to prevent Claude from automatically loading this skill. Use for workflows with side effects. Default: `false`. | `true` |
 | `argument-hint` | Hint shown during autocomplete to indicate expected arguments | `[issue-number]` or `[filename] [format]` |
+| `arguments` | Named positional arguments for `$name` substitution in skill content | `pr_url`, `"file format"` |
+| `paths` | Glob patterns that limit when this skill is auto-activated | `src/**/*.ts`, `["*.py", "tests/**"]` |
+| `shell` | Shell for inline `` !`command` `` blocks. Default `bash`. | `bash`, `powershell` |
 
 ### Complete Field Reference
 
@@ -323,6 +327,52 @@ argument-hint: [issue-number]
 ```
 
 The hint appears in the autocomplete menu to help users understand what arguments the skill expects. Examples: `[issue-number]`, `[filename] [format]`, `[component-name]`.
+
+#### arguments
+
+Named positional arguments referenced via `$name` substitution in the skill body. Accepts a space-separated string or a YAML list; names map to argument positions in order.
+
+```yaml
+arguments: pr_url focus_area
+```
+
+Then in the skill body: `Review $pr_url focusing on $focus_area`. Pair with `argument-hint` to surface the expected shape during autocomplete.
+
+#### effort
+
+Override the [effort level](https://docs.claude.com/en/docs/claude-code/model-config#adjust-effort-level) while the skill is active.
+
+```yaml
+effort: high
+```
+
+Available levels (subject to model support): `low`, `medium`, `high`, `xhigh`, `max`. Defaults to inheriting the session effort. Use for skills that warrant deeper reasoning (e.g. architecture review) or lighter touch (e.g. quick lookups).
+
+#### paths
+
+Glob patterns that gate auto-activation. Claude only auto-loads the skill when working with files matching the patterns. Same format as path-specific memory rules.
+
+```yaml
+# Comma-separated string
+paths: src/**/*.ts, tests/**/*.ts
+
+# Or YAML list
+paths:
+  - "src/**/*.py"
+  - "tests/**/*.py"
+```
+
+Use for ecosystem-specific skills (e.g. a Spring Boot skill that should only fire inside Java/Kotlin trees).
+
+#### shell
+
+Selects the shell used for inline `` !`command` `` and ```` ```! ```` blocks within the skill.
+
+```yaml
+shell: powershell
+```
+
+Accepts `bash` (default) or `powershell`. Setting `powershell` runs inline shell commands via PowerShell on Windows; requires `CLAUDE_CODE_USE_POWERSHELL_TOOL=1`.
 
 ### Control Who Invokes a Skill
 

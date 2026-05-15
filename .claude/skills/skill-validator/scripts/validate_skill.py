@@ -152,7 +152,10 @@ ALLOWED_FRONTMATTER_KEYS = {
     'name', 'description', 'license', 'allowed-tools', 'metadata',
     'model', 'context', 'agent', 'hooks', 'user-invocable',
     'disable-model-invocation', 'argument-hint',
-    'maxTurns', 'mcpServers', 'memory', 'skills'
+    'maxTurns', 'mcpServers', 'memory', 'skills',
+    'arguments', 'effort', 'paths', 'shell',
+    'tools', 'disallowedTools', 'permissionMode',
+    'background', 'isolation', 'color', 'initialPrompt'
 }
 
 RESERVED_WORDS = {'anthropic', 'claude'}
@@ -1026,6 +1029,8 @@ VALID_HOOK_EVENTS = {
     'PreCompact', 'PostCompact', 'SessionEnd', 'ConfigChange',
     'WorktreeCreate', 'WorktreeRemove',
     'Elicitation', 'ElicitationResult', 'InstructionsLoaded',
+    'CwdChanged', 'FileChanged', 'PermissionDenied', 'PostToolBatch',
+    'Setup', 'StopFailure', 'TaskCreated', 'UserPromptExpansion',
 }
 
 

@@ -166,8 +166,8 @@ Product management, roadmap analysis, and solution architecture with multi-agent
 
 ### Devtools Plugin
 Developer tooling setup and management.
-- **Skills**: `sops-setup` (command-invoke), `sops-encrypt` (command-invoke), `sops-decrypt` (command-invoke), `sops-add-key` (command-invoke), `code-env-setup` (command-invoke), `quality-stack` (command-invoke), `taskfile-setup` (command-invoke)
-- **Use**: SOPS + age encryption for .env files, Claude Code environment setup wizard (Global CLAUDE.md, project scaffolding, MCP servers, hooks, custom agents, keybindings, settings), multi-ecosystem quality/testing tooling audit and setup (JVM, Node.js/TypeScript, Python), Taskfile task runner setup and audit
+- **Skills**: `sops-setup` (command-invoke), `sops-encrypt` (command-invoke), `sops-decrypt` (command-invoke), `sops-add-key` (command-invoke), `code-env-setup` (command-invoke), `quality-stack` (command-invoke), `taskfile-setup` (command-invoke), `tilt-setup` (command-invoke)
+- **Use**: SOPS + age encryption for .env files, Claude Code environment setup wizard (Global CLAUDE.md, project scaffolding, MCP servers, hooks, custom agents, keybindings, settings), multi-ecosystem quality/testing tooling audit and setup (JVM, Node.js/TypeScript, Python), Taskfile task runner setup and audit, Tilt local Kubernetes development setup and audit (Tiltfile + tilt/ modular layout, Spring Boot/Next.js/Python/external service templates, production-context safety guards, PVC persistence, JDWP debug ports, optional monitoring scaffolds)
 
 ### Startup Plugin
 Startup idea validation pipeline with 6-stage analysis, decision gates, and domain presets.
@@ -624,7 +624,7 @@ See [docs/README.md](docs/README.md) "Maintaining This Documentation" section fo
 
 ## Plugin Versions
 
-Plugin versions: core 2.1.0, ai 1.0.0, doc 1.12.0, design-intent 2.2.0, git 1.0.0, google-stitch 2.0.0, lang 1.0.0, playwright 1.0.0, spring-boot 1.2.0, ralph 2.0.0, roadmap 2.1.0, review 2.0.0, devtools 2.2.0, startup 1.0.0. When making breaking changes, increment the major version and update `plugin.json`.
+Plugin versions: core 2.1.0, ai 1.0.0, doc 1.12.0, design-intent 2.2.0, git 1.0.0, google-stitch 2.0.0, lang 1.0.0, playwright 1.0.0, spring-boot 1.2.0, ralph 2.0.0, roadmap 2.1.0, review 2.0.0, devtools 2.3.0, startup 1.0.0. When making breaking changes, increment the major version and update `plugin.json`.
 
 ## Related Documentation
 

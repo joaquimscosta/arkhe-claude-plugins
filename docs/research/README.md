@@ -28,3 +28,4 @@ See [TEMPLATE.md](TEMPLATE.md) for the standard format when creating new researc
 | [Kotlin Multiplatform (KMP) Production Architecture & Patterns](kotlin-multiplatform-production-patterns.md) | 1.0.0 | Published | 2026-04-04 | 2026-04-04 |
 | [Offline-First Mobile Architecture: Patterns & Implementation](offline-first-mobile-architecture.md) | 1.0.0 | Published | 2026-04-04 | 2026-04-04 |
 | [Android Testing Ecosystem: Libraries, Patterns & Strategies](android-testing-ecosystem.md) | 1.0.0 | Published | 2026-04-04 | 2026-04-04 |
+| [tilt-local-kubernetes-development-setup](tilt-local-kubernetes-development-setup.md) | 1.0.0 | Published | 2026-05-07 | 2026-05-07 |
