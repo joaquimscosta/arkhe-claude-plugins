@@ -11,7 +11,7 @@ Subagents are specialized AI assistants that handle specific types of tasks. Use
 Each subagent runs in its own context window with a custom system prompt, specific tool access, and independent permissions. When Claude encounters a task that matches a subagent's description, it delegates to that subagent, which works independently and returns results. To see the context savings in practice, the [context window visualization](/en/context-window) walks through a session where a subagent handles research in its own separate window.
 
 <Note>
-  If you need multiple agents working in parallel and communicating with each other, see [agent teams](/en/agent-teams) instead. Subagents work within a single session; agent teams coordinate across separate sessions.
+  Subagents work within a single session. To run many independent sessions in parallel and monitor them from one place, see [background agents](/en/agent-view). For sessions that communicate with each other, see [agent teams](/en/agent-teams).
 </Note>
 
 Subagents help you:
@@ -158,8 +158,6 @@ The `/agents` command opens a tabbed interface for managing subagents. The **Run
 
 This is the recommended way to create and manage subagents. For manual creation or automation, you can also add subagent files directly.
 
-To list all configured subagents from the command line without starting an interactive session, run `claude agents`. This shows agents grouped by source and indicates which are overridden by higher-priority definitions.
-
 ### Choose the subagent scope
 
 Subagents are Markdown files with YAML frontmatter. Store them in different locations depending on scope. When multiple subagents share the same name, the higher-priority location wins.
@@ -177,6 +175,10 @@ Subagents are Markdown files with YAML frontmatter. Store them in different loca
 Project subagents are discovered by walking up from the current working directory. Directories added with `--add-dir` [grant file access only](/en/permissions#additional-directories-grant-file-access-not-configuration) and are not scanned for subagents. To share subagents across projects, use `~/.claude/agents/` or a [plugin](/en/plugins).
 
 **User subagents** (`~/.claude/agents/`) are personal subagents available in all your projects.
+
+Claude Code scans `.claude/agents/` and `~/.claude/agents/` recursively, so you can organize definitions into subfolders such as `agents/review/` or `agents/research/`. The subdirectory path does not affect how a subagent is identified or invoked, because identity comes only from the `name` frontmatter field. Keep `name` values unique across the whole tree: if two files within one scope declare the same name, Claude Code keeps one and discards the other without warning.
+
+Plugin `agents/` directories are also scanned recursively. Unlike project and user scopes, a subfolder inside a plugin's `agents/` directory becomes part of the [scoped identifier](#invoke-subagents-explicitly): a file at `agents/review/security.md` in plugin `my-plugin` registers as `my-plugin:review:security`.
 
 **CLI-defined subagents** are passed as JSON when launching Claude Code. They exist only for that session and aren't saved to disk, making them useful for quick testing or automation scripts. You can define multiple subagents in a single `--agents` call:
 
@@ -260,14 +262,14 @@ The following fields can be used in the YAML frontmatter. Only `name` and `descr
 
 | Field             | Required | Description                                                                                                                                                                                                                                                                                                                              |
 | :---------------- | :------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `name`            | Yes      | Unique identifier using lowercase letters and hyphens                                                                                                                                                                                                                                                                                    |
+| `name`            | Yes      | Unique identifier using lowercase letters and hyphens. [Hooks](/en/hooks#subagentstart) receive this value as `agent_type`. The filename does not have to match                                                                                                                                                                          |
 | `description`     | Yes      | When Claude should delegate to this subagent                                                                                                                                                                                                                                                                                             |
-| `tools`           | No       | [Tools](#available-tools) the subagent can use. Inherits all tools if omitted                                                                                                                                                                                                                                                            |
+| `tools`           | No       | [Tools](#available-tools) the subagent can use. Inherits all tools if omitted. To preload Skills into context, use the `skills` field rather than listing `Skill` here                                                                                                                                                                   |
 | `disallowedTools` | No       | Tools to deny, removed from inherited or specified list                                                                                                                                                                                                                                                                                  |
 | `model`           | No       | [Model](#choose-a-model) to use: `sonnet`, `opus`, `haiku`, a full model ID (for example, `claude-opus-4-7`), or `inherit`. Defaults to `inherit`                                                                                                                                                                                        |
 | `permissionMode`  | No       | [Permission mode](#permission-modes): `default`, `acceptEdits`, `auto`, `dontAsk`, `bypassPermissions`, or `plan`. Ignored for [plugin subagents](#choose-the-subagent-scope)                                                                                                                                                            |
 | `maxTurns`        | No       | Maximum number of agentic turns before the subagent stops                                                                                                                                                                                                                                                                                |
-| `skills`          | No       | [Skills](/en/skills) to load into the subagent's context at startup. The full skill content is injected, not just made available for invocation. Subagents don't inherit skills from the parent conversation                                                                                                                             |
+| `skills`          | No       | [Skills](/en/skills) to preload into the subagent's context at startup. The full skill content is injected, not just the description. Subagents can still invoke unlisted project, user, and plugin skills through the Skill tool                                                                                                        |
 | `mcpServers`      | No       | [MCP servers](/en/mcp) available to this subagent. Each entry is either a server name referencing an already-configured server (e.g., `"slack"`) or an inline definition with the server name as key and a full [MCP server config](/en/mcp#installing-mcp-servers) as value. Ignored for [plugin subagents](#choose-the-subagent-scope) |
 | `hooks`           | No       | [Lifecycle hooks](#define-hooks-for-subagents) scoped to this subagent. Ignored for [plugin subagents](#choose-the-subagent-scope)                                                                                                                                                                                                       |
 | `memory`          | No       | [Persistent memory scope](#enable-persistent-memory): `user`, `project`, or `local`. Enables cross-session learning                                                                                                                                                                                                                      |
@@ -418,7 +420,7 @@ skills:
 Implement API endpoints. Follow the conventions and patterns from the preloaded skills.
 ```
 
-The full content of each skill is injected into the subagent's context, not just made available for invocation. Subagents don't inherit skills from the parent conversation; you must list them explicitly.
+The full content of each listed skill is injected into the subagent's context at startup. This field controls which skills are preloaded, not which skills the subagent can access: without it, the subagent can still discover and invoke project, user, and plugin skills through the Skill tool during execution. To prevent a subagent from invoking skills entirely, omit `Skill` from the [`tools`](#available-tools) list or add it to `disallowedTools`.
 
 You cannot preload skills that set [`disable-model-invocation: true`](/en/skills#control-who-invokes-a-skill), since preloading draws from the same set of skills Claude can invoke. If a listed skill is missing or disabled, Claude Code skips it and logs a warning to the debug log.
 
@@ -638,7 +640,7 @@ Have the code-reviewer subagent look at my recent changes
 
 Your full message still goes to Claude, which writes the subagent's task prompt based on what you asked. The @-mention controls which subagent Claude invokes, not what prompt it receives.
 
-Subagents provided by an enabled [plugin](/en/plugins) appear in the typeahead as `<plugin-name>:<agent-name>`. Named background subagents currently running in the session also appear in the typeahead, showing their status next to the name. You can also type the mention manually without using the picker: `@agent-<name>` for local subagents, or `@agent-<plugin-name>:<agent-name>` for plugin subagents.
+Subagents provided by an enabled [plugin](/en/plugins) appear in the typeahead under their scoped name, such as `my-plugin:code-reviewer` or `my-plugin:review:security` when the plugin [organizes agents into subfolders](#choose-the-subagent-scope). Named background subagents currently running in the session also appear in the typeahead, showing their status next to the name. You can also type the mention manually without using the picker: `@agent-<name>` for local subagents, or `@agent-` followed by the scoped name for plugin subagents, for example `@agent-my-plugin:code-reviewer`.
 
 **Run the whole session as a subagent.** Pass [`--agent <name>`](/en/cli-reference) to start a session where the main thread itself takes on that subagent's system prompt, tool restrictions, and model:
 
@@ -650,7 +652,7 @@ The subagent's system prompt replaces the default Claude Code system prompt enti
 
 This works with built-in and custom subagents, and the choice persists when you resume the session.
 
-For a plugin-provided subagent, pass the scoped name: `claude --agent <plugin-name>:<agent-name>`.
+For a plugin-provided subagent, pass the scoped name: `claude --agent <plugin-name>:<agent-name>`. If the plugin places the agent in a subfolder of its `agents/` directory, include the subfolder in the scoped name, for example `claude --agent my-plugin:review:security`.
 
 To make it the default for every session in a project, set `agent` in `.claude/settings.json`:
 
@@ -666,8 +668,8 @@ The CLI flag overrides the setting if both are present.
 
 Subagents can run in the foreground (blocking) or background (concurrent):
 
-* **Foreground subagents** block the main conversation until complete. Permission prompts and clarifying questions (like [`AskUserQuestion`](/en/tools-reference)) are passed through to you.
-* **Background subagents** run concurrently while you continue working. Before launching, Claude Code prompts for any tool permissions the subagent will need, ensuring it has the necessary approvals upfront. Once running, the subagent inherits these permissions and auto-denies anything not pre-approved. If a background subagent needs to ask clarifying questions, that tool call fails but the subagent continues.
+* **Foreground subagents** block the main conversation until complete. Permission prompts are passed through to you as they come up.
+* **Background subagents** run concurrently while you continue working. They run with the permissions already granted in the session and auto-deny any tool call that would otherwise prompt. If a background subagent needs to ask clarifying questions, that tool call fails but the subagent continues.
 
 If a background subagent fails due to missing permissions, you can start a new foreground subagent with the same task to retry with interactive prompts.
 
@@ -678,7 +680,7 @@ Claude decides whether to run subagents in the foreground or background based on
 
 To disable all background task functionality, set the `CLAUDE_CODE_DISABLE_BACKGROUND_TASKS` environment variable to `1`. See [Environment variables](/en/env-vars).
 
-When [fork mode](#fork-the-current-conversation) is enabled, every subagent spawn runs in the background regardless of the `background` field. Forks still surface permission prompts in your terminal as they occur instead of pre-approving; named subagents follow the pre-approval flow above.
+When [fork mode](#fork-the-current-conversation) is enabled, every subagent spawn runs in the background regardless of the `background` field. Forks still surface permission prompts in your terminal as they occur; named subagents auto-deny anything that would prompt, as described above.
 
 ### Common patterns
 
@@ -823,13 +825,13 @@ Running forks appear in a panel below the prompt input, with one row for the mai
 
 A fork inherits everything the main session has at the moment it spawns. A named subagent starts from its own definition.
 
-|                         | Fork                             | Named subagent                                                                             |
-| :---------------------- | :------------------------------- | :----------------------------------------------------------------------------------------- |
-| Context                 | Full conversation history        | Fresh context with the prompt you pass                                                     |
-| System prompt and tools | Same as main session             | From the subagent's [definition file](#write-subagent-files)                               |
-| Model                   | Same as main session             | From the subagent's `model` field                                                          |
-| Permissions             | Prompts surface in your terminal | [Pre-approved](#run-subagents-in-foreground-or-background) before launch, then auto-denied |
-| Prompt cache            | Shared with main session         | Separate cache                                                                             |
+|                         | Fork                             | Named subagent                                                                           |
+| :---------------------- | :------------------------------- | :--------------------------------------------------------------------------------------- |
+| Context                 | Full conversation history        | Fresh context with the prompt you pass                                                   |
+| System prompt and tools | Same as main session             | From the subagent's [definition file](#write-subagent-files)                             |
+| Model                   | Same as main session             | From the subagent's `model` field                                                        |
+| Permissions             | Prompts surface in your terminal | [Auto-denied](#run-subagents-in-foreground-or-background) when running in the background |
+| Prompt cache            | Shared with main session         | Separate cache                                                                           |
 
 Because a fork's system prompt and tool definitions are identical to the parent, its first request reuses the parent's prompt cache. This makes forking cheaper than spawning a fresh subagent for tasks that need the same context.
 

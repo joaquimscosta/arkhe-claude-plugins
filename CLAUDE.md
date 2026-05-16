@@ -212,6 +212,8 @@ System prompt defining the agent's role, capabilities, and approach.
 - Include trigger phrases like "Use PROACTIVELY" or "MUST BE USED" for automatic invocation
 - Keep under 1,024 characters
 
+**Subfolder Organization**: Claude Code scans `agents/` recursively. A file at `agents/review/security.md` in plugin `my-plugin` registers as `my-plugin:review:security`. The folder path becomes part of the scoped identifier — keep `name` frontmatter values unique across the whole tree (duplicates are silently discarded). Identity comes only from `name`, so the filename does not need to match.
+
 ### Command Files (commands/*.md)
 
 Commands are slash commands that expand to full prompts:
@@ -263,6 +265,37 @@ Brief examples with reference to EXAMPLES.md
 2. SKILL.md loads with instructions
 3. Supporting docs load on-demand as needed
 4. Python scripts execute deterministic operations
+
+### Hook Files (hooks/*.json)
+
+Hook commands have two forms. Prefer **exec form** whenever the command references a path placeholder like `${CLAUDE_PLUGIN_ROOT}` or `${CLAUDE_PROJECT_DIR}` — each `args` element is passed as one argument with no shell tokenization, so paths with spaces or special characters need no quoting.
+
+```json
+// ✅ Exec form (recommended for path placeholders)
+{
+  "type": "command",
+  "command": "node",
+  "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/format.js", "--fix"]
+}
+
+// ⚠️ Shell form (only when you need pipes, &&, redirects, or globs)
+{
+  "type": "command",
+  "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/format.sh"
+}
+```
+
+**Path placeholders available in plugins**:
+- `${CLAUDE_PLUGIN_ROOT}` — plugin's install dir (changes on each plugin update)
+- `${CLAUDE_PLUGIN_DATA}` — persistent data dir (survives plugin updates)
+- `${CLAUDE_PROJECT_DIR}` — project root, usable inline in hooks, monitor commands, and MCP/LSP server configs
+
+**Other hook gotchas**:
+- Default timeout: 600s for `command`/`http`/`mcp_tool`, 30s for `prompt`, 60s for `agent`. `UserPromptSubmit` lowers `command`/`http`/`mcp_tool` to 30s.
+- Command hooks can no longer write to `/dev/tty` (macOS/Linux as of v2.1.139). Return `terminalSequence` in JSON output for notifications/window titles/bell, or `systemMessage` for plain user-visible text.
+- Hooks deduplicate by `command` + `args` string. HTTP hooks deduplicate by URL.
+
+See [HOOKS.md](docs/reference/HOOKS.md) for the full schema and the exec-vs-shell-form details.
 
 ## Python Script Guidelines
 

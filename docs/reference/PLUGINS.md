@@ -299,7 +299,13 @@ Use the `--plugin-dir` flag to test plugins during development. This loads your 
 claude --plugin-dir ./my-plugin
 ```
 
-When a `--plugin-dir` plugin has the same name as an installed marketplace plugin, the local copy takes precedence for that session. This lets you test changes to a plugin you already have installed without uninstalling it first. Marketplace plugins force-enabled by managed settings are the only exception and cannot be overridden.
+The flag also accepts a `.zip` archive of the plugin directory, which requires Claude Code v2.1.128 or later.
+
+```bash theme={null}
+claude --plugin-dir ./my-plugin.zip
+```
+
+When a `--plugin-dir` plugin has the same name as an installed marketplace plugin, the local copy takes precedence for that session. This lets you test changes to a plugin you already have installed without uninstalling it first. The exception is plugins that managed settings force-enable or force-disable: `--plugin-dir` cannot override those.
 
 As you make changes to your plugin, run `/reload-plugins` to pick up the updates without restarting. This reloads plugins, skills, agents, hooks, plugin MCP servers, and plugin LSP servers. Test your plugin components:
 
@@ -317,8 +323,16 @@ As you make changes to your plugin, run `/reload-plugins` to pick up the updates
 
 To test a plugin that is already packaged as a `.zip` archive and hosted at a URL, such as a CI build artifact, use `--plugin-url` instead. Claude Code fetches the archive at startup and loads it for that session only. If the fetch fails or the archive is invalid, Claude Code reports a plugin load error and starts without it. The same [trust considerations](/en/discover-plugins#security) apply as for any plugin source: only point this flag at archives you control or trust.
 
+To load multiple plugins, repeat the flag for each URL:
+
 ```bash theme={null}
-claude --plugin-url https://example.com/my-plugin.zip
+claude --plugin-url https://example.com/my-plugin.zip --plugin-url https://example.com/other.zip
+```
+
+Or pass space-separated URLs as one quoted argument:
+
+```bash theme={null}
+claude --plugin-url "https://example.com/my-plugin.zip https://example.com/other.zip"
 ```
 
 ### Debug plugin issues
