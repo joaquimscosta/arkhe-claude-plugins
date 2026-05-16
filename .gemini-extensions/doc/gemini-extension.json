@@ -1,0 +1,6 @@
+{
+  "name": "doc",
+  "description": "Multi-purpose documentation toolkit (generation, explanation, diagrams, health)",
+  "version": "1.12.0",
+  "contextFileName": "GEMINI.md"
+}

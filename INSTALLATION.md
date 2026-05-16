@@ -2,9 +2,15 @@
 
 Complete guide to installing and using the Arkhe Claude Plugins marketplace.
 
+Arkhe plugins are supported on **Claude Code**, **Gemini CLI**, and **Codex CLI**. The Claude Code path is the canonical install; Gemini and Codex consume per-plugin shims regenerated from the same sources. See the [Supported Platforms matrix](./README.md#supported-platforms) for what works where.
+
 ## Prerequisites
 
-- Claude Code installed and running
+Pick one of:
+
+- **Claude Code** — installed and running (canonical path)
+- **Gemini CLI** — `gemini` CLI installed and authenticated
+- **Codex CLI** — `codex` CLI installed; experimental skill support requires `--enable skills` (Dec 2025+)
 
 ## Quick Start
 
@@ -48,6 +54,68 @@ git clone https://github.com/joaquimscosta/arkhe-claude-plugins.git
 ### 3. Reload Plugins
 
 After installation, run `/reload-plugins` for all plugins to take effect.
+
+---
+
+## Install on Gemini CLI
+
+Gemini consumes per-plugin extensions from `.gemini-extensions/` at the repo root. These are regenerated from the canonical `plugins/` tree by `scripts/build-shims.sh`.
+
+```bash
+# Clone the repo (Gemini doesn't have a marketplace concept)
+git clone https://github.com/joaquimscosta/arkhe-claude-plugins.git
+cd arkhe-claude-plugins
+
+# Install the bootstrap (required) plus whatever plugins you need
+gemini extensions install ./.gemini-extensions/core
+
+# Then install any other plugins
+gemini extensions install ./.gemini-extensions/ai
+gemini extensions install ./.gemini-extensions/doc
+gemini extensions install ./.gemini-extensions/git
+# ...etc
+```
+
+The `using-arkhe-skills` bootstrap skill (inside the `core` extension) loads at session start and maps Claude-only primitives — `AskUserQuestion`, `TaskCreate`, `EnterPlanMode`, the `Skill` tool, the `Agent` tool with `subagent_type` — to Gemini equivalents. Install `core` first.
+
+### Behavioral notes on Gemini
+
+- **Skills run identically.** Each Gemini extension symlinks `skills/` to the canonical `plugins/<plugin>/skills/`.
+- **Slash commands are transpiled.** Claude `.md` commands convert to Gemini `.toml`. The 6 subagent-heavy commands (`/core:debug`, `/core:think`, `/core:research`, `/core:double-check`, `/spring-boot:spring-review`, `/spring-boot:verify-upgrade`) ship with the agent prompt **inlined** and a degradation banner; expect single-pass behavior, no parallel sub-execution.
+- **Agents are not ported.** The 29 Claude subagents stay Claude-only. Gemini relies on the inlined-prompt fallback above for the 6 commands that need them.
+
+---
+
+## Install on Codex CLI
+
+Codex consumes per-plugin `AGENTS.md` files plus a symlinked skills tree. There is no marketplace install; symlink each plugin's directory.
+
+```bash
+# Clone the repo
+git clone https://github.com/joaquimscosta/arkhe-claude-plugins.git
+cd arkhe-claude-plugins
+
+# Enable experimental skill support (Codex CLI ≥ Dec 2025)
+codex --enable skills
+
+# Wire the bootstrap (required) plus any plugins you want
+mkdir -p ~/.codex/plugins/core
+cp .codex-marketplace/core/AGENTS.md ~/.codex/plugins/core/AGENTS.md
+ln -s "$(pwd)/plugins/core/skills" ~/.codex/plugins/core/skills
+
+# Repeat for each plugin you want
+mkdir -p ~/.codex/plugins/git
+cp .codex-marketplace/git/AGENTS.md ~/.codex/plugins/git/AGENTS.md
+ln -s "$(pwd)/plugins/git/skills" ~/.codex/plugins/git/skills
+```
+
+Each `AGENTS.md` contains a one-line pointer to the global `using-arkhe-skills` bootstrap (inside `core`). Install `core` first so the bootstrap is available in `~/.codex/plugins/core/skills/using-arkhe-skills/SKILL.md`.
+
+### Behavioral notes on Codex
+
+- **No native slash-command support.** Commands surface as **trigger phrases** at the top of `AGENTS.md`: e.g., *"When the user says 'create a PR' or 'open a pull request' or 'send for review'..."*. The agent matches user intent against those phrases and runs the inlined prompt body.
+- **AGENTS.md size cap.** Each `AGENTS.md` is generated to stay ≤ 32 KiB (Codex's `project_doc_max_bytes` default). Subagent-heavy commands inline the agent body, which can push large plugins (notably `core`) close to the cap; the build script asserts the limit and fails loudly if exceeded.
+- **Skills are still experimental.** Codex's `--enable skills` flag is opt-in. If it's removed in a future Codex release, the trigger-phrase content in `AGENTS.md` still surfaces all command bodies; only auto-invoke skills would degrade.
 
 ---
 

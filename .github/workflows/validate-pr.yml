@@ -6,6 +6,10 @@ on:
       - 'plugins/**'
       - '.claude-plugin/marketplace.json'
       - '.claude/skills/**'
+      - '.gemini-extensions/**'
+      - '.codex-marketplace/**'
+      - 'scripts/**'
+      - '.version-bump.json'
       - 'docs/**'
       - '*.md'
 
@@ -22,6 +26,7 @@ jobs:
       skills: ${{ steps.filter.outputs.skills }}
       research: ${{ steps.filter.outputs.research }}
       docs: ${{ steps.filter.outputs.docs }}
+      shims: ${{ steps.filter.outputs.shims }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -44,6 +49,18 @@ jobs:
               - 'docs/**'
               - 'plugins/**'
               - '*.md'
+            shims:
+              - 'plugins/**/skills/**'
+              - 'plugins/**/commands/**'
+              - 'plugins/**/.claude-plugin/plugin.json'
+              - 'plugins/**/README.md'
+              - '.claude-plugin/marketplace.json'
+              - '.gemini-extensions/**'
+              - '.codex-marketplace/**'
+              - 'scripts/build-shims.sh'
+              - 'scripts/transpile-commands.py'
+              - 'scripts/generate-codex-agents-md.py'
+              - 'scripts/update-plugin-readmes.py'
 
   validate-plugins:
     name: Plugin Validation
@@ -187,3 +204,49 @@ jobs:
         with:
           checks: 'links,versions,staleness,claude-md'
           fail-on: 'errors'
+
+  shim-drift:
+    name: Shim Drift Check
+    needs: detect-changes
+    if: needs.detect-changes.outputs.shims == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Regenerate shims
+        run: bash scripts/build-shims.sh
+
+      - name: Verify shims are in sync
+        run: |
+          if ! git diff --exit-code .gemini-extensions/ .codex-marketplace/ plugins/*/README.md; then
+            echo "::error::Shim drift detected. Run 'bash scripts/build-shims.sh' locally and commit the result."
+            exit 1
+          fi
+          echo "Shims are in sync with canonical sources."
+
+      - name: Verify intra-plugin version sync (Claude/Gemini/Codex per plugin)
+        run: |
+          # `bump-version.sh --check` without --plugin treats cross-plugin
+          # version differences as informational. To catch a plugin whose 3
+          # manifests have drifted out of sync, run --check per plugin.
+          failed_plugins=()
+          while IFS= read -r plugin; do
+            if ! bash scripts/bump-version.sh --plugin "$plugin" --check >/dev/null 2>&1; then
+              echo "::error::Plugin '$plugin' has version drift across its 3 manifests. Run 'bash scripts/bump-version.sh --plugin $plugin --check' locally for details."
+              failed_plugins+=("$plugin")
+            fi
+          done < <(jq -r '.files[].plugin' .version-bump.json | sort -u)
+          if [[ ${#failed_plugins[@]} -gt 0 ]]; then
+            echo "Drifted plugins: ${failed_plugins[*]}"
+            exit 1
+          fi
+          echo "All plugins are in version-sync across Claude/Gemini/Codex manifests."

@@ -1,0 +1,6 @@
+{
+  "name": "roadmap",
+  "description": "Product management, roadmap analysis, and solution architecture with multi-agent orchestration",
+  "version": "2.1.0",
+  "contextFileName": "GEMINI.md"
+}

@@ -1,0 +1,60 @@
+{
+  "_comment": "Per-plugin versioning. Each plugin owns its own version across 3 manifests (Claude + Gemini + Codex). Use `bump-version.sh --plugin <name> <version>` to bump a single plugin's three manifests in lockstep. Use --skip-shims to bump Claude-only.",
+  "files": [
+    { "path": "plugins/ai/.claude-plugin/plugin.json", "field": "version", "plugin": "ai", "platform": "claude" },
+    { "path": "plugins/core/.claude-plugin/plugin.json", "field": "version", "plugin": "core", "platform": "claude" },
+    { "path": "plugins/design-intent/.claude-plugin/plugin.json", "field": "version", "plugin": "design-intent", "platform": "claude" },
+    { "path": "plugins/devtools/.claude-plugin/plugin.json", "field": "version", "plugin": "devtools", "platform": "claude" },
+    { "path": "plugins/doc/.claude-plugin/plugin.json", "field": "version", "plugin": "doc", "platform": "claude" },
+    { "path": "plugins/git/.claude-plugin/plugin.json", "field": "version", "plugin": "git", "platform": "claude" },
+    { "path": "plugins/google-stitch/.claude-plugin/plugin.json", "field": "version", "plugin": "google-stitch", "platform": "claude" },
+    { "path": "plugins/lang/.claude-plugin/plugin.json", "field": "version", "plugin": "lang", "platform": "claude" },
+    { "path": "plugins/playwright/.claude-plugin/plugin.json", "field": "version", "plugin": "playwright", "platform": "claude" },
+    { "path": "plugins/ralph/.claude-plugin/plugin.json", "field": "version", "plugin": "ralph", "platform": "claude" },
+    { "path": "plugins/review/.claude-plugin/plugin.json", "field": "version", "plugin": "review", "platform": "claude" },
+    { "path": "plugins/roadmap/.claude-plugin/plugin.json", "field": "version", "plugin": "roadmap", "platform": "claude" },
+    { "path": "plugins/spring-boot/.claude-plugin/plugin.json", "field": "version", "plugin": "spring-boot", "platform": "claude" },
+    { "path": "plugins/startup/.claude-plugin/plugin.json", "field": "version", "plugin": "startup", "platform": "claude" },
+
+    { "path": ".gemini-extensions/ai/gemini-extension.json", "field": "version", "plugin": "ai", "platform": "gemini" },
+    { "path": ".gemini-extensions/core/gemini-extension.json", "field": "version", "plugin": "core", "platform": "gemini" },
+    { "path": ".gemini-extensions/design-intent/gemini-extension.json", "field": "version", "plugin": "design-intent", "platform": "gemini" },
+    { "path": ".gemini-extensions/devtools/gemini-extension.json", "field": "version", "plugin": "devtools", "platform": "gemini" },
+    { "path": ".gemini-extensions/doc/gemini-extension.json", "field": "version", "plugin": "doc", "platform": "gemini" },
+    { "path": ".gemini-extensions/git/gemini-extension.json", "field": "version", "plugin": "git", "platform": "gemini" },
+    { "path": ".gemini-extensions/google-stitch/gemini-extension.json", "field": "version", "plugin": "google-stitch", "platform": "gemini" },
+    { "path": ".gemini-extensions/lang/gemini-extension.json", "field": "version", "plugin": "lang", "platform": "gemini" },
+    { "path": ".gemini-extensions/playwright/gemini-extension.json", "field": "version", "plugin": "playwright", "platform": "gemini" },
+    { "path": ".gemini-extensions/ralph/gemini-extension.json", "field": "version", "plugin": "ralph", "platform": "gemini" },
+    { "path": ".gemini-extensions/review/gemini-extension.json", "field": "version", "plugin": "review", "platform": "gemini" },
+    { "path": ".gemini-extensions/roadmap/gemini-extension.json", "field": "version", "plugin": "roadmap", "platform": "gemini" },
+    { "path": ".gemini-extensions/spring-boot/gemini-extension.json", "field": "version", "plugin": "spring-boot", "platform": "gemini" },
+    { "path": ".gemini-extensions/startup/gemini-extension.json", "field": "version", "plugin": "startup", "platform": "gemini" },
+
+    { "path": ".codex-marketplace/ai/plugin.json", "field": "version", "plugin": "ai", "platform": "codex" },
+    { "path": ".codex-marketplace/core/plugin.json", "field": "version", "plugin": "core", "platform": "codex" },
+    { "path": ".codex-marketplace/design-intent/plugin.json", "field": "version", "plugin": "design-intent", "platform": "codex" },
+    { "path": ".codex-marketplace/devtools/plugin.json", "field": "version", "plugin": "devtools", "platform": "codex" },
+    { "path": ".codex-marketplace/doc/plugin.json", "field": "version", "plugin": "doc", "platform": "codex" },
+    { "path": ".codex-marketplace/git/plugin.json", "field": "version", "plugin": "git", "platform": "codex" },
+    { "path": ".codex-marketplace/google-stitch/plugin.json", "field": "version", "plugin": "google-stitch", "platform": "codex" },
+    { "path": ".codex-marketplace/lang/plugin.json", "field": "version", "plugin": "lang", "platform": "codex" },
+    { "path": ".codex-marketplace/playwright/plugin.json", "field": "version", "plugin": "playwright", "platform": "codex" },
+    { "path": ".codex-marketplace/ralph/plugin.json", "field": "version", "plugin": "ralph", "platform": "codex" },
+    { "path": ".codex-marketplace/review/plugin.json", "field": "version", "plugin": "review", "platform": "codex" },
+    { "path": ".codex-marketplace/roadmap/plugin.json", "field": "version", "plugin": "roadmap", "platform": "codex" },
+    { "path": ".codex-marketplace/spring-boot/plugin.json", "field": "version", "plugin": "spring-boot", "platform": "codex" },
+    { "path": ".codex-marketplace/startup/plugin.json", "field": "version", "plugin": "startup", "platform": "codex" }
+  ],
+  "audit": {
+    "exclude": [
+      "CHANGELOG.md",
+      "RELEASE-NOTES.md",
+      "node_modules",
+      ".git",
+      ".version-bump.json",
+      "scripts/bump-version.sh",
+      "external-repos"
+    ]
+  }
+}

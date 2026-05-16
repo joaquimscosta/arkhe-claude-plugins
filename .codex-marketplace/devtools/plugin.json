@@ -1,0 +1,5 @@
+{
+  "name": "devtools",
+  "description": "Developer tooling setup and management (SOPS secrets encryption, Claude Code environment setup, multi-ecosystem quality stack for JVM/Node.js/Python, Taskfile task runner setup and audit)",
+  "version": "2.2.0"
+}

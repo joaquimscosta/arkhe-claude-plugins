@@ -1,0 +1,5 @@
+{
+  "name": "startup",
+  "description": "Startup idea validation pipeline with 6-stage analysis, decision gates, and domain presets",
+  "version": "1.0.0"
+}
