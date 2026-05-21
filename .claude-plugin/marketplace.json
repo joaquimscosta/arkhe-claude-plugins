@@ -40,7 +40,7 @@
     {
       "name": "design-intent",
       "source": "./plugins/design-intent",
-      "description": "UI/UX Design Plugin - Visual fidelity from Figma/mockups, design system enforcement, and React UI prototyping with pattern memory. Focused exclusively on frontend visual implementation."
+      "description": "UI/UX Design Plugin - Visual fidelity from Figma/mockups, design system enforcement, React UI prototyping with live browser gallery, and pattern memory. Focused exclusively on frontend visual implementation."
     },
     {
       "name": "lang",
@@ -70,7 +70,7 @@
     {
       "name": "devtools",
       "source": "./plugins/devtools",
-      "description": "Developer tooling setup and management (SOPS secrets encryption, Claude Code environment setup, multi-ecosystem quality stack for JVM/Node.js/Python, Taskfile task runner setup and audit, Tilt local Kubernetes development setup and audit)"
+      "description": "Developer tooling setup and management (SOPS secrets encryption, Claude Code environment setup, multi-ecosystem quality stack for JVM/Node.js/Python, Taskfile task runner setup and audit, Tilt local Kubernetes development setup and audit, browser-companion live-preview server with cross-plugin arkhe-preview CLI)"
     },
     {
       "name": "startup",

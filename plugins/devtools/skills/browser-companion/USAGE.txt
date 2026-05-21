@@ -1,0 +1,82 @@
+arkhe-preview — agent↔browser live-preview server
+
+USAGE
+  arkhe-preview start [options]
+  arkhe-preview stop <session-dir>
+  arkhe-preview status <session-dir>
+  arkhe-preview --help
+
+COMMANDS
+
+  start         Launch a new preview server. Prints connection JSON to stdout
+                (one line). The agent writes HTML fragments into screen_dir;
+                connected browsers reload automatically.
+
+  stop          Stop the server. Sends SIGTERM, falls back to SIGKILL after 2s.
+                Cleans /tmp/* session dirs; leaves project-dir sessions intact
+                so content can be reviewed later.
+
+  status        Print {running, pid, url} JSON. Always exits 0.
+
+START OPTIONS
+
+  --project-dir <path>     Place session under <path>/.claude/preview/<id>/
+                           Default: /tmp/arkhe-preview-<id>/
+  --frame-template <path>  Override default HTML frame template
+                           Default: scripts/frame-template.html (sibling)
+  --helper <path>          Override default browser helper JS
+                           Default: scripts/helper.js (sibling)
+  --port <N>               Force a specific port
+                           Default: random in 49152-65535
+  --host <H>               Bind interface
+                           Default: 127.0.0.1
+  --url-host <H>           Hostname in returned URL JSON
+                           Default: matches --host
+  --owner-pid <PID>        Watchdog: shut down when PID disappears.
+                           Default: parent of parent shell (typically the
+                                    agent process). Pass 0 to disable.
+  --foreground             Run in current shell instead of nohup'ing
+  --background             Force background mode (overrides auto-foreground
+                           heuristics for Codex/Windows/Git-Bash)
+
+OUTPUT (start)
+
+  One JSON line on stdout containing:
+    type        "server-started"
+    port        Integer (chosen port)
+    host        Bound host
+    url_host    Hostname in URL field
+    url         "http://<url_host>:<port>"
+    screen_dir  Where to write HTML fragments
+    state_dir   Where events.jsonl, server-info, server.pid live
+    session_dir Parent of screen_dir and state_dir
+    pid         Server process PID
+
+EXIT CODES
+
+  0   Success / informational
+  1   User error (bad args, file not found)
+  2   Server-side failure (port unavailable, server crashed)
+
+EXAMPLES
+
+  # Start a session under the current project
+  arkhe-preview start --project-dir "$(pwd)"
+
+  # Use a custom frame template + helper
+  arkhe-preview start --project-dir "$PWD" \\
+    --frame-template ./my-frame.html \\
+    --helper ./my-helper.js
+
+  # Pin to port 8080
+  arkhe-preview start --project-dir "$PWD" --port 8080
+
+  # Status / stop
+  arkhe-preview status /tmp/arkhe-preview-12345-1700000000
+  arkhe-preview stop   /tmp/arkhe-preview-12345-1700000000
+
+SEE ALSO
+
+  Full protocol:  plugins/devtools/skills/browser-companion/WORKFLOW.md
+  Examples:       plugins/devtools/skills/browser-companion/EXAMPLES.md
+  Troubleshoot:   plugins/devtools/skills/browser-companion/TROUBLESHOOTING.md

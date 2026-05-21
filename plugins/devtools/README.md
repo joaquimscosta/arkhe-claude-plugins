@@ -14,6 +14,7 @@ Developer tooling setup and management plugin for Claude Code.
 | `quality-stack` | `/devtools:quality-stack` | JVM project quality/testing tooling audit and setup |
 | `taskfile-setup` | `/devtools:taskfile-setup` | Install Taskfile and scaffold/audit Taskfile.yml |
 | `tilt-setup` | `/devtools:tilt-setup` | Install Tilt and scaffold/audit Tiltfile + tilt/ for local Kubernetes development |
+| `browser-companion` | `arkhe-preview` CLI on PATH | Zero-dep agent↔browser live-preview server (HTTP + WebSocket + file watcher) |
 
 ## Claude Code Setup
 
@@ -63,3 +64,32 @@ Scans JVM projects (Gradle/Maven) to detect configured quality and testing tools
 2. **Setup** — User selects tools from the report, skill configures build files, creates config files, and verifies detection
 
 Run `/devtools:quality-stack` to audit your project's tooling.
+
+## Browser Companion
+
+Zero-dependency Node.js HTTP + WebSocket server that gives any skill a live-reloading browser preview with bidirectional event capture. Watches a content directory, wraps HTML fragments in a configurable frame template, broadcasts live-reload to connected browsers, and persists browser-side click events as JSONL for the agent to read.
+
+The skill ships a public CLI named `arkhe-preview` in `plugins/devtools/bin/`. Any plugin's skill can invoke it as a bare bash command (no need to know the devtools install path) — Claude Code adds plugin `bin/` directories to the Bash tool's PATH while the plugin is enabled.
+
+```bash
+# Start a session scoped to the current project
+arkhe-preview start --project-dir "$(pwd)"
+# → {"type":"server-started","url":"http://localhost:54123","screen_dir":"…/<id>/content", ...}
+
+# Write a fragment — browser auto-reloads
+echo '<h2>Hello</h2><button data-event="ok">OK</button>' > "$SCREEN_DIR/hello.html"
+
+# Read user clicks
+tail -f "$STATE_DIR/events.jsonl"
+
+# Stop when done
+arkhe-preview stop "$SESSION_DIR"
+```
+
+Two reference UI flavors ship under `skills/browser-companion/examples/`:
+- `brainstorm/` — multi-choice option lists with a selection indicator bar
+- `gallery/` — variant browsing in a Tailwind-styled sidebar
+
+These are static reference docs (copy what you need), not runtime presets. See [skills/browser-companion/SKILL.md](skills/browser-companion/SKILL.md) for the full reference and [skills/browser-companion/EXAMPLES.md](skills/browser-companion/EXAMPLES.md) for end-to-end walkthroughs.
+
+Inherits zero-dep server code from Jesse Vincent's [superpowers](https://github.com/obra/superpowers) project (MIT, 2025); see [skills/browser-companion/WORKFLOW.md > Attribution](skills/browser-companion/WORKFLOW.md#attribution).
