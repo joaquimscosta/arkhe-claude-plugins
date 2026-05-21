@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+# arkhe-preview — agent↔browser live-preview server CLI.
+#
+# Public CLI surface. Semver-bound from devtools v2.4.0.
+# Run `arkhe-preview --help` for full usage.
+#
+# Resolution: this wrapper is invokable as a bare command from any plugin's
+# Bash tool calls because Claude Code adds plugin bin/ directories to PATH
+# while the plugin is enabled. The wrapper resolves its sibling skill scripts
+# via ${BASH_SOURCE[0]}, NOT via cwd or relative paths — cwd at invocation
+# time is the project root, not the plugin dir.
+
+set -euo pipefail
+
+# Resolve absolute path to this script. Follow one level of symlink (in case
+# the marketplace installs via symlink for local-path plugins).
+src="${BASH_SOURCE[0]}"
+if [[ -L "$src" ]]; then
+  src="$(readlink "$src")"
+fi
+bin_dir="$(cd "$(dirname "$src")" && pwd)"
+
+# Skill scripts live at <plugin-root>/skills/browser-companion/scripts/
+plugin_root="$(cd "$bin_dir/.." && pwd)"
+script_dir="$plugin_root/skills/browser-companion/scripts"
+usage_file="$plugin_root/skills/browser-companion/USAGE.txt"
+
+if [[ ! -d "$script_dir" ]]; then
+  echo "arkhe-preview: cannot find skill scripts at $script_dir" >&2
+  echo "(devtools plugin layout may be corrupted — reinstall the plugin)" >&2
+  exit 2
+fi
+
+cmd="${1:-}"
+case "$cmd" in
+  start)
+    shift
+    exec "$script_dir/start-server.sh" "$@"
+    ;;
+  stop)
+    shift
+    exec "$script_dir/stop-server.sh" "$@"
+    ;;
+  status)
+    shift
+    exec "$script_dir/status-server.sh" "$@"
+    ;;
+  -h|--help|help|"")
+    if [[ -f "$usage_file" ]]; then
+      cat "$usage_file"
+    else
+      echo "arkhe-preview {start|stop|status|--help}" >&2
+    fi
+    exit 0
+    ;;
+  *)
+    echo "arkhe-preview: unknown subcommand: $cmd" >&2
+    echo "Run 'arkhe-preview --help' for usage." >&2
+    exit 1
+    ;;
+esac

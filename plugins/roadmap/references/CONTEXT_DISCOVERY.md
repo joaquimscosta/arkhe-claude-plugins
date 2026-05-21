@@ -8,10 +8,13 @@ Read `.arkhe.yaml` from the project root. Extract the `roadmap:` section:
 
 ```yaml
 roadmap:
-  output_dir: arkhe/roadmap       # Default: arkhe/roadmap
-  context_dir: .arkhe/roadmap     # Default: .arkhe/roadmap
-  status_file: docs/PROJECT-STATUS.md  # Default: docs/PROJECT-STATUS.md
+  output_dir: arkhe/roadmap                # Default: arkhe/roadmap
+  context_dir: .arkhe/roadmap              # Default: .arkhe/roadmap
+  status_file: docs/PROJECT-STATUS.md      # Default: docs/PROJECT-STATUS.md
+  plan_file: docs/PROJECT-ROADMAP.md       # Default: docs/PROJECT-ROADMAP.md
 ```
+
+**Legacy fallback**: If `plan_file` is unset and `docs/PROJECT-PLAN.md` exists while `docs/PROJECT-ROADMAP.md` does not, the `plan` mode treats the legacy path as `plan_file` and emits a one-time migration notice. Pin `plan_file` in `.arkhe.yaml` to keep the legacy name without the notice.
 
 ## Phase 2: Johnny Decimal Detection
 
@@ -64,7 +67,7 @@ arkhe/specs/*/spec.md
 ```
 
 Categorize findings:
-- **Status documents**: PROJECT-STATUS.md, roadmap.md, CHANGELOG.md
+- **Status documents**: PROJECT-STATUS.md, PROJECT-ROADMAP.md, PROJECT-PLAN.md (legacy), roadmap.md, CHANGELOG.md
 - **Gap analyses**: Documents identifying missing features or capabilities
 - **Specs**: Feature specifications with requirements
 - **ADRs**: Architecture Decision Records

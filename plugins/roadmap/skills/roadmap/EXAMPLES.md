@@ -41,9 +41,9 @@ _Generated: 2026-02-17_
 3. Design notification system — growing user need
 ```
 
-## Example 2: Gap Analysis
+## Example 2: Focused Status — Gaps
 
-**Input:** `/roadmap:roadmap gaps`
+**Input:** `/roadmap:roadmap status --focus=gaps`
 
 **Output:**
 
@@ -71,9 +71,9 @@ _Generated: 2026-02-17_
 3. Backup strategy — data loss risk
 ```
 
-## Example 3: Blockers Analysis
+## Example 3: Focused Status — Blockers
 
-**Input:** `/roadmap:roadmap blockers`
+**Input:** `/roadmap:roadmap status --focus=blockers`
 
 **Output:**
 
@@ -102,14 +102,14 @@ Stripe API keys → Payment module → Order checkout → Revenue features
 3. Complete design token migration (unblocks UI work)
 ```
 
-## Example 4: Delta Report
+## Example 4: Dry-Run Update
 
-**Input:** `/roadmap:roadmap delta`
+**Input:** `/roadmap:roadmap update --dry-run`
 
 **Output:**
 
 ```
-## Delta Report
+## Proposed Updates to docs/PROJECT-STATUS.md (dry-run — no changes written)
 _Comparing PROJECT-STATUS.md (2026-02-10) vs current codebase_
 
 ### New Since Last Update
@@ -135,9 +135,9 @@ _Comparing PROJECT-STATUS.md (2026-02-10) vs current codebase_
 | API endpoints | 12 | 15 | +3 |
 ```
 
-## Example 5: Risk Register
+## Example 5: Focused Status — Risks
 
-**Input:** `/roadmap:roadmap risks`
+**Input:** `/roadmap:roadmap status --focus=risks`
 
 **Output:**
 
@@ -153,9 +153,9 @@ _Comparing PROJECT-STATUS.md (2026-02-10) vs current codebase_
 | 5 | Design system debt | Medium | Low | Low | Schedule token migration sprint |
 ```
 
-## Example 6: Spec Pipeline
+## Example 6: Focused Status — Specs
 
-**Input:** `/roadmap:roadmap specs`
+**Input:** `/roadmap:roadmap status --focus=specs`
 
 **Output:**
 
@@ -234,9 +234,9 @@ Add CHANGELOG entries for 3 shipped features under [Unreleased]? (y/N)
 **After CHANGELOG (if plan exists and phase changed):**
 
 ```
-Phase status changed — syncing project plan...
+Phase status changed — syncing project roadmap...
 
-## Proposed Updates to docs/PROJECT-PLAN.md
+## Proposed Updates to docs/PROJECT-ROADMAP.md
 
 ### Phases
   + Phase 3e: Glossary Management + Dictionary Browser -> Done
@@ -247,7 +247,7 @@ Phase status changed — syncing project plan...
 ### ADR Traceability
   + ADR 0010: skrebe.app redirect -> linked to Phase 3f [AUTO-LINKED]
 
-Apply updates to docs/PROJECT-PLAN.md? (y/N)
+Apply updates to docs/PROJECT-ROADMAP.md? (y/N)
 ```
 
 ## Example 8: Status with Drift Warning
@@ -318,8 +318,8 @@ The skill adapts to any project structure:
 Review the proposed plan. Adjust any linkages? (Type corrections or 'approve')
 > Spec 000 → Phase 0. Otherwise approve.
 
-Writing to docs/PROJECT-PLAN.md...
-Plan created with 14 phases, 26 specs linked, 10 ADRs linked, 9 backlog themes.
+Writing to docs/PROJECT-ROADMAP.md...
+Roadmap created with 14 phases, 26 specs linked, 10 ADRs linked, 9 backlog themes.
 ```
 
 ---
@@ -331,8 +331,8 @@ Plan created with 14 phases, 26 specs linked, 10 ADRs linked, 9 backlog themes.
 **Output:**
 
 ```
-## Project Plan Summary
-_Source: docs/PROJECT-PLAN.md (last synced: 2026-04-03)_
+## Project Roadmap Summary
+_Source: docs/PROJECT-ROADMAP.md (last synced: 2026-04-03)_
 
 ### Timeline
 | Phase | Status | Specs | ADRs |
@@ -382,15 +382,15 @@ _Last sync: 2026-04-01 (bb4804d), 3 commits ago_
 - No new ADRs found
 - Phase 4: no completion signal (still In Progress)
 
-## Proposed Updates to docs/PROJECT-PLAN.md
+## Proposed Updates to docs/PROJECT-ROADMAP.md
 
   ~ Phase 4 evidence: added "PR #38 — case-insensitive TM matching"
   ~ Timeline last-synced date: 2026-04-01 → 2026-04-03
 
-Apply updates to docs/PROJECT-PLAN.md? (y/N)
+Apply updates to docs/PROJECT-ROADMAP.md? (y/N)
 > y
 
-Plan document updated. 2 changes applied.
+Roadmap document updated. 2 changes applied.
 ```
 
 ---
@@ -442,9 +442,9 @@ Apply updates to docs/PROJECT-STATUS.md? (y/N)
 
 Status document updated. 9 changes applied.
 
-Phase status changed — syncing project plan...
+Phase status changed — syncing project roadmap...
 
-## Proposed Updates to docs/PROJECT-PLAN.md
+## Proposed Updates to docs/PROJECT-ROADMAP.md
 
 ### Timeline
   ~ Phase 2 (Offline-First): In Progress -> Done
@@ -455,10 +455,10 @@ Phase status changed — syncing project plan...
   + Spec 029: Background Sync -> linked to Phase 2 [AUTO-LINKED]
   + Spec 030: Conflict Resolution UI -> linked to Phase 2 [AUTO-LINKED]
 
-Apply updates to docs/PROJECT-PLAN.md? (y/N)
+Apply updates to docs/PROJECT-ROADMAP.md? (y/N)
 > y
 
-Project plan updated. 5 changes applied.
+Project roadmap updated. 5 changes applied.
 ```
 
 ---
