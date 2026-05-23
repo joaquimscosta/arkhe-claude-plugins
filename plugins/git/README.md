@@ -270,25 +270,25 @@ Create isolated git worktrees with intelligent branch naming for parallel develo
 - Commit type detection (feat/fix/refactor/chore/docs)
 - Sequential numbering (shared with `/create-branch`)
 - Base branch selection (main, current, other)
-- Automatic `.worktrees/` gitignore safety check
+- Automatic `.claude/worktrees/` gitignore safety check
 - SDLC-develop spec integration
 
 **Dual Naming**:
-- Worktree directory: `.worktrees/{keywords}` (tab-completion friendly)
+- Worktree directory: `.claude/worktrees/{keywords}` (tab-completion friendly)
 - Git branch: `{type}/{number}-{keywords}` (conventional format)
 
 **Usage**:
 ```bash
-/worktree add user authentication          # .worktrees/user-authentication, feat/001-user-authentication
-/worktree fix login bug                    # .worktrees/login-bug, fix/002-login-bug
-/worktree refactor auth service            # .worktrees/auth-service, refactor/003-auth-service
+/worktree add user authentication          # .claude/worktrees/user-authentication, feat/001-user-authentication
+/worktree fix login bug                    # .claude/worktrees/login-bug, fix/002-login-bug
+/worktree refactor auth service            # .claude/worktrees/auth-service, refactor/003-auth-service
 /worktree                                  # Auto-generate from uncommitted changes
 ```
 
 **Management**:
 ```bash
 git worktree list                          # List all worktrees
-git worktree remove .worktrees/<name>      # Remove when done
+git worktree remove .claude/worktrees/<name>      # Remove when done
 ```
 
 **Skill**: `git/skills/creating-worktree/` (creating-worktree)
@@ -406,7 +406,7 @@ Creates isolated git worktrees with intelligent branch naming and auto-increment
 
 **Delivers**:
 1. **Intelligent Naming** - Type detection, keyword extraction, sequential numbering
-2. **Worktree Isolation** - Independent working directory in `.worktrees/`
+2. **Worktree Isolation** - Independent working directory in `.claude/worktrees/`
 3. **Safety Checks** - Gitignore verification, directory conflict detection
 4. **Base Branch Selection** - Choose main, current, or custom base
 
