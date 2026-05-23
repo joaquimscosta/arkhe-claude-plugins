@@ -68,6 +68,7 @@ Quality control and workflow orchestration utilities.
 - **Agents**: `deep-think-partner`, `deep-researcher`, `code-explorer`, `code-architect`, `code-reviewer`, `systematic-debugger`
 - **Commands**: `/discuss`, `/double-check` (`--deep` for multi-agent review), `/develop`, `/debug` (`--deep` for agent-assisted), `/think`, `/research`
 - **Skills**: `sdlc-develop` (command-invoke), `deep-research` (auto-invoke), `workflow-orchestration` (auto-invoke)
+- **UI routes** (`sdlc-develop` Phase 1): sibling design routes — live prototype gallery ideation (via `design-intent:prototype`), Claude Design link reference (WebFetch input), Stitch prompts, existing designs, or skip. Phase 4 **VERIFY UI** gate adds a **LIVE PREVIEW** option (via devtools `arkhe-preview`). Prototype/preview routes degrade gracefully when `design-intent`/`devtools` aren't installed.
 
 ### AI Plugin
 AI engineering toolkit for production-ready LLM applications.
@@ -630,7 +631,7 @@ See [docs/README.md](docs/README.md) "Maintaining This Documentation" section fo
 
 ## Plugin Versions
 
-Plugin versions: core 2.1.0, ai 1.0.0, doc 1.12.0, design-intent 2.3.0, git 1.1.0, google-stitch 2.0.0, lang 1.0.0, playwright 1.0.0, spring-boot 1.2.0, ralph 2.0.0, roadmap 3.0.0, review 2.0.0, devtools 2.4.0, startup 1.0.0. When making breaking changes, increment the major version and update `plugin.json`.
+Plugin versions: core 2.2.0, ai 1.0.0, doc 1.12.0, design-intent 2.3.0, git 1.1.0, google-stitch 2.0.0, lang 1.0.0, playwright 1.0.0, spring-boot 1.2.0, ralph 2.0.0, roadmap 3.0.0, review 2.0.0, devtools 2.4.0, startup 1.0.0. When making breaking changes, increment the major version and update `plugin.json`.
 
 ## Related Documentation
 

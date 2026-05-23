@@ -29,6 +29,24 @@
 
 ---
 
+<!-- Include this section only when UI work is detected (ui_work_detected = true). Delete otherwise. -->
+## Visual Direction
+
+**Route:** Prototype gallery | Claude Design link | Stitch | Existing designs | Text-only
+
+<!-- Prototype route -->
+**Picked variant:** {style name} — `{prototype_artifact_path}`
+**Manifest:** `{prototype_manifest_path}`
+
+<!-- Claude Design link route -->
+**Design link:** {design_link_ref}
+**Notes / reference:** {design_link_notes — fetched text, screenshot path, or description}
+
+<!-- Text fallback -->
+**Direction:** {style, layout, tone described by the user}
+
+---
+
 ## Constraints
 
 ### Performance
