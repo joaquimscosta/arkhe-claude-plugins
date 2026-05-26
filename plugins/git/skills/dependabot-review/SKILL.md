@@ -1,7 +1,7 @@
 ---
 name: dependabot-review
 description: Reviews open Dependabot PRs, classifies by risk (patch/minor/major, security, lockfile-only), and merges safe ones or advises on what to do. Use when user mentions "dependabot", "dependabot PRs", "dependency updates", "merge dependabot", "review dependabot", "dependency PRs", "bump PRs", "update dependencies", or runs /dependabot-review command.
-model: sonnet
+model: haiku
 ---
 
 # Dependabot PR Review
@@ -252,4 +252,4 @@ For more details, see:
 
 ## Version
 
-1.0.0
+1.0.1
