@@ -32,9 +32,12 @@ jobs:
       - name: Warn on gate skip
         if: github.event.inputs.skip_gates == 'true'
         working-directory: .
+        env:
+          ACTOR: ${{ github.actor }}
+          SHA: ${{ github.sha }}
         run: |
           echo "::warning::skip_gates=true — bypassing type-check, lint, format, tests, and build."
-          echo "::warning::Triggered by ${{ github.actor }} for ref ${{ github.sha }}."
+          echo "::warning::Triggered by $ACTOR for ref $SHA."
 
       # REPLACE: your node+pnpm setup (composite action or individual steps)
       - name: Install pnpm

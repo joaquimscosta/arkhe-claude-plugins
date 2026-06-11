@@ -32,5 +32,6 @@ jobs:
       - name: Build and deploy
         env:
           DEPLOY_TOKEN: ${{ secrets.__DEPLOY_SECRET__ }}
+          VERSION: ${{ steps.pkg.outputs.version }}
         run: |
-          echo "Replace with your deploy command for version ${{ steps.pkg.outputs.version }}"
+          echo "Replace with your deploy command. Version is in $VERSION."

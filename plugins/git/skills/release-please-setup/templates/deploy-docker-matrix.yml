@@ -45,10 +45,12 @@ jobs:
 
       # REPLACE: build your service (e.g. ./gradlew :my-service:build)
       - name: Build service
+        env:
+          COMPONENT: ${{ steps.component.outputs.component }}
+          VERSION: ${{ steps.component.outputs.version }}
         run: |
-          echo "Replace with your build command for ${{ steps.component.outputs.component }}"
-          # Example: ./gradlew :${{ steps.component.outputs.component }}:build \
-          #   -Pversion=${{ steps.component.outputs.version }} --no-daemon
+          echo "Replace with your build command for $COMPONENT"
+          # Example: ./gradlew :"$COMPONENT":build -Pversion="$VERSION" --no-daemon
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6
