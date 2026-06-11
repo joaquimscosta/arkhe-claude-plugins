@@ -1,0 +1,36 @@
+name: Deploy __COMPONENT__
+
+on:
+  push:
+    tags:
+      - "__COMPONENT__-v*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Read package version
+        id: pkg
+        run: echo "version=$(node -p "require('./__PACKAGE_PATH__/package.json').version")" >> "$GITHUB_OUTPUT"
+
+      - name: Verify tag matches package version
+        if: github.event_name == 'push'
+        env:
+          REF_NAME: ${{ github.ref_name }}
+          PKG_VERSION: ${{ steps.pkg.outputs.version }}
+        run: |
+          EXPECTED="__COMPONENT__-v${PKG_VERSION}"
+          [ "$REF_NAME" = "$EXPECTED" ] || { echo "::error::tag/version mismatch"; exit 1; }
+
+      # REPLACE: your build + deploy commands. Secrets via env: from GitHub secrets.
+      - name: Build and deploy
+        env:
+          DEPLOY_TOKEN: ${{ secrets.__DEPLOY_SECRET__ }}
+        run: |
+          echo "Replace with your deploy command for version ${{ steps.pkg.outputs.version }}"

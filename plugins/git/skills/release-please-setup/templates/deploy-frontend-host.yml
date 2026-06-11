@@ -1,0 +1,151 @@
+name: Deploy __COMPONENT__ (Frontend)
+
+# Tag-driven frontend deploy with pre-deploy quality gates.
+# Gates (type-check, lint, format, tests, build) can be bypassed for emergency
+# hotfixes via workflow_dispatch with skip_gates=true.
+on:
+  push:
+    tags:
+      - "__COMPONENT__-v*"
+  workflow_dispatch:
+    inputs:
+      skip_gates:
+        description: "Skip pre-deploy verification gates. Emergency hotfix only."
+        type: boolean
+        required: false
+        default: false
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: __PACKAGE_PATH__
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Warn on gate skip
+        if: github.event.inputs.skip_gates == 'true'
+        working-directory: .
+        run: |
+          echo "::warning::skip_gates=true — bypassing type-check, lint, format, tests, and build."
+          echo "::warning::Triggered by ${{ github.actor }} for ref ${{ github.sha }}."
+
+      # REPLACE: your node+pnpm setup (composite action or individual steps)
+      - name: Install pnpm
+        run: npm install -g pnpm@10.33.0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+          cache-dependency-path: __PACKAGE_PATH__/pnpm-lock.yaml
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      # --- Quality gates (each skipped when skip_gates=true) ---
+
+      - name: Type Check
+        if: github.event.inputs.skip_gates != 'true'
+        # REPLACE: your type-check command
+        run: pnpm run type-check
+
+      - name: Lint
+        if: github.event.inputs.skip_gates != 'true'
+        # REPLACE: your lint command
+        run: pnpm run lint
+
+      - name: Format Check
+        if: github.event.inputs.skip_gates != 'true'
+        # REPLACE: your format check command
+        run: pnpm run format:check
+
+      - name: Unit Tests
+        if: github.event.inputs.skip_gates != 'true'
+        # REPLACE: your test command (vitest, jest, etc.)
+        run: pnpm run test:run
+
+      - name: Build
+        if: github.event.inputs.skip_gates != 'true'
+        # REPLACE: your build command
+        run: pnpm run build
+
+      # --- Deploy ---
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ secrets.AWS_ECR_ROLE_ARN }}
+          aws-region: us-east-1
+
+      # REPLACE: trigger your host deploy (e.g. AWS Amplify start-job + poll,
+      # Vercel deploy hook, Netlify CLI, etc.)
+      #
+      # --- AWS Amplify reference (uncomment and adapt) ---
+      # - name: Trigger Amplify deploy
+      #   id: amplify_start
+      #   working-directory: .
+      #   run: |
+      #     set -e
+      #     JOB_ID=$(aws amplify start-job \
+      #       --app-id __APP_ID__ \
+      #       --branch-name main \
+      #       --job-type RELEASE \
+      #       --query 'jobSummary.jobId' \
+      #       --output text)
+      #     echo "Amplify job started: $JOB_ID"
+      #     echo "job_id=$JOB_ID" >> "$GITHUB_OUTPUT"
+      #
+      # - name: Wait for Amplify deploy to finish
+      #   working-directory: .
+      #   env:
+      #     JOB_ID: ${{ steps.amplify_start.outputs.job_id }}
+      #   run: |
+      #     set -e
+      #     MAX_WAIT_SECONDS=1800
+      #     POLL_INTERVAL=30
+      #     ELAPSED=0
+      #     while [ "$ELAPSED" -lt "$MAX_WAIT_SECONDS" ]; do
+      #       STATUS=$(aws amplify get-job \
+      #         --app-id __APP_ID__ \
+      #         --branch-name main \
+      #         --job-id "$JOB_ID" \
+      #         --query 'job.summary.status' \
+      #         --output text)
+      #       echo "Amplify job $JOB_ID status: $STATUS (elapsed: ${ELAPSED}s)"
+      #       case "$STATUS" in
+      #         SUCCEED)
+      #           echo "Amplify deploy succeeded."
+      #           exit 0
+      #           ;;
+      #         FAILED|CANCELLED)
+      #           echo "Amplify deploy ended with status: $STATUS"
+      #           echo "Inspect: https://us-east-1.console.aws.amazon.com/amplify/apps/__APP_ID__/branches/main/deployments/$JOB_ID"
+      #           exit 1
+      #           ;;
+      #         PENDING|PROVISIONING|RUNNING)
+      #           sleep $POLL_INTERVAL
+      #           ELAPSED=$((ELAPSED + POLL_INTERVAL))
+      #           ;;
+      #         *)
+      #           echo "Unexpected status: $STATUS"
+      #           exit 1
+      #           ;;
+      #       esac
+      #     done
+      #     echo "Timed out waiting for Amplify deploy after ${MAX_WAIT_SECONDS}s"
+      #     exit 1
+      # --- end Amplify reference ---
+
+      - name: Host deploy
+        working-directory: .
+        run: |
+          echo "Replace this step with your host deploy command."
+          echo "See commented Amplify reference above, or use Vercel/Netlify CLI."

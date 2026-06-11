@@ -1,0 +1,59 @@
+name: Deploy __APP__ to Fly
+
+# Tag-driven deploy. Push a `__COMPONENT__-v<version>` tag (by hand or via
+# release-please) and CI deploys to Fly.
+on:
+  push:
+    tags:
+      - "__COMPONENT__-v*"
+  workflow_dispatch:   # optional rollback / on-demand redeploy; remove for strict tag-gating
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-__COMPONENT__
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Build & deploy to Fly
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Read package version
+        id: pkg
+        run: |
+          VERSION=$(node -p "require('./__PACKAGE_PATH__/package.json').version")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Verify tag matches package version
+        if: github.event_name == 'push'
+        env:
+          REF_NAME: ${{ github.ref_name }}
+          PKG_VERSION: ${{ steps.pkg.outputs.version }}
+        run: |
+          EXPECTED="__COMPONENT__-v${PKG_VERSION}"
+          if [ "$REF_NAME" != "$EXPECTED" ]; then
+            echo "::error::Tag '$REF_NAME' does not match expected '$EXPECTED'"
+            exit 1
+          fi
+
+      - name: Setup flyctl
+        uses: superfly/flyctl-actions/setup-flyctl@master
+
+      # BUILD-TIME public env (e.g. NEXT_PUBLIC_*) must be passed as --build-arg.
+      # RUNTIME secrets live in Fly (`fly secrets set`) and are NOT set here.
+      - name: Deploy to Fly
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+          # REPLACE/REMOVE build-arg secrets as needed:
+          BUILD_ARG_PUBLIC_KEY: ${{ secrets.__BUILD_ARG_SECRET__ }}
+        run: |
+          fly deploy . \
+            --config __PACKAGE_PATH__/fly.toml \
+            --dockerfile __PACKAGE_PATH__/Dockerfile \
+            --remote-only \
+            --build-arg "__BUILD_ARG_NAME__=${BUILD_ARG_PUBLIC_KEY}"
