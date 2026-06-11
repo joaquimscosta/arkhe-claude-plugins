@@ -1,0 +1,27 @@
+name: Release Please
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run release-please
+        id: release
+        uses: googleapis/release-please-action@v5
+        with:
+          # REPLACE: use a PAT (secrets.REPO_TOKEN) instead of GITHUB_TOKEN if you
+          # need release-please's tag pushes to trigger your deploy workflows.
+          # GITHUB_TOKEN-created tags do NOT trigger other workflows (GitHub's
+          # recursive-workflow guard). A PAT or an app token is required for the
+          # tag-keyed deploy templates in this skill to fire.
+          token: ${{ secrets.REPO_TOKEN || secrets.GITHUB_TOKEN }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
