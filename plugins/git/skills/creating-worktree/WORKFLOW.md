@@ -13,7 +13,7 @@ The worktree creation process follows 9 main steps:
 4. **Extract Keywords** - Filter meaningful words from description
 5. **Find Next Number** - Auto-increment sequential number
 6. **Validate Worktree Directory** - Ensure no conflicts
-7. **Ensure Git Ignore** - Safety check for `.worktrees/`
+7. **Ensure Git Ignore** - Safety check for `.claude/worktrees/`
 8. **Ask Base Branch** - User selects base branch
 9. **Create Worktree** - Generate names and create worktree
 
@@ -64,7 +64,7 @@ Use `AskUserQuestion` with options:
 If user selects a spec:
 - Extract spec name (e.g., "01-user-auth")
 - Detect type from spec name or default to "feat"
-- Use spec name as keywords: worktree dir = `.worktrees/01-user-auth`, branch = `feat/01-user-auth`
+- Use spec name as keywords: worktree dir = `.claude/worktrees/01-user-auth`, branch = `feat/01-user-auth`
 
 If user selects "None":
 - Set MODE="auto-generate"
@@ -216,13 +216,13 @@ Check that the target worktree directory doesn't conflict.
 
 1. **Check directory exists**:
    ```bash
-   ls .worktrees/$KEYWORDS 2>/dev/null
+   ls .claude/worktrees/$KEYWORDS 2>/dev/null
    ```
 
 2. **If exists**: Report conflict and stop:
    ```
-   Worktree directory .worktrees/user-authentication already exists.
-   - Remove it: git worktree remove .worktrees/user-authentication
+   Worktree directory .claude/worktrees/user-authentication already exists.
+   - Remove it: git worktree remove .claude/worktrees/user-authentication
    - Or use a different description
    ```
 
@@ -237,19 +237,19 @@ Check that the target worktree directory doesn't conflict.
 
 ## Step 7: Ensure Git Ignore
 
-Verify `.worktrees/` is excluded from version control.
+Verify `.claude/worktrees/` is excluded from version control.
 
 **Process**:
 
 1. **Check if ignored**:
    ```bash
-   git check-ignore -q .worktrees 2>/dev/null
+   git check-ignore -q .claude/worktrees 2>/dev/null
    ```
 
 2. **If NOT ignored** (exit code non-zero):
    ```bash
-   echo '\n# Worktrees\n.worktrees/' >> .gitignore
-   git add .gitignore && git commit -m "chore: add .worktrees/ to .gitignore"
+   echo '\n# Worktrees\n.claude/worktrees/' >> .gitignore
+   git add .gitignore && git commit -m "chore: add .claude/worktrees/ to .gitignore"
    ```
 
 3. **If already ignored**: Proceed silently.
@@ -279,15 +279,15 @@ Generate the worktree and branch.
 
 | Component | Value |
 |-----------|-------|
-| Worktree directory | `.worktrees/user-authentication` |
+| Worktree directory | `.claude/worktrees/user-authentication` |
 | Git branch | `feat/004-user-authentication` |
 | Base branch | `main` |
 
 **Commands**:
 
 ```bash
-mkdir -p .worktrees
-git worktree add ".worktrees/$KEYWORDS" -b "$TYPE/$NEXT_NUM-$KEYWORDS" "$BASE_BRANCH"
+mkdir -p .claude/worktrees
+git worktree add ".claude/worktrees/$KEYWORDS" -b "$TYPE/$NEXT_NUM-$KEYWORDS" "$BASE_BRANCH"
 ```
 
 **Verify creation**:
@@ -299,11 +299,11 @@ git worktree list
 ```
 Worktree created successfully!
 
-  Path:   .worktrees/user-authentication
+  Path:   .claude/worktrees/user-authentication
   Branch: feat/004-user-authentication (based on main)
 
   List worktrees:  git worktree list
-  Remove when done: git worktree remove .worktrees/user-authentication
+  Remove when done: git worktree remove .claude/worktrees/user-authentication
 ```
 
 ---
@@ -337,26 +337,26 @@ Worktree created successfully!
    - Next: 003
    - Result: `003`
 
-6. **Validate**: `.worktrees/user-authentication` does not exist
+6. **Validate**: `.claude/worktrees/user-authentication` does not exist
 
-7. **Git Ignore**: `.worktrees/` already in `.gitignore`
+7. **Git Ignore**: `.claude/worktrees/` already in `.gitignore`
 
 8. **Ask Base Branch**: User selects "main"
 
 9. **Create Worktree**:
    ```bash
-   git worktree add .worktrees/user-authentication -b feat/003-user-authentication main
+   git worktree add .claude/worktrees/user-authentication -b feat/003-user-authentication main
    ```
 
 **Final Output**:
 ```
 Worktree created successfully!
 
-  Path:   .worktrees/user-authentication
+  Path:   .claude/worktrees/user-authentication
   Branch: feat/003-user-authentication (based on main)
 
   List worktrees:  git worktree list
-  Remove when done: git worktree remove .worktrees/user-authentication
+  Remove when done: git worktree remove .claude/worktrees/user-authentication
 ```
 
 ---
@@ -368,13 +368,13 @@ Worktree created successfully!
 1. **Create worktree**:
    ```bash
    /worktree add payment integration
-   # Path:   .worktrees/payment-integration
+   # Path:   .claude/worktrees/payment-integration
    # Branch: feat/015-payment-integration
    ```
 
 2. **Switch to worktree** (in your terminal or IDE):
    ```bash
-   cd .worktrees/payment-integration
+   cd .claude/worktrees/payment-integration
    ```
 
 3. **Work, commit, and push** (using `/commit` and `/create-pr`):
@@ -390,7 +390,7 @@ Worktree created successfully!
 
 5. **Remove worktree when done**:
    ```bash
-   git worktree remove .worktrees/payment-integration
+   git worktree remove .claude/worktrees/payment-integration
    ```
 
 ### Multiple Simultaneous Worktrees
@@ -398,9 +398,9 @@ Worktree created successfully!
 You can have multiple worktrees active at the same time:
 
 ```bash
-/worktree add user authentication   # .worktrees/user-authentication
-/worktree fix payment validation    # .worktrees/payment-validation
-/worktree refactor api endpoints    # .worktrees/api-endpoints
+/worktree add user authentication   # .claude/worktrees/user-authentication
+/worktree fix payment validation    # .claude/worktrees/payment-validation
+/worktree refactor api endpoints    # .claude/worktrees/api-endpoints
 ```
 
 Each operates independently with its own branch and working directory.
@@ -415,7 +415,7 @@ Each operates independently with its own branch and working directory.
 
 2. **Clean Up**: Remove worktrees when done to avoid clutter
    ```bash
-   git worktree remove .worktrees/<name>
+   git worktree remove .claude/worktrees/<name>
    ```
 
 3. **Use for Isolation**: Worktrees are ideal for:

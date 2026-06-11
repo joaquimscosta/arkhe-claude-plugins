@@ -10,7 +10,7 @@ Common issues and solutions for the worktree creation workflow.
 |-------|-------|----------|
 | Directory already exists | Previous worktree not cleaned up | Remove with `git worktree remove` |
 | Branch already exists | Branch created by `/create-branch` or manually | Use different description or delete branch |
-| Not git-ignored | `.worktrees/` not in `.gitignore` | Skill auto-adds it; manual: add to `.gitignore` |
+| Not git-ignored | `.claude/worktrees/` not in `.gitignore` | Skill auto-adds it; manual: add to `.gitignore` |
 | Base branch not found | Typo or branch not fetched | `git fetch` then retry |
 | Worktree locked | Crash during previous operation | `git worktree unlock` then remove |
 | Not a git repository | Running outside a git repo | `cd` to a git repository first |
@@ -22,7 +22,7 @@ Common issues and solutions for the worktree creation workflow.
 
 **Error**:
 ```
-Worktree directory .worktrees/user-authentication already exists.
+Worktree directory .claude/worktrees/user-authentication already exists.
 ```
 
 **Cause**: A previous worktree was not cleaned up, or a directory was manually created.
@@ -30,10 +30,10 @@ Worktree directory .worktrees/user-authentication already exists.
 **Solution**:
 ```bash
 # If it's a registered worktree, remove it properly
-git worktree remove .worktrees/user-authentication
+git worktree remove .claude/worktrees/user-authentication
 
 # If the directory is orphaned (not in git worktree list)
-rm -rf .worktrees/user-authentication
+rm -rf .claude/worktrees/user-authentication
 git worktree prune
 ```
 
@@ -62,22 +62,22 @@ fatal: a branch named 'feat/003-user-authentication' already exists
 
 ---
 
-## Issue 3: `.worktrees/` Not Git-Ignored
+## Issue 3: `.claude/worktrees/` Not Git-Ignored
 
 **Symptom**: Worktree contents appear in `git status`.
 
-**Cause**: `.worktrees/` was not added to `.gitignore`.
+**Cause**: `.claude/worktrees/` was not added to `.gitignore`.
 
 **Solution**: The skill automatically detects and fixes this. If it didn't:
 ```bash
-echo '\n# Worktrees\n.worktrees/' >> .gitignore
-git add .gitignore && git commit -m "chore: add .worktrees/ to .gitignore"
+echo '\n# Worktrees\n.claude/worktrees/' >> .gitignore
+git add .gitignore && git commit -m "chore: add .claude/worktrees/ to .gitignore"
 ```
 
 **Verification**:
 ```bash
-git check-ignore -v .worktrees
-# .gitignore:5:.worktrees/    .worktrees
+git check-ignore -v .claude/worktrees
+# .gitignore:5:.claude/worktrees/    .claude/worktrees
 ```
 
 ---
@@ -100,7 +100,7 @@ git fetch origin
 git branch -a
 
 # Create worktree from remote branch
-git worktree add .worktrees/my-feature -b feat/001-my-feature origin/develop
+git worktree add .claude/worktrees/my-feature -b feat/001-my-feature origin/develop
 ```
 
 ---
@@ -109,7 +109,7 @@ git worktree add .worktrees/my-feature -b feat/001-my-feature origin/develop
 
 **Error**:
 ```
-fatal: '.worktrees/user-authentication' is locked
+fatal: '.claude/worktrees/user-authentication' is locked
 ```
 
 **Cause**: A previous operation crashed or was interrupted, leaving a lock file.
@@ -117,10 +117,10 @@ fatal: '.worktrees/user-authentication' is locked
 **Solution**:
 ```bash
 # Unlock the worktree
-git worktree unlock .worktrees/user-authentication
+git worktree unlock .claude/worktrees/user-authentication
 
 # Then remove if needed
-git worktree remove .worktrees/user-authentication
+git worktree remove .claude/worktrees/user-authentication
 ```
 
 ---
@@ -234,17 +234,17 @@ git worktree list
 # List all worktrees
 git worktree list
 
-# Check if .worktrees/ is ignored
-git check-ignore -v .worktrees
+# Check if .claude/worktrees/ is ignored
+git check-ignore -v .claude/worktrees
 
 # Check current branches
 git branch --list
 
 # Check worktree status
-cd .worktrees/<name> && git status
+cd .claude/worktrees/<name> && git status
 
 # Remove a worktree
-git worktree remove .worktrees/<name>
+git worktree remove .claude/worktrees/<name>
 
 # Prune stale worktree references
 git worktree prune

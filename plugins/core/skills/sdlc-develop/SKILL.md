@@ -47,16 +47,23 @@ Lightweight orchestrator for 6-phase software development lifecycle with progres
 /core:develop add logout button --auto        # Autonomous mode
 /core:develop create plan for dashboard --plan-only  # Plan only
 /core:develop @arkhe/specs/001-user-auth/     # Resume existing plan
-/core:develop add dashboard page with charts  # UI work → triggers Stitch workflow
+/core:develop add dashboard page with charts  # UI work → choose a design route
+/core:develop add settings page                # UI work → ideate with live prototype gallery
 ```
 
-### UI Features with Stitch Integration
+### UI Features (Ideation, Stitch, or Design Link)
 
-When a feature involves UI work (detected keywords: `UI`, `page`, `screen`, `component`, `button`, `form`, etc.), the skill offers Stitch integration:
+When a feature involves UI work (detected keywords: `UI`, `page`, `screen`, `component`, `button`, `form`, etc.), Phase 1 offers a menu of **sibling design routes** — pick one:
 
-1. **Phase 1**: Detects UI keywords → offers to generate Stitch prompts
-2. **Phase 2**: Offers to generate screens from prompts via MCP
-3. **Phase 4**: For each UI task, offers `stitch-to-react` conversion
+1. **Phase 1 — choose a route** (4-option menu):
+   - **Ideate with live prototype gallery** *(recommended for exploration)* — invokes `design-intent:prototype` to generate 3 visual variations in a live browser gallery; the picked variant is captured into spec.md `## Visual Direction`.
+   - **Generate Stitch prompts** — author Stitch prompts via `authoring-stitch-prompts`.
+   - **I have a design reference** — provide a Figma/Stitch export path, **or** a Claude.ai design/share link (WebFetch with screenshot/description fallback for auth-gated links).
+   - **Skip** — implement UI directly.
+2. **Phase 2**: Carries the chosen direction into plan.md `## Design Assets` (and, for the Stitch route, offers screen generation via MCP).
+3. **Phase 4**: `stitch-to-react` conversion when Stitch exports exist; the **VERIFY UI** gate adds a **LIVE PREVIEW** option (via `arkhe-preview`) to review the real built UI in-browser against the captured direction.
+
+> **Soft dependencies:** the prototype-gallery and live-preview routes use the `design-intent` (prototype skill) and `devtools` (`arkhe-preview` CLI) plugins. When they aren't installed, the skill degrades gracefully to a text-based direction summary or a screenshot.
 
 ## Arguments
 

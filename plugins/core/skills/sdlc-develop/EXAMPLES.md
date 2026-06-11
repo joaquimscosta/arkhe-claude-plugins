@@ -24,6 +24,27 @@ arkhe/specs/001-user-auth/
 
 ---
 
+## UI Feature with Visual Ideation
+
+```bash
+/core:develop add a settings page with a profile form
+```
+
+**What happens:**
+1. Phase 1 detects UI keywords and offers the design-route menu.
+2. You pick **"Ideate with live prototype gallery"** → the skill invokes `design-intent:prototype`, which serves 3 visual variations in a live browser. The turn ends so you can click a favorite.
+3. On your next reply, the skill reads the prototype `events.jsonl`, captures the picked variant, and records it in spec.md `## Visual Direction`.
+4. Phase 2 carries that direction into plan.md `## Design Assets`.
+5. Phase 4 implements the page; at the **VERIFY UI** gate you pick **LIVE PREVIEW** to review the real built page in-browser against the picked variant.
+
+**Alternative routes (Phase 1 menu):**
+- **I have a design reference** — provide a Figma/Stitch export path, or paste a Claude.ai design/share link as the visual reference (screenshot/description fallback if the link is auth-gated).
+- **Generate Stitch prompts** / **Skip** — the original routes, unchanged.
+
+> Requires the `design-intent` and `devtools` plugins for the gallery/live-preview routes. Without them, the skill falls back to a text-based visual direction.
+
+---
+
 ## Plan Only
 
 ```bash

@@ -380,27 +380,31 @@ Command-invoke skill for generating brand icons as SVG and producing all require
 
 ### Prototype
 
-Command-invoke skill for rapid UI prototyping — generates 3 visually distinct HTML/CSS components from a single text prompt.
+Command-invoke skill for rapid UI prototyping — generates 3 visually distinct HTML/CSS components from a single text prompt and serves them in a live browser gallery for picking.
 
-**Invoked by:** `/prototype <component description>` or `/prototype --vary <1|2|3>`
+**Invoked by:** `/prototype <component description>`, `/prototype --vary <1|2|3>`, or `/prototype --continue`
 
 **Capabilities:**
 
 - Generates 3 design direction names using physical/material metaphors (e.g., "Tactile Risograph Press", "Kinetic Wireframe Suspension")
 - Creates 3 complete, self-contained HTML pages — each driven by a different design metaphor
-- Writes files to disk with a comparison `index.html` for side-by-side browser preview
-- Supports `--vary N` to generate 3 radical variations of any artifact
+- Serves them in a **live browser gallery** powered by `arkhe-preview` (devtools plugin): sidebar with 3 variant buttons, iframe canvas that swaps on click, click capture to `events.jsonl`
+- Supports `--vary N` to generate 3 radical variations of any artifact (gallery auto-reloads via file watcher)
+- Supports `--continue` to read the user's last pick from `events.jsonl` and surface the absolute path
 - Supports `--dir <path>` for custom output directory (default: `.prototype/`)
+- Turn-based: the skill writes everything and ends its turn; the user picks at their leisure; the next `/prototype --continue` or follow-up message resolves the pick
 - IP-safe: uses material/physical metaphors instead of artist or brand references
 
-**Pipeline integration:** Pick a favorite prototype, then run `/design-intent` to implement it with your actual component library and design system.
+**Requires:** `devtools` plugin (ships the `arkhe-preview` CLI).
+
+**Pipeline integration:** Click a favorite in the live gallery, run `/prototype --continue` to resolve the path, then `/design-intent implement <path>` to implement it with your actual component library and design system.
 
 **Documentation:**
 
 - `skills/prototype/SKILL.md` - Quick start and workflow
-- `skills/prototype/WORKFLOW.md` - Detailed prompt templates and index page template
-- `skills/prototype/EXAMPLES.md` - Usage examples
-- `skills/prototype/TROUBLESHOOTING.md` - Common issues
+- `skills/prototype/WORKFLOW.md` - Detailed prompt templates, manifest schema, gallery fragment
+- `skills/prototype/EXAMPLES.md` - Usage examples and sample sessions
+- `skills/prototype/TROUBLESHOOTING.md` - Common issues (port collision, server died, can't find pick)
 
 ## Project Structure After Setup
 
