@@ -12,7 +12,7 @@ The Git plugin provides intelligent Git workflow automation with context-aware r
 
 ## Components
 
-### Commands (9)
+### Commands (10)
 
 #### 1. /commit
 Context-aware Git commit assistant with smart pre-commit checks and submodule support.
@@ -295,7 +295,29 @@ git worktree remove .claude/worktrees/<name>      # Remove when done
 
 ---
 
-### Skills (8)
+#### 10. /release-please-setup
+Scaffold or migrate a repository onto [release-please](https://github.com/googleapis/release-please) for automated, conventional-commit-driven versioning and releases.
+
+**Features**:
+- Auto-discovers packages and detects release-type per package (`package.json`→node, `pyproject.toml`→python, `build.gradle(.kts)`→simple)
+- Generates `release-please-config.json` (mutual `exclude-paths` matrix for monorepos) and `.release-please-manifest.json`
+- **Greenfield** scaffolding or **`--migrate`** of an existing manual-tag repo (seeds the manifest from current versions)
+- Opt-in menu of tag-keyed deploy/publish templates: Fly.io, npm OIDC, GitHub Release asset, Docker→ECR matrix, gated host deploy, generic
+- Always run with `--dry-run` first and review before writing
+
+**Usage**:
+```bash
+/release-please-setup                       # greenfield scaffold (dry-run first)
+/release-please-setup --migrate             # migrate an existing manual-tag repo
+/release-please-setup --single              # force single-package mode
+/release-please-setup --globs "packages/*"  # restrict discovery globs
+```
+
+**Skill**: `git/skills/release-please-setup/` (release-please-setup)
+
+---
+
+### Skills (9)
 
 All commands are implemented as **Skills** - slash commands delegate to skills that contain inline Bash workflows executed by Claude.
 
@@ -411,6 +433,21 @@ Creates isolated git worktrees with intelligent branch naming and auto-increment
 4. **Base Branch Selection** - Choose main, current, or custom base
 
 **Documentation**: See `skills/creating-worktree/` directory for WORKFLOW, EXAMPLES, and TROUBLESHOOTING guides.
+
+#### 9. release-please-setup
+
+Scaffolds or migrates a repository onto release-please, generating its config + manifest + release workflow plus optional tag-keyed deploy/publish templates.
+
+**Location**: `skills/release-please-setup/`
+**Invoked by**: `/release-please-setup` command
+
+**Two Modes**:
+1. **Greenfield** — scaffold release-please into a repo with no existing release automation
+2. **Migration** (`--migrate`) — adopt release-please in an existing manual-tag repo; existing `<component>-v*` publish/deploy workflows keep working because release-please produces the same tags
+
+**Deterministic core** (Python, stdlib only): package discovery, release-type detection, config generation (mutual `exclude-paths` matrix), manifest seeding. **Templates**: six tag-keyed deploy/publish workflows derived from real production pipelines.
+
+**Documentation**: See `skills/release-please-setup/` for WORKFLOW, EXAMPLES, CONTRACT (the release-please/tag contract + token gotcha), and TROUBLESHOOTING.
 
 ---
 

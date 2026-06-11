@@ -96,9 +96,9 @@ Claude + Google Stitch workflow toolkit with MCP integration.
 
 ### Git Plugin
 Git workflow automation for commits, pull requests, branching, changelog generation, releases, and Dependabot triage.
-- **Commands**: `/commit`, `/create-pr`, `/create-branch`, `/changelog`, `/release`, `/resolve-review`, `/stale-branches`, `/cleanup-branches`, `/worktree`
-- **Skills**: 10 skills (4 auto-invoke: `generating-changelog`, `listing-stale-branches`, `cleaning-up-branches`, `resolving-pr-issues`; 6 command-invoke: `creating-branch`, `creating-commit`, `creating-pr`, `creating-worktree`, `releasing`, `dependabot-review`)
-- **Use**: Git commits, PRs, branches, changelogs, semantic versioning releases, release pipeline scaffolding, Dependabot PR triage
+- **Commands**: `/commit`, `/create-pr`, `/create-branch`, `/changelog`, `/release`, `/release-please-setup`, `/resolve-review`, `/stale-branches`, `/cleanup-branches`, `/worktree`
+- **Skills**: 11 skills (4 auto-invoke: `generating-changelog`, `listing-stale-branches`, `cleaning-up-branches`, `resolving-pr-issues`; 7 command-invoke: `creating-branch`, `creating-commit`, `creating-pr`, `creating-worktree`, `releasing`, `dependabot-review`, `release-please-setup`)
+- **Use**: Git commits, PRs, branches, changelogs, semantic versioning releases, release pipeline scaffolding, release-please setup/migration (monorepo + single-package + mixed-language, with tag-keyed deploy/publish templates), Dependabot PR triage
 
 ### Design Intent Plugin
 Design Intent for UI development that combines AI-assisted implementation with persistent pattern memory.
@@ -631,7 +631,7 @@ See [docs/README.md](docs/README.md) "Maintaining This Documentation" section fo
 
 ## Plugin Versions
 
-Plugin versions: core 2.2.0, ai 1.0.0, doc 1.12.0, design-intent 2.3.0, git 1.1.1, google-stitch 2.0.0, lang 1.0.0, playwright 1.0.0, spring-boot 1.2.0, ralph 2.0.0, roadmap 3.0.0, review 2.0.0, devtools 2.4.0, startup 1.0.0. When making breaking changes, increment the major version and update `plugin.json`.
+Plugin versions: core 2.2.0, ai 1.0.0, doc 1.12.0, design-intent 2.3.0, git 1.2.0, google-stitch 2.0.0, lang 1.0.0, playwright 1.0.0, spring-boot 1.2.0, ralph 2.0.0, roadmap 3.0.0, review 2.0.0, devtools 2.4.0, startup 1.0.0. When making breaking changes, increment the major version and update `plugin.json`.
 
 ## Related Documentation
 

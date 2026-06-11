@@ -2,6 +2,20 @@
 
 ---
 
+## Generated config includes directories that aren't packages
+
+**Symptom:** The dry-run lists more entries than you expected — e.g. build-output folders, a `desktop/` package excluded from your pnpm workspace, or non-deployable backend dirs all show up under `packages/` or `backend/`.
+
+**Cause:** Discovery is **glob-based** — it scans every directory matched by `--globs` and does not read `pnpm-workspace.yaml` excludes, `settings.gradle` module lists, or any curated package set. This is intentional: discovery is broad, and the **`--dry-run`-first workflow exists so you prune before writing**.
+
+**Fix:**
+
+1. Always run with `--dry-run` and review the package list.
+2. Narrow `--globs` (e.g. `--globs "packages/*"` instead of the defaults) to scope discovery.
+3. After writing, delete any unwanted entries from `release-please-config.json` **and** the matching keys in `.release-please-manifest.json` (keep the two in sync), and remove the pruned paths from every other package's `exclude-paths` list.
+
+---
+
 ## Release PR not created
 
 **Symptom:** The `release-please.yml` workflow runs on every push to main but never opens a Release PR.
