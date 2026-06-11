@@ -170,10 +170,10 @@ The script found `"version": "0.3.0"` in `packages/text-cli/package.json`, `"ver
 ### Run
 
 ```bash
-python3 "$SCRIPTS/release_please_setup.py" --root . --single --dry-run
+python3 "$SCRIPTS/release_please_setup.py" --root . --globs "." --single --dry-run
 ```
 
-Or without `--single` — the script auto-detects ≤1 package and uses single-package mode.
+**`--globs "."` is required for a root-level package.** The default globs (`packages/*,backend/*,frontend/*`) only match sub-directories, so without `--globs "."` a single-package-at-root repo discovers nothing and produces an empty config. Once the root package is discovered, `--single` is optional — the script auto-detects ≤1 package and uses single-package mode anyway — but it's clearer to pass it explicitly.
 
 ### Generated config
 

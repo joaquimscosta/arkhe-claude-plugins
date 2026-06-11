@@ -9,7 +9,7 @@ Invoke the `release-please-setup` skill to configure [release-please](https://gi
 Arguments (parse from user input, all optional):
 - `--migrate` — migrate an existing manual-tag repo (seed manifest from current versions) instead of greenfield.
 - `--single` — force single-package mode (skip monorepo exclude-paths matrix).
-- `--globs <glob[,glob]>` — package directory globs to scan (default: `packages/*`, `backend/*`, `frontend/*`, and repo root).
+- `--globs <glob[,glob]>` — package directory globs to scan (default: `packages/*`, `backend/*`, `frontend/*`). For a single package at the repo root, pass `--globs "."` (the defaults only match sub-directories).
 - `--initial <semver>` — initial version for greenfield packages (default `0.0.0`).
 - `--dry-run` — print generated files without writing.
 
