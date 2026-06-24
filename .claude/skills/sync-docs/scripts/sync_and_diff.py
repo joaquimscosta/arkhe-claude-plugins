@@ -300,7 +300,7 @@ def extract_doc_fields(content_map: Dict[str, str]) -> DocFields:
     skills_content = content_map.get("SKILLS.md", "")
     if skills_content:
         skill_fields = re.findall(
-            r"^\|\s*`([a-z][-a-z]*)`\s*\|\s*(?:No|Yes|Recommended)\s*\|",
+            r"^\|\s*`([a-z][-_a-z]*)`\s*\|\s*(?:No|Yes|Recommended)\s*\|",
             skills_content, re.MULTILINE,
         )
         fields.skills_frontmatter_fields = sorted(set(skill_fields))
