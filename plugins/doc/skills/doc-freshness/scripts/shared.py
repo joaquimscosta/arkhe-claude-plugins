@@ -212,6 +212,12 @@ def _update_fence_state(
         # Otherwise it's just content inside the code block
         return in_code_block, open_fence
 
+# Matches an inline code span: a run of N backticks closed by a run of N
+# backticks (CommonMark). Used to blank out code spans before link/img
+# extraction so that example markdown like `[label](url)` inside backticks
+# is not mistaken for a real link.
+_CODE_SPAN_RE = re.compile(r'(`+)(.+?)\1')
+
 # Matches [text](target) and [text](target "title")
 _INLINE_LINK_RE = re.compile(
     r'\[([^\]]*)\]\(([^)\s]+)(?:\s+"[^"]*")?\)'
@@ -293,7 +299,12 @@ def parse_markdown_links(content: str) -> List[Dict[str, object]]:
         if in_code_block or prev_state != in_code_block:
             continue
 
-        for match in _INLINE_LINK_RE.finditer(line):
+        # Blank out inline code spans first so example markdown such as
+        # `[label](url)` or `![alt](src)` inside backticks is not extracted
+        # as a real link. Real links outside the code span are preserved.
+        line_no_code = _CODE_SPAN_RE.sub('', line)
+
+        for match in _INLINE_LINK_RE.finditer(line_no_code):
             links.append({
                 "text": match.group(1),
                 "target": match.group(2),
@@ -301,10 +312,9 @@ def parse_markdown_links(content: str) -> List[Dict[str, object]]:
                 "type": "inline",
             })
 
-        # Strip inline backtick spans before checking HTML img tags
-        # to avoid matching <img src="..."> inside code spans
-        line_no_backticks = re.sub(r'`[^`]+`', '', line)
-        for match in _IMG_SRC_RE.finditer(line_no_backticks):
+        # Reuse the code-span-stripped line for HTML img tags too, so
+        # <img src="..."> inside code spans is likewise ignored.
+        for match in _IMG_SRC_RE.finditer(line_no_code):
             links.append({
                 "text": "(image)",
                 "target": match.group(1),
