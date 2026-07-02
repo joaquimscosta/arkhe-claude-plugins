@@ -137,7 +137,7 @@ Every template uses a subset of these `__TOKEN__` placeholders. Replace all that
 | Token | What to fill |
 |---|---|
 | `__COMPONENT__` | Tag prefix and component name, e.g. `user-service`, `skrebe-web`, `text-cli` |
-| `__PACKAGE_PATH__` | Relative path to the package directory, e.g. `packages/text-cli`, `frontend/sellabella-ui` |
+| `__PACKAGE_PATH__` | Relative path to the package directory, e.g. `packages/text-cli`, `frontend/acme-ui` |
 | `__APP__` | Human-readable Fly app display name used in the workflow name, e.g. `Skrebe Web` |
 | `__APP_ID__` | Host platform app identifier, e.g. Amplify app-id (`d1abc23xyz`) |
 | `__ARTIFACT_NAME__` | Base filename for the release asset (without version suffix), e.g. `my-extension` (produces `my-extension-1.2.3.vsix`) |

@@ -62,8 +62,8 @@ token: ${{ secrets.REPO_TOKEN || secrets.GITHUB_TOKEN }}
 
 The `|| secrets.GITHUB_TOKEN` fallback lets the workflow run in forks or repos where
 `REPO_TOKEN` hasn't been provisioned yet (useful during initial setup), while
-production repos should always have `REPO_TOKEN` set. The sellabella-dev organisation
-uses `secrets.REPO_TOKEN` for exactly this reason.
+production repos should always have `REPO_TOKEN` set, and most real setups
+use `secrets.REPO_TOKEN` for exactly this reason.
 
 ✅ With `REPO_TOKEN`: release-please pushes tag → tag-keyed deploy workflows fire.  
 ❌ With `GITHUB_TOKEN` only: release-please pushes tag → deploy workflows are skipped.
@@ -87,11 +87,11 @@ steps.<id>.outputs['<package-path>--patch']              # e.g. "0"
 
 The top-level `releases_created` output is `"true"` if **any** package was released.
 
-**Real sellabella example** — propagating the output to a downstream deploy job:
+**Real-world example** — propagating the output to a downstream deploy job:
 
 ```yaml
 outputs:
-  frontend-release-created: ${{ steps.release.outputs['frontend/sellabella-ui--release_created'] }}
+  frontend-release-created: ${{ steps.release.outputs['frontend/acme-ui--release_created'] }}
 ```
 
 A downstream job then conditions on:
@@ -121,7 +121,7 @@ and derive the component name at runtime:
 COMPONENT=$(echo "${{ github.event.release.tag_name }}" | sed 's/-v[0-9]*\.[0-9]*\.[0-9]*$//')
 ```
 
-This is the pattern used by sellabella's `release-affected-services.yml`, which
+This is the pattern used by a `release-affected-services.yml` workflow that
 builds all affected backend services from a single release event using a matrix.
 
 **Trade-offs:**

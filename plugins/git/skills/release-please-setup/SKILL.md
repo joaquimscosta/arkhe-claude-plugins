@@ -68,6 +68,6 @@ Monorepo: each package gets `include-component-in-tag: true`, `tag-separator: "-
 ## References
 
 - [WORKFLOW.md](WORKFLOW.md) — Greenfield and migration runbooks + placeholder reference table
-- [EXAMPLES.md](EXAMPLES.md) — Three worked examples (sellabella monorepo, papia-studio migration, single-package)
+- [EXAMPLES.md](EXAMPLES.md) — Three worked examples (acme monorepo, papia-studio migration, single-package)
 - [CONTRACT.md](CONTRACT.md) — Tag format, REPO_TOKEN gotcha, job outputs, trigger variants
 - [TROUBLESHOOTING.md](TROUBLESHOOTING.md) — Error reference

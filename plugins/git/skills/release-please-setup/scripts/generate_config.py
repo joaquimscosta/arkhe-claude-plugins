@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Build a release-please-config.json dict from a list of package dicts.
 
-Mirrors the sellabella-dev config: monorepos get include-component-in-tag,
-tag-separator '-', pre-major bump flags, and a mutual exclude-paths matrix
-(each package excludes every other package's path). Single-package repos get a
-minimal release-type-only entry. Stdlib only.
+Monorepos get include-component-in-tag, tag-separator '-', pre-major bump
+flags, and a mutual exclude-paths matrix (each package excludes every other
+package's path). Single-package repos get a minimal release-type-only entry.
+Stdlib only.
 """
 
 CONFIG_SCHEMA = "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json"

@@ -2,9 +2,9 @@
 
 ---
 
-## Example 1: sellabella-style monorepo (backend services + frontend)
+## Example 1: acme-style monorepo (backend services + frontend)
 
-**Scenario:** A Gradle/Spring Boot backend monorepo with 10+ services under `backend/` and a Next.js frontend at `frontend/sellabella-ui`. All packages use `release-type: simple` (Gradle) except the frontend which uses `node`.
+**Scenario:** A Gradle/Spring Boot backend monorepo with 10+ services under `backend/` and a Next.js frontend at `frontend/acme-ui`. All packages use `release-type: simple` (Gradle) except the frontend which uses `node`.
 
 ### Run
 
@@ -31,7 +31,7 @@ python3 "$SCRIPTS/release_please_setup.py" \
       "exclude-paths": [
         "backend/common-libs",
         "backend/analytics-service",
-        "frontend/sellabella-ui"
+        "frontend/acme-ui"
       ]
     },
     "backend/analytics-service": {
@@ -44,12 +44,12 @@ python3 "$SCRIPTS/release_please_setup.py" \
       "exclude-paths": [
         "backend/common-libs",
         "backend/user-service",
-        "frontend/sellabella-ui"
+        "frontend/acme-ui"
       ]
     },
-    "frontend/sellabella-ui": {
+    "frontend/acme-ui": {
       "release-type": "node",
-      "package-name": "sellabella-ui",
+      "package-name": "acme-ui",
       "bump-minor-pre-major": true,
       "bump-patch-for-minor-pre-major": true,
       "include-component-in-tag": true,
@@ -76,16 +76,16 @@ python3 "$SCRIPTS/release_please_setup.py" \
 {
   "backend/user-service": "0.0.0",
   "backend/analytics-service": "0.0.0",
-  "frontend/sellabella-ui": "0.0.0"
+  "frontend/acme-ui": "0.0.0"
 }
 ```
 
 ### Deploy templates to pair
 
 - **Backend services** → `deploy-docker-matrix.yml` (one workflow covers all services; derives component from tag at runtime using `sed 's/-v[0-9]*\.[0-9]*\.[0-9]*$//'`).
-- **Frontend** → `deploy-frontend-host.yml` (gated quality gates: type-check, lint, format, tests, build; then Amplify/Vercel deploy triggered on `sellabella-ui-v*`).
+- **Frontend** → `deploy-frontend-host.yml` (gated quality gates: type-check, lint, format, tests, build; then Amplify/Vercel deploy triggered on `acme-ui-v*`).
 
-Tags produced: `user-service-v1.2.0`, `analytics-service-v2.3.0`, `sellabella-ui-v0.5.1`.
+Tags produced: `user-service-v1.2.0`, `analytics-service-v2.3.0`, `acme-ui-v0.5.1`.
 
 ---
 

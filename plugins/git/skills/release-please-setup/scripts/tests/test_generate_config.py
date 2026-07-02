@@ -31,7 +31,7 @@ class GenerateConfigTest(unittest.TestCase):
         self.assertTrue(a["bump-patch-for-minor-pre-major"])
 
     def test_monorepo_exclude_paths_is_mutual_matrix(self):
-        # Mirrors sellabella: each package excludes every OTHER package path.
+        # Monorepo config: each package excludes every OTHER package path.
         pkgs = [_pkg("backend/a", "a"), _pkg("backend/b", "b"), _pkg("backend/c", "c")]
         cfg = generate_config(pkgs, single=False)
         self.assertEqual(cfg["packages"]["backend/a"]["exclude-paths"], ["backend/b", "backend/c"])
