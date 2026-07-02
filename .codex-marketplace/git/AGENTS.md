@@ -10,10 +10,11 @@ Git workflow automation (commit, PR, branching, changelog, release)
 - **creating-branch** — Creates feature branches with optimized short naming, auto-incrementing, and commit type detection (feat/fix/refactor). Supports manual descriptions and auto-generation from uncommitted git changes.…
 - **creating-commit** — Creates context-aware git commits with smart pre-commit checks, submodule support, and conventional commit message generation. Use when user requests to commit changes, stage and commit, check in cod…
 - **creating-pr** — Creates GitHub Pull Requests with existing PR detection, branch pushing, and intelligent title/body generation. Use when user requests to create pull request, open PR, update PR, push for review, rea…
-- **creating-worktree** — Creates isolated git worktrees in .worktrees/ with intelligent branch naming, auto-incrementing, and commit type detection (feat/fix/refactor). Supports manual descriptions and auto-generation from u…
+- **creating-worktree** — Creates isolated git worktrees in .claude/worktrees/ with intelligent branch naming, auto-incrementing, and commit type detection (feat/fix/refactor). Supports manual descriptions and auto-generation…
 - **dependabot-review** — Reviews open Dependabot PRs, classifies by risk (patch/minor/major, security, lockfile-only), and merges safe ones or advises on what to do. Use when user mentions "dependabot", "dependabot PRs", "de…
 - **generating-changelog** — Analyzes git commit history and generates professional changelogs with semantic versioning, conventional commit support, and multiple output formats (Keep a Changelog, Conventional, GitHub). Use when…
 - **listing-stale-branches** — Lists local and remote git branches that are candidates for cleanup — merged but not deleted, and inactive branches with no commits in a configurable period (default 3 months). Use when user mentions…
+- **release-please-setup** — Scaffold or migrate a repository onto release-please. Generates release-please-config.json, .release-please-manifest.json, and a release-please.yml workflow, plus an opt-in menu of tag-keyed deploy/p…
 - **releasing** — Automate semantic versioning releases with CHANGELOG validation, comparison link management, GitHub Actions workflow triggering, and monitoring. Scaffold release infrastructure for new projects. Use…
 - **resolving-pr-issues** — Multi-agent review resolution with trust-but-verify methodology. Accepts a PR number/URL or a local code-review report file. Extracts review comments, verifies each with parallel agents using confide…
 
@@ -212,6 +213,25 @@ The skill will handle repository detection, existing PR handling, branch pushing
 
 For detailed documentation, see `git/skills/creating-pr/SKILL.md`.
 
+### When the user says "/git:release-please-setup"
+
+Scaffold or migrate a repo onto release-please (config, manifest, release workflow) with optional tag-keyed deploy/publish templates
+
+# Release-Please Setup
+
+Invoke the `release-please-setup` skill to configure [release-please](https://github.com/googleapis/release-please) for the current repository.
+
+Arguments (parse from user input, all optional):
+- `--migrate` — migrate an existing manual-tag repo (seed manifest from current versions) instead of greenfield.
+- `--single` — force single-package mode (skip monorepo exclude-paths matrix).
+- `--globs <glob[,glob]>` — package directory globs to scan (default: `packages/*`, `backend/*`, `frontend/*`). For a single package at the repo root, pass `--globs "."` (the defaults only match sub-directories).
+- `--initial <semver>` — initial version for greenfield packages (default `0.0.0`).
+- `--dry-run` — print generated files without writing.
+
+Deploy/publish templates are copied **interactively**, not via a script flag: after generating the config + manifest, copy the relevant template(s) from `skills/release-please-setup/templates/` (`fly`, `npm-oidc`, `release-asset`, `docker-matrix`, `frontend-host`, `generic`) into `.github/workflows/` and fill their placeholders. See `WORKFLOW.md` for the menu and placeholder reference.
+
+Follow `SKILL.md`. Always run the generator in `--dry-run` first and show the user the diff before writing.
+
 ### When the user says "/git:release" (args: <version> | --setup [--skip-monitor])
 
 Automate semantic versioning releases or scaffold release infrastructure
@@ -318,7 +338,7 @@ For detailed documentation, see `git/skills/listing-stale-branches/SKILL.md`.
 
 ### When the user says "/git:worktree" (args: [description])
 
-Create a git worktree in the .worktrees/ directory for isolated parallel development
+Create a git worktree in the .claude/worktrees/ directory for isolated parallel development
 
 # Worktree Command
 
@@ -338,15 +358,15 @@ Creates isolated git worktrees with intelligent branch naming and auto-increment
 
 ```bash
 /worktree add user authentication
-# Worktree: .worktrees/user-authentication
+# Worktree: .claude/worktrees/user-authentication
 # Branch:   feat/003-user-authentication
 
 /worktree fix login bug
-# Worktree: .worktrees/login-bug
+# Worktree: .claude/worktrees/login-bug
 # Branch:   fix/004-login-bug
 
 /worktree
-# Auto-detected from changes: .worktrees/authentication-system
+# Auto-detected from changes: .claude/worktrees/authentication-system
 # Branch: feat/005-authentication-system
 ```
 

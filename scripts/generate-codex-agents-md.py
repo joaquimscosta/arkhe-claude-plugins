@@ -27,6 +27,9 @@ SIZE_LIMIT_BYTES = 32 * 1024  # 32 KiB
 # Cap each inlined agent body for Codex output. Gemini's TOML transpiler keeps
 # the full body — Codex's 32 KiB doc limit forces a condensed inline here.
 INLINED_AGENT_CHAR_CAP = 1500
+# Cap each inlined command body for the same reason — plugins with several
+# long commands can otherwise blow the per-file limit on their own.
+INLINED_COMMAND_CHAR_CAP = 2500
 
 BANNER = (
     "On Codex, this command runs inline; the agent it would invoke on "
@@ -137,6 +140,23 @@ def condense_agent_body(body: str, source_plugin: str, agent_name: str) -> str:
     return truncated + pointer
 
 
+def condense_command_body(body: str, rel_path: str) -> str:
+    """Truncate at INLINED_COMMAND_CHAR_CAP at a paragraph boundary.
+
+    Codex enforces 32 KiB per AGENTS.md. Plugins with several long commands
+    do not all fit verbatim, so keep the lead-in and point at the canonical
+    file for the rest.
+    """
+    if len(body) <= INLINED_COMMAND_CHAR_CAP:
+        return body
+    cutoff = body.rfind("\n\n", 0, INLINED_COMMAND_CHAR_CAP)
+    if cutoff < INLINED_COMMAND_CHAR_CAP // 2:
+        cutoff = INLINED_COMMAND_CHAR_CAP
+    truncated = body[:cutoff].rstrip()
+    pointer = f"\n\n_…full command body at `{rel_path}`._"
+    return truncated + pointer
+
+
 # ---------------------------------------------------------------------------
 # Section builders
 # ---------------------------------------------------------------------------
@@ -183,7 +203,7 @@ def build_commands_section(plugin_dir: Path) -> str:
         if desc:
             chunks.append(desc)
             chunks.append("")
-        body = body.strip()
+        body = condense_command_body(body.strip(), rel_path)
         if rel_path in SUBAGENT_HEAVY:
             source_plugin, agent_name = SUBAGENT_HEAVY[rel_path]
             agent_body = load_agent_body(source_plugin, agent_name)

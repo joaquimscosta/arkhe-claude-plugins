@@ -1,4 +1,4 @@
-description = "Create a git worktree in the .worktrees/ directory for isolated parallel development"
+description = "Create a git worktree in the .claude/worktrees/ directory for isolated parallel development"
 prompt = '''
 # Worktree Command
 
@@ -18,15 +18,15 @@ Creates isolated git worktrees with intelligent branch naming and auto-increment
 
 ```bash
 /worktree add user authentication
-# Worktree: .worktrees/user-authentication
+# Worktree: .claude/worktrees/user-authentication
 # Branch:   feat/003-user-authentication
 
 /worktree fix login bug
-# Worktree: .worktrees/login-bug
+# Worktree: .claude/worktrees/login-bug
 # Branch:   fix/004-login-bug
 
 /worktree
-# Auto-detected from changes: .worktrees/authentication-system
+# Auto-detected from changes: .claude/worktrees/authentication-system
 # Branch: feat/005-authentication-system
 ```
 
