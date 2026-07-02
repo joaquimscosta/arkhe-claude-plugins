@@ -1,12 +1,12 @@
 ---
 name: creating-worktree
-description: Creates isolated git worktrees in .worktrees/ with intelligent branch naming, auto-incrementing, and commit type detection (feat/fix/refactor). Supports manual descriptions and auto-generation from uncommitted git changes. Use when user requests to create worktree, start isolated work, parallel development, run /worktree command, or mentions "worktree".
+description: Creates isolated git worktrees in .claude/worktrees/ with intelligent branch naming, auto-incrementing, and commit type detection (feat/fix/refactor). Supports manual descriptions and auto-generation from uncommitted git changes. Use when user requests to create worktree, start isolated work, parallel development, run /worktree command, or mentions "worktree".
 model: haiku
 ---
 
 # Git Worktree Creation Workflow
 
-Create isolated git worktrees in `.worktrees/` with intelligent branch naming. Combines worktree isolation with the same naming convention as the `creating-branch` skill.
+Create isolated git worktrees in `.claude/worktrees/` with intelligent branch naming. Combines worktree isolation with the same naming convention as the `creating-branch` skill.
 
 ## Usage
 
@@ -25,15 +25,15 @@ The command takes a description and automatically detects the commit type.
 **Examples**:
 ```bash
 /worktree add user authentication
-# Worktree: .worktrees/user-authentication
+# Worktree: .claude/worktrees/user-authentication
 # Branch:   feat/001-user-authentication
 
 /worktree fix login bug
-# Worktree: .worktrees/login-bug
+# Worktree: .claude/worktrees/login-bug
 # Branch:   fix/002-login-bug
 
 /worktree refactor auth service
-# Worktree: .worktrees/auth-service
+# Worktree: .claude/worktrees/auth-service
 # Branch:   refactor/003-auth-service
 ```
 
@@ -66,7 +66,7 @@ This skill produces **dual names**:
 
 | Component | Format | Example |
 |-----------|--------|---------|
-| **Worktree directory** | `.worktrees/{keywords}` | `.worktrees/user-authentication` |
+| **Worktree directory** | `.claude/worktrees/{keywords}` | `.claude/worktrees/user-authentication` |
 | **Git branch** | `{type}/{number}-{keywords}` | `feat/001-user-authentication` |
 
 The directory uses just keywords (tab-completion friendly). The branch uses the full conventional format (consistent with `/create-branch`).
@@ -135,7 +135,7 @@ NEXT_NUM=$(printf "%03d" $((10#${MAX_NUM:-0} + 1)))
 
 ```bash
 # Check directory doesn't already exist
-ls .worktrees/$KEYWORDS 2>/dev/null
+ls .claude/worktrees/$KEYWORDS 2>/dev/null
 ```
 
 If it exists, report the conflict and stop. Suggest either a different description or removing the existing worktree.
@@ -149,17 +149,17 @@ If the branch exists, increment the number and retry.
 
 ### Step 4: Safety Check - Git Ignore
 
-Verify `.worktrees/` is git-ignored:
+Verify `.claude/worktrees/` is git-ignored:
 
 ```bash
-git check-ignore -q .worktrees 2>/dev/null
+git check-ignore -q .claude/worktrees 2>/dev/null
 ```
 
-If NOT ignored (exit code non-zero), add `.worktrees/` to `.gitignore`:
+If NOT ignored (exit code non-zero), add `.claude/worktrees/` to `.gitignore`:
 
 ```bash
-echo '\n# Worktrees\n.worktrees/' >> .gitignore
-git add .gitignore && git commit -m "chore: add .worktrees/ to .gitignore"
+echo '\n# Worktrees\n.claude/worktrees/' >> .gitignore
+git add .gitignore && git commit -m "chore: add .claude/worktrees/ to .gitignore"
 ```
 
 ### Step 5: Ask Base Branch
@@ -173,8 +173,8 @@ Use `AskUserQuestion` to ask which branch to base the worktree on:
 ### Step 6: Create Worktree
 
 ```bash
-mkdir -p .worktrees
-git worktree add ".worktrees/$KEYWORDS" -b "$TYPE/$NEXT_NUM-$KEYWORDS" "$BASE_BRANCH"
+mkdir -p .claude/worktrees
+git worktree add ".claude/worktrees/$KEYWORDS" -b "$TYPE/$NEXT_NUM-$KEYWORDS" "$BASE_BRANCH"
 ```
 
 Where `$BASE_BRANCH` is `main`, `HEAD`, or the user-specified branch.
@@ -182,10 +182,10 @@ Where `$BASE_BRANCH` is `main`, `HEAD`, or the user-specified branch.
 ### Step 7: Confirm Success
 
 Report:
-- Worktree path: `.worktrees/<keywords>`
+- Worktree path: `.claude/worktrees/<keywords>`
 - Git branch: `<type>/<number>-<keywords>` (based on `<base-branch>`)
 - List worktrees: `git worktree list`
-- Remove when done: `git worktree remove .worktrees/<keywords>`
+- Remove when done: `git worktree remove .claude/worktrees/<keywords>`
 
 ## Important Notes
 

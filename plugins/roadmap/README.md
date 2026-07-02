@@ -54,6 +54,39 @@ ln -s "$(pwd)/plugins/roadmap/skills" ~/.codex/plugins/roadmap/skills
 Codex surfaces commands as trigger phrases inside `AGENTS.md` (it has no native slash-command support). The `using-arkhe-skills` bootstrap pointer at the top of `AGENTS.md` is loaded on first turn.
 <!-- END cross-platform-install -->
 
+## Migration from 2.x → 3.0
+
+Version 3.0 collapses 9 modes into 4 and renames the default plan artifact. This is a **hard break** — old mode names no longer work.
+
+### Mode renames
+
+| Old (2.x) | New (3.0) |
+|-----------|-----------|
+| `/roadmap gaps` | `/roadmap status --focus=gaps` |
+| `/roadmap blockers` | `/roadmap status --focus=blockers` |
+| `/roadmap risks` | `/roadmap status --focus=risks` |
+| `/roadmap specs` | `/roadmap status --focus=specs` |
+| `/roadmap delta` | `/roadmap update --dry-run` |
+| `/roadmap status` | `/roadmap status` (unchanged; now renders all focus sections inline) |
+| `/roadmap update` | `/roadmap update` (unchanged) |
+| `/roadmap next` | `/roadmap next` (unchanged) |
+| `/roadmap plan ...` | `/roadmap plan ...` (unchanged subcommands) |
+
+### Artifact rename
+
+The default `plan_file` is now `docs/PROJECT-ROADMAP.md` (was `docs/PROJECT-PLAN.md`).
+
+- **No `.arkhe.yaml`**: If `docs/PROJECT-PLAN.md` exists and `docs/PROJECT-ROADMAP.md` does not, the `plan` mode auto-detects the legacy file, uses it, and emits a one-time rename notice. No action required, but renaming is recommended.
+- **Pinned `plan_file: docs/PROJECT-PLAN.md` in `.arkhe.yaml`**: keeps working silently.
+- **Fresh project**: `/roadmap plan scaffold` writes to `docs/PROJECT-ROADMAP.md`.
+
+To migrate explicitly:
+
+```bash
+mv docs/PROJECT-PLAN.md docs/PROJECT-ROADMAP.md
+git add docs/PROJECT-ROADMAP.md && git rm docs/PROJECT-PLAN.md
+```
+
 ## Components
 
 ### Skills (Read-Only Analysis)
@@ -61,7 +94,7 @@ Codex surfaces commands as trigger phrases inside `AGENTS.md` (it has no native 
 | Skill | Modes | Description |
 |-------|-------|-------------|
 | `pm` | `stories`, `prioritize`, `scope`, `validate`, `needs`, `compare`, `next` | Feature analysis from user perspective. `stories` auto-runs scope assessment as preamble |
-| `roadmap` | `status`, `gaps`, `next`, `delta`, `blockers`, `risks`, `update` (`--incremental`), `specs`, `plan` | Project health and progress tracking. `--incremental` for fast post-sprint sync |
+| `roadmap` | `status` (`--focus=<gaps\|blockers\|risks\|specs>`), `update` (`--dry-run`, `--incremental`), `next` (`--force`), `plan` (`scaffold\|show\|sync`) | Project health and progress tracking. 4 modes; focus flags drill into individual sections |
 | `architect` | `module`, `api`, `data-model`, `boundaries`, `patterns`, `decisions`, `frontend` | System architecture analysis with optional file persistence |
 | `refresh` | `init`, `check`, `all`, `project`, `architecture`, `documents` | Context directory scaffolding and drift detection |
 
@@ -104,8 +137,10 @@ roadmap:
   output_dir: arkhe/roadmap              # Where artifacts are written (default: arkhe/roadmap)
   context_dir: .arkhe/roadmap            # Where context files live (default: .arkhe/roadmap)
   status_file: docs/PROJECT-STATUS.md    # Status doc path (default: docs/PROJECT-STATUS.md)
-  plan_file: docs/PROJECT-PLAN.md        # Plan doc path (default: docs/PROJECT-PLAN.md)
+  plan_file: docs/PROJECT-ROADMAP.md     # Roadmap doc path (default: docs/PROJECT-ROADMAP.md)
 ```
+
+> **Legacy `PROJECT-PLAN.md`?** If `plan_file` is unset and `docs/PROJECT-PLAN.md` exists while `docs/PROJECT-ROADMAP.md` does not, the `plan` mode treats the legacy file as `plan_file` for backward compatibility and emits a one-time migration notice. Rename the file (`mv docs/PROJECT-PLAN.md docs/PROJECT-ROADMAP.md`) or pin `plan_file` in `.arkhe.yaml` to keep the old name without the notice.
 
 ### `.arkhe/roadmap/` — Rich Context Files
 
@@ -154,21 +189,30 @@ All components use a shared vocabulary for assessing module maturity:
 /roadmap:pm --deep scope dark-mode
 
 # Roadmap skill (light)
-/roadmap:roadmap status
-/roadmap:roadmap gaps
-/roadmap:roadmap blockers
+/roadmap:roadmap                              # Default: full status dashboard
+/roadmap:roadmap status                       # Same as above (explicit)
+/roadmap:roadmap status --focus=gaps          # Drill into gap analysis only
+/roadmap:roadmap status --focus=blockers      # Drill into blockers only
+/roadmap:roadmap status --focus=risks         # Drill into risk register only
+/roadmap:roadmap status --focus=specs         # Drill into spec pipeline only
 
 # Roadmap skill (deep -- 3 parallel perspectives + cross-reference synthesis)
 /roadmap:roadmap --deep status
-/roadmap:roadmap --deep risks
+/roadmap:roadmap --deep status --focus=risks
 
-# Incremental status update (fast post-sprint sync)
-/roadmap:roadmap update --incremental
+# Status doc updates
+/roadmap:roadmap update --dry-run             # Preview what update would change (no write)
+/roadmap:roadmap update                       # Apply full update (Phase A + Phase B)
+/roadmap:roadmap update --incremental         # Fast post-sprint sync (targeted edits)
 
-# Plan lifecycle
-/roadmap:roadmap plan scaffold        # Create initial plan from existing docs
-/roadmap:roadmap plan                 # Show consolidated plan view
-/roadmap:roadmap plan sync            # Update plan from git history
+# Next actions (cached, merge-aware)
+/roadmap:roadmap next                         # Returns cached or recalculates
+/roadmap:roadmap next --force                 # Force recalculation (still merges)
+
+# Roadmap lifecycle (PROJECT-ROADMAP.md)
+/roadmap:roadmap plan scaffold                # Create initial roadmap from existing docs
+/roadmap:roadmap plan                         # Show consolidated roadmap view
+/roadmap:roadmap plan sync                    # Update roadmap from git history
 
 # Architect skill (light — now includes quality assessment + optional save)
 /roadmap:architect module payments

@@ -6,7 +6,7 @@ description: >
   comparing plan vs reality, documenting risks, or planning next milestones.
   Triggers: "roadmap", "project status", "blockers", "risks", "progress", "next milestone",
   "gaps", "what's done".
-argument-hint: "[--deep] status | gaps | next [--force] | delta | blockers | risks | update [--incremental] | specs | plan [scaffold|show|sync]"
+argument-hint: "[--deep] [status [--focus=<gaps|blockers|risks|specs>] | update [--dry-run] [--incremental] | next [--force] | plan [scaffold|show|sync]]"
 allowed-tools: Read, Glob, Grep, Write, Bash
 ---
 
@@ -21,12 +21,10 @@ Run the shared context discovery protocol in [CONTEXT_DISCOVERY.md](../../refere
 | Mode | Required Phases | Scan Depth |
 |------|----------------|------------|
 | `plan show` | 1 (config) | None — reads `{plan_file}` directly |
-| `specs` | 1, 5 | Light — config + doc scan for spec files |
-| `gaps` | 1, 3, 5 | Light — config, rich context, docs |
-| `delta` | 1, 5, 7 | Medium — config, docs, codebase scan |
 | `next` (cached) | 1 (config) | None — reads cached file + git drift check |
+| `update --dry-run` | 1, 5, 7 | Medium — config, docs, codebase scan (no write) |
+| `status` (with or without `--focus`) | 1-7 | Thorough — full protocol |
 | `next` (recalc) | 1-7 | Thorough — full protocol |
-| `status`, `blockers`, `risks` | 1-7 | Thorough — full protocol |
 | `update`, `update --incremental` | 1-7 | Thorough — full protocol |
 | `plan scaffold`, `plan sync` | 1-7 | Thorough — full protocol |
 
@@ -38,16 +36,11 @@ Parse from `$ARGUMENTS`:
 
 | Mode | Description |
 |------|-------------|
-| `status` | Overall dashboard — modules, phases, completion + drift detection |
-| `gaps` | Gap analysis status — open/closed/in-progress with evidence |
+| `status` | Overall dashboard — modules, phases, completion + drift detection. Renders Gaps, Blockers, Risks, and Specs as inline sections. Add `--focus=<gaps\|blockers\|risks\|specs>` to render only one section |
+| `update` | Git-aware status doc update (Phase A: what shipped + Phase B: full scan + auto-chains `plan sync`). Add `--dry-run` to preview the diff without writing. Add `--incremental` for post-sprint targeted edits only |
 | `next` | Prioritized recommendations with caching and smart merge. Saves to `{output_dir}/next-actions.md`. Returns cached results if <3 feat/fix commits and status doc unchanged; otherwise merge-based recalculation that preserves uncompleted items and user additions. Add `--force` to recalculate (still merges; delete file manually for clean slate) |
-| `delta` | What changed since last assessment (read-only comparison) |
-| `blockers` | Blocking chain analysis with critical path |
-| `risks` | Risk register with likelihood/impact scoring |
-| `update` | Git-aware status doc update (Phase A: what shipped + Phase B: full scan + auto-chains `plan sync`). Add `--incremental` for post-sprint targeted edits only |
-| `specs` | Spec pipeline verification against codebase. Cross-references `{plan_file}` for phase linkage if available |
-| `plan` | Project plan lifecycle — `scaffold` (create), `show` (read), `sync` (update). Defaults to `show` if plan exists, `scaffold` if not |
-| _(none)_ | Full dashboard (combines status + gaps + next) |
+| `plan` | Project roadmap lifecycle — `scaffold` (create), `show` (read), `sync` (update). Defaults to `show` if roadmap exists, `scaffold` if not |
+| _(none)_ | Defaults to `status`. Footer suggests `/roadmap next` if next-actions.md is stale |
 
 ## Module Maturity Scale
 
@@ -59,11 +52,28 @@ Rate each module using the shared vocabulary in [MATURITY_SCALE.md](../../refere
 
 Produce a status dashboard with module maturity table, then detail: What's working, What's planned, What's missing.
 
+After producing the dashboard, render four focus sections inline:
+- **Gaps** — open/closed/in-progress with evidence (cross-references all gap analysis documents)
+- **Blockers** — blocking chain analysis with critical path; for each blocker: what it blocks, owner, what's needed
+- **Risks** — risk register with Likelihood (H/M/L) x Impact (H/M/L) scoring and suggested mitigations
+- **Specs** — spec pipeline verification against codebase evidence (not just what the spec says). If `{plan_file}` exists, cross-reference to show which phase each spec belongs to and flag unlinked specs
+
+With `--focus=<gaps|blockers|risks|specs>`, render only that section (skip the dashboard preamble and other sections).
+
 After producing the dashboard, run drift detection: if 3+ feat/fix commits exist since last `{status_file}` update, append a staleness notice suggesting `/roadmap update`.
 
-### `gaps`
+### `update`
 
-Cross-reference all gap analysis documents. For each gap: original report, current status (Open/In Progress/Closed), evidence of closure.
+Git-aware status document update. See [WORKFLOW.md](WORKFLOW.md) § `update` for the full Phase A (git history scan) + Phase B (codebase scan + write) protocol.
+
+Key behaviors:
+- Shows "What Shipped" summary before scanning
+- Diff preview with `+`/`-`/`~` markers, requires confirmation before writing
+- Checks CHANGELOG.md for gaps (offers to add entries)
+- Auto-chains into `plan sync` when phase/spec status changes detected
+- Next `/roadmap next` will detect status doc changes and trigger merge-based recalculation (preserves uncompleted items)
+- `--dry-run` variant: runs Phase A + Phase B but stops at the diff preview without prompting or writing — read-only comparison of status doc vs current codebase
+- `--incremental` variant: surgical targeted edits only (skips Phase B full scan)
 
 ### `next`
 
@@ -77,44 +87,18 @@ Key behaviors:
 - Shows merge diff preview with `+`/`-`/`~`/`=` markers before writing (confirmation required)
 - Combines: unclosed gaps, unstarted specs, maturity imbalances, plan backlog themes
 
-### `delta`
-
-Compare the status document against current codebase state. Highlight: new files/modules, closed gaps, new issues, migration count changes.
-
-### `blockers`
-
-Trace blocking chains. For each blocker: what it blocks, who owns it, what's needed to unblock. Identify critical path (longest chain).
-
-### `risks`
-
-Risk register with Likelihood (H/M/L) x Impact (H/M/L) scoring and suggested mitigations.
-
-### `update`
-
-Git-aware status document update. See [WORKFLOW.md](WORKFLOW.md) § `update` for the full Phase A (git history scan) + Phase B (codebase scan + write) protocol.
-
-Key behaviors:
-- Shows "What Shipped" summary before scanning
-- Diff preview with `+`/`-`/`~` markers, requires confirmation before writing
-- Checks CHANGELOG.md for gaps (offers to add entries)
-- Auto-chains into `plan sync` when phase/spec status changes detected
-- Next `/roadmap next` will detect status doc changes and trigger merge-based recalculation (preserves uncompleted items)
-- `--incremental` variant: surgical targeted edits only (skips Phase B full scan)
-
-### `specs`
-
-Spec pipeline verification — verify status against codebase evidence, not just what the spec says. If `{plan_file}` exists, cross-reference to show which phase each spec belongs to and flag unlinked specs.
-
 ### `plan`
 
-Consolidated project plan lifecycle. Read `plan_file` from `.arkhe.yaml` (default: `docs/PROJECT-PLAN.md`).
+Consolidated project roadmap lifecycle. Read `plan_file` from `.arkhe.yaml` (default: `docs/PROJECT-ROADMAP.md`).
 
 | Subcommand | Description |
 |------------|-------------|
-| `scaffold` | Create initial PROJECT-PLAN.md using hybrid linking algorithm — see [WORKFLOW.md](WORKFLOW.md) § `plan scaffold` |
+| `scaffold` | Create initial PROJECT-ROADMAP.md using hybrid linking algorithm — see [WORKFLOW.md](WORKFLOW.md) § `plan scaffold` |
 | `show` | Read-only summary with timeline, progress stats, active phases, drift detection |
 | `sync` | Git-aware update with auto-detected links — see [WORKFLOW.md](WORKFLOW.md) § `plan sync` |
-| _(none)_ | Default to `show` if plan exists; `scaffold` if not |
+| _(none)_ | Default to `show` if roadmap exists; `scaffold` if not |
+
+**Legacy file fallback**: If `{plan_file}` is unset in `.arkhe.yaml` and `docs/PROJECT-PLAN.md` exists while `docs/PROJECT-ROADMAP.md` does not, treat the legacy path as `{plan_file}` for this run and emit a one-time migration notice suggesting `mv docs/PROJECT-PLAN.md docs/PROJECT-ROADMAP.md` (or pinning `plan_file` in `.arkhe.yaml`).
 
 ## Output Rules
 

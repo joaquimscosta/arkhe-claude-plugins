@@ -15,18 +15,18 @@ Real-world examples demonstrating all worktree creation modes and scenarios.
 ```
 Worktree created successfully!
 
-  Path:   .worktrees/user-authentication
+  Path:   .claude/worktrees/user-authentication
   Branch: feat/001-user-authentication (based on main)
 
   List worktrees:  git worktree list
-  Remove when done: git worktree remove .worktrees/user-authentication
+  Remove when done: git worktree remove .claude/worktrees/user-authentication
 ```
 
 **What happened**:
 - Detected "add" -> `feat` type
 - Extracted keywords: "user", "authentication"
 - Found next number: 001
-- Created worktree at `.worktrees/user-authentication`
+- Created worktree at `.claude/worktrees/user-authentication`
 - Created branch `feat/001-user-authentication` from `main`
 
 ---
@@ -42,11 +42,11 @@ Worktree created successfully!
 ```
 Worktree created successfully!
 
-  Path:   .worktrees/login-validation
+  Path:   .claude/worktrees/login-validation
   Branch: fix/002-login-validation (based on main)
 
   List worktrees:  git worktree list
-  Remove when done: git worktree remove .worktrees/login-validation
+  Remove when done: git worktree remove .claude/worktrees/login-validation
 ```
 
 **What happened**:
@@ -67,7 +67,7 @@ Worktree created successfully!
 ```
 Worktree created successfully!
 
-  Path:   .worktrees/auth-service
+  Path:   .claude/worktrees/auth-service
   Branch: refactor/003-auth-service (based on main)
 ```
 
@@ -84,7 +84,7 @@ Worktree created successfully!
 ```
 Worktree created successfully!
 
-  Path:   .worktrees/api-endpoints
+  Path:   .claude/worktrees/api-endpoints
   Branch: docs/004-api-endpoints (based on main)
 ```
 
@@ -112,7 +112,7 @@ Auto-detected from changes: auth module modifications
 
 Worktree created successfully!
 
-  Path:   .worktrees/auth-login
+  Path:   .claude/worktrees/auth-login
   Branch: feat/005-auth-login (based on main)
   (based on: src/auth/login.ts, src/auth/session.ts, src/auth/oauth.ts)
 ```
@@ -138,7 +138,7 @@ Which branch should this worktree be based on?
 ```
 Worktree created successfully!
 
-  Path:   .worktrees/payment-integration
+  Path:   .claude/worktrees/payment-integration
   Branch: feat/006-payment-integration (based on feat/001-user-authentication)
 ```
 
@@ -172,7 +172,7 @@ Select a feature spec for this worktree:
 ```
 Worktree created successfully!
 
-  Path:   .worktrees/02-dashboard
+  Path:   .claude/worktrees/02-dashboard
   Branch: feat/02-dashboard (based on main)
 ```
 
@@ -189,7 +189,7 @@ Worktree created successfully!
 ```
 Worktree created successfully!
 
-  Path:   .worktrees/user-authentication
+  Path:   .claude/worktrees/user-authentication
   Branch: feat/007-user-authentication (based on main)
 ```
 
@@ -215,18 +215,18 @@ feat/003-dashboard
 ## Example 10: Multiple Simultaneous Worktrees
 
 ```bash
-/worktree add user authentication    # .worktrees/user-authentication
-/worktree fix payment validation     # .worktrees/payment-validation
-/worktree refactor api endpoints     # .worktrees/api-endpoints
+/worktree add user authentication    # .claude/worktrees/user-authentication
+/worktree fix payment validation     # .claude/worktrees/payment-validation
+/worktree refactor api endpoints     # .claude/worktrees/api-endpoints
 ```
 
 **Verify all worktrees**:
 ```bash
 git worktree list
 # /Users/you/project                     abc1234 [main]
-# /Users/you/project/.worktrees/user-authentication  def5678 [feat/008-user-authentication]
-# /Users/you/project/.worktrees/payment-validation    ghi9012 [fix/009-payment-validation]
-# /Users/you/project/.worktrees/api-endpoints         jkl3456 [refactor/010-api-endpoints]
+# /Users/you/project/.claude/worktrees/user-authentication  def5678 [feat/008-user-authentication]
+# /Users/you/project/.claude/worktrees/payment-validation    ghi9012 [fix/009-payment-validation]
+# /Users/you/project/.claude/worktrees/api-endpoints         jkl3456 [refactor/010-api-endpoints]
 ```
 
 ---
@@ -236,13 +236,13 @@ git worktree list
 ### Create worktree
 ```bash
 /worktree add newsletter signup
-# Path:   .worktrees/newsletter-signup
+# Path:   .claude/worktrees/newsletter-signup
 # Branch: feat/011-newsletter-signup (based on main)
 ```
 
 ### Switch to worktree and work
 ```bash
-cd .worktrees/newsletter-signup
+cd .claude/worktrees/newsletter-signup
 # ... make changes ...
 ```
 
@@ -260,7 +260,7 @@ cd ../..
 
 ### Clean up after merge
 ```bash
-git worktree remove .worktrees/newsletter-signup
+git worktree remove .claude/worktrees/newsletter-signup
 git branch -d feat/011-newsletter-signup
 ```
 
@@ -277,7 +277,7 @@ git branch -d feat/011-newsletter-signup
 ```
 Worktree created successfully!
 
-  Path:   .worktrees/deprecated-endpoints
+  Path:   .claude/worktrees/deprecated-endpoints
   Branch: chore/012-deprecated-endpoints (based on main)
 ```
 
@@ -294,7 +294,7 @@ Worktree created successfully!
 ```
 Worktree created successfully!
 
-  Path:   .worktrees/dashboard-analytics
+  Path:   .claude/worktrees/dashboard-analytics
   Branch: feat/013-dashboard-analytics (based on main)
 ```
 
@@ -306,11 +306,11 @@ Worktree created successfully!
 
 | Input | Worktree Directory | Git Branch |
 |-------|-------------------|------------|
-| `add user auth` | `.worktrees/user-auth` | `feat/001-user-auth` |
-| `fix login bug` | `.worktrees/login-bug` | `fix/002-login-bug` |
-| `refactor api` | `.worktrees/api` | `refactor/003-api` |
-| `remove old code` | `.worktrees/old-code` | `chore/004-old-code` |
-| `document endpoints` | `.worktrees/endpoints` | `docs/005-endpoints` |
+| `add user auth` | `.claude/worktrees/user-auth` | `feat/001-user-auth` |
+| `fix login bug` | `.claude/worktrees/login-bug` | `fix/002-login-bug` |
+| `refactor api` | `.claude/worktrees/api` | `refactor/003-api` |
+| `remove old code` | `.claude/worktrees/old-code` | `chore/004-old-code` |
+| `document endpoints` | `.claude/worktrees/endpoints` | `docs/005-endpoints` |
 
 The directory name is short for easy navigation. The branch name includes the full conventional prefix for git consistency.
 

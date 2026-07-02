@@ -42,15 +42,24 @@ User provided existing design assets in Phase 1.
    - Offer to generate using Stitch or continue without
 3. If path exists: Store for use in Phase 4
 
+### If `visual_direction_captured = true` or `design_link_ref` is set:
+
+A visual direction was established in Phase 1 via the prototype gallery, a Claude Design link, or a text summary (recorded in spec.md `## Visual Direction`). No new gate — just carry it into `## Design Assets` so Phase 4 can reference it:
+
+- **Prototype pick** → `Source: Prototype pick`, `Exports: {prototype_artifact_path}` (the chosen HTML is the visual reference to match).
+- **Claude Design link** → `Source: Claude Design link`, with `{design_link_ref}` and any `{design_link_notes}`.
+- **Text-only** → `Source: Text direction`, summarized inline.
+
 ### Store in plan.md
 
 Add to plan.md under `## Design Assets`:
 ```markdown
 ## Design Assets
 
-**Source:** Stitch generated | User provided | None
+**Source:** Stitch generated | User provided | Prototype pick | Claude Design link | Text direction | None
 **Prompts:** `{prompts_path}` (if applicable)
-**Exports:** `{exports_path}` (if applicable)
+**Exports / Reference:** `{exports_path | prototype_artifact_path | design_link_ref}` (if applicable)
+**Notes:** `{design_link_notes | text direction}` (if applicable)
 **Status:** Ready | Pending generation | Skipped
 ```
 

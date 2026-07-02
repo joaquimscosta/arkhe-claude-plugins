@@ -170,7 +170,7 @@ kubectl top nodes            # check resource pressure
 
 **Cause**: `custom_build` re-runs the entire `gradle build` instead of incremental compile.
 
-**Fix**: Pair `custom_build` with `local_resource` for compile, then `live_update` syncs only the compiled `.class` files (sellabella pattern):
+**Fix**: Pair `custom_build` with `local_resource` for compile, then `live_update` syncs only the compiled `.class` files:
 
 ```python
 # Compile incrementally on host

@@ -20,7 +20,8 @@ Run the shared context discovery protocol in [CONTEXT_DISCOVERY.md](../../refere
    - What's working (evidence-backed)
    - What's planned (doc-backed)
    - What's missing (no docs, no code)
-5. **Drift detection** — after producing the dashboard:
+5. Render the four Focus Sections defined in § Focus Sections below. With no flag, render all four inline after the dashboard. With `--focus=<name>`, render ONLY the matching section and skip step 4 (the dashboard).
+6. **Drift detection** — after producing the dashboard and focus sections:
    - Get last `{status_file}` commit: `git log -1 --format="%H %ai" -- {status_file}`
    - Count `feat:`/`fix:` commits since that hash: `git log {hash}..HEAD --oneline --no-merges | grep -cE "^[a-f0-9]+ (feat|fix):"`
    - If >= 3, append a notice at the end of the output:
@@ -28,17 +29,55 @@ Run the shared context discovery protocol in [CONTEXT_DISCOVERY.md](../../refere
      ⚠️  Documentation may be stale: {N} feature/fix commits since last status update ({date}).
      Run `/roadmap update` to sync.
      ```
-6. **Plan reference** — if `{plan_file}` exists, append: "Full project plan: `{plan_file}`". Apply the same drift detection to `{plan_file}` and suggest `/roadmap plan sync` if stale.
+7. **Roadmap reference** — if `{plan_file}` exists, append: "Full project roadmap: `{plan_file}`". Apply the same drift detection to `{plan_file}` and suggest `/roadmap plan sync` if stale.
 
-### `gaps`
+#### Focus Sections
 
-1. Run context discovery
-2. Find all gap analysis documents
-3. For each gap:
+Rendered inline by `status` (all four) or in isolation by `status --focus=<name>`.
+
+**`gaps`**
+
+1. Find all gap analysis documents
+2. For each gap:
    - Extract the original finding
    - Search codebase for closure evidence
    - Classify: Open / In Progress / Closed
-4. Produce gap tracking table with evidence
+3. Produce gap tracking table with evidence
+
+**`blockers`**
+
+1. Identify blocking items from:
+   - Gap analyses (dependencies marked as blocking)
+   - Specs (prerequisites not met)
+   - Research (unanswered questions blocking decisions)
+   - External dependencies (APIs, services, approvals)
+2. Trace blocking chains: A blocks B blocks C; External X blocks internal Y
+3. Identify critical path (longest blocking chain)
+
+**`risks`**
+
+1. Extract risks from:
+   - Gap analyses
+   - Research documents
+   - Module maturity assessment (immature critical modules = risk)
+   - Missing tests (untested code = risk)
+   - External dependencies
+2. Score each: Likelihood (H/M/L) x Impact (H/M/L)
+3. Suggest mitigations
+4. Produce risk register
+
+**`specs`**
+
+1. Find all spec files:
+   - `arkhe/specs/*/spec.md`
+   - `specs/**/*.md`
+   - Any path configured in context
+2. For each spec:
+   - Extract title and requirements
+   - Search codebase for implementation evidence
+   - Classify: Proposed / Ready / In Progress / Complete
+3. Produce pipeline table with evidence
+4. If `{plan_file}` exists, cross-reference: show which phase each spec belongs to from the plan's Spec Traceability section. Flag specs that are Complete but not linked to any phase.
 
 ### `next`
 
@@ -141,43 +180,6 @@ Git-aware cached recommendations with smart merge. Preserves uncompleted items a
    - Carried items include the _(carried from {date})_ annotation
 10. Display the saved content with "Saved to `{output_dir}/next-actions.md`."
 
-### `delta`
-
-1. Read the status document (from config or default path)
-2. Run codebase scan
-3. Compare current state vs documented state:
-   - New files, modules, migrations since last update
-   - Gaps that have been addressed
-   - New issues or regressions
-   - Metric changes (file counts, test counts)
-4. Produce delta report
-
-### `blockers`
-
-1. Run context discovery
-2. Identify blocking items from:
-   - Gap analyses (dependencies marked as blocking)
-   - Specs (prerequisites not met)
-   - Research (unanswered questions blocking decisions)
-   - External dependencies (APIs, services, approvals)
-3. Trace blocking chains:
-   - A blocks B blocks C
-   - External X blocks internal Y
-4. Identify critical path (longest blocking chain)
-
-### `risks`
-
-1. Run context discovery
-2. Extract risks from:
-   - Gap analyses
-   - Research documents
-   - Module maturity assessment (immature critical modules = risk)
-   - Missing tests (untested code = risk)
-   - External dependencies
-3. Score each: Likelihood (H/M/L) x Impact (H/M/L)
-4. Suggest mitigations
-5. Produce risk register
-
 ### `update`
 
 #### Phase A: Git History Scan
@@ -259,6 +261,12 @@ Git-aware cached recommendations with smart merge. Preserves uncompleted items a
     4. If user declines the plan sync, present proposed changes as a code block (standard `plan sync` behavior). Do NOT fail the overall `update` — the status doc was already written.
 11. Leave `{output_dir}/next-actions.md` in place. The status drift check in `/roadmap next` step 3 will detect that `{status_file}` is newer and trigger a merge-based recalculation on next invocation, preserving uncompleted items and user additions.
 
+### `update --dry-run`
+
+Read-only preview. Identical to the full `update` flow above through Phase B step 5 (Diff Preview), then stops — no confirmation prompt, no write, no CHANGELOG check, no auto-chain into `plan sync`.
+
+Use when you want to see what `update` would change without committing to it. The output is the unified diff preview as defined in § `update` Phase B step 5.
+
 ### `update --incremental`
 
 Lightweight post-sprint sync. Skips full codebase scan (Phase B). Uses git history + optional wave context to apply targeted edits. Designed to be fast enough to use after every sprint.
@@ -311,27 +319,18 @@ Use the same unified diff format as the full `update` (see § `update` Phase B s
   4. If user declines plan sync, present as code block. Do NOT fail the overall update.
 - Leave `{output_dir}/next-actions.md` in place. The status drift check in `/roadmap next` step 3 will detect that `{status_file}` is newer and trigger a merge-based recalculation, preserving uncompleted items and user additions.
 
-### `specs`
-
-1. Run context discovery
-2. Find all spec files:
-   - `arkhe/specs/*/spec.md`
-   - `specs/**/*.md`
-   - Any path configured in context
-3. For each spec:
-   - Extract title and requirements
-   - Search codebase for implementation evidence
-   - Classify: Proposed / Ready / In Progress / Complete
-4. Produce pipeline table with evidence
-5. If `{plan_file}` exists, cross-reference: show which phase each spec belongs to from the plan's Spec Traceability section. Flag specs that are Complete but not linked to any phase.
-
 ### `plan`
 
 #### `plan scaffold`
 
-1. Read `.arkhe.yaml` for `plan_file` path (default: `docs/PROJECT-PLAN.md`)
+1. Read `.arkhe.yaml` for `plan_file` path (default: `docs/PROJECT-ROADMAP.md`).
+   - **Legacy file fallback**: if `plan_file` is unset in `.arkhe.yaml` AND `docs/PROJECT-PLAN.md` exists AND `docs/PROJECT-ROADMAP.md` does not, treat the legacy path as `{plan_file}` for this run and emit a one-time notice:
+     ```
+     Note: detected legacy docs/PROJECT-PLAN.md. The roadmap plugin now defaults to docs/PROJECT-ROADMAP.md.
+     Rename the file (mv docs/PROJECT-PLAN.md docs/PROJECT-ROADMAP.md) or pin plan_file in .arkhe.yaml to keep the old name.
+     ```
 2. Check if `{plan_file}` exists:
-   - If yes: warn "Plan document already exists at `{plan_file}`. Overwrite / sync instead / cancel?"
+   - If yes: warn "Roadmap document already exists at `{plan_file}`. Overwrite / sync instead / cancel?"
    - If user chooses sync, redirect to `plan sync`; if cancel, stop
 3. Run full context discovery (CONTEXT_DISCOVERY.md Phases 1–7)
 4. **Gather planning artifacts:**
@@ -348,7 +347,7 @@ Use the same unified diff format as the full `update` (see § `update` Phase B s
    - For each: extract number (filename), title (first `#` heading), status (`Status` section or `_Status:_` line)
    - Build inventory: `{number, title, status}`
 7. **Run hybrid linking algorithm** (see § Hybrid Linking Algorithm below)
-8. **Generate plan document** using the PROJECT-PLAN.md template from [TEMPLATES.md](../../references/TEMPLATES.md):
+8. **Generate roadmap document** using the PROJECT-ROADMAP.md template from [TEMPLATES.md](../../references/TEMPLATES.md):
    - Fill Timeline from phases found in status doc and roadmaps
    - Fill Phase Details with scope, status, linked specs, linked ADRs, evidence
    - Fill Backlog from themes with priority and dependencies
@@ -356,25 +355,26 @@ Use the same unified diff format as the full `update` (see § `update` Phase B s
    - Fill ADR Traceability from inventory + phase mappings
    - Include Sprint/Iteration Log only if sprint data found in existing docs
    - Fill References with paths to all source documents read
-9. **Present proposed plan** in chat with confidence markers:
+9. **Present proposed roadmap** in chat with confidence markers:
    - `[AUTO-LINKED]` on phase-to-spec and phase-to-ADR mappings detected from git
    - `[MANUAL]` on mappings found explicitly in existing docs
    - `[UNLINKED]` on specs/ADRs that couldn't be mapped to any phase
-10. **Confirm**: "Review the proposed plan. Adjust any linkages? (Type corrections or 'approve')"
+10. **Confirm**: "Review the proposed roadmap. Adjust any linkages? (Type corrections or 'approve')"
     - Apply user corrections to linkage mappings
 11. **Write** to `{plan_file}`
-12. Report: "Plan created at `{plan_file}` with N phases, M specs linked, K ADRs linked, J backlog themes."
+12. Report: "Roadmap created at `{plan_file}` with N phases, M specs linked, K ADRs linked, J backlog themes."
 
 #### `plan show`
 
-1. Read `.arkhe.yaml` for `plan_file` path
+1. Read `.arkhe.yaml` for `plan_file` path (default: `docs/PROJECT-ROADMAP.md`).
+   - **Legacy file fallback**: if `plan_file` is unset in `.arkhe.yaml` AND `docs/PROJECT-PLAN.md` exists AND `docs/PROJECT-ROADMAP.md` does not, use the legacy path for this run and emit the one-time migration notice (see § `plan scaffold` step 1).
 2. If `{plan_file}` doesn't exist:
-   - "No plan document found at `{plan_file}`. Run `/roadmap plan scaffold` to create one."
+   - "No roadmap document found at `{plan_file}`. Run `/roadmap plan scaffold` to create one."
    - Stop
 3. Read `{plan_file}`
 4. Parse and present summary view:
    ```
-   ## Project Plan Summary
+   ## Project Roadmap Summary
    _Source: {plan_file} (last synced: {date from git})_
 
    ### Timeline
@@ -398,15 +398,16 @@ Use the same unified diff format as the full `update` (see § `update` Phase B s
    - Get last `{plan_file}` commit: `git log -1 --format="%H %ai" -- {plan_file}`
    - Check age: was the plan last committed more than 7 days ago?
    - Count `feat:`/`fix:` commits since: `git log {hash}..HEAD --oneline --no-merges | grep -cE "^[a-f0-9]+ (feat|fix):"`
-   - If plan is >7 days old AND >= 3 feat/fix commits exist since, append: `"⚠️ Plan may be stale: {N} feature/fix commits since last sync ({date}). Run /roadmap plan sync to update."`
+   - If roadmap is >7 days old AND >= 3 feat/fix commits exist since, append: `"⚠️ Roadmap may be stale: {N} feature/fix commits since last sync ({date}). Run /roadmap plan sync to update."`
    - Both conditions prevent false positives: active development weeks with recent syncs won't trigger, and quiet weeks with no commits won't trigger.
 
 #### `plan sync`
 
-1. Read `.arkhe.yaml` for `plan_file` path
+1. Read `.arkhe.yaml` for `plan_file` path (default: `docs/PROJECT-ROADMAP.md`).
+   - **Legacy file fallback**: if `plan_file` is unset in `.arkhe.yaml` AND `docs/PROJECT-PLAN.md` exists AND `docs/PROJECT-ROADMAP.md` does not, use the legacy path for this run and emit the one-time migration notice (see § `plan scaffold` step 1).
 2. If `{plan_file}` doesn't exist: suggest `scaffold` and stop
 3. **Phase A: Git History Scan**
-   - Get last plan doc commit: `git log -1 --format="%H %ai" -- {plan_file}`
+   - Get last roadmap doc commit: `git log -1 --format="%H %ai" -- {plan_file}`
    - If no previous commit, warn and suggest `scaffold` instead
    - List commits since: `git log {last_hash}..HEAD --oneline --no-merges`
    - Categorize:
@@ -524,7 +525,7 @@ User can approve all, adjust individual mappings, or skip unlinked items.
 
 ### Step 6: Persist Mappings
 
-Store confirmed mappings in the plan document's Phase Details sections:
+Store confirmed mappings in the roadmap document's Phase Details sections:
 
 ```markdown
 ### Phase 3e: Glossary Management + Dictionary Browser

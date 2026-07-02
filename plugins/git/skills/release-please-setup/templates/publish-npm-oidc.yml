@@ -1,0 +1,63 @@
+name: Release __COMPONENT__
+
+on:
+  push:
+    tags:
+      - "__COMPONENT__-v*"
+
+permissions:
+  contents: write
+  id-token: write # required for npm Trusted Publishing (OIDC)
+
+jobs:
+  publish:
+    name: Publish to npm + draft GitHub Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Node & pnpm
+        # REPLACE: your node+pnpm setup (composite action or individual steps)
+        uses: ./.github/actions/setup-node-pnpm
+
+      - name: Read package version
+        id: pkg
+        working-directory: __PACKAGE_PATH__
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Verify tag matches package version
+        env:
+          REF_NAME: ${{ github.ref_name }}
+          PKG_VERSION: ${{ steps.pkg.outputs.version }}
+        run: |
+          EXPECTED="__COMPONENT__-v${PKG_VERSION}"
+          if [ "$REF_NAME" != "$EXPECTED" ]; then
+            echo "::error::Tag '$REF_NAME' does not match expected '$EXPECTED' (from __PACKAGE_PATH__/package.json version)"
+            exit 1
+          fi
+
+      - name: Run test suite
+        # REPLACE: your test command
+        run: pnpm -C __PACKAGE_PATH__ test
+
+      - name: Dry-run pack
+        working-directory: __PACKAGE_PATH__
+        run: pnpm pack --dry-run
+
+      - name: Publish to npm (Trusted Publishing)
+        # NOTE: --provenance is intentionally omitted while the repo is private.
+        # npm rejects provenance attestations from private sources
+        # (422 Unprocessable Entity). Add --provenance back once the
+        # repo flips public — see RELEASING.md.
+        working-directory: __PACKAGE_PATH__
+        run: pnpm publish --access public --no-git-checks
+
+      - name: Create draft GitHub Release
+        uses: softprops/action-gh-release@v3
+        with:
+          draft: true
+          name: "__COMPONENT__ ${{ steps.pkg.outputs.version }}"
+          tag_name: ${{ github.ref_name }}

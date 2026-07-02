@@ -12,7 +12,7 @@ The Git plugin provides intelligent Git workflow automation with context-aware r
 
 ## Components
 
-### Commands (9)
+### Commands (10)
 
 #### 1. /commit
 Context-aware Git commit assistant with smart pre-commit checks and submodule support.
@@ -270,32 +270,54 @@ Create isolated git worktrees with intelligent branch naming for parallel develo
 - Commit type detection (feat/fix/refactor/chore/docs)
 - Sequential numbering (shared with `/create-branch`)
 - Base branch selection (main, current, other)
-- Automatic `.worktrees/` gitignore safety check
+- Automatic `.claude/worktrees/` gitignore safety check
 - SDLC-develop spec integration
 
 **Dual Naming**:
-- Worktree directory: `.worktrees/{keywords}` (tab-completion friendly)
+- Worktree directory: `.claude/worktrees/{keywords}` (tab-completion friendly)
 - Git branch: `{type}/{number}-{keywords}` (conventional format)
 
 **Usage**:
 ```bash
-/worktree add user authentication          # .worktrees/user-authentication, feat/001-user-authentication
-/worktree fix login bug                    # .worktrees/login-bug, fix/002-login-bug
-/worktree refactor auth service            # .worktrees/auth-service, refactor/003-auth-service
+/worktree add user authentication          # .claude/worktrees/user-authentication, feat/001-user-authentication
+/worktree fix login bug                    # .claude/worktrees/login-bug, fix/002-login-bug
+/worktree refactor auth service            # .claude/worktrees/auth-service, refactor/003-auth-service
 /worktree                                  # Auto-generate from uncommitted changes
 ```
 
 **Management**:
 ```bash
 git worktree list                          # List all worktrees
-git worktree remove .worktrees/<name>      # Remove when done
+git worktree remove .claude/worktrees/<name>      # Remove when done
 ```
 
 **Skill**: `git/skills/creating-worktree/` (creating-worktree)
 
 ---
 
-### Skills (8)
+#### 10. /release-please-setup
+Scaffold or migrate a repository onto [release-please](https://github.com/googleapis/release-please) for automated, conventional-commit-driven versioning and releases.
+
+**Features**:
+- Auto-discovers packages and detects release-type per package (`package.json`→node, `pyproject.toml`→python, `build.gradle(.kts)`→simple)
+- Generates `release-please-config.json` (mutual `exclude-paths` matrix for monorepos) and `.release-please-manifest.json`
+- **Greenfield** scaffolding or **`--migrate`** of an existing manual-tag repo (seeds the manifest from current versions)
+- Opt-in menu of tag-keyed deploy/publish templates: Fly.io, npm OIDC, GitHub Release asset, Docker→ECR matrix, gated host deploy, generic
+- Always run with `--dry-run` first and review before writing
+
+**Usage**:
+```bash
+/release-please-setup                       # greenfield scaffold (dry-run first)
+/release-please-setup --migrate             # migrate an existing manual-tag repo
+/release-please-setup --single              # force single-package mode
+/release-please-setup --globs "packages/*"  # restrict discovery globs
+```
+
+**Skill**: `git/skills/release-please-setup/` (release-please-setup)
+
+---
+
+### Skills (9)
 
 All commands are implemented as **Skills** - slash commands delegate to skills that contain inline Bash workflows executed by Claude.
 
@@ -406,11 +428,26 @@ Creates isolated git worktrees with intelligent branch naming and auto-increment
 
 **Delivers**:
 1. **Intelligent Naming** - Type detection, keyword extraction, sequential numbering
-2. **Worktree Isolation** - Independent working directory in `.worktrees/`
+2. **Worktree Isolation** - Independent working directory in `.claude/worktrees/`
 3. **Safety Checks** - Gitignore verification, directory conflict detection
 4. **Base Branch Selection** - Choose main, current, or custom base
 
 **Documentation**: See `skills/creating-worktree/` directory for WORKFLOW, EXAMPLES, and TROUBLESHOOTING guides.
+
+#### 9. release-please-setup
+
+Scaffolds or migrates a repository onto release-please, generating its config + manifest + release workflow plus optional tag-keyed deploy/publish templates.
+
+**Location**: `skills/release-please-setup/`
+**Invoked by**: `/release-please-setup` command
+
+**Two Modes**:
+1. **Greenfield** — scaffold release-please into a repo with no existing release automation
+2. **Migration** (`--migrate`) — adopt release-please in an existing manual-tag repo; existing `<component>-v*` publish/deploy workflows keep working because release-please produces the same tags
+
+**Deterministic core** (Python, stdlib only): package discovery, release-type detection, config generation (mutual `exclude-paths` matrix), manifest seeding. **Templates**: six tag-keyed deploy/publish workflows derived from real production pipelines.
+
+**Documentation**: See `skills/release-please-setup/` for WORKFLOW, EXAMPLES, CONTRACT (the release-please/tag contract + token gotcha), and TROUBLESHOOTING.
 
 ---
 

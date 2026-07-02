@@ -394,11 +394,18 @@ Present combined quality review + RULE ZERO status, then use `AskUserQuestion` t
 Live UI verification using Playwright CLI. Refer to the `playwright:playwright-cli` skill for the full command reference.
 
 1. **Ask for verification type:**
+   - **LIVE PREVIEW** - Serve the built UI in a live browser session for hands-on review (best for matching against the Phase 1 visual direction)
    - **SCREENSHOT** - Navigate to URL and capture screenshot for visual review
    - **INTERACTIVE** - Take accessibility snapshot, explore and interact with elements
    - **TEST SCENARIO** - Run specific test steps (navigate, click, fill, verify)
 
 2. **Execute based on selection:**
+   - **LIVE PREVIEW:**
+     1. **Preflight:** `command -v arkhe-preview`. If not found, tell the user the live preview needs the `devtools` plugin (arkhe-preview CLI) and fall back to **SCREENSHOT**.
+     2. Start a session: `arkhe-preview start --project-dir "$(pwd)"`. Parse the JSON line for `url` and `screen_dir`.
+     3. Write the built component's rendered HTML/output into `screen_dir` (for a running dev server, serve a small fragment that iframes the local app URL, or copy the static build output).
+     4. Give the user the `url` to open and review the **real built UI** in-browser. If `## Design Assets` records a Phase 1 visual direction (prototype pick artifact or Claude Design link), reference it so they can compare built vs. intended.
+     5. When the user is done, `arkhe-preview stop <session_dir>`.
    - **SCREENSHOT:** Ask for URL, open page, capture screenshot, present for confirmation
    - **INTERACTIVE:** Ask for URL, navigate, capture accessibility snapshot, offer interaction
    - **TEST SCENARIO:** Ask for test steps (or reference task acceptance criteria), execute each step, report pass/fail

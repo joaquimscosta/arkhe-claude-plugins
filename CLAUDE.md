@@ -95,6 +95,7 @@ Quality control and workflow orchestration utilities.
 - **Agents**: `deep-think-partner`, `deep-researcher`, `code-explorer`, `code-architect`, `code-reviewer`, `systematic-debugger`
 - **Commands**: `/discuss`, `/double-check` (`--deep` for multi-agent review), `/develop`, `/debug` (`--deep` for agent-assisted), `/think`, `/research`
 - **Skills**: `sdlc-develop` (command-invoke), `deep-research` (auto-invoke), `workflow-orchestration` (auto-invoke)
+- **UI routes** (`sdlc-develop` Phase 1): sibling design routes — live prototype gallery ideation (via `design-intent:prototype`), Claude Design link reference (WebFetch input), Stitch prompts, existing designs, or skip. Phase 4 **VERIFY UI** gate adds a **LIVE PREVIEW** option (via devtools `arkhe-preview`). Prototype/preview routes degrade gracefully when `design-intent`/`devtools` aren't installed.
 
 ### AI Plugin
 AI engineering toolkit for production-ready LLM applications.
@@ -122,16 +123,16 @@ Claude + Google Stitch workflow toolkit with MCP integration.
 
 ### Git Plugin
 Git workflow automation for commits, pull requests, branching, changelog generation, releases, and Dependabot triage.
-- **Commands**: `/commit`, `/create-pr`, `/create-branch`, `/changelog`, `/release`, `/resolve-review`, `/stale-branches`, `/cleanup-branches`, `/worktree`
-- **Skills**: 10 skills (4 auto-invoke: `generating-changelog`, `listing-stale-branches`, `cleaning-up-branches`, `resolving-pr-issues`; 6 command-invoke: `creating-branch`, `creating-commit`, `creating-pr`, `creating-worktree`, `releasing`, `dependabot-review`)
-- **Use**: Git commits, PRs, branches, changelogs, semantic versioning releases, release pipeline scaffolding, Dependabot PR triage
+- **Commands**: `/commit`, `/create-pr`, `/create-branch`, `/changelog`, `/release`, `/release-please-setup`, `/resolve-review`, `/stale-branches`, `/cleanup-branches`, `/worktree`
+- **Skills**: 11 skills (4 auto-invoke: `generating-changelog`, `listing-stale-branches`, `cleaning-up-branches`, `resolving-pr-issues`; 7 command-invoke: `creating-branch`, `creating-commit`, `creating-pr`, `creating-worktree`, `releasing`, `dependabot-review`, `release-please-setup`)
+- **Use**: Git commits, PRs, branches, changelogs, semantic versioning releases, release pipeline scaffolding, release-please setup/migration (monorepo + single-package + mixed-language, with tag-keyed deploy/publish templates), Dependabot PR triage
 
 ### Design Intent Plugin
 Design Intent for UI development that combines AI-assisted implementation with persistent pattern memory.
 - **Agents**: `design-reviewer`, `ui-architect`, `ui-explorer`
 - **Commands**: `/setup`, `/design-intent`, `/save-patterns`, `/diary`, `/prototype`
-- **Skills**: `design-intent-specialist` (auto-invoked), `stitch-to-react` (auto-invoked), `icon-forge` (command-invoke), `prototype` (command-invoke)
-- **Use**: Build React prototypes from Figma/screenshots, capture proven patterns, maintain design-intent diaries, generate brand icon assets
+- **Skills**: `design-intent-specialist` (auto-invoked), `stitch-to-react` (auto-invoked), `icon-forge` (command-invoke), `prototype` (command-invoke; ships live browser gallery via `arkhe-preview` from devtools, with `--continue` to resolve the picked variant)
+- **Use**: Build React prototypes from Figma/screenshots, capture proven patterns, maintain design-intent diaries, generate brand icon assets. `/prototype` now serves the 3 generated variations in a live browser gallery (sidebar + iframe canvas), logs the click to `events.jsonl`, and supports `/prototype --continue` to resolve the picked variant — requires `devtools` plugin (`arkhe-preview` CLI)
 
 ### Lang Plugin
 Language-specific programming skills for production-grade code.
@@ -161,13 +162,13 @@ Autonomous development loop with fresh context per iteration and Hat-lite builde
 ### Roadmap Plugin
 Product management, roadmap analysis, and solution architecture with multi-agent orchestration.
 - **Agents**: `product-manager`, `system-architect`, `roadmap-critic`
-- **Skills**: `pm` (auto-invoke, `--deep` for multi-agent pipeline), `roadmap` (auto-invoke, `--deep` for cross-perspective analysis, `--incremental` for fast post-sprint update), `architect` (auto-invoke, `--deep` for adversarial review, now with Write permission), `refresh` (command-invoke)
-- **Use**: User stories, scope assessments, prioritization, project status, gap analysis, risk mapping, module design, API design, boundary analysis, plan lifecycle management. `--deep` mode adds: confidence scoring, Confession Pattern, cross-agent validation, adversarial architecture review
+- **Skills**: `pm` (auto-invoke, `--deep` for multi-agent pipeline), `roadmap` (auto-invoke, 4 modes: `status` with `--focus`, `update` with `--dry-run`/`--incremental`, `next`, `plan`; `--deep` for cross-perspective analysis), `architect` (auto-invoke, `--deep` for adversarial review, now with Write permission), `refresh` (command-invoke)
+- **Use**: User stories, scope assessments, prioritization, project status, gap analysis, risk mapping, module design, API design, boundary analysis, roadmap lifecycle management (PROJECT-ROADMAP.md). `--deep` mode adds: confidence scoring, Confession Pattern, cross-agent validation, adversarial architecture review
 
 ### Devtools Plugin
 Developer tooling setup and management.
-- **Skills**: `sops-setup` (command-invoke), `sops-encrypt` (command-invoke), `sops-decrypt` (command-invoke), `sops-add-key` (command-invoke), `code-env-setup` (command-invoke), `quality-stack` (command-invoke), `taskfile-setup` (command-invoke), `tilt-setup` (command-invoke)
-- **Use**: SOPS + age encryption for .env files, Claude Code environment setup wizard (Global CLAUDE.md, project scaffolding, MCP servers, hooks, custom agents, keybindings, settings), multi-ecosystem quality/testing tooling audit and setup (JVM, Node.js/TypeScript, Python), Taskfile task runner setup and audit, Tilt local Kubernetes development setup and audit (Tiltfile + tilt/ modular layout, Spring Boot/Next.js/Python/external service templates, production-context safety guards, PVC persistence, JDWP debug ports, optional monitoring scaffolds)
+- **Skills**: `sops-setup` (command-invoke), `sops-encrypt` (command-invoke), `sops-decrypt` (command-invoke), `sops-add-key` (command-invoke), `code-env-setup` (command-invoke), `quality-stack` (command-invoke), `taskfile-setup` (command-invoke), `tilt-setup` (command-invoke), `browser-companion` (command-invoke; ships `arkhe-preview` CLI in `plugins/devtools/bin/` for cross-plugin use)
+- **Use**: SOPS + age encryption for .env files, Claude Code environment setup wizard (Global CLAUDE.md, project scaffolding, MCP servers, hooks, custom agents, keybindings, settings), multi-ecosystem quality/testing tooling audit and setup (JVM, Node.js/TypeScript, Python), Taskfile task runner setup and audit, Tilt local Kubernetes development setup and audit (Tiltfile + tilt/ modular layout, Spring Boot/Next.js/Python/external service templates, production-context safety guards, PVC persistence, JDWP debug ports, optional monitoring scaffolds), browser-companion live-preview server for agent↔browser workflows (HTTP + WebSocket + file-watcher; `arkhe-preview start --project-dir <p>` invokable from any plugin's skill via the bin/ PATH mechanism; ships brainstorm and gallery example flavors)
 
 ### Startup Plugin
 Startup idea validation pipeline with 6-stage analysis, decision gates, and domain presets.
@@ -239,6 +240,8 @@ System prompt defining the agent's role, capabilities, and approach.
 - Include trigger phrases like "Use PROACTIVELY" or "MUST BE USED" for automatic invocation
 - Keep under 1,024 characters
 
+**Subfolder Organization**: Claude Code scans `agents/` recursively. A file at `agents/review/security.md` in plugin `my-plugin` registers as `my-plugin:review:security`. The folder path becomes part of the scoped identifier — keep `name` frontmatter values unique across the whole tree (duplicates are silently discarded). Identity comes only from `name`, so the filename does not need to match.
+
 ### Command Files (commands/*.md)
 
 Commands are slash commands that expand to full prompts:
@@ -290,6 +293,37 @@ Brief examples with reference to EXAMPLES.md
 2. SKILL.md loads with instructions
 3. Supporting docs load on-demand as needed
 4. Python scripts execute deterministic operations
+
+### Hook Files (hooks/*.json)
+
+Hook commands have two forms. Prefer **exec form** whenever the command references a path placeholder like `${CLAUDE_PLUGIN_ROOT}` or `${CLAUDE_PROJECT_DIR}` — each `args` element is passed as one argument with no shell tokenization, so paths with spaces or special characters need no quoting.
+
+```json
+// ✅ Exec form (recommended for path placeholders)
+{
+  "type": "command",
+  "command": "node",
+  "args": ["${CLAUDE_PLUGIN_ROOT}/scripts/format.js", "--fix"]
+}
+
+// ⚠️ Shell form (only when you need pipes, &&, redirects, or globs)
+{
+  "type": "command",
+  "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/format.sh"
+}
+```
+
+**Path placeholders available in plugins**:
+- `${CLAUDE_PLUGIN_ROOT}` — plugin's install dir (changes on each plugin update)
+- `${CLAUDE_PLUGIN_DATA}` — persistent data dir (survives plugin updates)
+- `${CLAUDE_PROJECT_DIR}` — project root, usable inline in hooks, monitor commands, and MCP/LSP server configs
+
+**Other hook gotchas**:
+- Default timeout: 600s for `command`/`http`/`mcp_tool`, 30s for `prompt`, 60s for `agent`. `UserPromptSubmit` lowers `command`/`http`/`mcp_tool` to 30s.
+- Command hooks can no longer write to `/dev/tty` (macOS/Linux as of v2.1.139). Return `terminalSequence` in JSON output for notifications/window titles/bell, or `systemMessage` for plain user-visible text.
+- Hooks deduplicate by `command` + `args` string. HTTP hooks deduplicate by URL.
+
+See [HOOKS.md](docs/reference/HOOKS.md) for the full schema and the exec-vs-shell-form details.
 
 ## Python Script Guidelines
 
@@ -624,7 +658,7 @@ See [docs/README.md](docs/README.md) "Maintaining This Documentation" section fo
 
 ## Plugin Versions
 
-Plugin versions: core 2.1.0, ai 1.0.0, doc 1.12.0, design-intent 2.2.0, git 1.0.0, google-stitch 2.0.0, lang 1.0.0, playwright 1.0.0, spring-boot 1.2.0, ralph 2.0.0, roadmap 2.1.0, review 2.0.0, devtools 2.3.0, startup 1.0.0. When making breaking changes, increment the major version and update `plugin.json`.
+Plugin versions: core 2.2.0, ai 1.0.0, doc 1.12.0, design-intent 2.3.0, git 1.2.0, google-stitch 2.0.0, lang 1.0.0, playwright 1.0.0, spring-boot 1.2.0, ralph 2.0.0, roadmap 3.0.0, review 2.0.0, devtools 2.4.0, startup 1.0.0. When making breaking changes, increment the major version and update `plugin.json`.
 
 ## Related Documentation
 

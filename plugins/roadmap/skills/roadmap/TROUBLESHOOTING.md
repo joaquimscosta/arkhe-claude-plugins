@@ -106,14 +106,14 @@ Common issues and fixes for the Roadmap Analyst skill.
 
 **Fix:** Phase B (full codebase scan) still runs regardless of Phase A results. Phase A is additive context that helps Phase B be more targeted — but Phase B catches discrepancies whether or not git shows drift. If the content is wrong despite a recent commit, Phase B will propose corrections based on the actual codebase state.
 
-## When to Use `update` vs `delta`
+## When to Use `update` vs `update --dry-run`
 
 | Mode | What it does | Writes files? |
 |------|-------------|---------------|
 | `update` | Phase A (git history) + Phase B (full codebase scan) → writes updated status doc | Yes (with confirmation) |
-| `delta` | Compares status doc against codebase state → read-only report | No (chat output only) |
+| `update --dry-run` | Same Phase A + Phase B flow, but stops at the diff preview → read-only report | No (chat output only) |
 
-Use `delta` when you want to **see** what's stale without changing anything. Use `update` when you want to **fix** the staleness.
+Use `update --dry-run` when you want to **see** what's stale without changing anything. Use `update` when you want to **fix** the staleness.
 
 ## Risk Scores Seem Arbitrary
 
