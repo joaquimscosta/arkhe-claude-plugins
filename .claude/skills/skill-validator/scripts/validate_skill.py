@@ -149,12 +149,12 @@ def parse_frontmatter(content: str) -> Tuple[Optional[Dict], str, str]:
 # ============================================================================
 
 ALLOWED_FRONTMATTER_KEYS = {
-    'name', 'description', 'license', 'allowed-tools', 'metadata',
+    'name', 'description', 'when_to_use', 'license', 'allowed-tools', 'metadata',
     'model', 'context', 'agent', 'hooks', 'user-invocable',
     'disable-model-invocation', 'argument-hint',
     'maxTurns', 'mcpServers', 'memory', 'skills',
     'arguments', 'effort', 'paths', 'shell',
-    'tools', 'disallowedTools', 'permissionMode',
+    'tools', 'disallowedTools', 'disallowed-tools', 'permissionMode',
     'background', 'isolation', 'color', 'initialPrompt'
 }
 
@@ -1031,6 +1031,7 @@ VALID_HOOK_EVENTS = {
     'Elicitation', 'ElicitationResult', 'InstructionsLoaded',
     'CwdChanged', 'FileChanged', 'PermissionDenied', 'PostToolBatch',
     'Setup', 'StopFailure', 'TaskCreated', 'UserPromptExpansion',
+    'MessageDisplay',
 }
 
 

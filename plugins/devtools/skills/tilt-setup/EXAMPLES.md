@@ -242,7 +242,7 @@ tilt up -- --environment=full-stack
 
 ---
 
-## Example 3: Audit Existing Tiltfile (Sellabella-style)
+## Example 3: Audit Existing Tiltfile (Legacy .tilt/ Layout)
 
 ### Detection Output
 
@@ -305,7 +305,7 @@ tilt up -- --environment=full-stack
 |---------|------------------------------------------------------------------|-------------------------------------------|
 | TILT011 | k8s_yaml() without k8s_resource() (note: may be in services.star)| Verify k8s_resource calls in sub-modules  |
 
-Note: This Tiltfile uses the legacy `.tilt/` directory (sellabella convention; the
+Note: This Tiltfile uses the legacy `.tilt/` directory (older convention; the
 detector recognizes both `tilt/` and `.tilt/`). The detector parses only the root
 Tiltfile, so k8s_resource calls in services.star are not counted.
 ```
@@ -318,10 +318,10 @@ The `validate_cluster_safety()` function in `Tiltfile` is updated to add `gke_`:
 
 ```python
 production_contexts = [
-    "arn:aws:eks:us-east-1:390403866510:cluster/sellabella-eks",
-    "sellabella-eks",
-    "sellabella-prod",
-    "sellabella-production",
+    "arn:aws:eks:us-east-1:111111111111:cluster/acme-eks",
+    "acme-eks",
+    "acme-prod",
+    "acme-production",
     "gke_",          # ADDED
     "akscluster",    # ADDED
     "prod",
