@@ -10,6 +10,15 @@
 
 set -euo pipefail
 
+# Bash 5.2+ (e.g. Ubuntu 24.04 CI runners) treats a literal `&` in the
+# replacement of `${var//pat/repl}` as "the matched text" when the
+# patsub_replacement option is on (the default). That corrupts our HTML
+# entity escaping below: `${skill_desc//@/&#64;}` would emit `@#64;` instead
+# of `&#64;`, diverging from macOS's bash 3.2 output and tripping shim-drift
+# CI. Disable it so `&` stays literal on every bash version (the option does
+# not exist before 5.2, hence the guard).
+shopt -u patsub_replacement 2>/dev/null || true
+
 REPO_ROOT=$(cd "$(dirname "$0")/.." && pwd)
 MARKETPLACE="$REPO_ROOT/.claude-plugin/marketplace.json"
 PLUGINS_DIR="$REPO_ROOT/plugins"
