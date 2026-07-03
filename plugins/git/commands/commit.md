@@ -1,6 +1,6 @@
 ---
 description: Context-aware Git commit assistant with smart pre-commit checks
-argument-hint: [scope] [--no-verify | --full-verify]
+argument-hint: "[scope] [--no-verify | --full-verify]"
 ---
 
 # Commit Command

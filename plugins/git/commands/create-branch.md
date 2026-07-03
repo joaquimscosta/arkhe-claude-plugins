@@ -1,6 +1,6 @@
 ---
 description: Create a new feature branch with optimized short naming, or auto-generate from uncommitted changes
-argument-hint: [feature_description]
+argument-hint: "[feature_description]"
 ---
 
 # Branch Creation Command

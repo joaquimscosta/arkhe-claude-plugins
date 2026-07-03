@@ -5,7 +5,7 @@ description: >
   Runs docs/reference/update-claude-docs.sh, computes diffs, and reports impacts
   on the skill validator, plugins, and project documentation. Use when user
   mentions "sync docs", "update reference docs", "refresh docs", or "check doc changes".
-argument-hint: [--dry-run]
+argument-hint: "[--dry-run]"
 ---
 
 # Sync Docs

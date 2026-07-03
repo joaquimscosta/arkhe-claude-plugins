@@ -1,6 +1,6 @@
 ---
 description: Create a git worktree in the .claude/worktrees/ directory for isolated parallel development
-argument-hint: [description]
+argument-hint: "[description]"
 ---
 
 # Worktree Command

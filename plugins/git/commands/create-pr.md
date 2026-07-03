@@ -1,6 +1,6 @@
 ---
 description: Context-aware GitHub Pull Request creation and update assistant
-argument-hint: [scope] [--draft] [--base <branch>]
+argument-hint: "[scope] [--draft] [--base <branch>]"
 ---
 
 # Create Pull Request Command

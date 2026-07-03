@@ -82,7 +82,7 @@ Create command files in `commands/` directory:
 ```markdown
 ---
 description: Brief description of what this command does
-argument-hint: [optional: argument description]
+argument-hint: "[optional: argument description]"
 ---
 
 # Command Name
