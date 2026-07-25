@@ -1,6 +1,6 @@
 ---
 description: Delete merged branches and flag stale unmerged branches for cleanup
-argument-hint: [--base <branch>] [--threshold <months>] [--remote] [--dry-run]
+argument-hint: "[--base <branch>] [--threshold <months>] [--remote] [--dry-run]"
 ---
 
 # Cleanup Branches

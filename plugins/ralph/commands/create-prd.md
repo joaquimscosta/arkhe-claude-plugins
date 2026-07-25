@@ -1,6 +1,6 @@
 ---
 description: Create PRD and set up project for Ralph autonomous development loop
-argument-hint: [project description]
+argument-hint: "[project description]"
 ---
 
 # Create PRD Command

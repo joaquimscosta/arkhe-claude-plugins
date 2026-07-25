@@ -1,6 +1,6 @@
 ---
 description: Generate comprehensive changelogs from git commit history with semantic versioning analysis and conventional commit support
-argument-hint: [--since <ref>] [--until <ref>] [--version <ver>] [--format <style>] [--output <file>] [--append] [--no-group]
+argument-hint: "[--since <ref>] [--until <ref>] [--version <ver>] [--format <style>] [--output <file>] [--append] [--no-group]"
 ---
 
 # Changelog

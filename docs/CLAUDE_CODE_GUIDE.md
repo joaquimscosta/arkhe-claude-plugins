@@ -270,7 +270,7 @@ Include:
 ---
 description: Smart commit with context
 allowed-tools: Bash(git add:*), Bash(git status:*), Bash(git commit:*)
-argument-hint: [message]
+argument-hint: "[message]"
 ---
 
 ## Context

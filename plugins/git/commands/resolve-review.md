@@ -1,6 +1,6 @@
 ---
 description: Analyze, verify, and resolve review suggestions from a GitHub PR or local code-review report
-argument-hint: [PR-number | URL | file-path]
+argument-hint: "[PR-number | URL | file-path]"
 ---
 
 # PR Issue Resolver

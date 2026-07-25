@@ -323,7 +323,7 @@ Use for workflows with side effects that you want to trigger manually with `/nam
 Display a hint during autocomplete to indicate expected arguments.
 
 ```yaml
-argument-hint: [issue-number]
+argument-hint: "[issue-number]"
 ```
 
 The hint appears in the autocomplete menu to help users understand what arguments the skill expects. Examples: `[issue-number]`, `[filename] [format]`, `[component-name]`.

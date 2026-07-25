@@ -1,6 +1,6 @@
 ---
 description: Verify Spring Boot project upgrade readiness with parallel multi-skill analysis
-argument-hint: [project path or scope]
+argument-hint: "[project path or scope]"
 ---
 
 # Spring Boot Upgrade Verification

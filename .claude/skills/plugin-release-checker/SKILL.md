@@ -1,7 +1,7 @@
 ---
 name: plugin-release-checker
 description: Validate plugin content quality before release. Run skill-validator across plugins, verify marketplace.json completeness, check plugin.json version consistency, and detect broken documentation cross-references. Use when preparing a release, before running release.sh, or when user mentions "release check", "pre-release", "plugin-release-checker", or "release validation".
-argument-hint: [--plugin <name>] [--all]
+argument-hint: "[--plugin <name>] [--all]"
 ---
 
 # Plugin Release Checker

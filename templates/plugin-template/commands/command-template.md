@@ -1,6 +1,6 @@
 ---
 description: Brief description of what this command does (shown in /help)
-argument-hint: [optional: description of expected arguments]
+argument-hint: "[optional: description of expected arguments]"
 ---
 
 # Command Name
