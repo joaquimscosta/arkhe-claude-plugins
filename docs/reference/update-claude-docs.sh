@@ -214,26 +214,31 @@ main() {
         local temp_file="${TEMP_DIR}/${filename}.tmp"
 
         # Download to temporary file
+        # NOTE: counters use `x=$((x + 1))`, never `((x++))`. Under `set -e`,
+        # `((x++))` evaluates to the pre-increment value, so incrementing from 0
+        # yields arithmetic result 0, which bash reports as exit status 1 and
+        # `set -e` treats as a fatal error -- aborting the loop after the first
+        # file. An assignment always exits 0.
         if ! download_file "${url}" "${temp_file}"; then
             print_status "${RED}" "✗ Failed to download: ${filename}"
-            ((failure_count++))
+            failure_count=$((failure_count + 1))
             continue
         fi
 
         # Validate content is non-empty
         if ! validate_content "${temp_file}"; then
             print_status "${YELLOW}" "⊖ Skipped (empty content): ${filename}"
-            ((skip_count++))
+            skip_count=$((skip_count + 1))
             continue
         fi
 
         # Atomically update target file
         if atomic_update "${temp_file}" "${target_file}"; then
             print_status "${GREEN}" "✓ Updated: ${filename}"
-            ((success_count++))
+            success_count=$((success_count + 1))
         else
             print_status "${RED}" "✗ Failed to update: ${filename}"
-            ((failure_count++))
+            failure_count=$((failure_count + 1))
         fi
     done
 

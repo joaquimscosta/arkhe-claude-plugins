@@ -1,7 +1,7 @@
 ---
 name: ralph-agent
 description: Autonomous development agent for Ralph loops with Hat-lite builder/verifier workflow. Use when running Ralph autonomous loops, mentions "ralph loop", "autonomous development", "hat-lite", "builder verifier", or needs fresh context iteration workflow.
-tools: Glob, Grep, LS, Read, Write, Edit, Bash, WebFetch, TodoWrite
+tools: Glob, Grep, Read, Write, Edit, Bash, WebFetch, TodoWrite
 color: yellow
 model: sonnet
 ---

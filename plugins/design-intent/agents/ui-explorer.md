@@ -1,7 +1,7 @@
 ---
 name: ui-explorer
 description: Analyzes existing UI codebase by tracing component hierarchies, mapping design tokens, understanding styling patterns, and documenting the established design system usage
-tools: Glob, Grep, LS, Read, NotebookRead, WebFetch, TodoWrite
+tools: Glob, Grep, Read, WebFetch, TodoWrite
 model: sonnet
 color: cyan
 ---

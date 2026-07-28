@@ -200,11 +200,18 @@ Agents are specialized AI subagents with focused expertise. Each agent file uses
 name: agent-name
 description: When and why to use this agent
 tools: Read, Write, Grep, Glob, Bash  # Optional - omit to inherit all
-model: sonnet  # Optional - sonnet/opus/haiku or 'inherit'
+model: sonnet  # Optional - sonnet/opus/haiku/fable, a full model ID, or 'inherit' (default)
 ---
 
 System prompt defining the agent's role, capabilities, and approach.
 ```
+
+**Background tool filtering**: subagents run in the background by default (Claude Code v2.1.198+), and background subagents keep every MCP tool but only these built-ins: `Read`, `Grep`, `Glob`, `Bash`, `PowerShell`, `Edit`, `Write`, `NotebookEdit`, `WebFetch`, `WebSearch`, `TodoWrite`, `Skill`, `ToolSearch`, `EnterWorktree`, `ExitWorktree`, `Monitor`, `TaskStop`, `SendMessage`, `Artifact`. Anything else in `tools` is dropped silently, with two exceptions that follow their own conditions wherever the subagent runs:
+
+- `Agent` survives unless the subagent is at the nesting depth limit (3 layers by default; tune with `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH`). **Keep `Agent` on orchestrator agents that spawn sub-agents** — e.g. `spring-boot-reviewer`, `spring-boot-upgrade-verifier`.
+- `ExitPlanMode` survives only with `permissionMode: plan`.
+
+`AskUserQuestion`, `EndConversation`, `EnterPlanMode`, `ScheduleWakeup`, `TaskOutput`, `WaitForMcpServers`, and `Workflow` are denied in both foreground and background runs — don't list them, and don't write agent prompts that depend on them. Forks (`context: fork`, as in the `verify-findings` skill) are exempt from both filters and receive the main conversation's exact tool pool. If nothing in `tools` resolves, the agent usually fails to launch.
 
 **Agent Naming Convention**: Use lowercase with hyphens (e.g., `code-explorer`, `ai-engineer`)
 
@@ -238,7 +245,7 @@ Skills are auto-invoked capabilities triggered by context. Use progressive discl
 
 ```markdown
 ---
-name: Skill Name
+name: skill-name    # kebab-case, matches the directory name (see Skill Development Best Practices)
 description: What it does. Use when [triggers].
 ---
 
@@ -471,10 +478,14 @@ claude  # Start Claude Code
 **Required fields**:
 ```yaml
 ---
-name: Skill Name              # 64 chars max (20-40 recommended)
+name: skill-name              # kebab-case; 64 chars max. MUST match the skill's directory name
 description: What it does...  # 1,024 chars max (200-400 recommended)
 ---
 ```
+
+> **`name` is not a display label for plugin skills.** As of Claude Code v2.1.216, a plugin skill's `name` sets the *last segment of its slash command*: a skill in a `review/` directory under plugin `my-plugin`, but carrying `name: fancy`, is invoked as `/my-plugin:fancy`, not `/my-plugin:review`. Use kebab-case and keep it identical to the directory name so the command is predictable. A name with spaces or capitals produces an awkward or unusable command. (Before v2.1.216 the frontmatter name replaced the *whole* command, dropping the plugin prefix.) For personal and project skills, `name` remains a display label only and the command comes from the directory.
+>
+> `description` and `when_to_use` are concatenated in the skill listing and truncated together at **1,536 characters** — put the key use case first.
 
 **Description template**:
 ```

@@ -1,7 +1,7 @@
 ---
 name: spring-boot-reviewer
 description: Reviews Spring Boot codebases against all spring-boot skills for correctness, best practices, and Spring Boot 4 compatibility. Use when reviewing Spring Boot projects, validating implementations, or user mentions "review my Spring Boot code", "check Spring best practices", "Spring Boot review", "validate Spring configuration".
-tools: Glob, Grep, Read, Agent, WebFetch, WebSearch, AskUserQuestion
+tools: Glob, Grep, Read, Agent, WebFetch, WebSearch
 model: sonnet
 color: green
 ---

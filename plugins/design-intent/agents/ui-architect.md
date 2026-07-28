@@ -1,7 +1,7 @@
 ---
 name: ui-architect
 description: Designs UI component architectures by analyzing existing patterns, proposing component structures, and creating implementation blueprints with clear trade-offs
-tools: Glob, Grep, LS, Read, NotebookRead, WebFetch, TodoWrite
+tools: Glob, Grep, Read, WebFetch, TodoWrite
 model: sonnet
 color: green
 ---
