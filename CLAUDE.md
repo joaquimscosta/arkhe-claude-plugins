@@ -483,7 +483,7 @@ description: What it does...  # 1,024 chars max (200-400 recommended)
 ---
 ```
 
-> **`name` is not a display label for plugin skills.** As of Claude Code v2.1.216, a plugin skill's `name` sets the *last segment of its slash command*: `my-plugin/skills/review/SKILL.md` with `name: fancy` is invoked as `/my-plugin:fancy`, not `/my-plugin:review`. Use kebab-case and keep it identical to the directory name so the command is predictable. A name with spaces or capitals produces an awkward or unusable command. (Before v2.1.216 the frontmatter name replaced the *whole* command, dropping the plugin prefix.) For personal and project skills, `name` remains a display label only and the command comes from the directory.
+> **`name` is not a display label for plugin skills.** As of Claude Code v2.1.216, a plugin skill's `name` sets the *last segment of its slash command*: a skill in a `review/` directory under plugin `my-plugin`, but carrying `name: fancy`, is invoked as `/my-plugin:fancy`, not `/my-plugin:review`. Use kebab-case and keep it identical to the directory name so the command is predictable. A name with spaces or capitals produces an awkward or unusable command. (Before v2.1.216 the frontmatter name replaced the *whole* command, dropping the plugin prefix.) For personal and project skills, `name` remains a display label only and the command comes from the directory.
 >
 > `description` and `when_to_use` are concatenated in the skill listing and truncated together at **1,536 characters** — put the key use case first.
 
