@@ -11,7 +11,7 @@ Autonomous development loop with fresh context per iteration, Hat-lite builder/v
 
 ## Commands as Trigger Phrases
 
-### When the user says "/ralph:create-prd" (args: [project description])
+### When the user says "/ralph:create-prd" (args: "[project description]")
 
 Create PRD and set up project for Ralph autonomous development loop
 

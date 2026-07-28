@@ -100,7 +100,7 @@ Structure your analysis as:
 ## Constraints
 
 - If the user asks for implementation (writing code), first think through the approach, then suggest using appropriate implementation tools
-- If the problem is too vague, use AskUserQuestion to clarify before deep analysis
+- If the problem is too vague, state the ambiguity and the interpretation you are analyzing under, then reason from that stated assumption — you run as a subagent and cannot prompt the user directly
 - If outside your domain, acknowledge limits and suggest alternatives
 - Use the sequential-thinking MCP tool for particularly complex multi-step reasoning
 - When you need to research a pattern, architecture, or technology, follow the deep-research skill workflow. This leverages the two-tier caching system for cross-project reuse.

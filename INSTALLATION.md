@@ -2,14 +2,15 @@
 
 Complete guide to installing and using the Arkhe Claude Plugins marketplace.
 
-Arkhe plugins are supported on **Claude Code**, **Gemini CLI**, and **Codex CLI**. The Claude Code path is the canonical install; Gemini and Codex consume per-plugin shims regenerated from the same sources. See the [Supported Platforms matrix](./README.md#supported-platforms) for what works where.
+Arkhe plugins are supported on **Claude Code**, **Antigravity CLI (`agy`) / Gemini CLI**, and **Codex CLI**. The Claude Code path is the canonical install; Antigravity, Gemini, and Codex consume per-plugin shims regenerated from the same sources. See the [Supported Platforms matrix](./README.md#supported-platforms) for what works where.
 
 ## Prerequisites
 
 Pick one of:
 
 - **Claude Code** — installed and running (canonical path)
-- **Gemini CLI** — `gemini` CLI installed and authenticated
+- **Antigravity CLI (`agy`)** — `agy` CLI installed (`agy --help`)
+- **Gemini CLI** — `gemini` CLI installed and authenticated (legacy)
 - **Codex CLI** — `codex` CLI installed; experimental skill support requires `--enable skills` (Dec 2025+)
 
 ## Quick Start
@@ -57,26 +58,32 @@ After installation, run `/reload-plugins` for all plugins to take effect.
 
 ---
 
-## Install on Gemini CLI
+## Install on Antigravity CLI (`agy`) & Gemini CLI
 
-Gemini consumes per-plugin extensions from `.gemini-extensions/` at the repo root. These are regenerated from the canonical `plugins/` tree by `scripts/build-shims.sh`.
+Antigravity CLI (`agy`) and Gemini CLI consume per-plugin extensions from `.gemini-extensions/` at the repo root. These are regenerated from the canonical `plugins/` tree by `scripts/build-shims.sh`.
 
 ```bash
-# Clone the repo (Gemini doesn't have a marketplace concept)
+# Clone the repo
 git clone https://github.com/joaquimscosta/arkhe-claude-plugins.git
 cd arkhe-claude-plugins
 
-# Install the bootstrap (required) plus whatever plugins you need
-gemini extensions install ./.gemini-extensions/core
+# --- Option 1: Install in Antigravity CLI (agy) ---
+# Link or copy plugins into ~/.gemini/config/plugins/
+mkdir -p ~/.gemini/config/plugins
+ln -s "$(pwd)/.gemini-extensions/core" ~/.gemini/config/plugins/core
+ln -s "$(pwd)/.gemini-extensions/git" ~/.gemini/config/plugins/git
 
-# Then install any other plugins
+# Validate installed plugins with agy
+agy plugin validate ~/.gemini/config/plugins/core
+
+# --- Option 2: Install in Gemini CLI (Legacy) ---
+gemini extensions install ./.gemini-extensions/core
 gemini extensions install ./.gemini-extensions/ai
 gemini extensions install ./.gemini-extensions/doc
 gemini extensions install ./.gemini-extensions/git
-# ...etc
 ```
 
-The `using-arkhe-skills` bootstrap skill (inside the `core` extension) loads at session start and maps Claude-only primitives — `AskUserQuestion`, `TaskCreate`, `EnterPlanMode`, the `Skill` tool, the `Agent` tool with `subagent_type` — to Gemini equivalents. Install `core` first.
+The `using-arkhe-skills` bootstrap skill (inside the `core` plugin) loads at session start and maps Claude-only primitives — `AskUserQuestion`, `TaskCreate`, `EnterPlanMode`, the `Skill` tool, the `Agent` tool — to Antigravity CLI (`agy`) and Gemini equivalents. Install `core` first.
 
 ### Behavioral notes on Gemini
 

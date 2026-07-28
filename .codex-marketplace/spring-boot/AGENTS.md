@@ -142,7 +142,7 @@ After discovery, report: "Found X relevant skills: [list]. Skipping Y skills (no
 
 _…full agent body at `plugins/spring-boot/agents/spring-boot-reviewer.md` (symlinked into `skills/` for Codex)._
 
-### When the user says "/spring-boot:verify-upgrade" (args: [project path or scope])
+### When the user says "/spring-boot:verify-upgrade" (args: "[project path or scope]")
 
 Verify Spring Boot project upgrade readiness with parallel multi-skill analysis
 

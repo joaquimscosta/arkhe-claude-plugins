@@ -31,6 +31,21 @@
     { "path": ".gemini-extensions/spring-boot/gemini-extension.json", "field": "version", "plugin": "spring-boot", "platform": "gemini" },
     { "path": ".gemini-extensions/startup/gemini-extension.json", "field": "version", "plugin": "startup", "platform": "gemini" },
 
+    { "path": ".gemini-extensions/ai/plugin.json", "field": "version", "plugin": "ai", "platform": "antigravity" },
+    { "path": ".gemini-extensions/core/plugin.json", "field": "version", "plugin": "core", "platform": "antigravity" },
+    { "path": ".gemini-extensions/design-intent/plugin.json", "field": "version", "plugin": "design-intent", "platform": "antigravity" },
+    { "path": ".gemini-extensions/devtools/plugin.json", "field": "version", "plugin": "devtools", "platform": "antigravity" },
+    { "path": ".gemini-extensions/doc/plugin.json", "field": "version", "plugin": "doc", "platform": "antigravity" },
+    { "path": ".gemini-extensions/git/plugin.json", "field": "version", "plugin": "git", "platform": "antigravity" },
+    { "path": ".gemini-extensions/google-stitch/plugin.json", "field": "version", "plugin": "google-stitch", "platform": "antigravity" },
+    { "path": ".gemini-extensions/lang/plugin.json", "field": "version", "plugin": "lang", "platform": "antigravity" },
+    { "path": ".gemini-extensions/playwright/plugin.json", "field": "version", "plugin": "playwright", "platform": "antigravity" },
+    { "path": ".gemini-extensions/ralph/plugin.json", "field": "version", "plugin": "ralph", "platform": "antigravity" },
+    { "path": ".gemini-extensions/review/plugin.json", "field": "version", "plugin": "review", "platform": "antigravity" },
+    { "path": ".gemini-extensions/roadmap/plugin.json", "field": "version", "plugin": "roadmap", "platform": "antigravity" },
+    { "path": ".gemini-extensions/spring-boot/plugin.json", "field": "version", "plugin": "spring-boot", "platform": "antigravity" },
+    { "path": ".gemini-extensions/startup/plugin.json", "field": "version", "plugin": "startup", "platform": "antigravity" },
+
     { "path": ".codex-marketplace/ai/plugin.json", "field": "version", "plugin": "ai", "platform": "codex" },
     { "path": ".codex-marketplace/core/plugin.json", "field": "version", "plugin": "core", "platform": "codex" },
     { "path": ".codex-marketplace/design-intent/plugin.json", "field": "version", "plugin": "design-intent", "platform": "codex" },
@@ -54,7 +69,15 @@
       ".git",
       ".version-bump.json",
       "scripts/bump-version.sh",
-      "external-repos"
+      "external-repos",
+      "docs",
+      "CONTRIBUTING.md",
+      "templates",
+      "CLAUDE.md",
+      ".codex-marketplace",
+      ".gemini-extensions",
+      "plugins",
+      ".claude"
     ]
   }
 }

@@ -6,7 +6,7 @@
 
 ## Skills
 
-- **bash** — Master defensive Bash scripting for production automation, CI/CD pipelines, and system utilities. Expert in safe, portable, and testable shell scripts with POSIX compliance, modern Bash 5.x features, and comprehensive error handling. Use when writing shell scripts, bash automation, CI/CD scripts, system utilities, or mentions "bash", "shell script", "automation", "defensive programming", or needs production-grade shell code.
+- **scripting-bash** — Master defensive Bash scripting for production automation, CI/CD pipelines, and system utilities. Expert in safe, portable, and testable shell scripts with POSIX compliance, modern Bash 5.x features, and comprehensive error handling. Use when writing shell scripts, bash automation, CI/CD scripts, system utilities, or mentions "bash", "shell script", "automation", "defensive programming", or needs production-grade shell code.
 
 ## Commands
 

@@ -149,6 +149,9 @@ while IFS=$'\t' read -r plugin description; do
     jq -n --arg name "$plugin" --arg desc "$description" --arg ver "$version" \
         '{name: $name, description: $desc, version: $ver, contextFileName: "GEMINI.md"}' \
         | write_if_changed "$gemini_dir/gemini-extension.json"
+    jq -n --arg name "$plugin" --arg desc "$description" --arg ver "$version" \
+        '{name: $name, description: $desc, version: $ver}' \
+        | write_if_changed "$gemini_dir/plugin.json"
     render_gemini_md "$plugin" | write_if_changed "$gemini_dir/GEMINI.md"
     ensure_symlink "$gemini_dir/skills" "../../plugins/$plugin/skills"
 

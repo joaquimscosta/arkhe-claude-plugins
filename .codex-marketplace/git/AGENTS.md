@@ -20,7 +20,7 @@ Git workflow automation (commit, PR, branching, changelog, release)
 
 ## Commands as Trigger Phrases
 
-### When the user says "/git:changelog" (args: [--since <ref>] [--until <ref>] [--version <ver>] [--format <style>] [--output <file>] [--append] [--no-group])
+### When the user says "/git:changelog" (args: "[--since <ref>] [--until <ref>] [--version <ver>] [--format <style>] [--output <file>] [--append] [--no-group]")
 
 Generate comprehensive changelogs from git commit history with semantic versioning analysis and conventional commit support
 
@@ -60,7 +60,7 @@ The skill will handle git history analysis, commit categorization, semantic vers
 
 For detailed documentation, see `git/skills/generating-changelog/SKILL.md`.
 
-### When the user says "/git:cleanup-branches" (args: [--base <branch>] [--threshold <months>] [--remote] [--dry-run])
+### When the user says "/git:cleanup-branches" (args: "[--base <branch>] [--threshold <months>] [--remote] [--dry-run]")
 
 Delete merged branches and flag stale unmerged branches for cleanup
 
@@ -99,7 +99,7 @@ The skill will delete merged branches (with user confirmation), flag stale unmer
 
 For detailed documentation, see `git/skills/cleaning-up-branches/SKILL.md`.
 
-### When the user says "/git:commit" (args: [scope] [--no-verify | --full-verify])
+### When the user says "/git:commit" (args: "[scope] [--no-verify | --full-verify]")
 
 Context-aware Git commit assistant with smart pre-commit checks
 
@@ -135,7 +135,7 @@ The skill will handle repository detection, pre-commit checks, commit message ge
 
 For detailed documentation, see `git/skills/creating-commit/SKILL.md`.
 
-### When the user says "/git:create-branch" (args: [feature_description])
+### When the user says "/git:create-branch" (args: "[feature_description]")
 
 Create a new feature branch with optimized short naming, or auto-generate from uncommitted changes
 
@@ -174,7 +174,7 @@ The skill will handle commit type detection, branch naming, auto-increment numbe
 
 For detailed documentation, see `git/skills/creating-branch/SKILL.md`.
 
-### When the user says "/git:create-pr" (args: [scope] [--draft] [--base <branch>])
+### When the user says "/git:create-pr" (args: "[scope] [--draft] [--base <branch>]")
 
 Context-aware GitHub Pull Request creation and update assistant
 
@@ -268,7 +268,7 @@ Invoke the Skill tool with skill name "git:releasing" and arguments: $ARGUMENTS
 
 The skill handles version validation, CHANGELOG checks, comparison link management, commit/push, workflow triggering, and monitoring.
 
-### When the user says "/git:resolve-review" (args: [PR-number | URL | file-path])
+### When the user says "/git:resolve-review" (args: "[PR-number | URL | file-path]")
 
 Analyze, verify, and resolve review suggestions from a GitHub PR or local code-review report
 
@@ -298,7 +298,7 @@ Invoke the Skill tool with skill name "git:resolving-pr-issues" and arguments: `
 
 For detailed documentation, see `git/skills/resolving-pr-issues/SKILL.md`.
 
-### When the user says "/git:stale-branches" (args: [--threshold <months>] [--base <branch>] [--remote])
+### When the user says "/git:stale-branches" (args: "[--threshold <months>] [--base <branch>] [--remote]")
 
 List stale git branches that are candidates for cleanup (merged or inactive)
 
@@ -336,7 +336,7 @@ The skill will detect merged branches, inactive unmerged branches, and optionall
 
 For detailed documentation, see `git/skills/listing-stale-branches/SKILL.md`.
 
-### When the user says "/git:worktree" (args: [description])
+### When the user says "/git:worktree" (args: "[description]")
 
 Create a git worktree in the .claude/worktrees/ directory for isolated parallel development
 
