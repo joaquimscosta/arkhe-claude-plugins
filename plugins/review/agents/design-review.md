@@ -1,7 +1,7 @@
 ---
 name: design-review
 description: Comprehensive UI/UX design review with automated browser testing via Playwright CLI. Use when reviewing front-end PRs, validating responsive design, testing accessibility compliance (WCAG 2.1 AA), or verifying visual consistency across viewports.
-tools: Bash, Glob, Grep, Read, Edit, MultiEdit, Write, WebFetch, WebSearch, ListMcpResourcesTool, ReadMcpResourceTool
+tools: Bash, Glob, Grep, Read, Edit, Write, WebFetch, WebSearch
 skills:
   - design-review
   - playwright:playwright-cli

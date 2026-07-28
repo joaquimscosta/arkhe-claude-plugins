@@ -104,6 +104,48 @@ def snapshot_files(root: Path, filenames: List[str]) -> Dict[str, str]:
     return result
 
 
+def snapshot_mtimes(root: Path, filenames: List[str]) -> Dict[str, Optional[float]]:
+    """Record mtime of each synced doc. Returns {filename: mtime or None}.
+
+    update-claude-docs.sh writes via `mv -f`, so a successful download always
+    bumps mtime -- even when the downloaded content is byte-identical. An
+    unchanged mtime therefore means the file was never written, which is how
+    we tell "download failed" apart from "upstream unchanged".
+    """
+    ref_dir = root / "docs" / "reference"
+    result: Dict[str, Optional[float]] = {}
+    for filename in filenames:
+        filepath = ref_dir / filename
+        result[filename] = filepath.stat().st_mtime if filepath.exists() else None
+    return result
+
+
+def parse_sync_log(log: str) -> Dict[str, str]:
+    """Map filename -> reported status from update-claude-docs.sh output.
+
+    The shell script prints one line per file: "✓ Updated: X",
+    "✗ Failed to download: X", "✗ Failed to update: X", or
+    "⊖ Skipped (empty content): X".
+
+    Pass stdout and stderr concatenated -- print_status writes to stderr, so
+    parsing stdout alone silently matches nothing.
+    """
+    statuses: Dict[str, str] = {}
+    for line in log.splitlines():
+        line = re.sub(r"\x1b\[[0-9;]*m", "", line).strip()
+        m = re.match(r"^[✓✗⊖]\s+(Updated|Failed to download|Failed to update|Skipped \(empty content\)):\s*(\S+)", line)
+        if not m:
+            continue
+        label, filename = m.group(1), m.group(2)
+        statuses[filename] = {
+            "Updated": "downloaded",
+            "Failed to download": "download_failed",
+            "Failed to update": "write_failed",
+            "Skipped (empty content)": "empty_response",
+        }[label]
+    return statuses
+
+
 # ---------------------------------------------------------------------------
 # Sync execution
 # ---------------------------------------------------------------------------
@@ -152,6 +194,10 @@ def dry_run_download(url_mappings: List[Tuple[str, str]], timeout: int = 30) -> 
 class FileDiff:
     filename: str
     changed: bool
+    # How the "after" content was obtained. "downloaded" means upstream was
+    # actually fetched, so changed=False genuinely means "upstream unchanged".
+    # Anything else means changed=False is NOT evidence of an up-to-date file.
+    download_status: str
     hash_before: str
     hash_after: str
     added_lines: int = 0
@@ -166,10 +212,15 @@ def extract_sections(content: str) -> List[str]:
     return re.findall(r"^(#{2,3}\s+.+)$", content, re.MULTILINE)
 
 
-def compute_diffs(before: Dict[str, str], after: Dict[str, str]) -> List[FileDiff]:
+def compute_diffs(
+    before: Dict[str, str],
+    after: Dict[str, str],
+    download_status: Optional[Dict[str, str]] = None,
+) -> List[FileDiff]:
     """Compute unified diffs between before and after snapshots."""
     results = []
     all_files = sorted(set(before.keys()) | set(after.keys()))
+    download_status = download_status or {}
 
     for filename in all_files:
         old = before.get(filename, "")
@@ -181,6 +232,7 @@ def compute_diffs(before: Dict[str, str], after: Dict[str, str]) -> List[FileDif
         fd = FileDiff(
             filename=filename,
             changed=changed,
+            download_status=download_status.get(filename, "unknown"),
             hash_before=h_before,
             hash_after=h_after,
         )
@@ -414,8 +466,25 @@ def build_output(
     """Build the final JSON output."""
     changed_count = sum(1 for f in file_diffs if f.changed)
     unchanged_count = sum(1 for f in file_diffs if not f.changed)
+    not_fetched = [f.filename for f in file_diffs if f.download_status != "downloaded"]
 
     return {
+        # Read this BEFORE the per-file diffs. update-claude-docs.sh exits 0
+        # when at least one file downloads, so exit_code alone cannot tell you
+        # the sync was complete. When complete is False, every "changed": false
+        # among not_fetched is unverified -- the file was never downloaded.
+        "sync_health": {
+            "complete": not not_fetched,
+            "fetched": len(file_diffs) - len(not_fetched),
+            "total": len(file_diffs),
+            "not_fetched": not_fetched,
+            "warning": (
+                None if not not_fetched else
+                f"{len(not_fetched)} of {len(file_diffs)} files were NOT downloaded "
+                f"({', '.join(not_fetched)}). Their 'changed: false' is meaningless -- "
+                f"re-run the sync before trusting any impact analysis for them."
+            ),
+        },
         "sync_result": {
             "exit_code": sync_exit_code,
             "stdout": sync_stdout,
@@ -451,28 +520,57 @@ def main():
 
     # Snapshot before
     before = snapshot_files(root, filenames)
+    mtimes_before = snapshot_mtimes(root, filenames)
 
     # Sync or dry-run
     sync_exit_code = None
     sync_stdout = ""
     sync_stderr = ""
+    download_status: Dict[str, str] = {}
 
     if args.dry_run:
         print("Dry run: downloading to memory without overwriting...", file=sys.stderr)
         after = dry_run_download(url_mappings)
-        # Fill in any files that failed to download with their current content
+        # A file that failed to download falls back to its on-disk content, so
+        # it would otherwise look identical to "upstream unchanged". Record the
+        # failure so the caller can tell the two apart.
         for filename in filenames:
-            if not after.get(filename):
+            if after.get(filename):
+                download_status[filename] = "downloaded"
+            else:
+                download_status[filename] = "download_failed"
                 after[filename] = before.get(filename, "")
     else:
         print("Running sync script...", file=sys.stderr)
         sync_exit_code, sync_stdout, sync_stderr = run_sync_script(root)
-        print(f"Sync complete (exit code: {sync_exit_code})", file=sys.stderr)
+        print(f"Sync script exited {sync_exit_code}", file=sys.stderr)
         # Snapshot after
         after = snapshot_files(root, filenames)
+        mtimes_after = snapshot_mtimes(root, filenames)
+
+        # Two independent signals, because the shell script exits 0 when even a
+        # single file succeeds: its own per-file log, plus mtime (it writes via
+        # `mv -f`, so a real download always bumps mtime).
+        reported = parse_sync_log(sync_stdout + "\n" + sync_stderr)
+        for filename in filenames:
+            written = mtimes_after.get(filename) != mtimes_before.get(filename)
+            status = reported.get(filename)
+            if status is None:
+                status = "downloaded" if written else "download_failed"
+            elif status == "downloaded" and not written:
+                status = "write_failed"
+            download_status[filename] = status
+
+        failed = [f for f, s in download_status.items() if s != "downloaded"]
+        if failed:
+            print(
+                f"WARNING: {len(failed)} of {len(filenames)} files were NOT downloaded: "
+                f"{', '.join(failed)}",
+                file=sys.stderr,
+            )
 
     # Compute diffs
-    file_diffs = compute_diffs(before, after)
+    file_diffs = compute_diffs(before, after, download_status)
 
     # Extract validator constants
     validator_constants = extract_validator_constants(root)

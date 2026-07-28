@@ -251,7 +251,7 @@
 ### HK001: Hook Structure [ERROR/WARNING]
 **Check**: `hooks` field is a proper mapping of event names to handler arrays.
 **Valid Skill Events**: `PreToolUse`, `PostToolUse`, `Stop`
-**All Valid Events**: `PreToolUse`, `PostToolUse`, `Stop`, `SessionStart`, `UserPromptSubmit`, `PermissionRequest`, `PostToolUseFailure`, `Notification`, `SubagentStart`, `SubagentStop`, `TeammateIdle`, `TaskCompleted`, `PreCompact`, `SessionEnd`, `ConfigChange`, `WorktreeCreate`, `WorktreeRemove`
+**All Valid Events** (30, matching `VALID_HOOK_EVENTS` in `scripts/validate_skill.py`): `ConfigChange`, `CwdChanged`, `Elicitation`, `ElicitationResult`, `FileChanged`, `InstructionsLoaded`, `MessageDisplay`, `Notification`, `PermissionDenied`, `PermissionRequest`, `PostCompact`, `PostToolBatch`, `PostToolUse`, `PostToolUseFailure`, `PreCompact`, `PreToolUse`, `SessionEnd`, `SessionStart`, `Setup`, `Stop`, `StopFailure`, `SubagentStart`, `SubagentStop`, `TaskCompleted`, `TaskCreated`, `TeammateIdle`, `UserPromptExpansion`, `UserPromptSubmit`, `WorktreeCreate`, `WorktreeRemove`
 **Fix**: Use proper hook structure with event names as keys.
 
 ### HK002: Hook Handler Format [ERROR]

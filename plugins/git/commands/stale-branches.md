@@ -1,6 +1,6 @@
 ---
 description: List stale git branches that are candidates for cleanup (merged or inactive)
-argument-hint: [--threshold <months>] [--base <branch>] [--remote]
+argument-hint: "[--threshold <months>] [--base <branch>] [--remote]"
 ---
 
 # Stale Branches

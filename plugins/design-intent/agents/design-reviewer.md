@@ -1,7 +1,7 @@
 ---
 name: design-reviewer
 description: Reviews UI implementations for visual consistency, accessibility compliance, responsive behavior, and design pattern adherence using confidence-based filtering
-tools: Glob, Grep, LS, Read, NotebookRead, WebFetch, TodoWrite, Bash
+tools: Glob, Grep, Read, WebFetch, TodoWrite, Bash
 model: sonnet
 skills:
   - playwright:playwright-cli

@@ -323,7 +323,7 @@ Use for workflows with side effects that you want to trigger manually with `/nam
 Display a hint during autocomplete to indicate expected arguments.
 
 ```yaml
-argument-hint: [issue-number]
+argument-hint: "[issue-number]"
 ```
 
 The hint appears in the autocomplete menu to help users understand what arguments the skill expects. Examples: `[issue-number]`, `[filename] [format]`, `[component-name]`.
@@ -711,9 +711,9 @@ agent: Explore
 
 | Agent | Description | Use Case |
 |-------|-------------|----------|
-| `Explore` | Fast, read-only, uses Haiku | Quick file discovery, code search |
-| `Plan` | Research and analysis, uses Sonnet | Planning, context gathering |
-| `general-purpose` | Full capabilities, uses Sonnet | Complex tasks requiring modification |
+| `Explore` | Fast, read-only; inherits the session model (capped at Opus on the Claude API) | Quick file discovery, code search |
+| `Plan` | Research and analysis; inherits the session model | Planning, context gathering |
+| `general-purpose` | Full capabilities; inherits the session model | Complex tasks requiring modification |
 | Custom agent | Your `.claude/agents/` agent | Specialized workflows |
 
 ### Dynamic Context Injection

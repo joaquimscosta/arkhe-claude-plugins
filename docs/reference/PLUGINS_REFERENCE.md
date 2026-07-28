@@ -7,7 +7,7 @@
 > Complete technical reference for Claude Code plugin system, including schemas, CLI commands, and component specifications.
 
 <Tip>
-  Looking to install plugins? See [Discover and install plugins](/en/discover-plugins). For creating plugins, see [Plugins](/en/plugins). For distributing plugins, see [Plugin marketplaces](/en/plugin-marketplaces).
+  Looking to install plugins? See [Discover and install plugins](/docs/en/discover-plugins). For creating plugins, see [Plugins](/docs/en/plugins). For distributing plugins, see [Plugin marketplaces](/docs/en/plugin-marketplaces).
 </Tip>
 
 This reference provides complete technical specifications for the Claude Code plugin system, including component schemas, CLI commands, and development tools.
@@ -44,7 +44,9 @@ skills/
 
 If a plugin has no `skills/` directory and no `skills` manifest field, a `SKILL.md` at the plugin root is loaded as a single skill. Set the frontmatter `name` field to control the skill's invocation name. Without it, Claude Code falls back to the install directory name, which for marketplace-installed plugins is a version string that changes on every update. For plugins that ship more than one skill, use the `skills/` directory layout shown above.
 
-For complete details, see [Skills](/en/skills).
+In plugin skills and commands, Boolean frontmatter fields such as `disable-model-invocation` accept `yes`, `no`, `on`, `off`, `1`, and `0` in any letter case, in addition to `true` and `false`. Before v2.1.218, Claude Code recognized only `true` and `false`.
+
+For complete details, see [Skills](/docs/en/skills).
 
 ### Agents
 
@@ -73,12 +75,12 @@ Plugin agents support `name`, `description`, `model`, `effort`, `maxTurns`, `too
 
 **Integration points**:
 
-* Agents appear in the `/agents` interface
+* Agents appear in the [@-mention typeahead](/docs/en/sub-agents#invoke-subagents-explicitly) under their scoped name, such as `my-plugin:code-reviewer`, once the plugin is enabled
 * Claude can invoke agents automatically based on task context
 * Agents can be invoked manually by users
 * Plugin agents work alongside built-in Claude agents
 
-For complete details, see [Subagents](/en/sub-agents).
+For complete details, see [Subagents](/docs/en/sub-agents).
 
 ### Hooks
 
@@ -108,7 +110,7 @@ Plugins can provide event handlers that respond to Claude Code events automatica
 }
 ```
 
-Plugin hooks respond to the same lifecycle events as [user-defined hooks](/en/hooks):
+Plugin hooks respond to the same lifecycle events as [user-defined hooks](/docs/en/hooks):
 
 | Event                 | When it fires                                                                                                                                          |
 | :-------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -130,13 +132,13 @@ Plugin hooks respond to the same lifecycle events as [user-defined hooks](/en/ho
 | `TaskCompleted`       | When a task is being marked as completed                                                                                                               |
 | `Stop`                | When Claude finishes responding                                                                                                                        |
 | `StopFailure`         | When the turn ends due to an API error. Output and exit code are ignored                                                                               |
-| `TeammateIdle`        | When an [agent team](/en/agent-teams) teammate is about to go idle                                                                                     |
+| `TeammateIdle`        | When an [agent team](/docs/en/agent-teams) teammate is about to go idle                                                                                     |
 | `InstructionsLoaded`  | When a CLAUDE.md or `.claude/rules/*.md` file is loaded into context. Fires at session start and when files are lazily loaded during a session         |
 | `ConfigChange`        | When a configuration file changes during a session                                                                                                     |
 | `CwdChanged`          | When the working directory changes, for example when Claude executes a `cd` command. Useful for reactive environment management with tools like direnv |
 | `FileChanged`         | When a watched file changes on disk. The `matcher` field specifies which filenames to watch                                                            |
-| `WorktreeCreate`      | When a worktree is being created via `--worktree` or `isolation: "worktree"`. Replaces default git behavior                                            |
-| `WorktreeRemove`      | When a worktree is being removed, either at session exit or when a subagent finishes                                                                   |
+| `WorktreeCreate`      | When a worktree is being created via `--worktree`, `isolation: "worktree"`, or for a background session. Replaces default git behavior                 |
+| `WorktreeRemove`      | When a worktree is being removed at session exit, when a subagent finishes, or when you delete a background session                                    |
 | `PreCompact`          | Before context compaction                                                                                                                              |
 | `PostCompact`         | After context compaction completes                                                                                                                     |
 | `Elicitation`         | When an MCP server requests user input during a tool call                                                                                              |
@@ -147,9 +149,11 @@ Plugin hooks respond to the same lifecycle events as [user-defined hooks](/en/ho
 
 * `command`: execute shell commands or scripts
 * `http`: send the event JSON as a POST request to a URL
-* `mcp_tool`: call a tool on a configured [MCP server](/en/mcp)
+* `mcp_tool`: call a tool on a configured [MCP server](/docs/en/mcp)
 * `prompt`: evaluate a prompt with an LLM (uses `$ARGUMENTS` placeholder for context)
 * `agent`: run an agentic verifier with tools for complex verification tasks
+
+Hooks that target the plugin's own [bundled MCP server](#mcp-servers) must use its scoped names. Tool matchers and `if` fields take the scoped tool name `mcp__plugin_<plugin-name>_<server-name>__<tool>`, and an `mcp_tool` hook's `server` field takes `plugin:<plugin-name>:<server-name>`. A matcher written against the bare server key never fires. See [Match MCP tools](/docs/en/hooks#match-mcp-tools) and [Plugin-provided MCP servers](/docs/en/mcp#plugin-provided-mcp-servers).
 
 ### MCP servers
 
@@ -173,8 +177,7 @@ Plugins can bundle Model Context Protocol (MCP) servers to connect Claude Code w
     },
     "plugin-api-client": {
       "command": "npx",
-      "args": ["@company/mcp-server", "--plugin-mode"],
-      "cwd": "${CLAUDE_PLUGIN_ROOT}"
+      "args": ["@company/mcp-server", "--plugin-mode"]
     }
   }
 }
@@ -254,8 +257,18 @@ LSP integration provides:
 | `settings`              | Settings passed via `workspace/didChangeConfiguration`                                                                                                              |
 | `workspaceFolder`       | Workspace folder path for the server                                                                                                                                |
 | `startupTimeout`        | Max time to wait for server startup (milliseconds)                                                                                                                  |
+| `shutdownTimeout`       | Max time to wait for graceful shutdown (milliseconds). When the timeout elapses, Claude Code terminates the server process. When unset, no timeout applies          |
+| `restartOnCrash`        | Whether to restart the server after it crashes. Defaults to `true`. Set to `false` to leave a crashed server stopped instead of restarting it                       |
 | `maxRestarts`           | Maximum number of restart attempts before giving up                                                                                                                 |
 | `diagnostics`           | Whether to push diagnostics into Claude's context after edits (default `true`). Set to `false` to keep code navigation but suppress automatic diagnostic injection. |
+
+`restartOnCrash` and `shutdownTimeout` require Claude Code v2.1.205 or later. Before v2.1.205, the config schema accepted both options but setting either one caused Claude Code to skip that LSP server entirely at startup, with the reason visible only in `claude --debug` output.
+
+**Multiple servers for the same extension**: when more than one enabled LSP server declares the same file extension in `extensionToLanguage`, whether the servers come from one plugin or from different plugins, the first server registered handles files with that extension and the others never start. The `/plugin` interface shows a warning naming the plugin whose server is active.
+
+**Servers that fail to initialize**: Claude Code skips a server whose configuration is invalid, for example one missing `command` or `extensionToLanguage`, and the other configured servers still start. Run `claude --debug` to see why a server was skipped.
+
+A skipped server doesn't claim its file extensions, so another valid server that declares the same extension, from the same or a different plugin, still handles those files. Before v2.1.205, a server that failed to initialize still claimed its extensions and blocked another valid server for the same extension.
 
 <Warning>
   **You must install the language server binary separately.** LSP plugins configure how Claude Code connects to a language server, but they don't include the server itself. If you see `Executable not found in $PATH` in the `/plugin` Errors tab, install the required binary for your language.
@@ -275,11 +288,7 @@ Install the language server first, then install the plugin from the marketplace.
 
 Plugins can declare background monitors that Claude Code starts automatically when the plugin is active. Each monitor runs a shell command for the lifetime of the session and delivers every stdout line to Claude as a notification, so Claude can react to log entries, status changes, or polled events without being asked to start the watch itself.
 
-Plugin monitors use the same mechanism as the [Monitor tool](/en/tools-reference#monitor-tool) and share its availability constraints. They run only in interactive CLI sessions, run unsandboxed at the same trust level as [hooks](#hooks), and are skipped on hosts where the Monitor tool is unavailable.
-
-<Note>
-  Plugin monitors require Claude Code v2.1.105 or later.
-</Note>
+Plugin monitors use the same mechanism as the [Monitor tool](/docs/en/tools-reference#monitor-tool) and share its availability constraints. They run only in interactive CLI sessions, run unsandboxed at the same trust level as [hooks](#hooks), and are skipped on hosts where the Monitor tool is unavailable.
 
 **Location**: `monitors/monitors.json` in the plugin root, or inline in `plugin.json`
 
@@ -291,7 +300,7 @@ The following `monitors/monitors.json` watches a deployment status endpoint and 
 [
   {
     "name": "deploy-status",
-    "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/poll-deploy.sh ${user_config.api_endpoint}",
+    "command": "\"${CLAUDE_PLUGIN_ROOT}\"/scripts/poll-deploy.sh",
     "description": "Deployment status changes"
   },
   {
@@ -319,7 +328,9 @@ To declare monitors inline, set `experimental.monitors` in `plugin.json` to the 
 | :----- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `when` | Controls when the monitor starts. `"always"` starts it at session start and on plugin reload, and is the default. `"on-skill-invoke:<skill-name>"` starts it the first time the named skill in this plugin is dispatched |
 
-The `command` value supports the same [variable substitutions](#environment-variables) as MCP and LSP server configs: `${CLAUDE_PLUGIN_ROOT}`, `${CLAUDE_PLUGIN_DATA}`, `${CLAUDE_PROJECT_DIR}`, `${user_config.*}`, and any `${ENV_VAR}` from the environment. Prefix the command with `cd "${CLAUDE_PLUGIN_ROOT}" && ` if the script needs to run from the plugin's own directory.
+The `command` value supports the [path substitutions](#environment-variables) `${CLAUDE_PLUGIN_ROOT}`, `${CLAUDE_PLUGIN_DATA}`, and `${CLAUDE_PROJECT_DIR}`, plus any `${ENV_VAR}` from the environment. Prefix the command with `cd "${CLAUDE_PLUGIN_ROOT}" && ` if the script needs to run from the plugin's own directory.
+
+A monitor `command` can't reference [`${user_config.*}`](#user-configuration) values. The command runs through a shell, so Claude Code rejects the monitor with an [error](/docs/en/errors#plugin-command-references-user-config) instead of substituting the value. Monitor processes don't receive `CLAUDE_PLUGIN_OPTION_<KEY>` environment variables, so have the monitor script read the value from a config file it owns. Before v2.1.207, monitor commands substituted `${user_config.*}` values.
 
 Disabling a plugin mid-session does not stop monitors that are already running. They stop when the session ends.
 
@@ -352,9 +363,9 @@ When you install a plugin, you choose a **scope** that determines where the plug
 | `user`    | `~/.claude/settings.json`                       | Personal plugins available across all projects (default) |
 | `project` | `.claude/settings.json`                         | Team plugins shared via version control                  |
 | `local`   | `.claude/settings.local.json`                   | Project-specific plugins, gitignored                     |
-| `managed` | [Managed settings](/en/settings#settings-files) | Managed plugins (read-only, update only)                 |
+| `managed` | [Managed settings](/docs/en/settings#settings-files) | Managed plugins (read-only, update only)                 |
 
-Plugins use the same scope system as other Claude Code configurations. For installation instructions and scope flags, see [Install plugins](/en/discover-plugins#install-plugins). For a complete explanation of scopes, see [Configuration scopes](/en/settings#configuration-scopes).
+Plugins use the same scope system as other Claude Code configurations. For installation instructions and scope flags, see [Install plugins](/docs/en/discover-plugins#install-plugins). For a complete explanation of scopes, see [Configuration scopes](/docs/en/settings#configuration-scopes).
 
 ***
 
@@ -366,7 +377,7 @@ A skills directory tree supports three distinct things:
 
 | What you have                                 | What it is                                                                          |
 | :-------------------------------------------- | :---------------------------------------------------------------------------------- |
-| `<skills-dir>/foo/SKILL.md` with no manifest  | A plain [skill](/en/skills) named `foo`                                             |
+| `<skills-dir>/foo/SKILL.md` with no manifest  | A plain [skill](/docs/en/skills) named `foo`                                             |
 | `<skills-dir>/foo/.claude-plugin/plugin.json` | A plugin `foo@skills-dir`, which can bundle its own skills, agents, hooks, and more |
 | `<plugin>/skills/bar/SKILL.md`                | A skill `bar` packaged inside a plugin                                              |
 
@@ -375,23 +386,23 @@ A skills directory tree supports three distinct things:
 | Skills directory        | Scope    | Loads                                                                            |
 | :---------------------- | :------- | :------------------------------------------------------------------------------- |
 | `~/.claude/skills/`     | personal | In every project, since the location is yours alone                              |
-| `<cwd>/.claude/skills/` | project  | Only after you accept the workspace [trust dialog](/en/settings) for that folder |
+| `<cwd>/.claude/skills/` | project  | Only after you accept the workspace [trust dialog](/docs/en/settings) for that folder |
 
 A project-scope plugin is checked into the repository and reaches every collaborator who clones it. Because that content comes from the repository rather than from you, it loads only after the same trust gate that governs `.claude/settings.json`, and components that run code are restricted further:
 
-* MCP servers it declares go through the [same per-server approval](/en/mcp) as a project `.mcp.json`
+* MCP servers it declares go through the [same per-server approval](/docs/en/mcp) as a project `.mcp.json`
 * LSP servers start only after you trust the workspace
 * [Background monitors](#monitors) do not load
 
 Personal-scope plugins have none of these restrictions.
 
 <Warning>
-  Project-scope `@skills-dir` plugins load only from the `.claude/skills/` of the directory where you start Claude Code. They do not [walk up to the repository root](/en/skills#automatic-discovery-from-parent-and-nested-directories) the way plain skills and commands do, so launching from a subdirectory misses a plugin that lives at the repo root. Launch from the repository root, or run `/reload-plugins` after changing directories.
+  Project-scope `@skills-dir` plugins load only from the `.claude/skills/` of the directory where you start Claude Code. They do not [walk up to the repository root](/docs/en/skills#automatic-discovery-from-parent-and-nested-directories) the way plain skills and commands do, so launching from a subdirectory misses a plugin that lives at the repo root. Launch from the repository root, or run `/reload-plugins` after changing directories.
 </Warning>
 
 ### Edit, reload, and disable a skills-directory plugin
 
-Changes you make to a skill's `SKILL.md` take effect immediately in the current session. Changes to the plugin's other components, such as `hooks/`, `.mcp.json`, `agents/`, and `output-styles/`, do not. Run `/reload-plugins` or restart Claude Code to pick those up. See [Live change detection](/en/skills#live-change-detection).
+Changes you make to a skill's `SKILL.md` take effect immediately in the current session. Changes to the plugin's other components, such as `hooks/`, `.mcp.json`, `agents/`, and `output-styles/`, do not. Run `/reload-plugins` or restart Claude Code to pick those up. See [Live change detection](/docs/en/skills#live-change-detection).
 
 To stop loading a skills-directory plugin, delete its folder or disable it by name. There is no `uninstall` step because nothing was installed from a marketplace.
 
@@ -446,9 +457,9 @@ The manifest is optional. If omitted, Claude Code auto-discovers components in [
 
 If you include a manifest, `name` is the only required field.
 
-| Field  | Type   | Description                               | Example              |
-| :----- | :----- | :---------------------------------------- | :------------------- |
-| `name` | string | Unique identifier (kebab-case, no spaces) | `"deployment-tools"` |
+| Field  | Type   | Description                                                                                                                                                                                                                       | Example              |
+| :----- | :----- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------- |
+| `name` | string | Unique identifier (kebab-case, no spaces). When a [marketplace entry](/docs/en/plugin-marketplaces#plugin-entries) lists the plugin under a different name, the marketplace entry name is what `enabledPlugins` keys and `/plugin` use | `"deployment-tools"` |
 
 This name is used for namespacing components. For example, in the UI, the
 agent `agent-creator` for the plugin with name `plugin-dev` will appear as
@@ -501,9 +512,9 @@ Set `defaultEnabled: false` in `plugin.json` to ship a plugin that installs disa
 `defaultEnabled` is the fallback when nothing else has decided the plugin's state. Two things take precedence over it:
 
 * **The user's setting**: an entry for the plugin in `enabledPlugins` at any settings scope. Once written, it persists across plugin updates and reinstalls, so changing `defaultEnabled` in a later release does not flip an existing user.
-* **A dependency requirement**: when a plugin is required by another one that is active, Claude Code writes `true` for it at install or enable time. That gives it an explicit setting, so its own default no longer applies. See [Enable or disable a plugin with dependencies](/en/plugin-dependencies#enable-or-disable-a-plugin-with-dependencies).
+* **A dependency requirement**: when a plugin is required by another one that is active, Claude Code writes `true` for it at install or enable time. That gives it an explicit setting, so its own default no longer applies. See [Enable or disable a plugin with dependencies](/docs/en/plugin-dependencies#enable-or-disable-a-plugin-with-dependencies).
 
-The same field can appear in a plugin's marketplace entry, where it takes precedence over the value in `plugin.json`. See [Optional plugin fields](/en/plugin-marketplaces#optional-plugin-fields).
+The same field can appear in a plugin's marketplace entry, where it takes precedence over the value in `plugin.json`. See [Optional plugin fields](/docs/en/plugin-marketplaces#optional-plugin-fields).
 
 ### Component path fields
 
@@ -512,15 +523,16 @@ The same field can appear in a plugin's marketplace entry, where it takes preced
 | `skills`                | string\|array         | Custom skill directories containing `<name>/SKILL.md`. Adds to the default `skills/` scan. See [Path behavior rules](#path-behavior-rules) for the marketplace-root exception | `"./custom/skills/"`                                 |
 | `commands`              | string\|array         | Custom flat `.md` skill files or directories (replaces default `commands/`)                                                                                                   | `"./custom/cmd.md"` or `["./cmd1.md"]`               |
 | `agents`                | string\|array         | Custom agent files (replaces default `agents/`)                                                                                                                               | `"./custom/agents/reviewer.md"`                      |
+| `workflows`             | string\|array         | Custom [workflow](/docs/en/workflows) script files or directories (replaces default `workflows/`)                                                                                  | `"./custom/workflows/"`                              |
 | `hooks`                 | string\|array\|object | Hook config paths or inline config                                                                                                                                            | `"./my-extra-hooks.json"`                            |
 | `mcpServers`            | string\|array\|object | MCP config paths or inline config                                                                                                                                             | `"./my-extra-mcp-config.json"`                       |
 | `outputStyles`          | string\|array         | Custom output style files/directories (replaces default `output-styles/`)                                                                                                     | `"./styles/"`                                        |
 | `lspServers`            | string\|array\|object | [Language Server Protocol](https://microsoft.github.io/language-server-protocol/) configs for code intelligence (go to definition, find references, etc.)                     | `"./.lsp.json"`                                      |
 | `experimental.themes`   | string\|array         | Color theme files/directories (replaces default `themes/`). See [Themes](#themes)                                                                                             | `"./themes/"`                                        |
-| `experimental.monitors` | string\|array         | Background [Monitor](/en/tools-reference#monitor-tool) configurations that start automatically when the plugin is active. See [Monitors](#monitors)                           | `"./monitors.json"`                                  |
+| `experimental.monitors` | string\|array         | Background [Monitor](/docs/en/tools-reference#monitor-tool) configurations that start automatically when the plugin is active. See [Monitors](#monitors)                           | `"./monitors.json"`                                  |
 | `userConfig`            | object                | User-configurable values prompted at enable time. See [User configuration](#user-configuration)                                                                               | See below                                            |
 | `channels`              | array                 | Channel declarations for message injection (Telegram, Slack, Discord style). See [Channels](#channels)                                                                        | See below                                            |
-| `dependencies`          | array                 | Other plugins this plugin requires, optionally with semver version constraints. See [Constrain plugin dependency versions](/en/plugin-dependencies)                           | `[{ "name": "secrets-vault", "version": "~2.1.0" }]` |
+| `dependencies`          | array                 | Other plugins this plugin requires, optionally with semver version constraints. See [Constrain plugin dependency versions](/docs/en/plugin-dependencies)                           | `[{ "name": "secrets-vault", "version": "~2.1.0" }]` |
 
 ### Experimental components
 
@@ -561,9 +573,31 @@ Keys must be valid identifiers. Each option supports these fields:
 | `multiple`    | No       | For `string` type, allow an array of strings                                             |
 | `min` / `max` | No       | Bounds for `number` type                                                                 |
 
-Each value is available for substitution as `${user_config.KEY}` in MCP and LSP server configs, hook commands, and monitor commands. Non-sensitive values can also be substituted in skill and agent content. All values are exported to plugin subprocesses as `CLAUDE_PLUGIN_OPTION_<KEY>` environment variables.
+Each value is available for substitution as `${user_config.KEY}` in MCP and LSP server configs and hook commands. Non-sensitive values can also be substituted in skill and agent content. All values are exported to hook processes as `CLAUDE_PLUGIN_OPTION_<KEY>` environment variables, where `<KEY>` is the option key uppercased.
 
-Non-sensitive values are stored in `settings.json` under `pluginConfigs[<plugin-id>].options`. Sensitive values go to the system keychain (or `~/.claude/.credentials.json` where the keychain is unavailable). Keychain storage is shared with OAuth tokens and has an approximately 2 KB total limit, so keep sensitive values small.
+Fields that run in a shell reject `${user_config.*}`: substituting a configured value into a shell command would let the shell run whatever that value contains, so the component fails with an [error](/docs/en/errors#plugin-command-references-user-config) instead. Each rejected field has an alternative way to pass the value:
+
+| Rejected field                                                               | How to pass the value                                                                                                             |
+| :--------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------- |
+| Shell-form hook commands                                                     | Use [exec form](/docs/en/hooks#exec-form-and-shell-form) with `args`, or read `CLAUDE_PLUGIN_OPTION_<KEY>` from the hook's environment |
+| [Monitor](#monitors) commands                                                | Read the value from a config file in the script                                                                                   |
+| MCP [`headersHelper`](/docs/en/mcp#use-dynamic-headers-for-custom-authentication) | Read the value from a config file in the script                                                                                   |
+
+Before v2.1.207, these fields substituted `${user_config.KEY}` values; update plugins that relied on this.
+
+Non-sensitive values are stored under the [`pluginConfigs`](/docs/en/settings#pluginconfigs) key in your user `settings.json` as `pluginConfigs[<plugin-id>].options`.
+
+Sensitive values go to the macOS Keychain, or to `~/.claude/.credentials.json` on platforms where no supported keychain is available. Keychain storage is shared with OAuth tokens and has an approximately 2 KB total limit, so keep sensitive values small.
+
+Claude Code reads all `pluginConfigs` values from only three settings sources:
+
+* **User settings**: `~/.claude/settings.json`, the file the enable-time prompt writes to
+* **`--settings`**: the CLI flag or SDK inline settings
+* **Managed settings**: [organization-controlled policy](/docs/en/permissions#managed-settings)
+
+When more than one source sets the same key, managed settings take precedence, then `--settings`, then user settings. The [`--setting-sources`](/docs/en/cli-reference#cli-flags) flag narrows the list further.
+
+Entries in a project's `.claude/settings.json` or `.claude/settings.local.json` are ignored. Both files live in the workspace, so a cloned repository could supply values there, and those values would flow into plugin hook commands, MCP server configs, LSP commands, and monitor commands. Before v2.1.207, these entries were read. The restriction is specific to `pluginConfigs`: [`enabledPlugins`](/docs/en/settings#enabledplugins) still honors project and local settings.
 
 ### Channels
 
@@ -598,11 +632,11 @@ The `server` field is required and must match a key in the plugin's `mcpServers`
 
 Whether a custom path replaces or extends the plugin's default directory depends on the field:
 
-* **Replaces the default**: `commands`, `agents`, `outputStyles`, `experimental.themes`, `experimental.monitors`. For example, when the manifest specifies `commands`, the default `commands/` directory is not scanned. To keep the default and add more, list it explicitly: `"commands": ["./commands/", "./extras/"]`
-* **Adds to the default**: `skills`. The default `skills/` directory is always scanned, and directories listed in `skills` are loaded alongside it. Exception: for a [marketplace entry whose `source` resolves to the marketplace root](/en/plugin-marketplaces#advanced-plugin-entries), declaring specific subdirectories replaces the default `skills/` scan
+* **Replaces the default**: `commands`, `agents`, `workflows`, `outputStyles`, `experimental.themes`, `experimental.monitors`. For example, when the manifest specifies `commands`, the default `commands/` directory is not scanned. To keep the default and add more, list it explicitly: `"commands": ["./commands/", "./extras/"]`
+* **Adds to the default**: `skills`. The default `skills/` directory is always scanned, and directories listed in `skills` are loaded alongside it. Exception: for a [marketplace entry whose `source` resolves to the marketplace root](/docs/en/plugin-marketplaces#advanced-plugin-entries), declaring specific subdirectories replaces the default `skills/` scan
 * **Own merge rules**: [hooks](#hooks), [MCP servers](#mcp-servers), and [LSP servers](#lsp-servers). See each section for how multiple sources combine
 
-When a plugin has both a default folder and the matching manifest key, Claude Code v2.1.140 and later flags the ignored folder in `/doctor`, `claude plugin list`, and the `/plugin` detail view. The plugin still loads using the manifest paths. No warning is shown when the manifest key points into the default folder, for example `"commands": ["./commands/deploy.md"]`, because the folder is addressed explicitly in that case.
+When a plugin has both a default folder and the matching manifest key, Claude Code v2.1.140 and later warns about the ignored folder in `claude plugin list` and the `/plugin` detail view. The plugin still loads using the manifest paths. Claude Code doesn't warn when the manifest key points into the default folder, for example `"commands": ["./commands/deploy.md"]`, because that path names the folder explicitly.
 
 For all path fields:
 
@@ -630,15 +664,25 @@ A plugin that has a `SKILL.md` at its root, no `skills/` subdirectory, and no `s
 
 ### Environment variables
 
-Claude Code provides three variables for referencing paths. All are substituted inline anywhere they appear in skill content, agent content, hook commands, monitor commands, and MCP or LSP server configs. All are also exported as environment variables to hook processes and MCP or LSP server subprocesses.
+Claude Code provides three variables for referencing paths:
 
-**`${CLAUDE_PLUGIN_ROOT}`**: the absolute path to your plugin's installation directory. Use this to reference scripts, binaries, and config files bundled with the plugin. In hook commands, use [exec form](/en/hooks#exec-form-and-shell-form) with `args` so the path is passed as one argument with no quoting. In shell-form hooks and monitor commands, wrap it in double quotes, as in `"${CLAUDE_PLUGIN_ROOT}"`. This path changes when the plugin updates. The previous version's directory remains on disk for about seven days after an update before cleanup, but treat it as ephemeral and do not write state here.
+| Variable                | Resolves to                                                                                                 | Use it for                                                                                               |
+| :---------------------- | :---------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------- |
+| `${CLAUDE_PLUGIN_ROOT}` | Absolute path to the plugin's installation directory                                                        | Scripts, binaries, and config files bundled with the plugin                                              |
+| `${CLAUDE_PLUGIN_DATA}` | [Persistent directory](#persistent-data-directory) that survives plugin updates, created on first reference | Installed dependencies such as `node_modules` or Python virtual environments, generated code, and caches |
+| `${CLAUDE_PROJECT_DIR}` | The project root                                                                                            | Project-local scripts and config files                                                                   |
 
-When a plugin updates mid-session, hook commands, monitors, MCP servers, and LSP servers keep using the previous version's path. Run `/reload-plugins` to switch hooks, MCP servers, and LSP servers to the new path; monitors require a session restart.
+All three are exported as environment variables to hook processes and to MCP and LSP server subprocesses. Which fields substitute them inline depends on the plugin component:
 
-**`${CLAUDE_PLUGIN_DATA}`**: a persistent directory for plugin state that survives updates. Use this for installed dependencies such as `node_modules` or Python virtual environments, generated code, caches, and any other files that should persist across plugin versions. The directory is created automatically the first time this variable is referenced.
+| Plugin component                | Fields where placeholders resolve           |
+| :------------------------------ | :------------------------------------------ |
+| Skill and agent content         | Anywhere the placeholder appears            |
+| Hook and monitor commands       | Anywhere the placeholder appears            |
+| MCP `stdio` servers             | `command`, `args`, `env`                    |
+| MCP `http`, `sse`, `ws` servers | `url`, `headers`, `headersHelper`           |
+| LSP servers                     | `command`, `args`, `env`, `workspaceFolder` |
 
-**`${CLAUDE_PROJECT_DIR}`**: the project root. This is the same directory hooks receive in their `CLAUDE_PROJECT_DIR` variable. Use this to reference project-local scripts or config files. Wrap in quotes to handle paths with spaces, for example `"${CLAUDE_PROJECT_DIR}/scripts/server.sh"`. MCP servers can also call the MCP `roots/list` request, which returns the directory Claude Code was launched from.
+In hook commands, use [exec form](/docs/en/hooks#exec-form-and-shell-form) with `args` so each path is passed as one argument with no quoting. In shell-form hooks and monitor commands, wrap the variables in double quotes, as in `"${CLAUDE_PROJECT_DIR}/scripts/server.sh"`. This shell-form hook runs a script bundled with a plugin:
 
 ```json theme={null}
 {
@@ -656,6 +700,12 @@ When a plugin updates mid-session, hook commands, monitors, MCP servers, and LSP
   }
 }
 ```
+
+`${CLAUDE_PLUGIN_ROOT}` changes when the plugin updates. The previous version's directory remains on disk for about two weeks after an update before cleanup, but treat it as ephemeral and don't write state there.
+
+When a plugin updates mid-session, hook commands, monitors, MCP servers, and LSP servers keep using the previous version's path. Run `/reload-plugins` to switch hooks, MCP servers, and LSP servers to the new path; monitors require a session restart.
+
+MCP servers can also call the `roots/list` request to read the session's working directories at runtime. See [what `roots/list` returns and when Claude Code notifies the server of changes](/docs/en/mcp#option-3-add-a-local-stdio-server).
 
 #### Persistent data directory
 
@@ -713,7 +763,7 @@ Plugins are specified in one of two ways:
 
 For security and verification purposes, Claude Code copies *marketplace* plugins to the user's local **plugin cache** (`~/.claude/plugins/cache`) rather than using them in-place. Understanding this behavior is important when developing plugins that reference external files.
 
-Each installed version is a separate directory in the cache. When you update or uninstall a plugin, the previous version directory is marked as orphaned and removed automatically 7 days later. The grace period lets concurrent Claude Code sessions that already loaded the old version keep running without errors.
+Each installed version is a separate directory in the cache. When you update or uninstall a plugin, the previous version directory is marked as orphaned and removed automatically 14 days later. The grace period lets concurrent Claude Code sessions that already loaded the old version keep running without errors.
 
 Claude's Glob and Grep tools skip orphaned version directories during searches, so file results don't include outdated plugin code.
 
@@ -764,6 +814,8 @@ enterprise-plugin/
 │   ├── security-reviewer.md
 │   ├── performance-tester.md
 │   └── compliance-checker.md
+├── workflows/                # Workflow scripts
+│   └── release-audit.js
 ├── output-styles/            # Output style definitions
 │   └── terse.md
 ├── themes/                   # Color theme definitions
@@ -787,7 +839,7 @@ enterprise-plugin/
 ```
 
 <Warning>
-  The `.claude-plugin/` directory contains the `plugin.json` file. All other directories (commands/, agents/, skills/, output-styles/, themes/, monitors/, hooks/) must be at the plugin root, not inside `.claude-plugin/`.
+  The `.claude-plugin/` directory contains the `plugin.json` file. All other directories (commands/, agents/, skills/, workflows/, output-styles/, themes/, monitors/, hooks/) must be at the plugin root, not inside `.claude-plugin/`.
 </Warning>
 
 A `CLAUDE.md` file at the plugin root is not loaded as project context. Plugins contribute context through skills, agents, and hooks rather than CLAUDE.md. To ship instructions that load into Claude's context, put them in a [skill](#skills).
@@ -800,6 +852,7 @@ A `CLAUDE.md` file at the plugin root is not loaded as project context. Plugins 
 | **Skills**        | `skills/`                    | Skills with `<name>/SKILL.md` structure                                                                                                                                                    |
 | **Commands**      | `commands/`                  | Skills as flat Markdown files. Use `skills/` for new plugins                                                                                                                               |
 | **Agents**        | `agents/`                    | Subagent Markdown files                                                                                                                                                                    |
+| **Workflows**     | `workflows/`                 | [Workflow](/docs/en/workflows) script files                                                                                                                                                     |
 | **Output styles** | `output-styles/`             | Output style definitions                                                                                                                                                                   |
 | **Themes**        | `themes/`                    | Color theme definitions                                                                                                                                                                    |
 | **Hooks**         | `hooks/hooks.json`           | Hook configuration                                                                                                                                                                         |
@@ -807,7 +860,7 @@ A `CLAUDE.md` file at the plugin root is not loaded as project context. Plugins 
 | **LSP servers**   | `.lsp.json`                  | Language server configurations                                                                                                                                                             |
 | **Monitors**      | `monitors/monitors.json`     | Background monitor configurations                                                                                                                                                          |
 | **Executables**   | `bin/`                       | Executables added to the Bash tool's `PATH`. Files here are invokable as bare commands in any Bash tool call while the plugin is enabled                                                   |
-| **Settings**      | `settings.json`              | Default configuration applied when the plugin is enabled. Only the [`agent`](/en/sub-agents) and [`subagentStatusLine`](/en/statusline#subagent-status-lines) keys are currently supported |
+| **Settings**      | `settings.json`              | Default configuration applied when the plugin is enabled. Only the [`agent`](/docs/en/sub-agents) and [`subagentStatusLine`](/docs/en/statusline#subagent-status-lines) keys are currently supported |
 
 ***
 
@@ -852,9 +905,9 @@ Each `--with` value adds a starter file for that component, ready to edit:
 | `mcp`          | A `.mcp.json` with HTTP and stdio server examples                                                         |
 | `lsp`          | A `.lsp.json` language-server example                                                                     |
 | `output-style` | An `output-styles/<name>.md` that applies automatically while the plugin is enabled                       |
-| `channel`      | An MCP-based [channel](/en/channels): a stdio server (`server.ts`), its `.mcp.json`, and a `package.json` |
+| `channel`      | An MCP-based [channel](/docs/en/channels): a stdio server (`server.ts`), its `.mcp.json`, and a `package.json` |
 
-The scaffolded plugin uses the `@skills-dir` source rather than a marketplace. Admins can block this source with `strictKnownMarketplaces` or by adding `{"source": "skills-dir"}` to `blockedMarketplaces` in [managed settings](/en/plugin-marketplaces#managed-marketplace-restrictions). When blocked, `plugin init` fails before writing.
+The scaffolded plugin uses the `@skills-dir` source rather than a marketplace. Admins can block this source with `strictKnownMarketplaces` or by adding `{"source": "skills-dir"}` to `blockedMarketplaces` in [managed settings](/docs/en/plugin-marketplaces#managed-marketplace-restrictions). When blocked, `plugin init` fails before writing.
 
 **Examples:**
 
@@ -883,10 +936,11 @@ claude plugin install <plugin> [options]
 
 **Options:**
 
-| Option                | Description                                       | Default |
-| :-------------------- | :------------------------------------------------ | :------ |
-| `-s, --scope <scope>` | Installation scope: `user`, `project`, or `local` | `user`  |
-| `-h, --help`          | Display help for command                          |         |
+| Option                 | Description                                                                                                                 | Default |
+| :--------------------- | :-------------------------------------------------------------------------------------------------------------------------- | :------ |
+| `-s, --scope <scope>`  | Installation scope: `user`, `project`, or `local`                                                                           | `user`  |
+| `--config <key=value>` | Set a [`userConfig`](#user-configuration) option declared in the plugin's manifest. Repeat the flag to set multiple options |         |
+| `-h, --help`           | Display help for command                                                                                                    |         |
 
 Scope determines which settings file the installed plugin is added to. For example, `--scope project` writes to `enabledPlugins` in .claude/settings.json, making the plugin available to everyone who clones the project repository.
 
@@ -929,9 +983,13 @@ claude plugin uninstall <plugin> [options]
 
 By default, uninstalling from the last remaining scope also deletes the plugin's `${CLAUDE_PLUGIN_DATA}` directory. Use `--keep-data` to preserve it, for example when reinstalling after testing a new version.
 
+<Note>
+  When installed plugins from different marketplaces share a name, the `plugin-name@marketplace-name` form uninstalls only the plugin from the named marketplace. Before v2.1.212, the qualified form could match and uninstall the same-named plugin from a different marketplace.
+</Note>
+
 ### plugin prune
 
-Remove auto-installed plugin dependencies that are no longer required by any installed plugin. Dependencies that Claude Code pulled in to satisfy another plugin's [`dependencies`](/en/plugin-dependencies) field are removed; plugins you installed directly are never touched.
+Remove auto-installed plugin dependencies that are no longer required by any installed plugin. Dependencies that Claude Code pulled in to satisfy another plugin's [`dependencies`](/docs/en/plugin-dependencies) field are removed; plugins you installed directly are never touched.
 
 ```bash theme={null}
 claude plugin prune [options]
@@ -956,7 +1014,7 @@ The command lists orphaned dependencies and asks for confirmation before removin
 
 ### plugin enable
 
-Enable a disabled plugin. If the plugin declares [dependencies](/en/plugin-dependencies), Claude Code enables them transitively at the same scope, and the command fails when a dependency is not installed.
+Enable a disabled plugin. If the plugin declares [dependencies](/docs/en/plugin-dependencies), Claude Code enables them transitively at the same scope, and the command fails when a dependency is not installed.
 
 ```bash theme={null}
 claude plugin enable <plugin> [options]
@@ -968,29 +1026,30 @@ claude plugin enable <plugin> [options]
 
 **Options:**
 
-| Option                | Description                                    | Default |
-| :-------------------- | :--------------------------------------------- | :------ |
-| `-s, --scope <scope>` | Scope to enable: `user`, `project`, or `local` | `user`  |
-| `-h, --help`          | Display help for command                       |         |
+| Option                | Description                                                                                                               | Default     |
+| :-------------------- | :------------------------------------------------------------------------------------------------------------------------ | :---------- |
+| `-s, --scope <scope>` | Scope to enable: `user`, `project`, or `local`. When omitted, Claude Code detects the scope where the plugin is installed | Auto-detect |
+| `-h, --help`          | Display help for command                                                                                                  |             |
 
 ### plugin disable
 
-Disable a plugin without uninstalling it. Fails when another enabled plugin [depends on](/en/plugin-dependencies#enable-or-disable-a-plugin-with-dependencies) the target. The error message includes a chained command that disables every dependent first.
+Disable a plugin without uninstalling it. Fails when another enabled plugin [depends on](/docs/en/plugin-dependencies#enable-or-disable-a-plugin-with-dependencies) the target. The error message includes a chained command that disables every dependent first.
 
 ```bash theme={null}
-claude plugin disable <plugin> [options]
+claude plugin disable [plugin] [options]
 ```
 
 **Arguments:**
 
-* `<plugin>`: Plugin name or `plugin-name@marketplace-name`
+* `[plugin]`: Plugin name or `plugin-name@marketplace-name`. Optional when using `--all`
 
 **Options:**
 
-| Option                | Description                                     | Default |
-| :-------------------- | :---------------------------------------------- | :------ |
-| `-s, --scope <scope>` | Scope to disable: `user`, `project`, or `local` | `user`  |
-| `-h, --help`          | Display help for command                        |         |
+| Option                | Description                                                                                                                | Default     |
+| :-------------------- | :------------------------------------------------------------------------------------------------------------------------- | :---------- |
+| `-a, --all`           | Disable all enabled plugins. Can't be combined with `--scope`                                                              |             |
+| `-s, --scope <scope>` | Scope to disable: `user`, `project`, or `local`. When omitted, Claude Code detects the scope where the plugin is installed | Auto-detect |
+| `-h, --help`          | Display help for command                                                                                                   |             |
 
 ### plugin update
 
@@ -1029,7 +1088,12 @@ claude plugin list [options]
 | `--available` | Include available plugins from marketplaces. Requires `--json` |         |
 | `-h, --help`  | Display help for command                                       |         |
 
-Within an interactive session, `/plugin list` prints the same listing inline. The interactive form accepts `--enabled` or `--disabled` to show only plugins in that state, and `ls` as a shorthand for `list`.
+Within an interactive session, `/plugin list` prints a similar listing inline, but it covers marketplace-installed plugins only:
+
+* Plugins loaded from skills directories appear in the `/plugin` interface and in `claude plugin list`, but not in the inline `/plugin list` output.
+* Plugins loaded for the session with `--plugin-dir` or `--plugin-url` appear in the `/plugin` interface, and in `claude plugin list` only when the same flag precedes the subcommand, as in `claude --plugin-dir <dir> plugin list`. They have no installed record, so a bare `claude plugin list` doesn't show them.
+
+The interactive form accepts `--enabled` or `--disabled` to show only plugins in that state, and `ls` as a shorthand for `list`.
 
 ### plugin details
 
@@ -1064,7 +1128,7 @@ dependency-guard 1.2.0
 Component inventory
   Skills (2)  scan-dependencies, review-changes
   Agents (0)
-  Hooks (1)  (harness-only — no model context cost)
+  Hooks (1)  SessionStart  (harness-only — no model context cost)
   MCP servers (0)
   LSP servers (0)
 
@@ -1084,20 +1148,26 @@ The always-on total is computed via the `count_tokens` API for your active model
 
 ### plugin tag
 
-Create a release git tag for the plugin in the current directory. Run from inside the plugin's folder. See [Tag plugin releases](/en/plugin-dependencies#tag-plugin-releases-for-version-resolution).
+Create a release git tag for a plugin. By default the command tags the plugin in the current directory; pass a path to tag a plugin elsewhere. See [Tag plugin releases](/docs/en/plugin-dependencies#tag-plugin-releases-for-version-resolution).
 
 ```bash theme={null}
-claude plugin tag [options]
+claude plugin tag [path] [options]
 ```
+
+**Arguments:**
+
+* `[path]`: Path to the plugin directory. Defaults to the current directory.
 
 **Options:**
 
-| Option        | Description                                                                | Default |
-| :------------ | :------------------------------------------------------------------------- | :------ |
-| `--push`      | Push the tag to the remote after creating it                               |         |
-| `--dry-run`   | Print what would be tagged without creating the tag                        |         |
-| `-f, --force` | Create the tag even if the working tree is dirty or the tag already exists |         |
-| `-h, --help`  | Display help for command                                                   |         |
+| Option                | Description                                                                | Default  |
+| :-------------------- | :------------------------------------------------------------------------- | :------- |
+| `--push`              | Push the tag to the remote after creating it                               |          |
+| `--dry-run`           | Print what would be tagged without creating the tag                        |          |
+| `-f, --force`         | Create the tag even if the working tree is dirty or the tag already exists |          |
+| `-m, --message <msg>` | Tag annotation message. Use `%s` as a placeholder for the version          |          |
+| `--remote <name>`     | Remote to push to with `--push`                                            | `origin` |
+| `-h, --help`          | Display help for command                                                   |          |
 
 ***
 
@@ -1130,8 +1200,8 @@ This shows:
 **Manifest validation errors**:
 
 * `Invalid JSON syntax: Unexpected token } in JSON at position 142`: check for missing commas, extra commas, or unquoted strings
-* `Plugin has an invalid manifest file at .claude-plugin/plugin.json. Validation errors: name: Required`: a required field is missing
-* `Plugin has a corrupt manifest file at .claude-plugin/plugin.json. JSON parse error: ...`: JSON syntax error
+* `Plugin <name> has an invalid manifest file at .claude-plugin/plugin.json. Validation errors: name: Invalid input: expected string, received undefined`: a required field is missing
+* `Plugin <name> has a corrupt manifest file at .claude-plugin/plugin.json. JSON parse error: ...`: JSON syntax error
 
 **Plugin loading errors**:
 
@@ -1224,10 +1294,10 @@ If you use explicit versions, follow [semantic versioning](https://semver.org) (
 
 ## See also
 
-* [Plugins](/en/plugins) - Tutorials and practical usage
-* [Plugin marketplaces](/en/plugin-marketplaces) - Creating and managing marketplaces
-* [Skills](/en/skills) - Skill development details
-* [Subagents](/en/sub-agents) - Agent configuration and capabilities
-* [Hooks](/en/hooks) - Event handling and automation
-* [MCP](/en/mcp) - External tool integration
-* [Settings](/en/settings) - Configuration options for plugins
+* [Plugins](/docs/en/plugins) - Tutorials and practical usage
+* [Plugin marketplaces](/docs/en/plugin-marketplaces) - Creating and managing marketplaces
+* [Skills](/docs/en/skills) - Skill development details
+* [Subagents](/docs/en/sub-agents) - Agent configuration and capabilities
+* [Hooks](/docs/en/hooks) - Event handling and automation
+* [MCP](/docs/en/mcp) - External tool integration
+* [Settings](/docs/en/settings) - Configuration options for plugins

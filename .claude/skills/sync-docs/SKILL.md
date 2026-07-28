@@ -5,7 +5,7 @@ description: >
   Runs docs/reference/update-claude-docs.sh, computes diffs, and reports impacts
   on the skill validator, plugins, and project documentation. Use when user
   mentions "sync docs", "update reference docs", "refresh docs", or "check doc changes".
-argument-hint: [--dry-run]
+argument-hint: "[--dry-run]"
 ---
 
 # Sync Docs
@@ -31,8 +31,18 @@ scripts/sync_and_diff.py --dry-run
 ### Phase 1: Sync & Diff
 
 1. Execute `scripts/sync_and_diff.py` (or with `--dry-run` if `$ARGUMENTS` contains `--dry-run`)
-2. Parse the JSON output from stdout
-3. Display a summary table of changed/unchanged files
+
+   Capture the **whole** JSON document. Never pipe it through `tail`/`head` — `sync_health` and `sync_result` are at the top of the output and are the first things to read.
+
+2. **Gate on `sync_health` before anything else**:
+
+   - If `sync_health.complete` is `true`, proceed to step 3.
+   - If `sync_health.complete` is `false`, **stop and do not report impacts for the files in `sync_health.not_fetched`.** Their `"changed": false` only means "not downloaded", not "up to date". Print `sync_health.warning`, re-run the sync once to retry the failed files, and if they still fail, report them explicitly as UNVERIFIED in the summary table rather than as unchanged.
+
+   > `update-claude-docs.sh` exits `0` when *at least one* file downloads, so a non-zero exit code is not the signal — a 1-of-8 sync also exits `0`. Trust `sync_health`, not `sync_result.exit_code`.
+
+3. Parse the rest of the JSON output
+4. Display a summary table of changed/unchanged files, using `download_status` to mark any file that was not fetched
 
 ### Phase 2: Impact Analysis
 
