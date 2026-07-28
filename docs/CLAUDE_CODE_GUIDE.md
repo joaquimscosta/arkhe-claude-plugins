@@ -668,13 +668,18 @@ Custom agents (subagents) provide context isolation, focused system prompts, and
 | Generic advice for specialized work | Agents have focused system prompts |
 | Manual orchestration overhead | Automatic delegation based on task |
 
-#### Method 1: Interactive Creation
+#### Method 1: Ask Claude to Write It
 
-```bash
-/agents
+Describe the agent you want and where to save it:
+
+```text
+Create a personal code-improver agent in ~/.claude/agents/ that scans files
+and suggests improvements. Make it read-only and have it use Sonnet.
 ```
 
-Select "Create new agent" -> Choose location -> Choose model -> Pick a color -> Configure memory -> Save.
+Claude writes the file with `name`, `description`, `tools`, `model`, and a system prompt. Review the result before using it.
+
+> As of Claude Code v2.1.198, `/agents` no longer opens an interactive creation wizard — it prints a reminder to ask Claude or edit `.claude/agents/` directly. Agent files, frontmatter fields, and the `.claude/agents/` and `~/.claude/agents/` locations are unchanged.
 
 #### Method 2: Manual Agent File
 
@@ -791,12 +796,14 @@ Claude thinks: "This is a code review task focusing on security"
 
 | Agent | Model | Purpose |
 |-------|-------|---------|
-| Explore | Haiku | Fast, read-only codebase search and analysis |
+| Explore | Inherits (capped at Opus on the Claude API) | Fast, read-only codebase search and analysis |
 | Plan | Inherits | Research agent for plan mode context gathering |
 | General-purpose | Inherits | Complex multi-step tasks requiring exploration + modification |
 | Bash | Inherits | Running terminal commands in a separate context |
 | statusline-setup | Sonnet | Configure custom status line via `/statusline` |
 | Claude Code Guide | Haiku | Answer questions about Claude Code features |
+
+> As of v2.1.198, Explore inherits the main conversation's model instead of always running on Haiku. Define a user or project agent named `Explore` with `model: haiku` to keep exploration on a lower-cost model. Set `CLAUDE_CODE_DISABLE_EXPLORE_PLAN_AGENTS=1` to remove the built-in Explore and Plan agents entirely.
 
 #### Agent Teams
 
@@ -1016,7 +1023,7 @@ claude --add-dir ../shared-configs ../team-standards
 | **MCP Tool Search** | **Lazy loading (85% savings)** | **Automatic when >10% context** |
 | Skills | Reusable expertise (10 frontmatter fields) | `.claude/skills/*/SKILL.md` |
 | **Bundled Skills** | **`/batch`, `/loop`, `/simplify`, `/debug`, `/claude-api`** | **Built-in** |
-| **Custom Agents** | **Automatic delegation (13 config fields)** | `~/.claude/agents/*.md` |
+| **Custom Agents** | **Automatic delegation (16 config fields)** | `~/.claude/agents/*.md` |
 | **Persistent Memory** | **Cross-session agent learning** | `memory:` field in agent frontmatter |
 | **Agent Teams** | **Multi-session coordination** | See [SUBAGENTS.md](./reference/SUBAGENTS.md) |
 | Commands | Personal shortcuts (merged into skills) | `~/.claude/commands/*.md` |

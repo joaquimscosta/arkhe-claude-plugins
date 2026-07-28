@@ -711,9 +711,9 @@ agent: Explore
 
 | Agent | Description | Use Case |
 |-------|-------------|----------|
-| `Explore` | Fast, read-only, uses Haiku | Quick file discovery, code search |
-| `Plan` | Research and analysis, uses Sonnet | Planning, context gathering |
-| `general-purpose` | Full capabilities, uses Sonnet | Complex tasks requiring modification |
+| `Explore` | Fast, read-only; inherits the session model (capped at Opus on the Claude API) | Quick file discovery, code search |
+| `Plan` | Research and analysis; inherits the session model | Planning, context gathering |
+| `general-purpose` | Full capabilities; inherits the session model | Complex tasks requiring modification |
 | Custom agent | Your `.claude/agents/` agent | Specialized workflows |
 
 ### Dynamic Context Injection
