@@ -67,8 +67,13 @@ Antigravity CLI (`agy`) and Gemini CLI consume per-plugin extensions from `.gemi
 git clone https://github.com/joaquimscosta/arkhe-claude-plugins.git
 cd arkhe-claude-plugins
 
-# --- Option 1: Install in Antigravity CLI (agy) ---
-# Link or copy plugins into ~/.gemini/config/plugins/
+# --- Option 1: Automated Install for Antigravity CLI (agy) ---
+./scripts/install-antigravity.sh
+
+# Or install specific plugins:
+./scripts/install-antigravity.sh core git ai review
+
+# --- Option 2: Manual Symlink for Antigravity CLI (agy) ---
 mkdir -p ~/.gemini/config/plugins
 ln -s "$(pwd)/.gemini-extensions/core" ~/.gemini/config/plugins/core
 ln -s "$(pwd)/.gemini-extensions/git" ~/.gemini/config/plugins/git
@@ -76,7 +81,7 @@ ln -s "$(pwd)/.gemini-extensions/git" ~/.gemini/config/plugins/git
 # Validate installed plugins with agy
 agy plugin validate ~/.gemini/config/plugins/core
 
-# --- Option 2: Install in Gemini CLI (Legacy) ---
+# --- Option 3: Install in Gemini CLI (Legacy) ---
 gemini extensions install ./.gemini-extensions/core
 gemini extensions install ./.gemini-extensions/ai
 gemini extensions install ./.gemini-extensions/doc

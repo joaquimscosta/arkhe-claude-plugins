@@ -77,50 +77,47 @@ See [INSTALLATION.md](./INSTALLATION.md) for per-platform install steps and each
 
 ## :rocket: Quick Start
 
-### 1. Add the Marketplace
+### Claude Code
 
-**Option A: Install directly from GitHub (recommended)**
+1. **Add the Marketplace:**
+   ```bash
+   /plugin marketplace add joaquimscosta/arkhe-claude-plugins
+   ```
 
-```bash
-/plugin marketplace add joaquimscosta/arkhe-claude-plugins
-```
+2. **Install Plugins:**
+   ```bash
+   /plugin install core@arkhe-claude-plugins
+   /plugin install ai@arkhe-claude-plugins
+   /plugin install doc@arkhe-claude-plugins
+   /plugin install review@arkhe-claude-plugins
+   /plugin install design-intent@arkhe-claude-plugins
+   /plugin install git@arkhe-claude-plugins
+   /plugin install google-stitch@arkhe-claude-plugins
+   /plugin install lang@arkhe-claude-plugins
+   /plugin install playwright@arkhe-claude-plugins
+   /plugin install spring-boot@arkhe-claude-plugins
+   /plugin install ralph@arkhe-claude-plugins
+   /plugin install roadmap@arkhe-claude-plugins
+   /plugin install devtools@arkhe-claude-plugins
+   ```
 
-**Option B: Clone and install locally**
+3. **Reload Plugins:** Run `/reload-plugins` to apply.
 
-```bash
-git clone https://github.com/joaquimscosta/arkhe-claude-plugins.git
-/plugin marketplace add ./arkhe-claude-plugins
-```
+---
 
-### 2. Install Plugins
+### Antigravity CLI (`agy`)
 
-You can install all plugins at once:
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/joaquimscosta/arkhe-claude-plugins.git
+   cd arkhe-claude-plugins
+   ```
 
-```bash
-/plugin install core@arkhe-claude-plugins
-/plugin install ai@arkhe-claude-plugins
-/plugin install doc@arkhe-claude-plugins
-/plugin install review@arkhe-claude-plugins
-/plugin install design-intent@arkhe-claude-plugins
-/plugin install git@arkhe-claude-plugins
-/plugin install google-stitch@arkhe-claude-plugins
-/plugin install lang@arkhe-claude-plugins
-/plugin install playwright@arkhe-claude-plugins
-/plugin install spring-boot@arkhe-claude-plugins
-/plugin install ralph@arkhe-claude-plugins
-/plugin install roadmap@arkhe-claude-plugins
-/plugin install devtools@arkhe-claude-plugins
-```
-
-*Or install selectively based on your needs.*
-
-### 3. Usage
-
-After installation, run `/reload-plugins` and use:
-
-- **Agents:** Type `/agents` to see and select available agents.
-- **Commands:** Type `/help` to see all available commands.
-- **Skills:** Skills are automatically invoked when Claude detects relevant tasks.
+2. **Run the automated installer:**
+   ```bash
+   ./scripts/install-antigravity.sh
+   ```
+   *Or install specific plugins:* `./scripts/install-antigravity.sh core git ai`
 
 ---
 
