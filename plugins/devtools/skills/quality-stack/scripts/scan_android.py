@@ -66,13 +66,26 @@ ANDROID_PLUGIN_PATTERNS: Dict[str, List[str]] = {
         r'kotlin\s*\(\s*"plugin\.serialization"\s*\)',
     ],
     # Android testing
+    # Legacy plugin ID — renamed to `de.mannodermaus.android-junit` (android-junit-framework)
+    # in Jan 2026. Keep detecting the old ID so we can flag it as superseded.
     "android-junit5": [r"de\.mannodermaus\.android-junit5"],
+    # Current plugin ID (2.0.x): JUnit 5 + 6, and supports instrumented tests.
+    # Negative lookahead prevents matching the legacy `...android-junit5` ID.
+    "android-junit-framework": [r"de\.mannodermaus\.android-junit(?!5)"],
+    # Coverage (Kotlin-native, KMP-capable)
+    "kover": [r"org\.jetbrains\.kotlinx\.kover"],
     # DI
     "hilt": [r"com\.google\.dagger\.hilt\.android", r"dagger\.hilt"],
     "ksp": [r"com\.google\.devtools\.ksp"],
     # Database
-    "room": [r"androidx\.room"],
+    # Room 3.0 (Jul 2026) uses a NEW maven group `androidx.room3` and coexists with Room 2.x.
+    # The Room 2.x pattern needs the negative lookahead or it substring-matches Room 3
+    # coordinates (`androidx.room3:room3-runtime`) and misreports them as Room 2.
+    "room": [r"androidx\.room(?!3)"],
+    "room3": [r"androidx\.room3"],
     "sqldelight": [r"app\.cash\.sqldelight"],
+    # Navigation — Nav3 is a separate artifact group from navigation-compose 2.x
+    "navigation3": [r"androidx\.navigation3"],
     # Screenshot testing
     "roborazzi-plugin": [r"io\.github\.takahirom\.roborazzi"],
     "paparazzi-plugin": [r"app\.cash\.paparazzi"],
@@ -97,17 +110,24 @@ ANDROID_TEST_DEPENDENCY_PATTERNS: Dict[str, List[str]] = {
     "robolectric": [r"robolectric"],
     # Flow/coroutine testing
     "turbine": [r"app\.cash\.turbine", r"\bturbine\b"],
+    # Kotlin mocking (de facto standard; handles final classes, objects, coroutines)
+    "mockk": [r"io\.mockk", r"\bmockk\b"],
     # Google assertions
     "truth": [r"com\.google\.common\.truth", r"com\.google\.truth"],
     # AndroidX test
     "androidx-test-core": [r"androidx\.test:core", r"androidx\.test\.core"],
-    "androidx-test-runner": [r"androidx\.test:runner", r"test-runner"],
-    "androidx-test-rules": [r"androidx\.test:rules", r"test-rules"],
+    # Word boundary required: a bare `test-runner` substring-matches `kotest-runner-junit4`
+    # (and `test-rules` would match similarly), producing false AndroidX Test detections.
+    "androidx-test-runner": [r"androidx\.test:runner", r"\btest-runner"],
+    "androidx-test-rules": [r"androidx\.test:rules", r"\btest-rules"],
     # Espresso
     "espresso": [r"espresso-core", r"espresso-contrib", r"espresso-intents"],
     # Network testing
     "ktor-mock-engine": [r"ktor-client-mock"],
-    "mockwebserver": [r"mockwebserver", r"MockWebServer"],
+    # OkHttp 5 split MockWebServer into `mockwebserver3`; the legacy artifact is marked Obsolete.
+    # Order matters: check mockwebserver3 first, and exclude it from the legacy pattern.
+    "mockwebserver3": [r"mockwebserver3"],
+    "mockwebserver": [r"mockwebserver(?!3)", r"MockWebServer"],
     # Database testing
     "sqldelight-jvm-driver": [r"sqlite-driver", r"sqldelight.*jvm.*driver", r"jdbc-driver"],
     # Macrobenchmark
@@ -131,7 +151,10 @@ ANDROID_VERSION_CATALOG_KEY_MAP = {
     "compose": "compose-bom",
     "hilt": "hilt",
     "room": "room",
+    "room3": "room3",
     "navigation": "navigation",
+    "navigation3": "navigation3",
+    "nav3": "navigation3",
     "lifecycle": "lifecycle",
     "datastore": "datastore",
     "work": "workmanager",
@@ -141,6 +164,10 @@ ANDROID_VERSION_CATALOG_KEY_MAP = {
     "sqldelight": "sqldelight",
     "ktor": "ktor",
     "koin": "koin",
+    "kover": "kover",
+    "mockk": "mockk",
+    "kotest": "kotest",
+    "coroutines": "coroutines",
 }
 
 
@@ -434,10 +461,14 @@ ANDROID_PLUGIN_CATEGORY_MAP = {
     "kotlin-multiplatform": "build_config",
     "kotlin-serialization": "build_config",
     "android-junit5": "testing",
+    "android-junit-framework": "testing",
+    "kover": "testing",
     "hilt": "dependency_injection",
     "ksp": "build_config",
     "room": "database",
+    "room3": "database",
     "sqldelight": "database",
+    "navigation3": "build_config",
     "roborazzi-plugin": "screenshot_testing",
     "paparazzi-plugin": "screenshot_testing",
     "android-lint-custom": "static_analysis",
@@ -457,8 +488,10 @@ ANDROID_DEP_CATEGORY_MAP = {
     "androidx-test-runner": "testing",
     "androidx-test-rules": "testing",
     "espresso": "testing",
+    "mockk": "testing",
     "ktor-mock-engine": "network_testing",
     "mockwebserver": "network_testing",
+    "mockwebserver3": "network_testing",
     "sqldelight-jvm-driver": "database_testing",
     "macrobenchmark": "performance",
 }

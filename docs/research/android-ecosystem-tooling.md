@@ -1,9 +1,9 @@
 ---
 title: "Android Development Ecosystem & Tooling (2025-2026)"
-version: "1.0.0"
+version: "1.1.0"
 status: Published
 created: 2026-04-04
-last_updated: 2026-04-04
+last_updated: 2026-07-28
 slug: android-ecosystem-tooling
 aliases: ["android-tooling", "agp-9", "kotlin-android-2025", "jetpack-2025"]
 tags: ["android", "kotlin", "jetpack", "compose", "gradle", "agp", "kmp", "tooling", "material3", "room", "navigation", "lifecycle", "datastore", "workmanager"]
@@ -22,9 +22,16 @@ The Android development ecosystem entered a new maturity phase in 2025-2026, def
 
 Android Gradle Plugin 9.0 (released July 2025) delivered the most breaking change density since AGP 4: old variant APIs were removed, built-in Kotlin became the default (KGP 2.2.10 bundled at runtime), a new DSL interface model was enforced, and the KMP story was formalized via the `com.android.kotlin.multiplatform.library` plugin — replacing the fragile practice of co-applying `com.android.library` and `org.jetbrains.kotlin.multiplatform` in the same module. Gradle 9.0 (released July 2025) matched with its own wave of removals: Java 17 minimum, Groovy 4, Kotlin 2.2 in DSL scripts, and Configuration Cache promoted to the recommended mode.
 
-Kotlin 2.2 (released mid-2025) promoted guard conditions and non-local break/continue to stable, introduced context parameters as an opt-in preview, and unified the Compose compiler plugin — `PausableComposition` and `OptimizeNonSkippingGroups` are now on by default. The Jetpack library layer followed: Room 2.7 became the first full KMP release covering Android, iOS, JVM, macOS, and Linux; Lifecycle 2.10 reached stable with KMP coverage across all major platforms; Navigation 2.9 added type-safe KClass APIs, multiplatform deep-link handling, and simultaneous-resume support for multi-pane layouts. Material 3 1.4.0 introduced Material Expressive components and integrated a `MotionScheme` system, while the Compose BOM advanced to the `2026.03` series.
+Kotlin 2.2 (released mid-2025) promoted guard conditions and non-local break/continue to stable, introduced context parameters as an opt-in preview, and unified the Compose compiler plugin. **Kotlin has since moved two full language releases further — 2.3.0 (Dec 2025) and 2.4.0 (Jun 2026), with 2.4.10 current — making context parameters Stable, removing K1 entirely, and escalating the `StrongSkipping`/`IntrinsicRemember` Compose compiler flags to error level (see §4.7).** The Jetpack library layer followed: Room 2.7 became the first full KMP release covering Android, iOS, JVM, macOS, and Linux, and **Room 3.0 shipped stable in July 2026 under a new `androidx.room3` Maven group (§5.4)**; Lifecycle reached 2.11 with Scoped ViewModels in Compose; Navigation 2.9 added type-safe KClass APIs, multiplatform deep-link handling, and simultaneous-resume support for multi-pane layouts — while **Navigation 3 (`androidx.navigation3`) reached stable 1.0 and is now Google's Compose-first navigation recommendation** (see `jetpack-compose-patterns.md`). Material 3 1.4.0 introduced Material Expressive components and integrated a `MotionScheme` system, while the Compose BOM advanced to the `2026.06` series.
 
-For teams targeting the 2025-2026 state-of-the-art, the reference configuration is: AGP 9.x + Gradle 9.3+ + Kotlin 2.2+ + Compose BOM 2025.09+ + Room 2.7+/SQLDelight 2.x for KMP data layer + Navigation 2.9 with type-safe routes + Lifecycle 2.10 + Material 3 1.4+ + version catalog with convention plugins.
+**Reference configuration (as of July 2026):** AGP 9.3 + Gradle 9.6.1 + Kotlin 2.4.10 + Compose BOM
+2026.06.01 + Room 3.0 (`androidx.room3`) or SQLDelight 2.3.2 for the KMP data layer + Navigation 3
+for new Compose apps (Navigation 2.9.8 for existing) + Lifecycle 2.11 + Material 3 1.4 + version
+catalog with convention plugins.
+
+> **Version currency.** This document was refreshed on 2026-07-28. Version tables reflect that
+> date. The Kotlin/AGP/Gradle/Compose release cadence is roughly quarterly — re-verify before
+> relying on any specific version string more than a few months after that date.
 
 ---
 
@@ -34,11 +41,26 @@ For teams targeting the 2025-2026 state-of-the-art, the reference configuration 
 
 | AGP Version | Release Date | Min Gradle | Notes |
 |-------------|-------------|------------|-------|
-| 9.0.0 | Aug 2025 | 9.1.0 | Major breaking release |
+| 9.0.0 | Aug 2025 (see note) | 9.1.0 | Major breaking release |
 | 9.0.1 | Jan 2026 | 9.1.0 | Bug-fix patch |
 | 9.1.0 | Mar 2026 | 9.3.1 | Minor feature release |
+| 9.1.1 | Apr 2026 | 9.3.1 | Bug-fix patch |
+| 9.2.0 | Apr 2026 | 9.4.1 | Minor feature release |
+| **9.3.0** | **Jul 2026** | **9.5.0** | **Current stable.** Max API level 37; unified coverage + test HTML reports; tightened R8 `-keepattributes` wildcard semantics; negated-name support in `-keepclassmembers` |
 
-All 9.x versions require **JDK 17**, **SDK Build Tools 36.0.0**, and a minimum SDK API level target of 36.1.
+**AGP 9.3.0 is the current stable release.** All 9.x versions require **JDK 17** and **SDK Build
+Tools 36.0.0**.
+
+> **Dating caveat (unresolved).** The executive summary states AGP 9.0 was released in July 2025
+> while this table says August 2025. Neither can be reconciled with AGP 9.0.0's own stated minimum
+> of Gradle 9.1.0, which did not ship until 2025-09-18. The original 9.0.0 GA date is no longer
+> visible on Google's release-notes page (the page title now tracks the latest patch), so this is
+> recorded as an open inconsistency rather than silently corrected. Treat AGP 9.0's exact GA month
+> as unverified; the minimum-Gradle pairings in this table are confirmed against official notes.
+
+**R8 keep-rule semantics changed in 9.3.0.** `-keepattributes` wildcards no longer implicitly
+retain runtime-invisible annotations. Projects relying on the old behaviour for reflection-based
+libraries must name the attributes explicitly.
 
 ### 1.2 Breaking Changes from AGP 8
 
@@ -216,8 +238,14 @@ kotlin {
 | 9.3.1 | Jan 29, 2026 |
 | 9.4.0 | Mar 04, 2026 |
 | 9.4.1 | Mar 19, 2026 |
+| 9.5.0 | Apr 28, 2026 |
+| 9.5.1 | May 12, 2026 |
+| 9.6.0 | Jun 18, 2026 |
+| **9.6.1** | **Jun 26, 2026** — current stable |
+| 9.7.0-RC1 | Jul 2026 (preview) |
 
-AGP 9.1 requires Gradle 9.3.1. The cabo-verde-pos reference project uses Gradle 9.2.1 (compatible with AGP 9.0.x).
+**Gradle 9.6.1 is the current stable release.** AGP 9.1 requires Gradle 9.3.1; **AGP 9.3 requires
+Gradle 9.5.0**. The cabo-verde-pos reference project uses Gradle 9.2.1 (compatible with AGP 9.0.x).
 
 ### 3.2 Major Features
 
@@ -238,7 +266,7 @@ org.gradle.cacheConfigurationCache=true
 
 **JSpecify nullability annotations.** Gradle's own API now uses JSpecify instead of JSR-305 annotations. Kotlin-based plugins may emit new compiler warnings or errors.
 
-**Isolated Projects (pre-alpha).** Isolated Projects remains in incubation and was not promoted to stable in Gradle 9.0. It requires Configuration Cache as a prerequisite and is expected in a later 9.x release.
+**Isolated Projects (experimental → incubating).** Isolated Projects was not promoted to stable in Gradle 9.0 and remains **experimental through Gradle 9.6.1**. It requires Configuration Cache as a prerequisite. **Gradle 9.7.0 (currently RC) formally promotes it from experimental to incubating**, adds stable property names (deprecating the `.unsafe.*` spellings), makes fail-on-first-violation the default, and adds `-x`/`--exclude-tasks` support. Teams evaluating it should plan against 9.7, not "some later 9.x".
 
 **Dependabot supports Gradle lockfiles (June 2025).** Supply-chain tooling can now automatically detect and update locked dependency versions.
 
@@ -256,7 +284,21 @@ kotlin.incremental.useClasspathSnapshot=true
 
 ---
 
-## 4. Kotlin 2.2+ for Android
+## 4. Kotlin 2.2 → 2.4 for Android
+
+**Release timeline.** Kotlin has moved two full language releases past the 2.2 baseline this
+section was originally written against:
+
+| Version | Released | Notes |
+|---------|----------|-------|
+| 2.2.x | mid-2025 | Guard conditions, non-local break/continue stable; context parameters preview |
+| 2.3.0 | 2025-12-16 | followed by 2.3.10 (Feb 2026), 2.3.20 (Mar 2026), 2.3.21 (Apr 2026) |
+| **2.4.0** | **2026-06-03** | Language release — context parameters **Stable**, full K1 removal |
+| **2.4.10** | **2026-07-14** | Current stable bug-fix release |
+| 2.5.0 | Dec 2026 (planned) | — |
+
+Sections 4.1–4.6 below describe the 2.2 baseline; **§4.7 covers the 2.3/2.4 deltas** that supersede
+parts of it. Where the two disagree, §4.7 wins.
 
 ### 4.1 Stable Features Promoted in 2.2
 
@@ -273,8 +315,13 @@ context(users: UserService)
 fun outputMessage(message: String) {
     users.log("Log: $message")
 }
-// Enable with: -Xcontext-parameters
+// Kotlin 2.2: enable with -Xcontext-parameters
+// Kotlin 2.4+: STABLE — no opt-in flag required (see §4.7)
 ```
+
+> **Superseded.** Context parameters reached **Stable in Kotlin 2.4.0**. The `-Xcontext-parameters`
+> flag is no longer required and can be removed. Context *arguments* and context-parameter callable
+> references remain experimental, gated behind `-Xexplicit-context-arguments`.
 
 **Context-sensitive resolution** — omit enum/sealed class prefixes when the type is unambiguous:
 
@@ -322,6 +369,29 @@ The Compose compiler plugin is now bundled with Kotlin 2.x and versioned togethe
 - `StrongSkipping` and `IntrinsicRemember` feature flags are **deprecated**
 - Composable function references are now stable:
 
+> ⚠️ **This flag guidance is superseded and following it on Kotlin 2.4+ breaks the build.**
+> The deprecation ladder advanced a full rung with the Compose compiler bundled in Kotlin 2.4.0:
+>
+> | Flag | Kotlin 2.2 status | Kotlin 2.4+ status |
+> |------|-------------------|--------------------|
+> | `StrongSkipping` | deprecated | **compiler error** — removal in Compose compiler 2.5.0 |
+> | `IntrinsicRemember` | deprecated | **compiler error** — removal in Compose compiler 2.5.0 |
+> | `OptimizeNonSkippingGroups` | on by default | **deprecated** — removal in 2.6.0 |
+> | `PausableComposition` | on by default | **deprecated** — removal in 2.6.0 |
+>
+> **Action:** delete any explicit `featureFlags` entries for these four. All four behaviours are
+> now the compiler's default; setting them explicitly is at best redundant and, for the first two,
+> a hard build failure.
+>
+> ```kotlin
+> // ❌ Fails to compile on Kotlin 2.4+
+> composeCompiler {
+>     featureFlags = setOf(ComposeFeatureFlag.StrongSkipping)
+> }
+>
+> // ✅ Remove the block entirely — the behaviour is the default
+> ```
+
 ```kotlin
 val content: @Composable (String) -> Unit = ::Text
 
@@ -344,25 +414,51 @@ fun App() {
 
 Android's minimum supported JVM bytecode target remained at JVM 8 in AGP 9.x for broad device compatibility, but the Kotlin compiler itself and Gradle daemon require JDK 17. Teams may set `jvmTarget = JvmTarget.JVM_17` in module-level compiler options when minSdk ≥ 26, enabling Java 17 language features through desugaring.
 
+### 4.7 Kotlin 2.3 and 2.4 Deltas
+
+**Kotlin 2.4.0 (2026-06-03) / 2.4.10 (2026-07-14) — current stable.**
+
+| Change | Impact |
+|--------|--------|
+| **Context parameters Stable** | Drop `-Xcontext-parameters`. Supersedes §4.2. |
+| **Compose compiler flag escalation** | `StrongSkipping`/`IntrinsicRemember` now compiler errors; `PausableComposition`/`OptimizeNonSkippingGroups` deprecated. Supersedes §4.4. |
+| **Full K1 removal** | `-language-version=1.9` is gone. Any module still pinning it fails to build. |
+| **Annotations in Kotlin metadata on by default** | Was experimental in 2.2 (§4.3). |
+| **Java 26 bytecode target support** | Irrelevant for Android's JVM 8 floor, relevant for KMP JVM targets. |
+| **Minimum AGP for KGP raised to 8.5.2** | Blocks very old AGP + new Kotlin combinations. |
+| **Apple platform minimums raised** | iOS/tvOS 14→15, macOS 11→12, watchOS 7→8. Affects KMP targets. |
+
+**Migration checklist for a project on the Kotlin 2.2 baseline:**
+
+1. Remove `-Xcontext-parameters` from `freeCompilerArgs`.
+2. Delete any `composeCompiler { featureFlags = ... }` entries for the four flags in §4.4.
+3. Search for `languageVersion = "1.9"` / `-language-version=1.9` and remove — K1 is gone.
+4. If the project consumes KMP Apple targets, verify the raised OS minimums against your
+   deployment target.
+5. Confirm AGP ≥ 8.5.2 (any project on AGP 9.x already satisfies this).
+
 ---
 
 ## 5. Jetpack Library Ecosystem
 
 ### 5.1 Compose BOM
 
-The Compose BOM is the authoritative way to keep all Compose library versions in sync. BOM 2026.03.01 (latest as of Apr 2026) maps to:
+The Compose BOM is the authoritative way to keep all Compose library versions in sync. BOM **2026.06.01** (current stable as of Jul 2026) maps to:
 
-| Library | Version |
-|---|---|
-| `compose.ui`, `compose.runtime`, `compose.animation` | 1.10.6 |
-| `compose.material3` | 1.4.0 |
-| `compose.material3.adaptive` | 1.2.0 |
-| `compose.material:material` (M2) | 1.10.6 |
+| Library | 2026.06.01 (current) | 2026.03.01 (previous) |
+|---|---|---|
+| `compose.ui`, `compose.runtime`, `compose.animation` | **1.11.4** | 1.10.6 |
+| `compose.material3` | 1.4.0 | 1.4.0 |
+| `compose.material3.adaptive` | 1.2.0 | 1.2.0 |
+| `compose.material:material` (M2) | **1.11.4** | 1.10.6 |
+
+> **Forward-looking:** Compose 1.12.0 is in beta (beta02). When it stabilizes it will require
+> **compileSdk 37 and AGP 9** — plan the compileSdk bump before adopting it.
 
 ```toml
 # libs.versions.toml
 [versions]
-compose-bom = "2026.03.01"
+compose-bom = "2026.06.01"
 
 [libraries]
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
@@ -385,7 +481,7 @@ The cabo-verde-pos project uses BOM 2024.12.01, which maps to Compose UI 1.7.x a
 
 ### 5.2 Navigation — Type-Safe Routes (2.8+)
 
-Navigation 2.8.0 introduced compile-time type safety via Kotlin Serialization. Navigation 2.9.x (stable: **2.9.7**, Jan 2026) extended it:
+Navigation 2.8.0 introduced compile-time type safety via Kotlin Serialization. Navigation 2.9.x (stable: **2.9.8**, Apr 2026) extended it:
 
 ```kotlin
 // Type-safe destinations
@@ -408,20 +504,20 @@ NavHost(navController, startDestination = Home) {
 
 **KMP support (2.9.0+):** `NavController.handleDeepLink(NavDeepLinkRequest)` is platform-agnostic; `NavUri` parser works on non-Android platforms.
 
-**Alpha (2.10.0-alpha02):** min SDK raised to API 23, `predictivePopEnterTransition` / `predictivePopExitTransition` for back gesture animations, multiplatform `navigation-common` / `navigation-runtime`.
+**Alpha (2.10.0-alpha06, Jul 2026):** min SDK raised to API 23, `predictivePopEnterTransition` / `predictivePopExitTransition` for back gesture animations, multiplatform `navigation-common` / `navigation-runtime`.
 
 ```kotlin
 // Dependencies (Kotlin DSL)
 dependencies {
-    val nav = "2.9.7"
+    val nav = "2.9.8"
     implementation("androidx.navigation:navigation-compose:$nav")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
 }
 ```
 
-### 5.3 Lifecycle (2.10.0 stable)
+### 5.3 Lifecycle (2.11.0 stable)
 
-Lifecycle **2.10.0** (Nov 2025) is the current stable. KMP coverage is comprehensive:
+Lifecycle **2.11.0** (Jun 17, 2026) is the current stable, superseding 2.10.0 (Nov 2025). KMP coverage is comprehensive:
 
 | Artifact | Platforms |
 |---|---|
@@ -448,9 +544,21 @@ class MyViewModel(
 
 // 2.10.0 — scoped lifecycles in Compose
 val owner = rememberLifecycleOwner()
+
+// 2.11.0 — Scoped ViewModels in Compose
+val storeOwner = rememberViewModelStoreOwner()
+val vm = viewModel<MyViewModel>(viewModelStoreOwner = storeOwner)
 ```
 
 `collectAsStateWithLifecycle()` (from `lifecycle-runtime-compose`) is the recommended way to collect Flows in Compose — it automatically pauses collection when the lifecycle drops below the specified state.
+
+**New in 2.11.0:**
+
+- **Scoped ViewModels in Compose** — `ViewModelStoreProvider`, `rememberViewModelStoreProvider()`,
+  and `rememberViewModelStoreOwner()` let a subtree own its own `ViewModelStore`, so ViewModels
+  can be scoped to a composable rather than the host Activity/Fragment or nav entry.
+- **Full KMP support** for `lifecycle-viewmodel-compose` and `lifecycle-viewmodel-navigation3`.
+- Tighter Navigation 3 integration via `ViewModelStoreNavEntryDecorator`.
 
 ### 5.4 Room vs SQLDelight for KMP
 
@@ -475,11 +583,46 @@ fun createDatabase(path: String) =
         .build()
 ```
 
-Room 2.7 requires KSP2 (KSP 2.x with Kotlin 2.0+) for Kotlin code generation. Room 2.8 adds WatchOS/TvOS targets and a `room-sqlite-wrapper` artifact for gradual migration.
+Room 2.7 requires KSP2 (KSP 2.x with Kotlin 2.0+) for Kotlin code generation. Room 2.8 adds WatchOS/TvOS targets and a `room-sqlite-wrapper` artifact for gradual migration. **Room 2.x's current stable is 2.8.4 (Nov 19, 2025)**; the 2.x line has had no release since.
+
+**Room 3.0 (stable, 1 July 2026) — new Maven group `androidx.room3`:**
+
+Room 3.0 is a KMP-focused rewrite shipped under a **deliberately separate Maven group** so it can
+coexist with Room 2.x. Google's stated reason: *"To prevent compatibility issues with existing
+Room 2.x implementations and for libraries with transitive dependencies to Room (for example,
+WorkManager)."* This is an **additive** release — Room 2.x is not retired by it.
+
+```kotlin
+// Room 2.x                          →  Room 3.0
+// androidx.room:room-runtime        →  androidx.room3:room3-runtime
+// androidx.room:room-compiler       →  androidx.room3:room3-compiler
+// androidx.room.RoomDatabase        →  androidx.room3.RoomDatabase
+
+val roomVersion = "3.0.0"
+implementation("androidx.room3:room3-runtime:$roomVersion")
+ksp("androidx.room3:room3-compiler:$roomVersion")
+```
+
+| Aspect | Room 2.8.4 | Room 3.0.0 |
+|---|---|---|
+| Maven group | `androidx.room` | `androidx.room3` |
+| Package | `androidx.room.*` | `androidx.room3.*` |
+| Annotation processing | KSP or KAPT | **KSP only** |
+| SQLite access | SupportSQLite or SQLiteDriver | **SQLiteDriver only** |
+| KMP targets | Android, iOS, JVM, macOS, Linux, WatchOS, TvOS | adds JS / WasmJS |
+| Coexists with the other | — | Yes, by design |
+
+**Migration is a package-rename exercise plus two hard requirements:** you must be on KSP (KAPT is
+not supported) and you must have migrated off the `SupportSQLite*` APIs to `SQLiteDriver`. Projects
+that already followed the Room 2.7+ KMP guidance above are most of the way there.
+
+**Which to choose.** For a new KMP project, Room 3.0. For an existing Android-only app on Room 2.x
+with no KMP ambitions, there is no urgency — 2.8.4 is stable and the separate group means you are
+not being forced. Migrate when you need the KMP targets or the JS/WasmJS support.
 
 **SQLDelight 2.x:**
 
-SQLDelight remains the alternative for teams who prefer SQL-first schema definition and want a leaner dependency. It supports all KMP targets (Android, iOS, JVM, macOS, Linux, Windows, Web) and produces type-safe query APIs from `.sq` files. The primary differentiators:
+SQLDelight remains the alternative for teams who prefer SQL-first schema definition and want a leaner dependency. It supports all KMP targets (Android, iOS, JVM, macOS, Linux, Windows, Web) and produces type-safe query APIs from `.sq` files. **Current stable is 2.3.2** — note that 2.3.0 and 2.3.1 were failed releases, so pin 2.3.2 explicitly. In June 2026 the project moved from Cash App/Block stewardship to the **Commonhaus Foundation**, following the maintainer's March 2025 statement that it was volunteer-maintained with no guarantee of future work; the foundation move is the mitigation of that risk. The primary differentiators:
 
 | | Room | SQLDelight |
 |---|---|---|
@@ -490,7 +633,9 @@ SQLDelight remains the alternative for teams who prefer SQL-first schema definit
 | Migrations | Auto/manual | Manual `.sqm` files |
 | Dialect | Android SQLite | Multiple (SQLite, PostgreSQL, MySQL) |
 
-For Android-only or Android-primary projects, Room 2.7+ is the natural choice given IDE tooling, AndroidX testing utilities, and auto-migrations. For truly symmetric KMP projects (equal weight on iOS/Desktop), SQLDelight's SQL-centric model avoids Room's Android-focused abstractions.
+For Android-only or Android-primary projects, Room (2.8.4, or 3.0 for new work) is the natural choice given IDE tooling, AndroidX testing utilities, and auto-migrations. For truly symmetric KMP projects (equal weight on iOS/Desktop), SQLDelight's SQL-centric model avoids Room's Android-focused abstractions — though Room 3.0 has narrowed that gap considerably, and the governance history above is now a factor worth weighing alongside the technical comparison.
+
+If you are evaluating whether to hand-roll a local store and sync layer at all versus adopting an off-the-shelf sync engine, see [sync-engine-landscape.md](sync-engine-landscape.md).
 
 ### 5.5 DataStore (1.2.1 stable)
 
@@ -552,7 +697,7 @@ ksp             = "2.2.10-1.0.31"
 compose-bom     = "2025.09.01"
 hilt            = "2.59"
 room            = "2.8.4"
-navigation      = "2.9.7"
+navigation      = "2.9.8"
 lifecycle       = "2.10.0"
 coroutines      = "1.10.1"
 serialization   = "1.8.0"
@@ -849,6 +994,8 @@ implementation("com.example:lib:1.2.3")
 
 | AGP | Min Gradle | Min KGP | Bundled KGP | JDK |
 |---|---|---|---|---|
+| **9.3.x** | **9.5.0** | 2.0.0 | 2.2.10 | 17 |
+| 9.2.x | 9.4.1 | 2.0.0 | 2.2.10 | 17 |
 | 9.1.x | 9.3.1 | 2.0.0 | 2.2.10 | 17 |
 | 9.0.x | 9.1.0 | 2.0.0 | 2.2.10 | 17 |
 | 8.10.x | 8.11.1 | 1.9.0 | — | 17 |
@@ -865,26 +1012,33 @@ The cabo-verde-pos project uses:
 To upgrade to the 2025-2026 state-of-the-art:
 1. Bump Gradle to 9.3.1+ (required for AGP 9.1)
 2. Bump Compose BOM to 2025.09.01+ (picks up M3 1.4.0)
-3. Adopt Navigation 2.9.7 type-safe routes
-4. Adopt Lifecycle 2.10.0
+3. Adopt Navigation 2.9.8 type-safe routes
+4. Adopt Lifecycle 2.11.0
 5. For KMP modules, migrate to `com.android.kotlin.multiplatform.library`
 
 ### 9.3 KMP Library Versions
 
 | Library | KMP Stable Since | Platforms |
 |---|---|---|
-| Room | 2.7.0 (Apr 2025) | Android, iOS, JVM, macOS, Linux, WatchOS, TvOS |
+| Room 2.x | 2.7.0 (Apr 2025) | Android, iOS, JVM, macOS, Linux, WatchOS, TvOS |
+| **Room 3.x** | **3.0.0 (Jul 2026)** | above + JS, WasmJS (`androidx.room3` group) |
 | Lifecycle | 2.8.0 | Android, JVM, iOS, Native, Web |
 | DataStore | 1.1.0 | Android, JVM, Web |
-| Navigation | 2.10.0-alpha | Android + partial |
-| WorkManager | Not planned | Android only |
+| Navigation (2.x) | 2.9.0 — deep links / `NavUri` | Android + partial |
+| **Navigation 3** | **1.0 (Nov 2025)** | Android + Compose Multiplatform 1.10+ |
+| WorkManager | Not planned (unverified) | Android only |
 | Security Crypto | Not planned | Android only |
+
+> The Navigation row previously read "2.10.0-alpha", which conflicted with §5.2's own statement
+> that 2.9.0+ already ships KMP-capable `handleDeepLink`/`NavUri`. Corrected above. The
+> "WorkManager: Not planned" entry could not be re-confirmed against a current official source
+> and is flagged as unverified rather than dropped.
 
 ---
 
 ## 10. Android Studio Tooling
 
-**Android Studio Panda 3 (2025.3.3)** is the current stable. Key tooling capabilities:
+**Android Studio Quail 2 (2026.1.2)** is the current stable, with Quail 3 in RC. (Earlier revisions of this document cited Panda 3 / 2025.3.3; the release train has since moved through Panda 4 — April 2026 — and Quail 1.) Key tooling capabilities:
 
 - **Gemini integration** — AI-powered code completion, bug detection, and refactoring suggestions inline in the editor
 - **AGP Upgrade Assistant** — wizard-guided migration from AGP 7/8 to AGP 9 with automated refactoring
@@ -893,6 +1047,16 @@ To upgrade to the 2025-2026 state-of-the-art:
 - **Compose Preview** — live preview with interactive mode, multi-preview, and animation inspector
 - **Layout Inspector** — live inspection of Compose semantics tree and recomposition highlights
 - **Build Scans** — integration with Gradle Enterprise for detailed build performance analytics
+
+**Added in the Quail generation (2026.1.x):**
+
+- **Per-composable recomposition-cause tracing** in Layout Inspector — surfaces which state reads
+  triggered a recomposition, with an "Explain with AI" affordance
+- **App Quality Insights wired to the Gemini agent** — crash clusters can be handed directly to the
+  agent for triage
+- **Agent-driven dependency updates** — walks the version catalog, applies bumps, and auto-fixes
+  compile errors introduced by API changes
+- **Multi-task with the Android Studio AI agent** — parallel agent tasks within one project
 
 ---
 
@@ -916,7 +1080,7 @@ To upgrade to the 2025-2026 state-of-the-art:
 16. Compose Material 3 Releases — https://developer.android.com/jetpack/androidx/releases/compose-material3
 17. Gradle Version Catalogs for Android — https://developer.android.com/build/migrate-to-catalogs
 18. Now in Android Version Catalog — https://github.com/android/nowinandroid/blob/main/gradle/libs.versions.toml
-19. Android Studio Panda 3 — https://developer.android.com/studio/releases/
+19. Android Studio releases — https://developer.android.com/studio/releases/
 <!-- AUTO-GENERATED: End -->
 
 <!-- TEAM-NOTES: Start -->

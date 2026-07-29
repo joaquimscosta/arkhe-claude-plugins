@@ -87,9 +87,26 @@ When Android ecosystem is detected, cross-reference against BOTH Android researc
    - [ ] In-memory database testing (Room `inMemoryDatabaseBuilder` or SQLDelight JVM driver)
    - [ ] MainDispatcherRule for ViewModel tests (has ViewModels but no test dispatcher setup)
    - [ ] KMP commonTest coverage (has KMP but tests only in androidTest)
+   - [ ] MockK for Kotlin mocking (using Mockito, or no mocking library)
+   - [ ] Macrobenchmark / Baseline Profiles (performance-sensitive app, no benchmarks)
 
 Do NOT skip testing-ecosystem items even if the tooling doc covers some testing tools.
 The two docs have different scopes — tooling covers build configuration, testing covers patterns and practices.
+
+**Superseded-coordinates check.** Several widely-used Android artifacts changed coordinates in
+2025-2026. Flag these whenever the scanner reports the legacy form — a version bump alone will not
+fix them:
+
+| Scanner reports | Action |
+|---|---|
+| `android-junit5` | Plugin renamed to `de.mannodermaus.android-junit` (2.0.x) |
+| `room` on a KMP project | Room 3.0 lives at `androidx.room3` — separate group, coexists with 2.x |
+| `mockwebserver` (legacy) | OkHttp 5 split it into `mockwebserver3`; legacy is Obsolete |
+| Detekt `2.0.x` under `io.gitlab.arturbosch.detekt` | Detekt 2 moved to the `dev.detekt` plugin ID/group |
+| `navigation` 2.x on a Compose-only app | Navigation 3 (`androidx.navigation3`) is the current recommendation |
+
+**Note on doc currency:** both Android research docs were refreshed 2026-07-28. If the current
+date is materially later, re-verify version claims before presenting them as current.
 
 ## Phase 2: Setup
 
@@ -334,22 +351,29 @@ rounds into a single AskUserQuestion with all NOW tools + "Skip setup".
 | kotlin.test (KMP) | KMP project, no commonTest setup | NOW |
 | Kotest assertions | When team wants Kotlin DSL assertions | SOON |
 | Truth | Google stack, instrumented tests | SOON |
-| JUnit 5 (android-junit5) | Still on JUnit 4 only | SOON |
+| MockK | Kotlin project, no mocking library (or using Mockito) | SOON |
+| JUnit 5/6 (`de.mannodermaus.android-junit` 2.x) | Still on JUnit 4 only | SOON |
+| Migrate off `de.mannodermaus.android-junit5` | Legacy plugin ID detected (`android-junit5`) | NOW |
+| Kotest 5 -> 6 migration | `kotest` version < 6 detected | SOON (breaking - see research doc) |
 
 ### Category: Database Testing (Android)
 
 | Tool | When to Recommend | Priority |
 |------|------------------|----------|
-| Room in-memory testing | Has Room, no in-memory test DB | NOW |
+| Room in-memory testing | Has Room (2.x or 3.x), no in-memory test DB | NOW |
 | SQLDelight JVM driver | KMP + SQLDelight, no JVM test driver | NOW |
 | Migration testing | Has Room with version > 1 or SQLDelight migrations | SOON |
+| Room 3 migration (`androidx.room3`) | `room` (2.x) detected **and** project is KMP | SOON |
+| Room 3 migration | `room` (2.x) detected, Android-only, no KMP plans | LATER (2.8.4 is stable; no urgency) |
+| Pin SQLDelight 2.3.2 | SQLDelight 2.3.0 or 2.3.1 detected | NOW (both were failed releases) |
 
 ### Category: Network Testing (Android)
 
 | Tool | When to Recommend | Priority |
 |------|------------------|----------|
 | Ktor MockEngine | KMP + Ktor, no mock engine | NOW |
-| MockWebServer | Retrofit/OkHttp, no mock server | SOON |
+| MockWebServer3 | Retrofit/OkHttp, no mock server | SOON |
+| Migrate to `mockwebserver3` | Legacy `mockwebserver` detected + OkHttp 5 | SOON (legacy artifact marked Obsolete) |
 | WireMock | Complex API stubbing needed | LATER |
 
 ### Category: Coverage (Android)
@@ -379,13 +403,30 @@ rounds into a single AskUserQuestion with all NOW tools + "Skip setup".
 |-------------|-------------|
 | < 8.0 | Major migration needed; suggest AGP Upgrade Assistant |
 | 8.x | Standard recommendations apply; warn about AGP 9 breaking changes |
-| 9.0+ | Built-in Kotlin, new variant API; can use KMP library plugin |
+| 9.0-9.2 | Built-in Kotlin, new variant API; can use KMP library plugin |
+| 9.3+ | Current stable (min Gradle 9.5.0). Max API 37; R8 `-keepattributes` wildcards no longer keep runtime-invisible annotations |
+| KMP module using `com.android.library` | **NOW** - migrate to `com.android.kotlin.multiplatform.library`; incompatible on AGP 9, required from AGP 10 (est. late 2026) |
+
+| Kotlin Version | Implications |
+|----------------|-------------|
+| < 2.2 | Behind; strong skipping already default since 2.0.20 |
+| 2.2.x | Context parameters still preview; Compose flags not yet error-level |
+| 2.3+ | Non-final classes infer `Unknown` not `Stable` - recheck recomposition-sensitive code |
+| 2.4+ (current 2.4.10) | **NOW** - remove `StrongSkipping`/`IntrinsicRemember` feature flags (compiler **error**); `PausableComposition`/`OptimizeNonSkippingGroups` deprecated; K1 fully removed (`-language-version=1.9` fails); context parameters Stable |
 
 | Compose BOM | Implications |
 |-------------|-------------|
 | < 2024.01 | Outdated; suggest BOM upgrade |
 | 2024.x | Stable; M3 1.2-1.3 |
-| 2025.09+ | M3 1.4.0 (Material Expressive), Compose UI 1.8+ (strong skipping) |
+| 2025.09+ | M3 1.4.0 (Material Expressive), Compose UI 1.8+ |
+| 2026.06+ | Current stable; Compose UI 1.11.4. Compose 1.12 (beta) will require compileSdk 37 + AGP 9 |
+
+| Navigation | Implications |
+|------------|-------------|
+| `navigation-compose` 2.x only, Compose-only app | SOON - Navigation 3 (`androidx.navigation3`, stable since Nov 2025) is Google's Compose-first recommendation |
+| `navigation-compose` 2.x, Fragment-based or hybrid | SKIP - Nav3 is Compose-only |
+| KMP/CMP project without `navigation3` | SOON - Nav3 supports Compose Multiplatform 1.10+ |
+| Nav 2.x detected | Do **not** flag as deprecated - Google has not deprecated Navigation 2 |
 
 ### Android Scanner Output Interpretation
 
@@ -657,8 +698,30 @@ NEVER guess a tool version. Use this resolution order:
 
 **AGP / Compose BOM**:
 - Always check AGP <-> Gradle <-> Kotlin compatibility matrix before upgrades
+  (AGP 9.0 -> Gradle 9.1.0, 9.1 -> 9.3.1, 9.2 -> 9.4.1, 9.3 -> 9.5.0)
 - Compose BOM pins all Compose library versions — never specify individual Compose versions alongside a BOM
 - AGP 9.x removes `applicationVariants` — verify no build scripts use the old API
+
+**Kotlin 2.4+ Compose compiler flags** (build-breaking):
+- `StrongSkipping` and `IntrinsicRemember` are **compiler errors** on Kotlin 2.4+ — remove them
+  from any `composeCompiler { featureFlags = ... }` block and remove the legacy
+  `enableStrongSkippingMode` property. Both behaviours are the compiler default.
+- `PausableComposition` and `OptimizeNonSkippingGroups` are deprecated (removal in 2.6.0) — also
+  safe to delete.
+- Search for `-language-version=1.9` / `languageVersion = "1.9"` — K1 was fully removed in 2.4.
+
+**Room 3 (`androidx.room3`)**:
+- Separate Maven group from Room 2.x by design; both can coexist in one build
+- Room 3 is **KSP-only** (no KAPT) and **SQLiteDriver-only** (no `SupportSQLite*`) — verify both
+  before proposing a migration
+- Do not rewrite `androidx.room` coordinates to `androidx.room3` mechanically; class imports move
+  from `androidx.room.*` to `androidx.room3.*`
+
+**Navigation 3**:
+- Compose-only. Do not recommend for Fragment-based or hybrid View/Compose projects.
+- Requires `androidx.lifecycle:lifecycle-viewmodel-navigation3` (Lifecycle 2.11+) for
+  `rememberViewModelStoreNavEntryDecorator`
+- Nav 2.x is **not** deprecated — frame Nav3 as the default for new work, not a forced migration
 
 **Roborazzi**:
 - Requires `testOptions { unitTests { isIncludeAndroidResources = true } }` in the android block
