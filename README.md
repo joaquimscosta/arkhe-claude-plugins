@@ -37,7 +37,7 @@
 
 ---
 
-## :globe_with_meridians: Supported Platforms
+## Supported Platforms
 
 Arkhe plugins now ship as a single repo with per-platform shims. The same skills payload runs on all three CLIs; commands and agents degrade gracefully where the platform lacks the primitive.
 
