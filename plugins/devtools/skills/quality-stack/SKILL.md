@@ -110,7 +110,14 @@ Include effort estimates. After user completes selection across all rounds:
 - Android Compose project: NOW Compose UI testing, SOON Roborazzi; SKIP Espresso
 - Android KMP project: NOW commonTest setup, NOW Turbine; SOON Ktor MockEngine
 - Android no lint config: NOW Android Lint baseline; SOON custom lint rules
+- Android Kotlin 2.4+: NOW remove `StrongSkipping`/`IntrinsicRemember` flags (compiler errors)
+- Android KMP module on `com.android.library`: NOW migrate to `com.android.kotlin.multiplatform.library`
+- Android Compose-only app on Navigation 2.x: SOON Navigation 3 (`androidx.navigation3`)
+- Superseded coordinates (flag, don't just bump): `android-junit5` → `de.mannodermaus.android-junit`;
+  `mockwebserver` → `mockwebserver3`; Detekt 2.x → `dev.detekt`; Room 3 → `androidx.room3`
 - JVM Pure Kotlin: SKIP Error Prone, SpotBugs; JVM Pure Java: SKIP Detekt, ktlint, MockK
+- JVM Kotlin/KMP coverage: prefer Kover over JaCoCo; JaCoCo for mixed Java/Kotlin or Maven
+- JVM Kotlin mutation testing: `pitest-kotlin` is archived — maintained filter is paid (Arcmutate)
 - JVM Spring Boot 4+: SKIP REST Assured, NOW MockMvcTester
 - Node.js no linter: NOW ESLint; no formatter + no Biome: NOW Prettier
 - Node.js TypeScript not strict: NOW enable strict
