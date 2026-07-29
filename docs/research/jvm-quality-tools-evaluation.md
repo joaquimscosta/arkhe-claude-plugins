@@ -1,18 +1,20 @@
 ---
 title: "Java/Kotlin Quality Tools Evaluation"
-version: "1.0.0"
+version: "1.1.0"
 status: Published
 created: 2026-02-13
-last_updated: 2026-03-26
+last_updated: 2026-07-28
 ---
 
 # Java/Kotlin Quality Tools Evaluation
 
 ## A Practitioner's Guide for Modern JVM Projects
 
-> **Java baseline**: 21+ | **Kotlin**: 2.1-2.3 | **Build tools**: Gradle 9.x (9.4.1 latest) / Maven 3.9+
+> **Java baseline**: 21+ | **Kotlin**: 2.1-2.4 (2.4.10 current) | **Build tools**: Gradle 9.x (9.6.1 latest) / Maven 3.9+
 >
-> This guide evaluates 19 tools across four categories for Java and Kotlin teams building
+> **Versions verified 2026-07-28.**
+>
+> This guide evaluates 22 tools across four categories for Java and Kotlin teams building
 > production systems with Spring Boot. Every tool listed is free or has a meaningful free tier.
 > Configurations are shown in both Gradle (Kotlin DSL) and Maven where applicable.
 
@@ -24,25 +26,27 @@ last_updated: 2026-03-26
 
 | Tool | Category | Version | Java 21 | Kotlin | Spring Boot 3/4 | Gradle | Maven | Cost | Stars |
 |------|----------|---------|---------|--------|-----------------|--------|-------|------|-------|
-| **Error Prone** | Static Analysis | 2.48.0 | Required | No | Yes | Yes | Yes | Free | 7.1k |
-| **SpotBugs** | Static Analysis | 4.9.6 | Yes | Via bytecode | Yes | Yes | Yes | Free | 3.8k |
-| **Detekt** | Static Analysis | 1.23.8 / 2.0.0-alpha.2 | N/A | Native | Yes | Yes | Yes | Free | 6.9k |
+| **Error Prone** | Static Analysis | 2.50.0 | Required | No | Yes | Yes | Yes | Free | 7.1k |
+| **SpotBugs** | Static Analysis | 4.10.3 (plugin 6.5.9) | Yes | Via bytecode | Yes | Yes | Yes | Free | 3.8k |
+| **Detekt** | Static Analysis | 1.23.8 / 2.0.0-alpha.5 | N/A | Native | Yes | Yes | Yes | Free | 6.9k |
 | **ktlint** | Static Analysis | 1.8.0 | N/A | Native | Yes | Yes | Yes | Free | 5.9k |
 | **Qodana** | Static Analysis | 2026.1 | Yes | Yes | Yes | Yes | Yes | Freemium | N/A |
-| **SonarQube** | Static Analysis | 26.1.0 | Yes | Yes | Yes | Yes | Yes | Freemium | N/A |
+| **SonarQube** | Static Analysis | 26.7.0 | Yes | Yes | Yes | Yes | Yes | Freemium | N/A |
 | **JaCoCo** | Testing & Quality | 0.8.14 | Yes | Yes | Yes | Yes | Yes | Free | 4.5k |
-| **PIT** | Testing & Quality | 1.22.0 | Yes | Yes (plugin) | Yes | Yes | Yes | Freemium | 1.8k |
-| **ArchUnit** | Testing & Quality | 1.4.1 | Yes | Yes | Yes | Yes | Yes | Free | 3.6k |
-| **Testcontainers** | Testing & Quality | 2.0.3 | Yes | Yes | Native | Yes | Yes | Free | 8.6k |
+| **Kover** | Testing & Quality | 0.9.2 | Yes | Native (+KMP) | Yes | Yes | Limited | Free | N/A |
+| **MockK** | Testing & Quality | 1.14.11 | Yes | Native (+KMP) | Yes | Yes | Yes | Free | 5.9k |
+| **PIT** | Testing & Quality | 1.22.0 (Gradle plugin 1.19.0) | Yes | Yes (plugin) | Yes | Yes | Yes | Freemium | 1.8k |
+| **ArchUnit** | Testing & Quality | 1.4.2 | Yes | Yes | Yes | Yes | Yes | Free | 3.6k |
+| **Testcontainers** | Testing & Quality | 2.0.5 | Yes | Yes | Native | Yes | Yes | Free | 8.6k |
 | **Spring Cloud Contract** | Testing & Quality | 4.1.x | Yes | Yes | Native | Yes | Yes | Free | N/A |
 | **Pact** | Testing & Quality | 4.6.x | Yes | Yes | Yes | Yes | Yes | Freemium | N/A |
-| **Gradle Cache** | Build & CI/CD | 9.4.1 | Yes | Yes | Yes | Native | N/A | Free | N/A |
+| **Gradle Cache** | Build & CI/CD | 9.6.1 | Yes | Yes | Yes | Native | N/A | Free | N/A |
 | **GitHub Actions** | Build & CI/CD | N/A | Yes | Yes | Yes | Yes | Yes | Freemium | N/A |
-| **OpenRewrite** | Build & CI/CD | 8.71.0 | Yes | Partial | Yes | Yes | Yes | Free | N/A |
+| **OpenRewrite** | Build & CI/CD | 8.87.7 | Yes | Partial | Yes | Yes | Yes | Free | N/A |
 | **Renovate** | Build & CI/CD | 43.x | N/A | N/A | N/A | Yes | Yes | Free | 20.7k |
 | **JMH** | Performance & Security | 1.37 | Yes | N/A | Yes | Yes | Yes | Free | 2.6k |
-| **OWASP DC** | Performance & Security | 12.2.0 | Yes | N/A | Yes | Yes | Yes | Free | 7.4k |
-| **Trivy** | Performance & Security | 0.69.x | Yes | N/A | Yes | Via CLI | Via CLI | Free | 31.9k |
+| **OWASP DC** | Performance & Security | 12.2.2 | Yes | N/A | Yes | Yes | Yes | Free | 7.4k |
+| **Trivy** | Performance & Security | 0.72.0 | Yes | N/A | Yes | Via CLI | Via CLI | Free | 31.9k |
 | **Snyk** | Performance & Security | SaaS | Yes | N/A | Yes | Yes | Yes | Freemium | N/A |
 
 ### Recommended Starting Sets
@@ -67,8 +71,9 @@ last_updated: 2026-03-26
 | Linting | Detekt | Native Kotlin AST, coroutine/flow awareness |
 | Compile-time (Java) | Error Prone | For any Java code in mixed projects |
 | Post-build | SpotBugs | Analyzes Kotlin bytecode too |
-| Coverage | JaCoCo | Kotlin bytecode filtering built-in |
-| Mutation | PIT + pitest-kotlin | Filters Kotlin-generated junk mutations |
+| Coverage | Kover (or JaCoCo) | Kover is Kotlin-native and KMP-capable; JaCoCo for mixed Java/Kotlin or Maven |
+| Mocking | MockK | Final classes, objects, extension functions, coroutines — no Mockito workarounds |
+| Mutation | PIT — see caveat | The free `pitest-kotlin` filter is **archived**; the maintained filter is commercial (§2.2) |
 | Integration | Testcontainers | Spring Boot `@ServiceConnection` |
 | Contracts | Spring Cloud Contract | JVM-only: auto-generated tests + stubs |
 | Security | Trivy + OWASP DC | Defense in depth |
@@ -323,7 +328,7 @@ Detekt is the only static analysis tool that natively understands Kotlin constru
 #### Quick Start - Gradle
 
 ```kotlin
-// build.gradle.kts
+// build.gradle.kts — Detekt 1.x (current stable line)
 plugins {
     id("io.gitlab.arturbosch.detekt") version "1.23.8"
 }
@@ -337,6 +342,28 @@ dependencies {
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.8")
 }
 ```
+
+> ⚠️ **Detekt 2.0 renames the plugin ID and Maven group.** Applying a 2.0.x version string to the
+> `io.gitlab.arturbosch.detekt` plugin ID above **fails outright** — the coordinates changed:
+>
+> | | Detekt 1.x | Detekt 2.x |
+> |---|---|---|
+> | Gradle plugin ID | `io.gitlab.arturbosch.detekt` | **`dev.detekt`** |
+> | Maven group | `io.gitlab.arturbosch.detekt` | **`dev.detekt`** |
+>
+> ```kotlin
+> // build.gradle.kts — Detekt 2.x (ALPHA — not production-ready)
+> plugins {
+>     id("dev.detekt") version "2.0.0-alpha.5"
+> }
+>
+> dependencies {
+>     detektPlugins("dev.detekt:detekt-formatting:2.0.0-alpha.5")
+> }
+> ```
+>
+> **Detekt 2.0 remains in alpha** (`2.0.0-alpha.5`) and is not yet GA — **1.23.8 is still the
+> production recommendation**. Plan for the ID change when 2.0 stabilizes; do not adopt it yet.
 
 #### Quick Start - Maven
 
@@ -410,7 +437,7 @@ ktlint provides deterministic, fast code formatting for Kotlin with zero configu
 ```kotlin
 // build.gradle.kts
 plugins {
-    id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
+    id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
 }
 
 ktlint {
@@ -640,6 +667,103 @@ tasks.jacocoTestReport {
 
 ---
 
+### 2.1b Kover — JetBrains' Kotlin Coverage Tool
+
+Kover is JetBrains' first-party coverage tool for Kotlin. It is the better default for
+Kotlin-heavy and Kotlin Multiplatform projects, and was absent from earlier revisions of this
+guide despite being the natural counterpart to JaCoCo for Kotlin teams.
+
+| Criterion | Rating |
+|---|---|
+| Kotlin Support | **Native** — understands inline functions, coroutines, and KMP source sets |
+| KMP | **Yes** — the main differentiator; JaCoCo is JVM-bytecode only |
+| Engines | Its own IntelliJ-based engine, or delegates to JaCoCo |
+| Cost | **Free** (Apache 2.0, JetBrains) |
+| Maturity | Stable, actively developed |
+
+```kotlin
+// build.gradle.kts
+plugins {
+    id("org.jetbrains.kotlinx.kover") version "0.9.2"
+}
+
+kover {
+    reports {
+        verify {
+            rule {
+                minBound(80)   // fail the build below 80% line coverage
+            }
+        }
+    }
+}
+```
+
+```bash
+./gradlew koverHtmlReport      # HTML report
+./gradlew koverVerify          # enforce thresholds
+./gradlew koverXmlReport       # for SonarQube / CI ingestion
+```
+
+**Kover vs JaCoCo:**
+
+| | Kover | JaCoCo |
+|---|---|---|
+| Kotlin idioms (inline, coroutines) | Native handling | Needs filtering, improved in 0.8.14+ |
+| Kotlin Multiplatform | **Supported** | JVM only |
+| Java projects | Works, but no advantage | **Preferred** |
+| Ecosystem integration | Good (Sonar via XML) | **Broadest** — every tool consumes JaCoCo XML |
+| Maven support | Limited | **Full** |
+
+**Recommendation:** Kover for Kotlin-only and KMP projects, especially Gradle-based. JaCoCo for
+Java or mixed Java/Kotlin codebases and anything on Maven. Kover can emit JaCoCo-compatible XML if
+you need Kover's Kotlin awareness with JaCoCo-shaped tooling downstream. Do not run both engines
+over the same modules — the reports will disagree and the delta is not meaningful.
+
+---
+
+### 2.1c MockK — Kotlin Mocking
+
+MockK is the de facto mocking library for Kotlin. Mockito requires `mockito-inline` plus opt-ins to
+mock final classes — and Kotlin classes are final by default — so Mockito fights the language in a
+way MockK does not.
+
+| Criterion | Rating |
+|---|---|
+| Kotlin Support | **Native** — final classes, `object`s, extension functions, coroutines |
+| KMP | Yes (common, JVM, native source sets) |
+| Java Support | Works, but Mockito is more idiomatic for pure Java |
+| Cost | **Free** (Apache 2.0) |
+| Version | 1.14.11 |
+
+```kotlin
+testImplementation("io.mockk:mockk:1.14.11")
+```
+
+```kotlin
+class OrderServiceTest {
+    private val repo = mockk<OrderRepository>()
+    private val service = OrderService(repo)
+
+    @Test
+    fun `submit delegates to repository`() = runTest {
+        coEvery { repo.submit(any()) } returns Result.success(Unit)   // suspend stubbing
+
+        service.submit(order)
+
+        coVerify(exactly = 1) { repo.submit(order) }                  // suspend verification
+    }
+}
+```
+
+**Why it matters for Kotlin teams:** `coEvery`/`coVerify` stub and verify suspend functions
+directly, `mockkObject`/`mockkStatic` handle Kotlin `object` singletons and top-level functions,
+and `relaxed = true` removes stubbing boilerplate for `Unit`-returning calls.
+
+**Recommendation:** MockK for Kotlin and mixed Kotlin-dominant codebases; Mockito for pure Java.
+Do not run both in one module — the two produce confusingly similar APIs with different semantics.
+
+---
+
 ### 2.2 PIT Mutation Testing
 
 **What**: Mutation testing tool that verifies test quality by introducing faults into code and checking if tests detect them
@@ -655,7 +779,7 @@ Code coverage tells you which lines execute during tests; mutation testing tells
 | Criterion | Rating |
 |-----------|--------|
 | Java Compatibility | **Strong** - All modern versions |
-| Kotlin Support | **Adequate** - Requires `pitest-kotlin` plugin to filter junk mutations |
+| Kotlin Support | **Degraded** - the free `pitest-kotlin` plugin is archived/unmaintained; the only maintained Kotlin filter is the paid Arcmutate plugin (see note below) |
 | Spring Boot Integration | **Adequate** - Works but context startup amplifies runtime |
 | Setup Effort | **Medium** - Requires target class/test configuration |
 | Ongoing Maintenance | **Medium** - Incremental runs essential for large projects |
@@ -679,11 +803,31 @@ pitest {
     outputFormats.set(listOf("HTML", "XML"))
     timestampedReports.set(false)
 
-    // For Kotlin projects - REQUIRED to avoid junk mutations
+    // For Kotlin projects - filtering is needed to avoid junk mutations.
+    // NOTE: the free `pitest-kotlin` plugin below is ARCHIVED — see the note after this block.
     pitestVersion.set("1.22.0")
     plugins.set(listOf("pitest-kotlin:1.2.0"))
 }
 ```
+
+> ⚠️ **`pitest-kotlin` is archived and unmaintained.** The project's own GitHub README states:
+> *"This plugin is not maintained... a commercial plugin is now available from arcmutate."*
+> The only maintained Kotlin-aware mutation filter is **`com.arcmutate:pitest-kotlin-plugin`**
+> (1.5.1), which is **paid and requires a license key**.
+>
+> This changes the calculus for Kotlin teams. Without a Kotlin-aware filter, PIT reports large
+> numbers of false surviving mutations from compiler-generated artifacts (null checks, `equals`/
+> `hashCode`/`copy` on data classes), which makes the mutation score hard to act on. Options:
+>
+> | Option | Trade-off |
+> |---|---|
+> | Keep archived `pitest-kotlin:1.2.0` | Works today, no upstream fixes, will bit-rot against new Kotlin releases |
+> | Buy `com.arcmutate:pitest-kotlin-plugin` | Maintained, but no longer free — breaks this guide's "free or meaningful free tier" premise |
+> | Skip mutation testing on Kotlin modules | Reasonable — apply PIT to Java modules only |
+>
+> The "Kotlin-First Team" and "Enterprise" recommended sets earlier in this document list
+> "PIT + pitest-kotlin" as though it were a free, maintained combination. **It is not** — treat
+> those recommendations as needing one of the three choices above.
 
 #### Quick Start - Maven
 
@@ -721,7 +865,7 @@ pitest {
 
 - **Overhead**: 3x to 30x test execution time
 - **Optimization**: Use incremental mode (Git integration), parallel threads, and scoped execution
-- **Kotlin**: MUST use `pitest-kotlin` plugin to filter junk mutations from compiler artifacts
+- **Kotlin**: junk mutations from compiler artifacts need filtering — but the free `pitest-kotlin` plugin is archived (see the Kotlin support note above); the maintained option is commercial
 
 #### Recent Updates [Updated 2026-03]
 
@@ -1567,7 +1711,7 @@ plugins {
     id("net.ltgt.errorprone") version "4.0.1"
     id("com.github.spotbugs") version "6.4.8"
     id("io.gitlab.arturbosch.detekt") version "1.23.8"
-    id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
+    id("org.jlleitschuh.gradle.ktlint") version "14.2.0"
     id("info.solidsoft.pitest") version "1.19.0-rc.3"
     id("org.owasp.dependencycheck") version "12.2.0"
     id("org.sonarqube") version "5.0.0.4638"

@@ -1,9 +1,9 @@
 ---
 title: "Android Testing Ecosystem: Libraries, Patterns & Strategies"
-version: "1.0.0"
+version: "1.1.0"
 status: Published
 created: 2026-04-04
-last_updated: 2026-04-04
+last_updated: 2026-07-28
 slug: android-testing-ecosystem
 aliases: ["android-testing", "kmp-testing", "compose-testing"]
 tags: ["android", "testing", "kotlin", "kmp", "compose-testing", "turbine", "kotest", "robolectric", "screenshot-testing"]
@@ -22,7 +22,7 @@ The Android testing ecosystem in 2025-2026 has matured significantly, driven by 
 
 This document covers the full testing stack for Android/KMP projects -- from unit tests through screenshot regression to contract testing -- with practical Kotlin code examples throughout. It complements the `kotlin-spring-boot-testing-ecosystem.md` (backend) with Android/mobile-specific patterns.
 
-Key version coordinates referenced throughout: JUnit 4/5, Kotest 5.9.1, Turbine 1.2.0, in-memory SQLDelight via JVM driver, Compose UI testing, and Robolectric 4.13.
+Key version coordinates referenced throughout (verified 2026-07-28): JUnit 5.14.4 / JUnit 6.1.1, **Kotest 6.2.3**, Turbine 1.2.1, in-memory SQLDelight 2.3.2 via JVM driver, Compose UI testing 1.11.4, and Robolectric 4.16.1. See §2 for the Kotest 5→6 migration, which is breaking.
 
 ---
 
@@ -65,24 +65,43 @@ For KMP projects the pyramid gains a **horizontal layer**: `commonTest` sources 
 
 ### JUnit 5 Jupiter on Android
 
-Android Gradle Plugin (AGP) 8.x supports JUnit 5 for **unit tests** (not instrumented) via the `android-junit5` plugin by Marcel Bro:
+JUnit 5 on Android is enabled by Marcel Brooks' plugin, which was **renamed in January 2026** from
+`android-junit5` to **`android-junit-framework`**. The plugin ID changed and the version series
+reset — using the old coordinates pins you to an unmaintained line.
+
+| | Old (pre-2026) | Current |
+|---|---|---|
+| Plugin ID | `de.mannodermaus.android-junit5` | **`de.mannodermaus.android-junit`** |
+| Version | 1.11.0 | **2.0.1** |
+| JUnit support | JUnit 5 | **JUnit 5 and JUnit 6** |
+| Instrumented tests | Not supported | **Supported** |
 
 ```kotlin
 // build.gradle.kts
 plugins {
-    id("de.mannodermaus.android-junit5") version "1.11.0"
+    id("de.mannodermaus.android-junit") version "2.0.1"
 }
 
 dependencies {
-    testImplementation("org.junit.jupiter:junit-jupiter:5.11.3")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.11.3")
-    testImplementation("org.junit.jupiter:junit-jupiter-params:5.11.3")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.14.4")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.14.4")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:5.14.4")
 }
 
 tasks.withType<Test> {
     useJUnitPlatform()
 }
 ```
+
+> **The "unit tests only" limitation no longer holds.** Earlier revisions of this document stated
+> that AGP supports JUnit 5 for unit tests but not instrumented tests. That was accurate for the
+> old plugin; `android-junit-framework` 2.x now facilitates JUnit 5/6 for **instrumented** tests as
+> well. AGP itself still provides no first-party instrumented JUnit 5 support — the capability comes
+> from the plugin.
+
+> **JUnit 6 has shipped** (6.1.1, Jun 2026) and junit.org describes it as the current generation.
+> The 5.x line remains maintained at 5.14.4. New projects can target either; the plugin supports
+> both. This document's examples use JUnit 5 coordinates.
 
 ```kotlin
 // JUnit 5 parameterized test
@@ -106,7 +125,7 @@ class PriceCalculatorTest {
 
 ### JUnit 4 Migration Path
 
-Projects still on JUnit 4: Kotest 5 runs on top of JUnit 4 via the `junit-vintage-engine`. Incremental migration approach:
+Projects still on JUnit 4 can run it alongside JUnit 5 via the `junit-vintage-engine`. (Kotest 6 runs on the JUnit 5 platform — see §3.1 for its migration path, which is separate from this one.) Incremental migration approach:
 
 1. Keep existing `@Test` + `@Rule` tests under `junit-vintage-engine`.
 2. Add JUnit 5 for all new tests going forward.
@@ -174,8 +193,26 @@ class MoneyTest {
 
 ```kotlin
 // build.gradle.kts
-testImplementation("io.kotest:kotest-assertions-core:5.9.1")
+testImplementation("io.kotest:kotest-assertions-core:6.2.3")
 ```
+
+#### 3.1 Kotest 5 → 6 Migration (Breaking)
+
+Kotest 6.0 shipped in mid-2025 and the line is now at **6.2.3** (2026-07-20). It is a major release
+with real breaking changes — a project on 5.9.1 cannot simply bump the version string.
+
+| Change | Impact |
+|---|---|
+| **JDK 11 and Kotlin 2.2 minimum** | Blocks older toolchains outright |
+| **Classpath scanning removed**, including `@AutoScan` | Auto-discovered listeners/extensions must be registered explicitly |
+| **Project config location changed** | `AbstractProjectConfig` must be declared via the new mechanism, not discovered by scanning |
+| **`kotest-assertions-api` discontinued** | Remove the dependency |
+| **`InstancePerTest` / `InstancePerLeaf` deprecated** | Migrate to the current isolation modes |
+| **KMP setup mechanism changed** | The Gradle plugin was renamed and is now KSP-based rather than a compiler plugin |
+
+The KMP change matters most for this document's audience: Kotest's multiplatform integration no
+longer works the way the `commonTest` examples in §5 assumed under 5.x. Verify the plugin
+coordinates against the Kotest 6 docs when wiring up a KMP module rather than copying a 5.x setup.
 
 ```kotlin
 import io.kotest.matchers.shouldBe
@@ -366,7 +403,7 @@ Three tools -- choose based on speed vs fidelity requirements:
 // build.gradle.kts
 testImplementation("io.github.takahirom.roborazzi:roborazzi:1.13.0")
 testImplementation("io.github.takahirom.roborazzi:roborazzi-compose:1.13.0")
-testImplementation("org.robolectric:robolectric:4.13")
+testImplementation("org.robolectric:robolectric:4.16.1")
 
 android {
     testOptions {
@@ -435,13 +472,13 @@ kotlin {
     sourceSets {
         commonTest.dependencies {
             implementation(kotlin("test"))
-            implementation("io.kotest:kotest-assertions-core:5.9.1")
-            implementation("app.cash.turbine:turbine:1.2.0")
-            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
+            implementation("io.kotest:kotest-assertions-core:6.2.3")
+            implementation("app.cash.turbine:turbine:1.2.1")
+            implementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.11.0")
         }
         androidUnitTest.dependencies {
-            implementation("io.kotest:kotest-runner-junit4:5.9.1")
-            implementation("org.robolectric:robolectric:4.13")
+            implementation("io.kotest:kotest-runner-junit5:6.2.3")
+            implementation("org.robolectric:robolectric:4.16.1")
         }
     }
 }
@@ -719,7 +756,7 @@ For KMP projects sharing SQL schemas, the JDBC driver enables fast in-memory tes
 
 ```kotlin
 // build.gradle.kts (shared module, jvmTest / androidUnitTest)
-testImplementation("app.cash.sqldelight:sqlite-driver:2.0.2")
+testImplementation("app.cash.sqldelight:sqlite-driver:2.3.2")
 
 // Factory function
 fun createInMemoryDriver(): SqlDriver =
@@ -915,6 +952,62 @@ class RetrofitOrderApiTest {
     }
 }
 ```
+
+> **OkHttp 5 moved MockWebServer.** OkHttp 5.0.0 (stable, Jul 2025) split MockWebServer into a new
+> `mockwebserver3` package with dedicated JUnit 4 and JUnit 5 adapter artifacts. Square marks the
+> legacy `okhttp3.mockwebserver` artifact used above as **Obsolete**.
+>
+> ```kotlin
+> // Legacy (obsolete)
+> testImplementation("com.squareup.okhttp3:mockwebserver")
+>
+> // OkHttp 5+
+> testImplementation("com.squareup.okhttp3:mockwebserver3")
+> testImplementation("com.squareup.okhttp3:mockwebserver3-junit5")   // or -junit4
+> ```
+>
+> The API is close but not identical — `mockwebserver3` favours immutable `MockResponse` builders
+> over the mutable setters shown above, so expect small call-site changes when migrating.
+
+### MockK — Kotlin Mocking
+
+MockK is the de facto mocking library for Kotlin and handles final classes, objects, extension
+functions, and coroutines natively — all things Mockito needs workarounds for. Google's own Android
+testing guidance recommends it for Kotlin projects. Current version: **1.14.11**.
+
+```kotlin
+testImplementation("io.mockk:mockk:1.14.11")
+// KMP / common source sets:
+// implementation("io.mockk:mockk:1.14.11")   // supports common, jvm, and native targets
+```
+
+```kotlin
+class OrderServiceTest {
+
+    private val repo = mockk<OrderRepository>()
+    private val service = OrderService(repo)
+
+    @Test
+    fun `submit marks order as sent`() = runTest {
+        coEvery { repo.submit(any()) } returns Result.success(Unit)
+
+        service.submit(order)
+
+        coVerify(exactly = 1) { repo.submit(order) }
+    }
+
+    @Test
+    fun `relaxed mocks avoid stubbing every call`() {
+        val logger = mockk<Logger>(relaxed = true)   // no stubbing needed for Unit-returning calls
+        OrderService(repo, logger).submit(order)
+    }
+}
+```
+
+`coEvery`/`coVerify` are the suspend-function equivalents of `every`/`verify` — the main reason
+MockK is preferred over Mockito in coroutine-heavy Android code. The JUnit 4 migration examples in
+§2 use Mockito because that is what legacy Android codebases contain; new Kotlin tests should
+default to MockK.
 
 ### WireMock for Complex Stubbing
 
@@ -1139,11 +1232,75 @@ jobs:
           script: ./gradlew connectedDebugAndroidTest
 ```
 
+### Macrobenchmark and Baseline Profiles
+
+Performance regression testing is part of the modern Android test stack and belongs alongside
+correctness tests in CI. `androidx.benchmark` is at **1.4.1** (Jul 2026).
+
+```kotlin
+// benchmark module — build.gradle.kts
+plugins {
+    id("com.android.test")
+    id("androidx.baselineprofile")
+}
+
+dependencies {
+    implementation("androidx.benchmark:benchmark-macro-junit4:1.4.1")
+}
+```
+
+```kotlin
+@RunWith(AndroidJUnit4::class)
+class StartupBenchmark {
+
+    @get:Rule val rule = MacrobenchmarkRule()
+
+    @Test
+    fun coldStartup() = rule.measureRepeated(
+        packageName = "com.example.pos",
+        metrics = listOf(StartupTimingMetric()),
+        iterations = 10,
+        startupMode = StartupMode.COLD,
+    ) {
+        pressHome()
+        startActivityAndWait()
+    }
+}
+```
+
+**Baseline Profiles** are the higher-leverage half: a generated profile of hot code paths that ART
+pre-compiles at install time, typically improving cold start and scroll jank measurably for no
+runtime code change. Generate with the `androidx.baselineprofile` plugin and commit the output.
+
+Two distinct concerns, often confused:
+
+| | Macrobenchmark | Baseline Profile |
+|---|---|---|
+| Purpose | *Measure* startup/jank/frame timing | *Improve* startup and jank |
+| Output | Metrics, CI regression gate | `baseline-prof.txt` shipped in the APK |
+| Runs | On device, in CI | Generated once, regenerated on major changes |
+
+Two related tools worth knowing: **Microbenchmark** (`benchmark-junit4`) for tight
+CPU-bound loops, and **UiAutomator** for the driving code inside a macrobenchmark block.
+
+### AndroidX Test Coordinates
+
+The document's examples assume these artifacts; current stable versions as of 2026-07-28:
+
+```kotlin
+androidTestImplementation("androidx.test:core:1.7.0")
+androidTestImplementation("androidx.test:runner:1.7.0")
+androidTestImplementation("androidx.test:rules:1.7.0")
+androidTestImplementation("androidx.test.ext:junit:1.3.0")
+androidTestImplementation("androidx.test.espresso:espresso-core:3.7.0")
+androidTestUtil("androidx.test:orchestrator:1.6.1")
+```
+
 ---
 
 ## 11. cabo-verde-pos Reference Setup
 
-Configuration extracted from a real KMP project using JUnit 4, Kotest 5.9.1, Turbine 1.2.0, and in-memory SQLDelight:
+Configuration **as observed in** a real KMP project using JUnit 4, Kotest 5.9.1, Turbine 1.2.0, and in-memory SQLDelight:
 
 ```kotlin
 // shared/build.gradle.kts -- version catalog excerpt
@@ -1166,6 +1323,20 @@ sourceSets {
     }
 }
 ```
+
+> **These are the versions that project pinned, not current recommendations.** Left unchanged
+> because this section documents an observed configuration. Every one of them is now behind:
+>
+> | | Observed here | Current (2026-07-28) |
+> |---|---|---|
+> | Kotest | 5.9.1 | **6.2.3** (breaking — see §3.1) |
+> | Turbine | 1.2.0 | 1.2.1 |
+> | coroutines-test | 1.8.1 | 1.11.0 |
+> | SQLDelight | 2.0.2 | 2.3.2 |
+> | Robolectric | 4.13 | 4.16.1 |
+>
+> Note `kotest-runner-junit4` in particular: Kotest 6 runs on the JUnit 5 platform, so a bump to
+> 6.x means switching to `kotest-runner-junit5` and re-checking the KMP plugin wiring.
 
 In-memory SQLDelight JVM driver pattern used across the project:
 

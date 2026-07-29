@@ -9,7 +9,7 @@ See [TEMPLATE.md](TEMPLATE.md) for the standard format when creating new researc
 | [Cross-platform LLM CLI Plugin Portability](cross-platform-llm-cli-plugin-portability.md) | 1.0.0 | Published | 2026-03-04 | 2026-03-26 |
 | [LLM Agentic Development Patterns](ai-agentic-development-patterns.md) | 2.1.0 | Published | 2026-02-13 | 2026-03-26 |
 | [AI-Ready SDLC Design Patterns](sdlc-artifact-design-patterns.md) | 2.0.0 | Living Document | 2026-02-13 | 2026-03-26 |
-| [Java/Kotlin Quality Tools Evaluation](jvm-quality-tools-evaluation.md) | 1.0.0 | Published | 2026-02-13 | 2026-03-26 |
+| [Java/Kotlin Quality Tools Evaluation](jvm-quality-tools-evaluation.md) | 1.1.0 | Published | 2026-02-13 | 2026-07-28 |
 | [Domain-Driven Design](domain-driven-design.md) | 1.1.0 | Published | 2025-12-18 | 2026-03-26 |
 | [Spring Boot 4 Ecosystem Research](spring-boot-ecosystem-research.md) | 1.0.0 | Published | 2025-12-20 | 2026-03-26 |
 | [Spring Boot 4 DDD Implementation](spring-boot-ddd-implementation.md) | 1.0.0 | Published | 2025-12-20 | 2026-03-26 |
@@ -23,9 +23,10 @@ See [TEMPLATE.md](TEMPLATE.md) for the standard format when creating new researc
 | [Cross-Cutting Developer Tools Evaluation](cross-cutting-devtools-evaluation.md) | 1.0.0 | Published | 2026-03-25 | 2026-03-25 |
 | [Superpowers Agentic Patterns: Quick Reference](superpowers-patterns-overview.md) | 1.0.0 | Published | 2026-04-02 | 2026-04-02 |
 | [Superpowers Agentic Patterns: Deep Dive](superpowers-patterns-deep-dive.md) | 1.0.0 | Published | 2026-04-02 | 2026-04-02 |
-| [Android Development Ecosystem & Tooling (2025-2026)](android-ecosystem-tooling.md) | 1.0.0 | Published | 2026-04-04 | 2026-04-04 |
-| [Jetpack Compose Advanced Patterns & Best Practices](jetpack-compose-patterns.md) | 1.0.0 | Published | 2026-04-04 | 2026-04-04 |
-| [Kotlin Multiplatform (KMP) Production Architecture & Patterns](kotlin-multiplatform-production-patterns.md) | 1.0.0 | Published | 2026-04-04 | 2026-04-04 |
-| [Offline-First Mobile Architecture: Patterns & Implementation](offline-first-mobile-architecture.md) | 1.0.0 | Published | 2026-04-04 | 2026-04-04 |
-| [Android Testing Ecosystem: Libraries, Patterns & Strategies](android-testing-ecosystem.md) | 1.0.0 | Published | 2026-04-04 | 2026-04-04 |
+| [Android Development Ecosystem & Tooling (2025-2026)](android-ecosystem-tooling.md) | 1.1.0 | Published | 2026-04-04 | 2026-07-28 |
+| [Jetpack Compose Advanced Patterns & Best Practices](jetpack-compose-patterns.md) | 1.1.0 | Published | 2026-04-04 | 2026-07-28 |
+| [Kotlin Multiplatform (KMP) Production Architecture & Patterns](kotlin-multiplatform-production-patterns.md) | 1.1.0 | Published | 2026-04-04 | 2026-07-28 |
+| [Offline-First Mobile Architecture: Patterns & Implementation](offline-first-mobile-architecture.md) | 1.1.0 | Published | 2026-04-04 | 2026-07-28 |
+| [Android Testing Ecosystem: Libraries, Patterns & Strategies](android-testing-ecosystem.md) | 1.1.0 | Published | 2026-04-04 | 2026-07-28 |
 | [tilt-local-kubernetes-development-setup](tilt-local-kubernetes-development-setup.md) | 1.0.0 | Published | 2026-05-07 | 2026-05-07 |
+| [Sync Engine Landscape for Kotlin/KMP Mobile](sync-engine-landscape.md) | 1.0.0 | Published | 2026-07-28 | 2026-07-28 |

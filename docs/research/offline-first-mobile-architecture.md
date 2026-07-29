@@ -1,9 +1,9 @@
 ---
 title: "Offline-First Mobile Architecture: Patterns & Implementation"
-version: "1.0.0"
+version: "1.1.0"
 status: Published
 created: 2026-04-04
-last_updated: 2026-04-04
+last_updated: 2026-07-28
 slug: offline-first-mobile-architecture
 aliases: ["offline-first", "local-first-mobile", "sync-patterns", "outbox-pattern-mobile"]
 tags: ["offline-first", "mobile", "sync", "conflict-resolution", "workmanager", "sqldelight", "outbox-pattern", "kmp", "android", "kotlin"]
@@ -124,6 +124,26 @@ The UI shows the item immediately with a "pending" badge. On sync success the ba
 ### 3.1 SQLDelight as Source of Truth
 
 SQLDelight generates type-safe Kotlin from `.sq` files. It integrates with coroutines Flow, making it natural to observe live queries.
+
+> **Choosing the local store (2026).** This document uses SQLDelight throughout, and it remains a
+> sound choice — current stable is **2.3.2**. Two developments since this doc was first written
+> should factor into a new project's decision:
+>
+> - **Governance change.** SQLDelight left Cash App/Block stewardship and moved to the
+>   **Commonhaus Foundation** in June 2026. The maintainer had previously (March 2025) stated the
+>   project was volunteer-maintained with no guarantee of future work; the foundation move is the
+>   response to that risk, not a continuation of it. Note that 2.3.0 and 2.3.1 were failed
+>   releases — pin **2.3.2**.
+> - **Room 3.0** shipped stable on **1 July 2026** under a new Maven group, `androidx.room3`
+>   (`androidx.room3:room3-runtime`, classes at `androidx.room3.*`). It is a KMP-focused,
+>   KSP-only, SQLiteDriver-only rewrite. Google deliberately used a separate group so it can
+>   coexist with Room 2.x and with libraries that depend on Room transitively (WorkManager, for
+>   example). Room 2.x remains at **2.8.4**.
+>
+> For a symmetric KMP project the choice stays close; for an Android-primary project Room 3 now
+> has a materially stronger KMP story than it did. If you are weighing a hand-rolled local store
+> against an off-the-shelf sync engine entirely, see
+> [sync-engine-landscape.md](sync-engine-landscape.md).
 
 ```sql
 -- src/main/sqldelight/com/pos/Transaction.sq
@@ -424,7 +444,7 @@ data class PNCounter(
         copy(increments = increments + (deviceId to (increments[deviceId] ?: 0) + amount))
 
     fun decrement(deviceId: String, amount: Long = 1): PNCounter =
-        copy(decrements = decrements + (deviceId to (decrements[decrements] ?: 0) + amount))
+        copy(decrements = decrements + (deviceId to (decrements[deviceId] ?: 0) + amount))
 
     fun value(): Long =
         increments.values.sum() - decrements.values.sum()
@@ -561,11 +581,43 @@ Android's Doze mode defers background work when the device is idle and unplugged
 - Don't rely on exact timing for sync. Use event-driven triggers (network reconnect) instead.
 - For truly critical operations (fiscal document submission), use a **Foreground Service** with a persistent notification — Doze mode does not affect foreground services.
 
+> **Platform constraints (Android 14/15/16).** Foreground services have been progressively
+> restricted and the rules below are now mandatory, not advisory. Google Play requires existing
+> apps to target API 35+ and new apps API 36 as of **31 August 2026**, so these apply to any
+> app still shipping.
+>
+> - **Android 14 (API 34)** — every foreground service must declare a `foregroundServiceType`
+>   in the manifest *and* pass it to `startForeground()`. Omitting it throws
+>   `MissingForegroundServiceTypeException` at runtime.
+> - **Android 15 (API 35)** — `dataSync` foreground services are capped at **6 hours per rolling
+>   24-hour period**, after which the system calls `onTimeout()` and you must stop the service.
+>   Design sync as short bursts, not a long-lived service.
+> - **Android 16 (API 36)** — job runtime quotas are enforced even for jobs running concurrently
+>   with a foreground service. The `WorkManager` + FGS combination no longer buys unlimited
+>   runtime. See §6.5 for the User-Initiated Data Transfer alternative.
+
+```xml
+<!-- AndroidManifest.xml -->
+<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+<uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+
+<service
+    android:name=".sync.FiscalDocumentSyncService"
+    android:foregroundServiceType="dataSync"
+    android:exported="false" />
+```
+
 ```kotlin
 // Foreground service for fiscal document submission
 class FiscalDocumentSyncService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        startForeground(NOTIF_ID, buildSyncNotification())
+        // API 34+: the type argument is REQUIRED and must match the manifest declaration.
+        ServiceCompat.startForeground(
+            this,
+            NOTIF_ID,
+            buildSyncNotification(),
+            ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC,
+        )
         serviceScope.launch {
             try {
                 submitPendingFiscalDocuments()
@@ -575,8 +627,21 @@ class FiscalDocumentSyncService : Service() {
         }
         return START_NOT_STICKY
     }
+
+    // API 35+: invoked when the 6h/24h dataSync budget is exhausted.
+    // You must stop promptly — failing to do so triggers an ANR.
+    override fun onTimeout(startId: Int, fgsType: Int) {
+        // Persist progress so the next window resumes rather than restarts.
+        syncCheckpoint.save()
+        stopSelf()
+    }
 }
 ```
+
+**Budget-aware design.** Because the 6-hour cap is cumulative across a rolling day, a POS terminal
+that syncs continuously will exhaust it and lose the foreground guarantee for the rest of the
+window. Treat the foreground service as a *burst* mechanism for the fiscal-critical path only, and
+leave routine outbox drain to `WorkManager` (§6.2).
 
 ### 6.4 Connectivity-Triggered Sync
 
@@ -607,6 +672,62 @@ class NetworkAwareSyncTrigger(private val context: Context) {
     }
 }
 ```
+
+### 6.5 Long Transfers: User-Initiated Data Transfer Jobs
+
+Android 16 (API 36) closed the loophole that made `WorkManager` + foreground service the standard
+answer for long uploads: job runtime quotas are now enforced **even while a foreground service is
+running**. A large catalog pull or a backlog of queued fiscal documents can no longer be guaranteed
+to run to completion by simply holding a foreground service open.
+
+The platform's replacement is the **User-Initiated Data Transfer (UIDT)** job — a `JobScheduler`
+job type for transfers the user explicitly asked for, which the system surfaces in a
+user-visible notification and grants a larger runtime budget.
+
+```kotlin
+// UIDT is JobScheduler-only — there is no WorkManager wrapper as of 2026-07.
+val job = JobInfo.Builder(JOB_ID, ComponentName(context, CatalogSyncJobService::class.java))
+    .setUserInitiated(true)                       // API 34+
+    .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
+    .setEstimatedNetworkBytes(estimatedDownloadBytes, 0L)
+    .build()
+
+jobScheduler.schedule(job)
+```
+
+```kotlin
+class CatalogSyncJobService : JobService() {
+    override fun onStartJob(params: JobParameters): Boolean {
+        setNotification(
+            params,
+            NOTIF_ID,
+            buildTransferNotification(),
+            JobService.JOB_END_NOTIFICATION_POLICY_DETACH,
+        )
+        scope.launch {
+            syncCatalog()
+            jobFinished(params, /* wantsReschedule = */ false)
+        }
+        return true
+    }
+
+    override fun onStopJob(params: JobParameters) = true  // reschedule on interruption
+}
+```
+
+**Caveats.** UIDT requires the transfer to be genuinely user-initiated — it is not a general-purpose
+background escape hatch, and misuse risks the job being denied. It also has **no Jetpack/WorkManager
+wrapper as of 2026-07**, so adopting it means dropping to `JobScheduler` and losing WorkManager's
+constraint/backoff/observability machinery for that one path.
+
+**Practical split for a POS terminal:**
+
+| Work | Mechanism |
+|------|-----------|
+| Routine outbox drain | `WorkManager` with network constraint (§6.1-6.2) |
+| Fiscal-critical submission (short burst) | Foreground service, `dataSync` type (§6.3) |
+| User-tapped "Sync catalog now" (large transfer) | UIDT job (§6.5) |
+| Immediate drain on reconnect | `NetworkCallback` trigger (§6.4) |
 
 ---
 
@@ -1055,7 +1176,7 @@ Is your app's core workflow usable without network?
 
 8. Google. **ConnectivityManager NetworkCallback.** Android Developers. https://developer.android.com/reference/android/net/ConnectivityManager.NetworkCallback
 
-9. Cash App. **SQLDelight Documentation.** https://cashapp.github.io/sqldelight/
+9. SQLDelight. **SQLDelight Documentation.** https://sqldelight.github.io/sqldelight/ (project moved from Cash App/Block governance to the Commonhaus Foundation in June 2026; the legacy `cashapp.github.io/sqldelight/` host still resolves but is deprecated infrastructure)
 
 10. ULID Community. **Universally Unique Lexicographically Sortable Identifier.** https://github.com/ulid/spec
 
@@ -1072,6 +1193,18 @@ Is your app's core workflow usable without network?
 16. Perron, M. & Jiang, L. (2021). **Operational Transformation FAQ.** https://operational-transformation.github.io/
 
 17. **cabo-verde-pos** (internal). Offline-first POS for Cabo Verde: SQLDelight, outbox pattern, WorkManager, device-based receipt numbering `M-{DEVICE4}-{YYYYMMDD}-{NNN}`.
+
+18. Google. **Foreground service types are required (Android 14).** Android Developers. https://developer.android.com/about/versions/14/changes/fgs-types-required
+
+19. Google. **Changes to foreground services — dataSync timeout (Android 15).** Android Developers. https://developer.android.com/about/versions/15/behavior-changes-15#fgs-timeout
+
+20. Google. **User-initiated data transfer jobs.** Android Developers. https://developer.android.com/develop/background-work/services/user-initiated-data-transfers
+
+21. Google. **Meet Google Play's target API level requirement.** Android Developers. https://developer.android.com/google/play/requirements/target-sdk
+
+22. Commonhaus Foundation. **SQLDelight project governance.** https://www.commonhaus.org/
+
+23. PowerSync, Firebase SQL Connect, Ditto, ElectricSQL and related sync engines — see the companion research document [sync-engine-landscape.md](sync-engine-landscape.md).
 <!-- AUTO-GENERATED: End -->
 
 <!-- TEAM-NOTES: Start -->
