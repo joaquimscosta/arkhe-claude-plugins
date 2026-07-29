@@ -2,16 +2,24 @@
 #
 # release.sh - Automate the full release process
 #
-# Usage: release.sh <version>
-# Example: release.sh 1.6.0
+# Usage:
+#   release.sh <version>                               Repo-wide release (no manifest bump)
+#   release.sh --plugin <name> <version>               Per-plugin: bump 3 manifests + release
+#   release.sh --plugin <name> --skip-shims <version>  Per-plugin Claude-only (legacy)
+#
+# Examples:
+#   release.sh 1.6.0
+#   release.sh --plugin core 2.3.0
+#   release.sh --plugin core --skip-shims 2.3.0
 #
 # This script:
 #   1. Validates version format
-#   2. Checks CHANGELOG.md entry exists
-#   3. Adds comparison link to CHANGELOG.md (if missing)
-#   4. Commits and pushes CHANGELOG.md changes
-#   5. Triggers the GitHub Actions release workflow
-#   6. Monitors workflow and reports result
+#   2. (Optional) Bumps plugin manifests via bump-version.sh
+#   3. Checks CHANGELOG.md entry exists
+#   4. Adds comparison link to CHANGELOG.md (if missing)
+#   5. Commits and pushes changes
+#   6. Triggers the GitHub Actions release workflow
+#   7. Monitors workflow and reports result
 #
 # Prerequisites:
 #   - gh CLI installed and authenticated
@@ -19,6 +27,9 @@
 #   - CHANGELOG.md entry already added for the version
 
 set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 # --- Output Helpers ---
 
@@ -52,8 +63,9 @@ function print_banner() {
 function validate_version_arg() {
     if [[ -z "${1:-}" ]]; then
         print_error "Version required"
-        echo "Usage: release.sh <version>"
+        echo "Usage: release.sh [--plugin <name>] [--skip-shims] <version>"
         echo "Example: release.sh 1.6.0"
+        echo "Example: release.sh --plugin core 2.3.0"
         exit 1
     fi
 }
@@ -164,14 +176,26 @@ $compare_link" "$changelog"
 function commit_changelog_changes() {
     local version="$1"
     local changelog="$2"
+    shift 2
+    # Remaining args are additional paths to include in the commit (e.g.,
+    # bumped manifest files when --plugin is in use).
+    local -a extra_paths=("$@")
 
-    # Skip if no changes
-    if git diff --quiet "$changelog" 2>/dev/null; then
+    # Build the list of paths to consider for staging.
+    local -a paths=("$changelog")
+    if [[ ${#extra_paths[@]} -gt 0 ]]; then
+        paths+=("${extra_paths[@]}")
+    fi
+
+    # Skip if no changes across all paths.
+    if git diff --quiet -- "${paths[@]}" 2>/dev/null; then
         return 0
     fi
 
     echo ""
-    echo "CHANGELOG.md has uncommitted changes."
+    echo "Pending release changes:"
+    git diff --stat -- "${paths[@]}" || true
+    echo ""
     read -p "Commit and push? [y/N] " -n 1 -r
     echo ""
 
@@ -180,10 +204,52 @@ function commit_changelog_changes() {
         exit 0
     fi
 
-    git add "$changelog"
-    git commit -m "docs: prepare release $version"
+    git add -- "${paths[@]}"
+    git commit -m "chore: prepare release $version"
     git push origin main
     print_success "Changes committed and pushed"
+}
+
+# --- Manifest Bump ---
+
+function bump_plugin_manifests() {
+    local plugin="$1"
+    local version="$2"
+    local skip_shims="$3"
+
+    local bump_script="$SCRIPT_DIR/bump-version.sh"
+    if [[ ! -x "$bump_script" ]]; then
+        print_error "bump-version.sh not found or not executable at $bump_script"
+        exit 1
+    fi
+
+    echo "Bumping plugin '$plugin' manifests to $version..."
+    local -a bump_args=("--plugin" "$plugin")
+    if [[ "$skip_shims" -eq 1 ]]; then
+        bump_args+=("--skip-shims")
+    fi
+    bump_args+=("$version")
+
+    if ! "$bump_script" "${bump_args[@]}"; then
+        print_error "bump-version.sh failed"
+        exit 1
+    fi
+    print_success "Plugin manifests updated"
+}
+
+# Echo the relative paths bumped by bump-version.sh for the given plugin/mode,
+# so the caller can include them in `git add`.
+function bumped_manifest_paths() {
+    local plugin="$1"
+    local skip_shims="$2"
+    local config="$REPO_ROOT/.version-bump.json"
+
+    local jq_filter=".files[] | select(.plugin == \"$plugin\")"
+    if [[ "$skip_shims" -eq 1 ]]; then
+        jq_filter="$jq_filter | select((.platform // \"claude\") == \"claude\")"
+    fi
+
+    jq -r "$jq_filter | .path" "$config"
 }
 
 # --- Workflow Management ---
@@ -249,29 +315,101 @@ function wait_for_workflow() {
 # --- Main ---
 
 function main() {
-    local version="${1:-}"
+    # All git operations downstream use repo-relative paths; ensure cwd is the
+    # repo root so `git add ./relative/path` resolves the same regardless of
+    # where the developer invoked release.sh from.
+    cd "$REPO_ROOT"
+
+    # --- flag parsing ---
+    local plugin=""
+    local skip_shims=0
+    local version=""
+
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --plugin)
+                [[ -n "${2:-}" ]] || { print_error "--plugin requires a value"; exit 1; }
+                plugin="$2"
+                shift 2
+                ;;
+            --plugin=*)
+                plugin="${1#--plugin=}"
+                shift
+                ;;
+            --skip-shims)
+                skip_shims=1
+                shift
+                ;;
+            --help|-h)
+                head -20 "$0" | sed 's/^# \{0,1\}//' | sed -n '/^Usage:/,/^$/p'
+                exit 0
+                ;;
+            --*)
+                print_error "Unknown flag '$1'"
+                exit 1
+                ;;
+            *)
+                if [[ -n "$version" ]]; then
+                    print_error "Unexpected extra argument '$1'"
+                    exit 1
+                fi
+                version="$1"
+                shift
+                ;;
+        esac
+    done
 
     # Validate inputs
     validate_version_arg "$version"
     version="${version#v}"  # Strip 'v' prefix if present
     validate_semver_format "$version"
 
+    if [[ "$skip_shims" -eq 1 && -z "$plugin" ]]; then
+        print_error "--skip-shims requires --plugin <name>"
+        exit 1
+    fi
+
+    # Validate --plugin exists in .version-bump.json before any gh API calls.
+    if [[ -n "$plugin" ]]; then
+        local config="$REPO_ROOT/.version-bump.json"
+        if ! jq -e --arg p "$plugin" '.files[] | select(.plugin == $p)' "$config" >/dev/null 2>&1; then
+            print_error "--plugin '$plugin' not found in .version-bump.json"
+            echo "Available plugins:"
+            jq -r '.files[].plugin' "$config" | sort -u | sed 's/^/  /'
+            exit 1
+        fi
+    fi
+
     local changelog="CHANGELOG.md"
     local repo_url
     repo_url=$(gh repo view --json url -q '.url')
 
-    echo "Preparing release v$version..."
+    if [[ -n "$plugin" ]]; then
+        echo "Preparing release v$version for plugin '$plugin' (skip-shims: $skip_shims)..."
+    else
+        echo "Preparing release v$version..."
+    fi
     echo ""
 
     # Pre-flight checks
     check_changelog_entry "$version" "$changelog"
     check_release_not_exists "v$version"
 
+    # Per-plugin manifest bump (before changelog link insertion so the bumped
+    # manifests are part of the same commit).
+    local -a manifest_paths=()
+    if [[ -n "$plugin" ]]; then
+        bump_plugin_manifests "$plugin" "$version" "$skip_shims"
+        while IFS= read -r path; do
+            [[ -n "$path" ]] && manifest_paths+=("$path")
+        done < <(bumped_manifest_paths "$plugin" "$skip_shims")
+    fi
+
     # Update changelog links
     add_comparison_link "$version" "$changelog" "$repo_url"
 
-    # Commit if needed
-    commit_changelog_changes "$version" "$changelog"
+    # Commit if needed (includes bumped manifests when --plugin is set)
+    commit_changelog_changes "$version" "$changelog" "${manifest_paths[@]}"
 
     # Trigger and monitor workflow
     trigger_workflow "$version"

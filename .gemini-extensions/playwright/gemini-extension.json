@@ -1,0 +1,6 @@
+{
+  "name": "playwright",
+  "description": "Browser automation via Playwright CLI for testing, screenshots, and interaction workflows",
+  "version": "1.0.0",
+  "contextFileName": "GEMINI.md"
+}

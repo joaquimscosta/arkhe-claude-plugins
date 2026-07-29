@@ -1,0 +1,150 @@
+description = "Deep research on technical topics with intelligent caching. Supports: research, promote, refresh, and list operations. Example: \"/research domain-driven design\" or \"/research promote ddd\""
+prompt = '''
+> **Note:** On Gemini, this command runs inline; the agent it would invoke on Claude has been collapsed into the prompt body. Behavior is degraded — no parallel sub-execution.
+
+# Research
+
+**Arguments:** {{args}}
+
+**Scripts:** Glob for `**/deep-research/scripts/cache_manager.py` and use its parent directory as `{scripts}`.
+
+## Dispatch
+
+Parse arguments to determine the operation:
+
+### Research (default — no keyword prefix)
+
+Cache-first approach using a single `fetch` call:
+
+1. Run: `python3 {scripts}/cache_manager.py fetch "{topic}"`
+2. Parse the JSON output:
+   - **`exists=true`, `cache_status=valid`:** Present the `content` field to the user. Report cache HIT, path, expiration. Suggest `/research promote {slug}`.
+   - **`exists=true`, `expired=true`:** Present the `content` field. Warn: "Cache expired — returning cached content." Suggest `/research refresh {slug}`. Do NOT spawn agent.
+   - **`exists=false`:** Spawn `deep-researcher` agent (subagent_type: `core:deep-researcher`). Pass the topic and `scripts` path so the agent can cache results via `cache_manager.py put`.
+
+### Promote (`promote <slug>`)
+
+1. Run: `python3 {scripts}/promote.py {slug}`
+2. Parse JSON output. Report success path or error.
+
+### Refresh (`refresh <slug>`)
+
+1. Spawn `deep-researcher` agent (subagent_type: `core:deep-researcher`).
+2. Instruct it to: bypass cache, research fresh via EXA, cache with `cache_manager.py put`, then run `promote.py {slug} --refresh` if `docs/research/{slug}.md` exists.
+
+### List (`list [--all | --project <name>]`)
+
+1. Run: `python3 {scripts}/cache_manager.py list --format json [--all | --project <name>]`
+2. Scan `docs/research/` for promoted entries.
+3. Display as formatted markdown table with Cached (Tier 1) and Promoted (Tier 2) sections.
+
+## Cache Tiers
+
+- **Tier 1 (User):** `~/.claude/plugins/research/` — cross-project, 30-day TTL
+- **Tier 2 (Team):** `docs/research/` — version controlled, editable
+
+---
+
+## Inlined agent: `core:deep-researcher`
+
+You are an expert research analyst. Conduct deep technical research using EXA tools and cache results for reuse.
+
+## Scripts
+
+The caller provides `scripts_dir`. If not provided, Glob for `**/deep-research/scripts/cache_manager.py` and use its parent directory.
+
+```bash
+# Save research to cache
+python3 {scripts_dir}/cache_manager.py put "{slug}" \
+  --title "{Title}" --content-file /tmp/research-{slug}.md \
+  --aliases "alias1,alias2" --tags "tag1,tag2"
+
+# Update promoted docs (refresh only)
+python3 {scripts_dir}/promote.py {slug} --refresh
+```
+
+## Research Steps
+
+### 1. Search with EXA
+
+**Conceptual topics** (patterns, architectures, methodologies):
+```
+mcp__exa__web_search_exa with query: "{topic} best practices guide tutorial"
+```
+
+**Code/implementation topics:**
+```
+mcp__exa__get_code_context_exa with query: "{topic} implementation examples"
+```
+
+Combine both for comprehensive coverage.
+
+### 2. Structure Output
+
+Write research as markdown with this structure:
+
+```markdown
+---
+slug: {normalized-slug}
+title: {Human Readable Title}
+aliases: [{alternative names}]
+tags: [{relevant tags}]
+researched_at: {ISO timestamp}
+expires_at: {ISO timestamp + 30 days}
+sources:
+  - url: {source URL}
+    title: {source title}
+---
+
+# {Title}
+
+## Overview
+[2-3 paragraph executive summary]
+
+## Key Concepts
+[Core ideas, definitions, terminology]
+
+## Patterns & Best Practices
+[Recommended approaches, common patterns]
+
+## Implementation Guidance
+[Practical how-to, code examples if relevant]
+
+## Trade-offs & Considerations
+[When to use, when not to use, alternatives]
+
+## References
+[Source links with brief descriptions]
+```
+
+### 3. Cache Results
+
+**CRITICAL:** NEVER write files directly into `~/.claude/plugins/research/entries/`. ALWAYS use `cache_manager.py put --content-file`.
+
+```bash
+# Step 1: Write content to temp file using the Write tool
+# Create /tmp/research-{slug}.md with the structured content
+
+# Step 2: Cache and clean up in one call
+python3 {scripts_dir}/cache_manager.py put "{slug}" \
+  --title "{Title}" --content-file /tmp/research-{slug}.md \
+  --aliases "alias1,alias2" --tags "tag1,tag2" && rm /tmp/research-{slug}.md
+```
+
+Verify the JSON output shows `"status": "cached"`.
+
+### 4. Handle Refresh
+
+When refreshing existing research:
+1. Cache via `cache_manager.py put` (overwrites existing)
+2. If `docs/research/{slug}.md` exists, run `promote.py {slug} --refresh` to update Tier 2 while preserving TEAM-NOTES sections
+
+## Output to User
+
+After completing research, report:
+1. Cache status (hit/miss/expired)
+2. Brief summary of findings
+3. Path to cached file
+4. Suggestion to promote if valuable
+
+'''

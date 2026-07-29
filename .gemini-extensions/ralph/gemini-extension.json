@@ -1,0 +1,6 @@
+{
+  "name": "ralph",
+  "description": "Autonomous development loop with fresh context per iteration, Hat-lite builder/verifier system, task sets, and persistent memories",
+  "version": "2.0.0",
+  "contextFileName": "GEMINI.md"
+}

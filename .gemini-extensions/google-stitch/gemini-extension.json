@@ -1,0 +1,6 @@
+{
+  "name": "google-stitch",
+  "description": "Claude + Google Stitch workflow toolkit with MCP integration (prompt authoring, screen generation, design extraction)",
+  "version": "2.0.0",
+  "contextFileName": "GEMINI.md"
+}
