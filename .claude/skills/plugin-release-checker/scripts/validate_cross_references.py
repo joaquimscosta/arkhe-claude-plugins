@@ -9,6 +9,7 @@ Checks:
   XR001  Markdown link target file does not exist
   XR002  Anchor #section not found in target file headings
   XR003  Image reference target does not exist
+  XR004  Section reference (e.g. "see §4.7") has no matching numbered heading
 
 Usage:
     validate_cross_references.py [--format text|json] [--min-severity ...]
@@ -32,6 +33,10 @@ SCAN_DIRS = ["docs", "plugins", ".claude/skills"]
 # Patterns to skip
 EXTERNAL_PREFIXES = ("http://", "https://", "mailto:", "ftp://", "tel:")
 SKIP_EXTENSIONS = {".png", ".jpg", ".jpeg", ".gif", ".svg", ".ico", ".webp"}
+
+# Max characters between a "§N.N" reference and a sibling *.md filename for that file
+# to be treated as the reference's target document (XR004).
+SECTION_REF_PROXIMITY = 60
 
 
 def heading_to_anchor(heading: str) -> str:
@@ -70,6 +75,105 @@ def extract_headings(content: str) -> Set[str]:
             if anchor:
                 anchors.add(anchor)
     return anchors
+
+
+def extract_numbered_sections(content: str) -> Set[str]:
+    """Collect numbered heading labels, e.g. '4', '4.7', '2.1b', from '## 4.7 Title'."""
+    sections = set()
+    in_code_block = False
+    for line in content.split("\n"):
+        stripped = line.strip()
+        if stripped.startswith("```"):
+            in_code_block = not in_code_block
+            continue
+        if in_code_block:
+            continue
+        # Accepts both "## 4.7 Title" and "## 1. Title" (trailing period after the number).
+        match = re.match(r"^#{2,6}\s+(\d+(?:\.\d+[a-z]?)*)\.?(?:\s|$)", stripped)
+        if match:
+            sections.add(match.group(1))
+    return sections
+
+
+def extract_section_refs(content: str) -> List[Tuple[str, int, str, int]]:
+    """Find numeric section references like '§4.7' outside code blocks.
+
+    Returns (ref, line_number, full_line, column). Only numeric refs are checked;
+    symbolic ones such as "§Data" are ignored to avoid false positives on prose.
+    """
+    refs = []
+    in_code_block = False
+    for line_num, line in enumerate(content.split("\n"), start=1):
+        stripped = line.strip()
+        if stripped.startswith("```"):
+            in_code_block = not in_code_block
+            continue
+        if in_code_block:
+            continue
+        for match in re.finditer(r"§\s?(\d+(?:\.\d+[a-z]?)*)", line):
+            refs.append((match.group(1).rstrip("."), line_num, line, match.start()))
+    return refs
+
+
+def validate_section_refs(
+    md_path: Path,
+    content: str,
+    root: Path,
+    section_cache: Dict[str, Set[str]],
+) -> List[Issue]:
+    """Report §N.N references that resolve in neither this file nor a doc named on the line.
+
+    A reference is accepted if the numbered heading exists in the current document, or
+    in any *.md file named on the same line (the "see other-doc.md §4.1" pattern).
+    """
+    own_sections = extract_numbered_sections(content)
+    if not own_sections:
+        return []
+
+    issues = []
+    seen: Set[Tuple[str, int]] = set()
+    for ref, line_num, line, col in extract_section_refs(content):
+        if ref in own_sections or (ref, line_num) in seen:
+            continue
+
+        # Accept if the ref resolves in a sibling document named *near* it on the same
+        # line (the "see other-doc.md §4.1" pattern). Proximity matters: a document
+        # mentioned elsewhere in a long paragraph is not the referent, and treating it
+        # as one would silently accept a wrong same-file reference.
+        resolved_elsewhere = False
+        for name_match in re.finditer(r"([A-Za-z0-9._-]+\.md)", line):
+            if abs(name_match.start() - col) > SECTION_REF_PROXIMITY:
+                continue
+            target = md_path.parent / name_match.group(1)
+            if not target.is_file():
+                continue
+            key = str(target)
+            if key not in section_cache:
+                try:
+                    section_cache[key] = extract_numbered_sections(
+                        target.read_text(encoding="utf-8")
+                    )
+                except (OSError, UnicodeDecodeError):
+                    section_cache[key] = set()
+            if ref in section_cache[key]:
+                resolved_elsewhere = True
+                break
+        if resolved_elsewhere:
+            continue
+
+        seen.add((ref, line_num))
+        try:
+            rel = md_path.relative_to(root)
+        except ValueError:
+            rel = md_path
+        issues.append(
+            Issue(
+                "XR004", WARNING,
+                f"Section reference '§{ref}' has no matching numbered heading",
+                f"{rel}:{line_num}",
+            )
+        )
+    return issues
 
 
 def extract_links(content: str) -> List[Tuple[str, bool, int]]:
@@ -213,6 +317,7 @@ def main():
 
     all_issues: List[Issue] = []
     heading_cache: Dict[str, Set[str]] = {}
+    section_cache: Dict[str, Set[str]] = {}
 
     for md_path in md_files:
         try:
@@ -225,6 +330,8 @@ def main():
             issue = validate_link(md_path, target_raw, is_image, line_num, root, heading_cache)
             if issue:
                 all_issues.append(issue)
+
+        all_issues.extend(validate_section_refs(md_path, content, root, section_cache))
 
     # Filter and output
     filtered = filter_issues(all_issues, args.min_severity)
