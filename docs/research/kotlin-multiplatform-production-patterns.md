@@ -1,9 +1,9 @@
 ---
 title: "Kotlin Multiplatform (KMP) Production Architecture & Patterns"
-version: "1.0.0"
+version: "1.1.0"
 status: Published
 created: 2026-04-04
-last_updated: 2026-04-04
+last_updated: 2026-07-28
 slug: kotlin-multiplatform-production-patterns
 aliases: ["kmp-architecture", "kotlin-multiplatform", "kmp-patterns"]
 tags: ["kotlin", "kmp", "multiplatform", "architecture", "sqldelight", "ktor", "koin", "compose-multiplatform"]
@@ -22,7 +22,20 @@ Kotlin Multiplatform (KMP) reached Stable status in November 2023 and has mature
 
 The core value proposition: share business logic, domain models, data access, and network layers while keeping UI fully native. This preserves the best developer experience for each platform while eliminating the logic duplication that plagues Android/iOS teams.
 
-This document covers production-ready patterns as of early 2026, including library ecosystem state, architectural patterns, testing strategies, and migration paths.
+This document covers production-ready patterns, including library ecosystem state, architectural patterns, testing strategies, and migration paths.
+
+> **Version currency — refreshed 2026-07-28.** Key coordinates: Kotlin **2.4.10**, Ktor **3.5.1**,
+> SQLDelight **2.3.2**, Koin **4.2.2**, Room **3.0.0** (`androidx.room3`) / 2.8.4, Compose
+> Multiplatform **1.11.1**, Kotest **6.2.3**.
+>
+> Three changes since the original draft are significant enough to call out here:
+> 1. **Compose Multiplatform for iOS is Stable** — since CMP **1.8.0 (May 2025)**, not 1.6 as
+>    originally written. The "share logic, keep native UI" framing above is still the safe default,
+>    but sharing UI on iOS is now a supported choice rather than a bet.
+> 2. **AGP 9 breaks the convention-plugin pattern in §1** — `com.android.library` can no longer be
+>    co-applied with the KMP plugin. See the corrected example there.
+> 3. **Room 3.0** shipped under a new `androidx.room3` group, materially narrowing the gap with
+>    SQLDelight for KMP work.
 
 ---
 
@@ -83,20 +96,26 @@ project-root/
 
 Convention plugins in `build-logic/` eliminate Gradle boilerplate across modules. This is the pattern used by Now in Android and large-scale KMP projects:
 
+> ⚠️ **This plugin combination is no longer valid on AGP 9.** Co-applying
+> `org.jetbrains.kotlin.multiplatform` and `com.android.library` in the same module was deprecated
+> by AGP 9.0 and is incompatible going forward. Use **`com.android.kotlin.multiplatform.library`**
+> instead — available since AGP 8.10.0 and required from AGP 10.0 (estimated late 2026). The
+> corrected convention plugin is shown immediately below.
+
 ```kotlin
 // build-logic/src/main/kotlin/kmp-library-convention.gradle.kts
 plugins {
     id("org.jetbrains.kotlin.multiplatform")
-    id("com.android.library")
+    id("com.android.kotlin.multiplatform.library")   // ✅ AGP 8.10+ — replaces com.android.library
+    // id("com.android.library")                     // ❌ incompatible with the KMP plugin on AGP 9+
 }
 
 kotlin {
-    androidTarget {
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = JavaVersion.VERSION_17.toString()
-            }
-        }
+    // The KMP library plugin configures the Android target through this block
+    androidLibrary {
+        namespace = "com.example.shared"
+        compileSdk = 36
+        minSdk = 24
     }
 
     listOf(
@@ -123,15 +142,22 @@ kotlin {
     }
 }
 
-android {
-    compileSdk = libs.versions.compileSdk.get().toInt()
-    defaultConfig { minSdk = libs.versions.minSdk.get().toInt() }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
-    }
-}
+// NOTE: no top-level `android { }` block. The KMP library plugin does not create the
+// `com.android.library` extension — Android configuration lives in `kotlin { androidLibrary { } }`
+// above. Carrying over an `android { }` block from the old setup fails configuration.
 ```
+
+**Migrating an existing convention plugin:**
+
+| Old (`com.android.library`) | New (`com.android.kotlin.multiplatform.library`) |
+|---|---|
+| `id("com.android.library")` | `id("com.android.kotlin.multiplatform.library")` |
+| top-level `android { }` | `kotlin { androidLibrary { } }` |
+| `android { namespace = ... }` | `androidLibrary { namespace = ... }` |
+| `androidTarget()` in `kotlin { }` | implied by `androidLibrary { }` |
+| `defaultConfig { minSdk = }` | `androidLibrary { minSdk = }` |
+
+The Android *application* module is unaffected — `com.android.application` is unchanged.
 
 ```kotlin
 // Module build.gradle.kts — clean and minimal with convention plugin
@@ -472,7 +498,7 @@ Phase 6 (optional): Compose Multiplatform UI
 
 ### Ktor 3.x — HTTP Client
 
-Ktor 3.0 (released late 2024) is the standard KMP HTTP client with full multiplatform support.
+Ktor is the standard KMP HTTP client with full multiplatform support. Ktor 3.0 shipped in late 2024; **current stable is 3.5.1** (2026-06-25). The 3.4/3.5 line added OpenAPI code generation, Digest auth, and DNS resolver configuration.
 
 ```kotlin
 // shared/network/commonMain
@@ -527,9 +553,17 @@ val httpClient = HttpClient {
 
 Ktor 3.x additions: `HttpClient` is now fully suspending on all platforms, WebSocket improvements, improved server-sent events, and first-class KMP support in all plugins.
 
-### SQLDelight 2.3+ — Multiplatform Database
+### SQLDelight 2.3.2 — Multiplatform Database
 
 SQLDelight generates type-safe Kotlin APIs from `.sq` files. Version 2.x supports async coroutines natively.
+
+> **Version and governance.** Pin **2.3.2** — 2.3.0 and 2.3.1 were failed releases. In March 2025
+> the maintainer stated publicly that SQLDelight was volunteer-maintained with no guarantee of
+> future work; in **June 2026 the project moved from Cash App/Block stewardship to the Commonhaus
+> Foundation** (`lysine-dev` org), which is the response to that risk rather than a continuation of
+> it. Documentation is migrating from `cashapp.github.io/sqldelight/` to
+> `sqldelight.github.io/sqldelight/`. SQLDelight remains a reasonable production choice; the
+> governance history is context for a long-horizon dependency decision, not a reason to avoid it.
 
 ```sql
 -- shared/data/src/commonMain/sqldelight/com/example/app/User.sq
@@ -597,23 +631,56 @@ sqldelight {
 }
 ```
 
-### Room 2.7 KMP vs SQLDelight
+### Room KMP vs SQLDelight
 
-| Feature | Room 2.7 KMP | SQLDelight 2.x |
-|---|---|---|
-| Query language | Kotlin DAO annotations + SQL | Pure `.sq` files |
-| Code generation | Annotation processor (KSP) | Gradle plugin |
-| Type safety | Generated Kotlin DAOs | Generated Kotlin queries |
-| Migration support | Excellent (built-in) | Manual migration scripts |
-| iOS support | Yes (since 2.7) | Yes (mature) |
-| Coroutines | Flow + suspend | Flow + suspend |
-| Testing | In-memory Room | JVM SQLite driver |
-| Learning curve | Low for Android devs | Medium |
-| Recommendation | Great for teams migrating from Android | Better for greenfield KMP |
+**Room 3.0.0 shipped stable on 1 July 2026** under a new Maven group, `androidx.room3`
+(`androidx.room3:room3-runtime`, classes at `androidx.room3.*`). Google used a separate group
+deliberately so Room 3 can coexist with Room 2.x and with libraries that depend on Room
+transitively. It is KSP-only and SQLiteDriver-only, and adds JS/WasmJS to the KMP target list.
+Room 2.x remains available at **2.8.4**.
+
+| Feature | Room 3.0 (`androidx.room3`) | Room 2.8.4 | SQLDelight 2.3.2 |
+|---|---|---|---|
+| Query language | Kotlin DAO annotations + SQL | same | Pure `.sq` files |
+| Code generation | KSP only | KSP or KAPT | Gradle plugin |
+| SQLite access | `SQLiteDriver` only | Support/Driver | Driver per platform |
+| Type safety | Generated Kotlin DAOs | same | Generated Kotlin queries |
+| Migration support | Excellent (built-in) | Excellent | Manual migration scripts |
+| Android | Yes | Yes | Yes |
+| iOS | Yes | Yes (since 2.7) | Yes (mature) |
+| JVM / Desktop | Yes | Yes | Yes |
+| JS / WasmJS | **Yes** | No | Yes |
+| Coroutines | Flow + suspend | Flow + suspend | Flow + suspend |
+| Testing | In-memory Room | In-memory Room | JVM SQLite driver |
+| Learning curve | Low for Android devs | Low for Android devs | Medium |
+
+> An earlier revision of this table marked Room's JVM support as `N/A`. That was incorrect even
+> for Room 2.x — JVM/Desktop is a supported Room KMP target.
+
+**Recommendation.** For a new KMP project, Room 3.0 and SQLDelight are now genuinely close. Choose
+**Room 3.0** if the team is Android-centric, wants auto-migrations and AndroidX testing utilities,
+or needs first-party Google support. Choose **SQLDelight** if you want SQL-first schema authoring,
+multiple SQL dialects, or a leaner build — weighing the governance history noted below. The
+previous framing of "Room for migrators, SQLDelight for greenfield KMP" no longer holds; Room 3.0
+was built for the greenfield KMP case.
 
 ### Koin 4.x — Multiplatform DI
 
-Koin 4.0 (2024) added first-class KMP support with `koin-core` on all platforms.
+Koin has supported KMP since the 3.x line (earlier revisions of this document credited 4.0 with adding it; 4.0 broadened rather than introduced it). **Current stable is 4.2.2** (2026-06-15), which adds a Ktor 3.4 DI bridge and Lazy Modules.
+
+> **Compile-time DI is now a real option for KMP.** Koin's core model is runtime resolution —
+> mistakes surface as crashes at first resolution rather than build errors. Two developments in
+> 2026 change the trade-off:
+>
+> - **Koin Compiler Plugin 1.0.0-RC1** (Apr 2026) adds compile-time verification of the Koin graph
+>   while keeping the Koin API — the incremental option for existing Koin projects.
+> - **Metro 1.0** (stable, Apr 2026, by Zac Sweers) is a fully compile-time, multiplatform DI
+>   framework in the Dagger/Anvil lineage, built for KMP from the start.
+>
+> Koin remains the pragmatic default for its simplicity and ecosystem. Consider Metro when the
+> graph is large enough that runtime resolution failures are a recurring cost, or when the team
+> already thinks in Dagger terms. Adoption data comparing the two in production KMP apps was not
+> available at the time of this refresh.
 
 ```kotlin
 // commonMain — shared DI modules
@@ -679,9 +746,17 @@ object UserIdSerializer : KSerializer<UserId> {
 
 ### kotlinx-datetime
 
+> ⚠️ **`Instant` and `Clock` moved to the standard library.** As of kotlinx-datetime **0.7.0**,
+> `Instant` and `Clock` were relocated from `kotlinx.datetime` to **`kotlin.time`** in the Kotlin
+> stdlib. Version **0.8.0** removed the deprecated typealiases entirely, so code importing them
+> from `kotlinx.datetime` no longer compiles. Import from `kotlin.time` instead — the example below
+> is updated accordingly.
+
 ```kotlin
 // Multiplatform date/time — replaces java.time on all platforms
 import kotlinx.datetime.*
+import kotlin.time.Clock      // moved to stdlib in kotlinx-datetime 0.7.0
+import kotlin.time.Instant    // moved to stdlib in kotlinx-datetime 0.7.0
 
 val now: Instant = Clock.System.now()
 val today: LocalDate = now.toLocalDateTime(TimeZone.currentSystemDefault()).date
@@ -871,7 +946,15 @@ val testPlatformModule = module {
 | Web (Wasm) | Beta | Kotlin/Wasm target, replacing JS |
 | Web (JS) | Alpha | Being superseded by Wasm target |
 
-CMP 1.6 (released early 2024) stabilized iOS. CMP 1.7+ continues improvements in interop, performance, and accessibility.
+**Compose Multiplatform for iOS reached Stable in CMP 1.8.0 (May 2025)** — it remained Beta through the 1.6 and 1.7 lines, contrary to what earlier revisions of this document stated. Current release is **1.11.1** (Jun 2026).
+
+Notable since then:
+
+| Release | Additions |
+|---|---|
+| 1.8.0 (May 2025) | **iOS Stable / production-ready**; accessibility support (VoiceOver, AssistiveTouch, Full Keyboard Access) |
+| 1.10 | Stable Compose Hot Reload; unified `@Preview` across platforms; **Navigation 3 support** |
+| 1.11.1 (Jun 2026) | iOS concurrent rendering on by default; experimental native UIView-backed text input |
 
 ### When to Adopt CMP vs Platform-Native UI
 
@@ -1095,7 +1178,7 @@ class UserApiTest {
 
 ### Kotest Multiplatform
 
-Kotest 5.x supports commonTest with its `FunSpec`, `BehaviorSpec`, and `ShouldSpec` styles:
+Kotest supports commonTest with its `FunSpec`, `BehaviorSpec`, and `ShouldSpec` styles. **Kotest is now on 6.x** (6.2.3); 6.0 requires JDK 11 + Kotlin 2.2, removed classpath scanning, and changed the KMP setup to a renamed, KSP-based Gradle plugin — verify plugin wiring against the Kotest 6 docs rather than copying a 5.x setup:
 
 ```kotlin
 // commonTest
@@ -1151,7 +1234,7 @@ Before adding KMP, prepare your Android code to minimize migration effort:
 4. **Adopt kotlinx-serialization**: Replace Gson/Moshi (Gson has no KMP support)
 5. **Replace java.time with kotlinx-datetime**
 6. **Replace OkHttp/Retrofit with Ktor**: Or keep OkHttp for Android-only during transition
-7. **Replace Room with SQLDelight** (or adopt Room 2.7+ KMP): SQLDelight is more KMP-native
+7. **Replace Room with SQLDelight** (or adopt Room 3.0, `androidx.room3`): both are now fully KMP-capable
 
 ### Adding iOS Target to Existing KMP Project
 
@@ -1213,7 +1296,7 @@ Week 3-4: Convert `network` module
   - Add MockEngine tests in commonTest
 
 Week 5-6: Convert `data` module
-  - Migrate Room → SQLDelight (or Room 2.7 KMP)
+  - Migrate Room → SQLDelight (or Room 3.0 KMP, `androidx.room3`)
   - Add JVM driver tests
   - Wire up Android driver
 
@@ -1260,24 +1343,25 @@ For library projects, the [multiplatform-library-template](https://github.com/Ko
 
 ### KMP Weaknesses
 - **iOS debugging**: Debugging Kotlin code in Xcode is still awkward; LLDB integration improving
-- **Swift interop**: Default Kotlin/Native → Swift mapping is verbose; SKIE (Touchlab) greatly improves this
+- **Swift interop**: Default Kotlin/Native → Swift mapping is verbose; SKIE (Touchlab) greatly improves this. JetBrains' first-party **Swift export** reached **Alpha in Kotlin 2.4.0** (Jun 2026) but is not yet production-ready — no CocoaPods support and no subclassing of Kotlin types from Swift, so SKIE remains the pragmatic choice today
 - **Build times**: Kotlin/Native compilation is slow; use `iosSimulatorArm64` locally, CI builds full targets
 - **expect/actual fragmentation**: Overuse leads to platform fragmentation of logic
-- **Compose Multiplatform immaturity**: iOS CMP still has accessibility and text input gaps vs native
+- **Compose Multiplatform maturity**: iOS reached Stable in CMP 1.8.0 (May 2025). The accessibility gap was largely closed in 1.8.0 (VoiceOver, AssistiveTouch, Full Keyboard Access) and native UIView-backed text input arrived experimentally in 1.11.0 — this weakness is substantially resolved, though native SwiftUI remains ahead on platform-idiomatic polish
 
 ### Library Maturity Matrix
 
 | Library | Android | iOS | JVM | Maturity |
 |---|---|---|---|---|
-| Ktor 3.x | Stable | Stable | Stable | Production |
-| SQLDelight 2.x | Stable | Stable | Stable | Production |
-| Koin 4.x | Stable | Stable | Stable | Production |
+| Ktor 3.5.x | Stable | Stable | Stable | Production |
+| SQLDelight 2.3.2 | Stable | Stable | Stable | Production (see the governance note under "SQLDelight 2.3.2 — Multiplatform Database") |
+| Koin 4.2.x | Stable | Stable | Stable | Production |
 | kotlinx-serialization | Stable | Stable | Stable | Production |
 | kotlinx-coroutines | Stable | Stable | Stable | Production |
 | kotlinx-datetime | Stable | Stable | Stable | Production |
 | Multiplatform Settings | Stable | Stable | Stable | Production |
 | Kermit logging | Stable | Stable | Stable | Production |
-| Room 2.7 KMP | Stable | Stable | N/A | Production |
+| Room 3.0 (`androidx.room3`) | Stable | Stable | Stable | Production |
+| Room 2.8.4 (`androidx.room`) | Stable | Stable | Stable | Production |
 | Compose MP (iOS) | Stable | Stable | Stable | Beta→Stable |
 | Compose MP (Wasm) | Stable | N/A | Stable | Beta |
 | Decompose (navigation) | Stable | Stable | Stable | Production |

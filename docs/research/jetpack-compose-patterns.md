@@ -1,9 +1,9 @@
 ---
 title: "Jetpack Compose Advanced Patterns & Best Practices"
-version: "1.0.0"
+version: "1.1.0"
 status: Published
 created: 2026-04-04
-last_updated: 2026-04-04
+last_updated: 2026-07-28
 slug: jetpack-compose-patterns
 aliases: ["compose-patterns", "jetpack-compose", "android-compose"]
 tags: ["android", "jetpack-compose", "kotlin", "ui", "state-management", "navigation", "material3", "accessibility", "kmp"]
@@ -18,7 +18,10 @@ sources: []
 
 ## Executive Summary
 
-Jetpack Compose (stable since 1.0 in 2021) has matured into the primary Android UI toolkit, with the ecosystem converging on well-understood architectural patterns. As of 2025-2026, the state of the art is defined by: type-safe navigation (Compose Navigation 2.8+), strong skipping mode (default in Kotlin 2.2+ / Compose 1.8+), MVI as the dominant event-handling pattern, Material3 with dynamic color, and Circuit/Molecule as higher-level architecture abstractions. Kotlin Multiplatform (KMP) has also elevated Compose to the cross-platform space, making navigation and state patterns increasingly important to design with portability in mind.
+Jetpack Compose (stable since 1.0 in 2021) has matured into the primary Android UI toolkit, with the ecosystem converging on well-understood architectural patterns. As of mid-2026, the state of the art is defined by: **Navigation 3 (`androidx.navigation3`, stable since Nov 2025) as the Compose-first navigation model**, strong skipping mode (default since Kotlin 2.0.20), MVI as the dominant event-handling pattern, Material 3 with dynamic color and the **Material 3 Expressive** component set, and Circuit/Molecule as higher-level architecture abstractions. Kotlin Multiplatform (KMP) has also elevated Compose to the cross-platform space — and Navigation 3 supports Compose Multiplatform 1.10+, closing the gap that made navigation the hardest layer to share.
+
+> **Version currency.** Refreshed 2026-07-28 against Compose BOM 2026.06.01 (Compose UI 1.11.4),
+> Navigation 3 1.1.4, Navigation 2.9.8, Material 3 1.4.0, and Kotlin 2.4.10.
 
 This document covers eight topic areas with practical Kotlin code examples, trade-off analysis, and guidance for teams using MVVM + StateFlow/SharedFlow + Compose Navigation + Material3 + Koin (a common production stack).
 
@@ -228,15 +231,95 @@ For a typical production app (cabo-verde-pos style): **MVVM + StateFlow + Channe
 
 ---
 
-## 2. Navigation (Compose Navigation 2.8+)
+## 2. Navigation
 
-### 2.1 Type-Safe Routes with Kotlin Serialization
+> **Read §2.0 first.** Navigation 3 (`androidx.navigation3`) reached **stable 1.0 in November 2025**
+> and is Google's Compose-first navigation recommendation. Sections 2.1–2.5 document
+> **Navigation 2.x (`navigation-compose`)**, which remains supported and is still the right choice
+> for existing apps and Fragment-based navigation — but new Compose-only apps should start at §2.0.
 
-Navigation 2.8 (released Nov 2024) replaced string-based routes with `@Serializable` data classes. Routes are compile-safe, support arguments natively, and integrate with the Safe Args paradigm without a Gradle plugin.
+### 2.0 Navigation 3 — The Compose-First Model
+
+Navigation 3 is a ground-up redesign built around a principle Navigation 2 could not adopt without
+breaking its API: **you own the back stack**. Rather than the library holding navigation state
+inside a `NavController` that you mutate through commands, Nav3 takes an observable list of keys
+that *you* hold — typically in a ViewModel — and renders it.
+
+| | Navigation 2.x | Navigation 3 |
+|---|---|---|
+| Back stack ownership | Library (`NavController`) | **Your code** (a `SnapshotStateList`) |
+| State model | Imperative commands | Observable list → UDF |
+| Multiplatform | Android + partial | **Android + Compose Multiplatform 1.10+** |
+| Adaptive layouts | Bolt-on | First-class (Material Adaptive integration) |
+| Current version | 2.9.8 (Apr 2026) | **1.1.4** (Jul 2026) |
 
 ```kotlin
 // build.gradle.kts
-implementation("androidx.navigation:navigation-compose:2.8.5")
+implementation("androidx.navigation3:navigation3-runtime:1.1.4")
+implementation("androidx.navigation3:navigation3-ui:1.1.4")
+implementation("androidx.lifecycle:lifecycle-viewmodel-navigation3:2.11.0")
+```
+
+```kotlin
+// Keys are plain @Serializable types, exactly as in Nav2's type-safe routes
+@Serializable data object HomeKey : NavKey
+@Serializable data class ProductDetailKey(val productId: String) : NavKey
+
+@Composable
+fun AppNavDisplay() {
+    // YOU own the stack — it is ordinary Compose state, and can live in a ViewModel
+    val backStack = rememberNavBackStack<NavKey>(HomeKey)
+
+    NavDisplay(
+        backStack = backStack,
+        onBack = { backStack.removeLastOrNull() },
+        entryDecorators = listOf(
+            rememberSceneSetupNavEntryDecorator(),
+            rememberSavedStateNavEntryDecorator(),
+            rememberViewModelStoreNavEntryDecorator(),   // Lifecycle 2.11+
+        ),
+        entryProvider = entryProvider {
+            entry<HomeKey> {
+                HomeScreen(onProductClick = { backStack.add(ProductDetailKey(it)) })
+            }
+            entry<ProductDetailKey> { key ->
+                ProductDetailScreen(productId = key.productId)
+            }
+        },
+    )
+}
+```
+
+**Why the ownership inversion matters.** Because the back stack is ordinary observable state, it
+composes with the rest of your UDF architecture: you can drive it from a ViewModel, persist it,
+unit-test navigation logic without a `NavController` test harness, and derive it from business
+state rather than imperatively pushing and popping. This is the piece Nav2 architectures usually
+had to work around.
+
+**Adaptive/multi-pane** is handled by `Scene` strategies rather than by conditionally swapping
+NavHosts — a two-pane list/detail layout is expressed as a scene that renders two back-stack
+entries simultaneously, which is why Nav3 is tied closely to Material Adaptive.
+
+**When to use which:**
+
+| Situation | Recommendation |
+|---|---|
+| New Compose-only app | **Navigation 3** |
+| Compose Multiplatform app | **Navigation 3** (CMP 1.10+) |
+| Existing app on Nav 2.x, working fine | Stay — Nav 2.x is supported, not deprecated |
+| Fragment-based or hybrid View/Compose | **Navigation 2.x** — Nav3 is Compose-only |
+| Heavy reliance on Nav2 deep-link infrastructure | Stay for now; migrate deliberately |
+
+Google has **not** formally deprecated Navigation 2. Treat Nav3 as the recommended default for new
+Compose work rather than as a forced migration.
+
+### 2.1 Type-Safe Routes with Kotlin Serialization (Navigation 2.x)
+
+Navigation 2.8 (released Nov 2024) replaced string-based routes with `@Serializable` data classes. Routes are compile-safe, support arguments natively, and integrate with the Safe Args paradigm without a Gradle plugin. Current stable in the 2.x line is **2.9.8** (Apr 2026).
+
+```kotlin
+// build.gradle.kts
+implementation("androidx.navigation:navigation-compose:2.9.8")
 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
 
 // Route declarations (can live in a routes/ package)
@@ -363,9 +446,16 @@ Keep route definitions in a shared `:navigation` module to avoid circular depend
 
 | Library | Approach | KMP support | Complexity | Best for |
 |---|---|---|---|---|
-| Compose Navigation | Official, NavController | Android only | Low | Android-only apps |
+| **Navigation 3** | Caller-owned back stack, `NavDisplay` | **Yes — CMP 1.10+** | Low-Medium | **Default choice for new CMP apps** |
+| Compose Navigation (2.x) | Official, NavController | Android + partial | Low | Android-only apps |
 | Voyager | Screen objects, Navigator | Yes (KMP) | Low-Medium | CMP apps wanting familiar patterns |
 | Decompose | Component tree, back handler | Yes (KMP) | High | Complex back-stack, deep linking in KMP |
+
+**This table's premise has changed.** Voyager and Decompose existed largely because the official
+navigation library was Android-only, forcing CMP teams to third-party options. Navigation 3 removes
+that constraint: it is official, Compose-first, and supports Compose Multiplatform 1.10+. Decompose
+still wins for genuinely complex component-tree lifecycles, and Voyager remains a reasonable
+incumbent, but neither is now the default answer for a new CMP app.
 
 ---
 
@@ -393,22 +483,34 @@ data class ProfileListState(val profiles: List<Profile>)
 fun ProfileList(profiles: ImmutableList<Profile>) { ... }
 ```
 
-### 3.2 Strong Skipping Mode (Compose 1.8+ / Kotlin 2.2+)
+### 3.2 Strong Skipping Mode
 
-Strong skipping mode (enabled by default in Kotlin 2.2+ / Compose compiler 1.8+) relaxes the stability requirement: **unstable parameters are skipped by reference equality**. Lambda parameters are always considered stable.
+Strong skipping mode has been **enabled by default since Kotlin 2.0.20** (not 2.2, as earlier
+revisions of this document stated). It relaxes the stability requirement: **unstable parameters are
+skipped by reference equality**. Lambda parameters are always considered stable.
 
 Impact: most apps no longer need `@Stable`/`@Immutable` workarounds for data classes. However, stable annotations still help for:
 - Explicit API contracts
 - Classes crossing module boundaries
 - `List<T>` (still unstable even with strong skipping)
 
-Enable explicitly for older compiler versions:
-```kotlin
-// build.gradle.kts
-composeCompiler {
-    enableStrongSkippingMode = true // now default in 1.8+
-}
-```
+> ⚠️ **Do not set this flag on Kotlin 2.4+.** The `StrongSkipping` feature flag was deprecated and
+> has since been escalated to **compiler-error level** (removal in Compose compiler 2.5.0). The
+> legacy `enableStrongSkippingMode = true` property and the newer
+> `featureFlags = setOf(ComposeFeatureFlag.StrongSkipping)` form both fail the build on current
+> toolchains. Delete the block — the behaviour is the default.
+>
+> ```kotlin
+> // ❌ Both forms are now build failures
+> composeCompiler { enableStrongSkippingMode = true }
+> composeCompiler { featureFlags = setOf(ComposeFeatureFlag.StrongSkipping) }
+> ```
+
+**Stability inference changed in Kotlin 2.3/2.4.** Non-final classes are now inferred as
+`Unknown` rather than `Stable`. In practice this means an `open class` or an interface-typed
+parameter that previously skipped correctly may now recompose. Where a non-final type is genuinely
+stable, annotate it explicitly with `@Stable` rather than relying on inference — the guidance in
+§3.1 about "the compiler may infer this" is weaker than it used to be.
 
 ### 3.3 LazyColumn / LazyGrid Optimization
 
@@ -667,7 +769,37 @@ AnimatedVisibility(
 )
 ```
 
-### 5.5 Shape Theming and Elevation
+`MotionScheme` is wired into the Expressive theme described in §5.5 — the motion tokens and the
+Expressive component set are designed to be adopted together.
+
+### 5.5 Material 3 Expressive (M3 1.4.0+)
+
+Material 3 Expressive shipped with **compose-material3 1.4.0** (Sep 2025, still the current stable
+as of Jul 2026; 1.5.0 remains in alpha). It is an additive design direction emphasising motion,
+shape variety, and emphasis hierarchy, delivered as a **separate theme entry point** rather than a
+change to `MaterialTheme`.
+
+```kotlin
+// Opt in explicitly — MaterialTheme is unchanged and remains valid
+MaterialExpressiveTheme(
+    colorScheme = expressiveColorScheme,
+    motionScheme = MotionScheme.expressive(),
+) {
+    AppContent()
+}
+```
+
+Notable additions in the Expressive set: button groups, split buttons, the loading indicator,
+FAB menus, and richer shape morphing. Several are marked `@ExperimentalMaterial3ExpressiveApi` and
+require an opt-in annotation.
+
+**Adoption guidance.** Expressive is opt-in and not a migration you are required to make.
+`MaterialTheme` + the standard component set remains fully supported. Adopt Expressive when the
+product wants the more animated, higher-emphasis visual language — not as a routine version bump.
+The exact rollout timeline for `MaterialExpressiveTheme` graduating from experimental (tracking
+toward Material3 1.5) was not confirmed at the time of this refresh.
+
+### 5.6 Shape Theming and Elevation
 
 ```kotlin
 val AppShapes = Shapes(
@@ -985,7 +1117,7 @@ fun AdaptiveProductScreen(
 
 The `calculateWindowSizeClass()` API (from `androidx.window:window:1.3+`) provides `WindowSizeClass`. On Android, pass it from the `Activity`.
 
-### 8.6 PausableComposition (Kotlin 2.2+ / Compose 1.8+)
+### 8.6 PausableComposition
 
 `PausableComposition` allows Compose to pause and resume composition — enabling lazy loading of composable trees and better off-screen performance. This is primarily a framework-level feature used by lazy lists and `Pager`. App developers benefit automatically, but can also leverage it explicitly:
 
@@ -997,6 +1129,59 @@ HorizontalPager(pageCount = items.size) { page ->
     HeavyContent(item = items[page])
 }
 ```
+
+### 8.7 Compose 1.11 Experimental Layout Primitives
+
+Compose 1.11 (shipped in Compose BOM 2026.06.01) adds a set of **experimental** layout and styling
+primitives that close long-standing gaps against the View system and CSS-style layout. All require
+an opt-in annotation and their APIs may change before stabilizing.
+
+| Primitive | Fills the gap for |
+|---|---|
+| `Grid` | Two-dimensional layout without nesting Rows in Columns |
+| `FlexBox` | Wrapping / flexible-basis layout (previously needed `FlowRow`/`FlowColumn` or custom `Layout`) |
+| Styles | Reusable, inheritable text/visual style bundles |
+| `mediaQuery` | Declarative responsive conditions inside composition |
+
+```kotlin
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun ProductGrid(products: List<Product>) {
+    Grid(columns = 3, horizontalSpacing = 8.dp, verticalSpacing = 8.dp) {
+        products.forEach { ProductCard(it) }
+    }
+}
+```
+
+**Adoption guidance.** These are genuinely useful but experimental — do not build a design system's
+public API on them yet. `LazyVerticalGrid`, `FlowRow`/`FlowColumn`, and Window Size Classes (§8.5)
+remain the stable answers. Revisit when they leave experimental status.
+
+### 8.8 Compose 1.11 Testing Default Change
+
+Compose 1.11 changed the default test coroutine dispatcher behaviour ("v2" test semantics), moving
+Compose UI tests onto `StandardTestDispatcher` semantics rather than the previous eager dispatch.
+
+**What this means in practice:** tests that implicitly relied on coroutines running eagerly to
+completion may now need an explicit `advanceUntilIdle()`, `runCurrent()`, or a
+`waitForIdle()`/`waitUntil { }` before asserting. Symptom is a test that passes on an older Compose
+version and fails after a BOM bump with state that looks one step behind.
+
+```kotlin
+@Test
+fun `submitting the form shows the confirmation`() = runTest {
+    composeTestRule.setContent { CheckoutScreen(viewModel) }
+
+    composeTestRule.onNodeWithText("Submit").performClick()
+
+    composeTestRule.waitForIdle()      // now load-bearing under 1.11 test semantics
+    composeTestRule.onNodeWithText("Order confirmed").assertIsDisplayed()
+}
+```
+
+This is a **test-only** behaviour change — production recomposition is unaffected — but it is a
+common source of confusing failures when upgrading the Compose BOM past 2026.06.01. See
+`android-testing-ecosystem.md` for the broader Compose UI testing setup.
 
 ---
 
@@ -1016,7 +1201,7 @@ HorizontalPager(pageCount = items.size) { page ->
 
 ### Performance
 
-- Strong skipping mode (Compose 1.8+) makes most `@Stable`/`@Immutable` annotations unnecessary for data classes, but does not fix `List<T>` stability. Wrap lists in `ImmutableList` or a stable wrapper data class.
+- Strong skipping mode (default since Kotlin 2.0.20) makes most `@Stable`/`@Immutable` annotations unnecessary for data classes, but does not fix `List<T>` stability. Wrap lists in `ImmutableList` or a stable wrapper data class. Note that Kotlin 2.3/2.4 infer non-final classes as `Unknown` rather than `Stable` — annotate those explicitly.
 - Always provide `key` lambdas in `LazyColumn` — the single highest-impact performance change for list screens.
 - Measure before optimizing: use Layout Inspector recomposition counts and Perfetto composition traces to identify actual hot paths.
 
@@ -1034,7 +1219,7 @@ HorizontalPager(pageCount = items.size) { page ->
 3. [Android Developers – Navigation with Compose](https://developer.android.com/jetpack/compose/navigation) — Type-safe routes, NavHost, deep links
 4. [Android Developers – Compose Performance](https://developer.android.com/jetpack/compose/performance) — Recomposition, stability, profiling
 5. [Android Developers – Compose Stability Explained](https://developer.android.com/jetpack/compose/performance/stability) — @Stable, @Immutable, strong skipping
-6. [Android Developers – Strong Skipping Mode](https://developer.android.com/jetpack/compose/performance/stability/strongskipping) — Default in Compose 1.8+
+6. [Android Developers – Strong Skipping Mode](https://developer.android.com/jetpack/compose/performance/stability/strongskipping) — Default since Kotlin 2.0.20
 7. [Android Developers – Compose Accessibility](https://developer.android.com/jetpack/compose/accessibility) — Semantics, TalkBack, custom actions
 8. [Android Developers – Material3 Theming](https://developer.android.com/jetpack/compose/designsystems/material3) — Color schemes, typography, shapes
 9. [Android Developers – Side-effects in Compose](https://developer.android.com/jetpack/compose/side-effects) — Effect API reference
