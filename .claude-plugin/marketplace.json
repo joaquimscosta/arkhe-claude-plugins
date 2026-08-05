@@ -1,7 +1,7 @@
 {
   "name": "arkhe-claude-plugins",
   "metadata": {
-    "description": "Supercharge Claude Code with 118 specialized components — from deep reasoning and autonomous dev loops to DDD architecture, design system enforcement, and git workflow automation. 29 agents, 33 commands, 56 skills across 14 modular plugins."
+    "description": "Supercharge Claude Code with 118 specialized components — from deep reasoning and autonomous dev loops to DDD architecture, design system enforcement, and git workflow automation. 20 agents, 35 commands, 63 skills across 12 modular plugins."
   },
   "owner": {
     "name": "Arkhe"
@@ -11,11 +11,6 @@
       "name": "core",
       "source": "./plugins/core",
       "description": "Quality control and workflow orchestration utilities"
-    },
-    {
-      "name": "ai",
-      "source": "./plugins/ai",
-      "description": "AI engineering toolkit for production-ready LLM applications"
     },
     {
       "name": "doc",
@@ -71,11 +66,6 @@
       "name": "devtools",
       "source": "./plugins/devtools",
       "description": "Developer tooling setup and management (SOPS secrets encryption, Claude Code environment setup, multi-ecosystem quality stack for JVM/Node.js/Python, Taskfile task runner setup and audit, Tilt local Kubernetes development setup and audit, browser-companion live-preview server with cross-plugin arkhe-preview CLI)"
-    },
-    {
-      "name": "startup",
-      "source": "./plugins/startup",
-      "description": "Startup idea validation pipeline with 6-stage analysis, decision gates, and domain presets"
     }
   ]
 }

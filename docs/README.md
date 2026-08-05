@@ -110,7 +110,6 @@ The Arkhe Claude Plugins marketplace demonstrates all plugin component types acr
 
 **Commands** (workflow automation via slash commands):
 - **core**: 6 commands - `/discuss`, `/double-check`, `/develop`, `/debug`, `/think`, `/research`
-- **ai**: 2 commands - `/improve-agent`, `/multi-agent-optimize`
 - **doc**: 2 commands - `/code-explain`, `/diagram`
 - **git**: 4 commands - `/commit`, `/create-pr`, `/create-branch`, `/changelog`
 - **review**: 4 commands - `/code`, `/security`, `/design`, `/codebase`
@@ -118,12 +117,12 @@ The Arkhe Claude Plugins marketplace demonstrates all plugin component types acr
 - **design-intent**: 4 commands - `/setup`, `/design-intent`, `/save-patterns`, `/diary`
 
 **Agents** (specialized AI assistants):
-- **ai**: 3 agents - `ai-engineer`, `prompt-engineer`, `context-manager`
+- **core**: 6 agents - `deep-think-partner`, `deep-researcher`, `code-explorer`, `code-architect`, `code-reviewer`, `systematic-debugger`
 - **review**: 2 agents - `pragmatic-code-review`, `design-review`
 - **design-intent**: 3 agents - `ui-explorer`, `ui-architect`, `design-reviewer`
 
 **Skills** (model-invoked capabilities):
-- **core**: 3 skills - `sdlc-develop` (command-invoke), `deep-research` (auto-invoke), `workflow-orchestration` (auto-invoke)
+- **core**: 5 skills - `sdlc-develop` (command-invoke), `deep-research` (auto-invoke), `workflow-orchestration` (auto-invoke), `lyra` (auto-invoke), `using-arkhe-skills` (cross-platform bootstrap)
 - **doc**: 4 skills - `doc-coauthoring` (auto-activates on documentation keywords), `diagramming` (auto-activates on diagram/flowchart keywords), `code-explanation`, `adr`
 - **git**: 4 skills - `generating-changelog` (auto-invoke) + 3 command-invoke skills
 - **google-stitch**: 2 skills - `authoring-stitch-prompts`, `generating-stitch-screens`

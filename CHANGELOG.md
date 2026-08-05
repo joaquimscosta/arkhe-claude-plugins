@@ -7,6 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Removed
+
+#### AI Plugin Retired (BREAKING)
+- **The `ai` plugin has been removed.** Nothing in the repository depended on it — no other plugin, skill, agent, or hook invoked its components — so removal is breaking only for users who had it installed directly.
+- **Deleted agents**: `ai-engineer`, `prompt-engineer`, `context-manager`. Their content had never been edited since the original import; the model landscape they describe (`o1-preview`, `Claude 3.5 Sonnet`, the deprecated OpenAI Assistants API) was roughly two years stale, and none declared a `tools:` frontmatter field.
+- **Deleted commands**: `/improve-agent` (referenced `parallel-test-runner`, an agent that does not exist, and an `analyze-agent-performance` subcommand backed by no telemetry source) and `/multi-agent-optimize` (referenced no real agent or skill; hardcoded retired model IDs and 2023-era token prices).
+- **Migration**: uninstall with `/plugin uninstall ai@arkhe-claude-plugins`. The one component worth keeping — the `lyra` skill — moved to `core` (see below).
+
+#### Startup Plugin Retired (BREAKING)
+- **The `startup` plugin has been removed.** Nothing else in the repository depended on it — no other plugin, skill, agent, or hook invoked its components — so removal is breaking only for users who had it installed directly.
+- **Deleted agents**: `market-validator`, `feasibility-analyst`, `product-designer`, `business-strategist`, `growth-strategist`, `execution-planner`, `validation-critic`.
+- **Deleted command**: `/startup-validate`. **Deleted skill**: `startup-validating`. **Deleted presets**: `fintech`, `cape-verde`, `saas`, `marketplace`.
+- **Removed shim trees**: `.gemini-extensions/startup/` and `.codex-marketplace/startup/`, plus the four `startup` entries in `.version-bump.json`.
+- **Migration**: uninstall with `/plugin uninstall startup@arkhe-claude-plugins`. No replacement — the pipeline was domain-specific and out of scope for a developer-tooling marketplace.
+- **Net effect of both removals**: the marketplace now ships **12 plugins instead of 14**.
+
+### Changed
+
+#### Core Plugin 2.2.0 → 2.3.0
+- **`lyra` prompt-optimization skill moved from `ai` to `core`.** Invocation changes from `/ai:lyra` to **`/core:lyra`**; all other behavior, flags (`BASIC`/`DETAIL`, `for <Platform>`, `--research`), and output contracts are unchanged.
+- **`lyra` gains reasoning-model guidance** in the platform-optimization section of `WORKFLOW.md`. Chain-of-thought scaffolding and few-shot examples degrade output on models that reason before answering, so the skill now inverts its standard advice for them: state goal and constraints, drop prescribed thinking order, prefer zero-shot. Reachable from the technique-selection matrix, the CoT section, the development checklist, and the `SKILL.md` platform table. Guidance is keyed to model *behavior*, not model names, so it will not go stale the way the deleted agents did.
+- **`lyra` staleness cleanup**: removed hardcoded years from `--research` search queries and example prompt text; retitled the `ChatGPT/GPT-4` section to `ChatGPT`.
+
+### Fixed
+- **Component counts corrected across the docs.** `README.md` and `.claude-plugin/marketplace.json` disagreed with each other and both disagreed with reality. All now report the verified post-removal figures: **20 agents, 35 commands, 63 skills across 12 plugins** (118 components).
+- **`README.md` repo tree** listed the retired plugins; now lists all 12 remaining plugins.
+- **`INSTALLATION.md` subagent count** claimed 29 Claude-only subagents; corrected to 20.
+- **`INSTALLATION.md` core plugin section** understated core as 5 agents / 6 commands / 3 skills; corrected to 6 / 7 / 5.
+
 ## [1.15.0] - 2026-07-31
 
 ### Added

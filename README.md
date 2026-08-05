@@ -5,8 +5,8 @@
 
 
   <p>
-    <b>Supercharge Claude Code with 109 specialized components</b> — from deep reasoning and autonomous dev loops to<br />
-    DDD architecture, design system enforcement, and git workflow automation. 22 agents, 32 commands, 55 skills across 13 modular plugins.
+    <b>Supercharge Claude Code with 118 specialized components</b> — from deep reasoning and autonomous dev loops to<br />
+    DDD architecture, design system enforcement, and git workflow automation. 20 agents, 35 commands, 63 skills across 12 modular plugins.
   </p>
 
   <p>
@@ -14,9 +14,9 @@
       <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License" />
     </a>
     <img src="https://img.shields.io/badge/Plugins-13-blue" alt="Plugins" />
-    <img src="https://img.shields.io/badge/Agents-22-purple" alt="Agents" />
-    <img src="https://img.shields.io/badge/Commands-32-orange" alt="Commands" />
-    <img src="https://img.shields.io/badge/Skills-52-green" alt="Skills" />
+    <img src="https://img.shields.io/badge/Agents-27-purple" alt="Agents" />
+    <img src="https://img.shields.io/badge/Commands-36-orange" alt="Commands" />
+    <img src="https://img.shields.io/badge/Skills-64-green" alt="Skills" />
     <a href="https://github.com/joaquimscosta/arkhe-claude-plugins/stargazers">
       <img src="https://img.shields.io/github/stars/joaquimscosta/arkhe-claude-plugins" alt="Stars" />
     </a>
@@ -59,8 +59,7 @@ See [INSTALLATION.md](./INSTALLATION.md) for per-platform install steps and each
 
 | Plugin | Description | Key Components | Docs |
 | :--- | :--- | :--- | :---: |
-| 🧠 **Core** | 6-phase SDLC pipeline with multi-agent orchestration and deep research. | `deep-think-partner`, `deep-researcher`, `/develop`, `/research` | [View](./plugins/core/README.md) |
-| 🤖 **AI** | AI engineering toolkit for production LLM apps, RAG, and prompt optimization. | `ai-engineer`, `prompt-engineer`, `lyra`, `/improve-agent` | [View](./plugins/ai/README.md) |
+| 🧠 **Core** | 6-phase SDLC pipeline with multi-agent orchestration, deep research, and prompt optimization. | `deep-think-partner`, `deep-researcher`, `lyra`, `/develop`, `/research` | [View](./plugins/core/README.md) |
 | 📝 **Doc** | Documentation generation with diagrams, ADRs, RFCs, and Johnny.Decimal management. | `rfc-critic`, `adr-critic`, `doc-coauthoring`, `/diagram`, `/rfc` | [View](./plugins/doc/README.md) |
 | 🔍 **Review** | Code quality, security, and design reviews with pragmatic standards. | `pragmatic-code-review`, `design-review`, `false-positive-verifier` | [View](./plugins/review/README.md) |
 | 🧵 **Stitch** | Atomic UI prompt authoring and MCP-powered Google Stitch screen generation. | `/prompt`, `/stitch-generate`, `generating-stitch-screens` | [View](./plugins/google-stitch/README.md) |
@@ -70,7 +69,7 @@ See [INSTALLATION.md](./INSTALLATION.md) for per-platform install steps and each
 | 🎭 **Playwright** | Browser automation via Playwright CLI for testing and screenshots. | `playwright-cli`, `/playwright-setup` | [View](./plugins/playwright/README.md) |
 | 🍃 **Spring Boot** | DDD with Spring Boot 4, Modulith 2.0, Security 7, and OpenTelemetry. | 10 skills: DDD, data, web-api, modulith, security, observability, testing, flyway | [View](./plugins/spring-boot/README.md) |
 | 🔄 **Ralph** | Autonomous development loop with fresh context, task sets, and memory system. | `ralph-agent`, `/ralph`, `/create-prd`, Hat-lite system | [View](./plugins/ralph/README.md) |
-| 🗺️ **Roadmap** | Product management, roadmap analysis, and solution architecture. | `product-manager`, `system-architect`, `roadmap-analyst` | [View](./plugins/roadmap/README.md) |
+| 🗺️ **Roadmap** | Product management, roadmap analysis, and solution architecture. | `product-manager`, `system-architect`, `roadmap-critic` | [View](./plugins/roadmap/README.md) |
 | 🔧 **Devtools** | Developer tooling: SOPS encryption, Claude Code environment setup, quality stack. | `sops-setup`, `code-env-setup`, `quality-stack` | [View](./plugins/devtools/README.md) |
 
 ---
@@ -87,7 +86,6 @@ See [INSTALLATION.md](./INSTALLATION.md) for per-platform install steps and each
 2. **Install Plugins:**
    ```bash
    /plugin install core@arkhe-claude-plugins
-   /plugin install ai@arkhe-claude-plugins
    /plugin install doc@arkhe-claude-plugins
    /plugin install review@arkhe-claude-plugins
    /plugin install design-intent@arkhe-claude-plugins
@@ -117,7 +115,7 @@ See [INSTALLATION.md](./INSTALLATION.md) for per-platform install steps and each
    ```bash
    ./scripts/install-antigravity.sh
    ```
-   *Or install specific plugins:* `./scripts/install-antigravity.sh core git ai`
+   *Or install specific plugins:* `./scripts/install-antigravity.sh core git review`
 
 ---
 
@@ -133,7 +131,6 @@ Then add plugins for your focus area:
 | :--- | :--- | :--- |
 | **Frontend/UI** | `design-intent`, `playwright` | Figma-to-React prototyping, pattern memory, browser testing |
 | **Backend (Java)** | `spring-boot` | DDD, Spring Modulith, Security 7, observability, Flyway |
-| **AI/LLM Apps** | `ai` | RAG systems, prompt optimization, multi-agent coordination |
 | **Code Quality** | `review` | Pragmatic code review, security audits, design review |
 | **Documentation** | `doc` | Diagrams, ADRs, Johnny.Decimal, co-authored docs |
 | **Product/Planning** | `roadmap` | User stories, scope assessment, architecture design |
@@ -185,20 +182,19 @@ If multiple plugins provide commands with similar names, use namespaced invocati
 arkhe-claude-plugins/
 ├── .claude-plugin/
 │   └── marketplace.json              # Marketplace catalog
-├── plugins/                          # All 13 plugins
+├── plugins/                          # All 12 plugins
 │   ├── core/                         # 1. Quality control & orchestration
-│   ├── ai/                           # 2. AI engineering toolkit
-│   ├── doc/                          # 3. Documentation toolkit
-│   ├── review/                       # 4. Code review tools
-│   ├── google-stitch/                # 5. Google Stitch prompting
-│   ├── git/                          # 6. Git workflow automation
-│   ├── design-intent/                # 7. Design Intent for UI development
-│   ├── lang/                         # 8. Language-specific skills
-│   ├── playwright/                   # 9. Browser automation via Playwright CLI
-│   ├── spring-boot/                  # 10. Domain-Driven Design with Spring Boot 4
-│   ├── ralph/                        # 11. Autonomous development loop
-│   ├── roadmap/                      # 12. Product management & architecture
-│   └── devtools/                     # 13. Developer tooling & environment setup
+│   ├── doc/                          # 2. Documentation toolkit
+│   ├── review/                       # 3. Code review tools
+│   ├── google-stitch/                # 4. Google Stitch prompting
+│   ├── git/                          # 5. Git workflow automation
+│   ├── design-intent/                # 6. Design Intent for UI development
+│   ├── lang/                         # 7. Language-specific skills
+│   ├── playwright/                   # 8. Browser automation via Playwright CLI
+│   ├── spring-boot/                  # 9. Domain-Driven Design with Spring Boot 4
+│   ├── ralph/                        # 10. Autonomous development loop
+│   ├── roadmap/                      # 11. Product management & architecture
+│   └── devtools/                     # 12. Developer tooling & environment setup
 ├── docs/                             # Developer documentation
 ├── templates/                        # Plugin templates
 ├── assets/                           # Project assets

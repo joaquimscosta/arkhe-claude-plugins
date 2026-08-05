@@ -131,6 +131,7 @@ PRIORITY: [High/Medium/Low] - [Reason]
 | **Educational** | Few-shot, Structured | Progressive complexity |
 | **Analytical** | Framework-based, Systematic | Chain-of-thought |
 | **Complex** | Decomposition, CoT | Meta-prompting |
+| **Any, on a reasoning model** | Goal + constraints, Zero-shot | — (drop CoT and few-shot; see §3.4) |
 
 ### 3.2 Core Techniques
 
@@ -208,6 +209,10 @@ Work through this step-by-step:
 Show your reasoning at each step.
 ```
 
+**When NOT to use:** on a model that reasons before answering, this scaffolding is redundant at
+best and harmful at worst — it overrides the model's own decomposition with yours. State the goal
+and let it plan. See [Reasoning Models](#reasoning-models) in §3.4.
+
 #### Few-Shot Examples
 
 For pattern-following tasks:
@@ -276,7 +281,7 @@ Claude responds well to:
 </output_format>
 ```
 
-#### ChatGPT/GPT-4
+#### ChatGPT
 
 ChatGPT responds well to:
 - System message for role setting
@@ -318,6 +323,52 @@ Consider:
 Then provide a synthesized view that balances all perspectives.
 ```
 
+#### Reasoning Models
+
+This is a **behavior**, not a vendor — it applies to any model that reasons before it answers,
+whatever the platform. Detect it from how the model works, not from its name; model names go stale,
+this distinction doesn't.
+
+The rules above mostly **invert** here. A reasoning model already decomposes, considers
+alternatives, and checks its own work. Prompting techniques that supply that scaffolding compete
+with it:
+
+| Standard technique | On a reasoning model |
+|---|---|
+| Chain-of-thought ("think step by step") | **Drop it.** Redundant, and a prescribed sequence can be worse than the one the model would pick. |
+| Few-shot examples | **Prefer zero-shot.** Examples narrow the solution space before the model has explored it. Use one only to pin down *format*, never *approach*. |
+| Decomposition into phases | **Drop it** unless the phases are a real requirement, not just a suggested method. |
+| Rigid output skeleton | **Loosen it.** Specify what must appear, not the order to think in. |
+| Role assignment | **Keep it** — domain framing still helps. |
+| Constraints and success criteria | **Keep it, and strengthen it** — this is where the leverage moves. |
+
+Write the *what* and the *bar*, not the *how*:
+
+```markdown
+You are a [role] with expertise in [domain].
+
+## Goal
+[The outcome, stated precisely]
+
+## Constraints
+- [Hard requirement]
+- [Hard requirement]
+
+## What a good answer looks like
+- [Success criterion the model can check itself against]
+- [Tradeoff it must explicitly address]
+
+## Output
+[Required elements — not a thinking order]
+```
+
+**When to reach for one:** genuinely hard problems — novel analysis, tricky debugging, decisions
+with real tradeoffs. **When not to:** formatting, extraction, summarization, rewriting. These are
+slower and more expensive with no quality gain; a standard model with a well-specified prompt wins.
+
+**If the user hasn't said which model they're targeting** and the task looks reasoning-heavy, flag
+both variants in the Pro Tip rather than silently picking one.
+
 ### 3.5 Development Checklist
 
 - [ ] Selected appropriate techniques for request type
@@ -326,6 +377,7 @@ Then provide a synthesized view that balances all perspectives.
 - [ ] Specified output format clearly
 - [ ] Added constraints where needed
 - [ ] Applied platform-specific optimizations
+- [ ] If targeting a reasoning model, stripped CoT/few-shot scaffolding (§3.4)
 - [ ] Verified all issues from DIAGNOSE are addressed
 
 ---
@@ -450,4 +502,5 @@ Before delivering:
 | Claude | Long context, nuance | XML tags, detailed context |
 | ChatGPT | Structured output | Clear steps, explicit format |
 | Gemini | Creative exploration | Multiple angles, synthesis |
+| Reasoning models | Self-directed analysis | Goal + constraints; **drop CoT and few-shot** |
 | Universal | Broad compatibility | Role + context + output pattern |
