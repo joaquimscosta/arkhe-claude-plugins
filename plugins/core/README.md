@@ -16,6 +16,8 @@ Quality control and workflow orchestration utilities for Claude Code.
 
 - **deep-research** (auto-invoke + command-invoke): Deep technical research using EXA tools with intelligent two-tier caching. Auto-triggered when user asks to research a topic, investigate best practices, look up information, find patterns, or explore architectures. Also invoked via `/research` command. Features cross-project cache reuse and promotion to version-controlled project docs.
 
+- **lyra** (auto-invoke): Transforms vague inputs into precision-optimized AI prompts using a 4-D methodology (Deconstruct, Diagnose, Develop, Deliver). Auto-triggered when user mentions "optimize prompt", "improve prompt", "lyra", or "prompt engineering". Supports `BASIC`/`DETAIL` modes, per-platform tuning (Claude, ChatGPT, Gemini, reasoning models), and a `--research` flag for current best practices. Invoked as `/core:lyra`.
+
 ### Agents
 
 - **deep-think-partner**: Elite reasoning partner for complex logical problems, multi-step reasoning challenges, and strategic decisions. Triggers on "should I", "what are the tradeoffs", "help me decide", or "think through". Provides structured output with problem restatement, multi-perspective analysis, and ranked recommendations. Uses Opus model with sequential-thinking MCP for maximum reasoning depth.
@@ -127,4 +129,4 @@ After installation, the agents and commands will be available:
 
 ## Version
 
-2.1.0
+2.3.0

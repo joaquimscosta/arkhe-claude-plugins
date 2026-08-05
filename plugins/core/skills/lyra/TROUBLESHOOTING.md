@@ -22,7 +22,7 @@ Common issues and solutions when using the Lyra prompt optimizer.
 
 1. **Use BASIC mode for simple prompts**
    ```
-   /lyra BASIC Summarize this article
+   /core:lyra BASIC Summarize this article
    ```
 
 2. **Remove optional sections**
@@ -64,8 +64,8 @@ Common issues and solutions when using the Lyra prompt optimizer.
 
 1. **Always specify platform**
    ```
-   /lyra BASIC for Claude Write documentation
-   /lyra DETAIL for ChatGPT Analyze this data
+   /core:lyra BASIC for Claude Write documentation
+   /core:lyra DETAIL for ChatGPT Analyze this data
    ```
 
 2. **Platform-specific adjustments**
@@ -143,7 +143,7 @@ Common issues and solutions when using the Lyra prompt optimizer.
 
 1. **Switch to DETAIL mode**
    ```
-   /lyra DETAIL for Claude [prompt]
+   /core:lyra DETAIL for Claude [prompt]
    ```
    Then ask targeted questions about context.
 
