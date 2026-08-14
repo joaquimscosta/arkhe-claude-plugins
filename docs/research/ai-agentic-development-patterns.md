@@ -807,7 +807,7 @@ This repository implements many patterns from the catalog. Here's how each maps 
 | Pattern | Implementation |
 |---------|----------------|
 | **Orchestrator-Worker** | Main agent delegates to specialized agents in `plugins/*/agents/*.md` |
-| **Role-based specialization** | `code-reviewer`, `code-architect`, `code-explorer`, `ai-engineer`, `prompt-engineer` |
+| **Role-based specialization** | `code-reviewer`, `code-architect`, `code-explorer`, `systematic-debugger`, `deep-researcher` |
 | **Lightweight agents** | Agent descriptions target <1,024 chars; tools scoped per agent |
 | **Model selection** | Agent frontmatter supports `model: sonnet/opus/haiku/inherit` |
 

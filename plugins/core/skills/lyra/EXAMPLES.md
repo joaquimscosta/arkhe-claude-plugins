@@ -20,7 +20,7 @@ Before/after examples demonstrating prompt optimization techniques.
 
 ### Input
 ```
-/lyra BASIC Write a marketing email
+/core:lyra BASIC Write a marketing email
 ```
 
 ### Before
@@ -65,7 +65,7 @@ Please specify or I'll create a general product promotion email:
 
 ### Input
 ```
-/lyra DETAIL for Claude Help me debug this code
+/core:lyra DETAIL for Claude Help me debug this code
 ```
 
 ### DETAIL Mode Questions Asked
@@ -141,7 +141,7 @@ Please share:
 
 ### Input
 ```
-/lyra BASIC for ChatGPT Write a story
+/core:lyra BASIC for ChatGPT Write a story
 ```
 
 ### Before
@@ -284,7 +284,7 @@ For each perspective, share:
 Then synthesize these viewpoints:
 - What patterns emerge across perspectives?
 - What does this suggest for different project types?
-- If you had to choose for a typical mid-sized web app in 2024, which would you lean toward and why?
+- If you had to choose for a typical mid-sized web app today, which would you lean toward and why?
 
 I appreciate nuanced thinking over definitive answers. The goal is to understand tradeoffs, not find a "winner."
 ```
@@ -403,18 +403,18 @@ Provide a 2-week preparation plan:
 
 ### Without --research
 ```
-/lyra BASIC Write API documentation
+/core:lyra BASIC Write API documentation
 ```
 
 Outputs optimization based on built-in knowledge of documentation best practices.
 
 ### With --research
 ```
-/lyra BASIC --research Write API documentation
+/core:lyra BASIC --research Write API documentation
 ```
 
 **Research performed:**
-- WebSearch: "API documentation best practices 2025"
+- WebSearch: "current API documentation best practices"
 - WebSearch: "developer-friendly API docs examples"
 
 **Findings incorporated:**
@@ -428,7 +428,7 @@ Outputs optimization based on built-in knowledge of documentation best practices
 ```
 You are a technical writer specializing in developer documentation with expertise in modern API documentation standards.
 
-Create API documentation following current industry best practices (2024-2025).
+Create API documentation following current industry best practices.
 
 ## Documentation Structure
 

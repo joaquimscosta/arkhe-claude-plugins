@@ -18,10 +18,9 @@ This repository uses a **marketplace-based plugin system** where each plugin is 
 ```
 arkhe-claude-plugins/
 ├── .claude-plugin/
-│   └── marketplace.json          # Marketplace catalog (13 plugins)
-├── plugins/                       # All 13 plugins
+│   └── marketplace.json          # Marketplace catalog (12 plugins)
+├── plugins/                       # All 12 plugins
 │   ├── core/                      # Quality control and workflow orchestration
-│   ├── ai/                        # AI engineering and LLM development
 │   ├── doc/                       # Documentation generation
 │   ├── review/                    # Code review and quality
 │   ├── google-stitch/             # Google Stitch prompting toolkit
@@ -32,8 +31,7 @@ arkhe-claude-plugins/
 │   ├── spring-boot/               # Domain-Driven Design with Spring Boot 4
 │   ├── ralph/                     # Autonomous development loop
 │   ├── roadmap/                   # PM, roadmap analysis, solution architecture
-│   ├── devtools/                  # Developer tooling and environment setup
-│   └── startup/                   # Startup idea validation pipeline
+│   └── devtools/                  # Developer tooling and environment setup
 ├── docs/                          # Developer documentation
 ├── templates/                     # Plugin templates
 └── assets/                        # Project assets
@@ -94,14 +92,8 @@ For per-platform install steps, see [INSTALLATION.md](INSTALLATION.md). For the 
 Quality control and workflow orchestration utilities.
 - **Agents**: `deep-think-partner`, `deep-researcher`, `code-explorer`, `code-architect`, `code-reviewer`, `systematic-debugger`
 - **Commands**: `/discuss`, `/double-check` (`--deep` for multi-agent review), `/develop`, `/debug` (`--deep` for agent-assisted), `/think`, `/research`
-- **Skills**: `sdlc-develop` (command-invoke), `deep-research` (auto-invoke), `workflow-orchestration` (auto-invoke)
+- **Skills**: `sdlc-develop` (command-invoke), `deep-research` (auto-invoke), `workflow-orchestration` (auto-invoke), `lyra` (auto-invoke, AI prompt optimization)
 - **UI routes** (`sdlc-develop` Phase 1): sibling design routes — live prototype gallery ideation (via `design-intent:prototype`), Claude Design link reference (WebFetch input), Stitch prompts, existing designs, or skip. Phase 4 **VERIFY UI** gate adds a **LIVE PREVIEW** option (via devtools `arkhe-preview`). Prototype/preview routes degrade gracefully when `design-intent`/`devtools` aren't installed.
-
-### AI Plugin
-AI engineering toolkit for production-ready LLM applications.
-- **Agents**: `ai-engineer`, `prompt-engineer`, `context-manager`
-- **Commands**: `/improve-agent`, `/multi-agent-optimize`
-- **Skills**: `lyra` (auto-invoked for AI prompt engineering)
 
 ### Doc Plugin
 Multi-purpose documentation toolkit with RFC management and documentation health.
@@ -170,14 +162,6 @@ Developer tooling setup and management.
 - **Skills**: `sops-setup` (command-invoke), `sops-encrypt` (command-invoke), `sops-decrypt` (command-invoke), `sops-add-key` (command-invoke), `code-env-setup` (command-invoke), `quality-stack` (command-invoke), `taskfile-setup` (command-invoke), `tilt-setup` (command-invoke), `browser-companion` (command-invoke; ships `arkhe-preview` CLI in `plugins/devtools/bin/` for cross-plugin use)
 - **Use**: SOPS + age encryption for .env files, Claude Code environment setup wizard (Global CLAUDE.md, project scaffolding, MCP servers, hooks, custom agents, keybindings, settings), multi-ecosystem quality/testing tooling audit and setup (JVM, Node.js/TypeScript, Python), Taskfile task runner setup and audit, Tilt local Kubernetes development setup and audit (Tiltfile + tilt/ modular layout, Spring Boot/Next.js/Python/external service templates, production-context safety guards, PVC persistence, JDWP debug ports, optional monitoring scaffolds), browser-companion live-preview server for agent↔browser workflows (HTTP + WebSocket + file-watcher; `arkhe-preview start --project-dir <p>` invokable from any plugin's skill via the bin/ PATH mechanism; ships brainstorm and gallery example flavors)
 
-### Startup Plugin
-Startup idea validation pipeline with 6-stage analysis, decision gates, and domain presets.
-- **Agents**: `market-validator`, `feasibility-analyst`, `product-designer`, `business-strategist`, `growth-strategist`, `execution-planner`, `validation-critic`
-- **Commands**: `/startup-validate`
-- **Skills**: `startup-validating` (command-invoke)
-- **Presets**: `fintech`, `cape-verde`, `saas`, `marketplace`
-- **Use**: Validate startup ideas through 6 sequential stages (market, feasibility, product, business model, go-to-market, execution), with decision gates, confidence scoring, composable domain presets, and `--deep` mode for parallel specialist analysis
-
 ## Common Development Commands
 
 ### Plugin Management
@@ -188,7 +172,6 @@ Startup idea validation pipeline with 6-stage analysis, decision gates, and doma
 
 # Install all plugins
 /plugin install core@arkhe-claude-plugins
-/plugin install ai@arkhe-claude-plugins
 /plugin install doc@arkhe-claude-plugins
 /plugin install review@arkhe-claude-plugins
 /plugin install design-intent@arkhe-claude-plugins
@@ -200,7 +183,6 @@ Startup idea validation pipeline with 6-stage analysis, decision gates, and doma
 /plugin install ralph@arkhe-claude-plugins
 /plugin install roadmap@arkhe-claude-plugins
 /plugin install devtools@arkhe-claude-plugins
-/plugin install startup@arkhe-claude-plugins
 
 # Verify installation
 /plugin                    # View installed plugins
@@ -240,7 +222,7 @@ System prompt defining the agent's role, capabilities, and approach.
 
 `AskUserQuestion`, `EndConversation`, `EnterPlanMode`, `ScheduleWakeup`, `TaskOutput`, `WaitForMcpServers`, and `Workflow` are denied in both foreground and background runs — don't list them, and don't write agent prompts that depend on them. Forks (`context: fork`, as in the `verify-findings` skill) are exempt from both filters and receive the main conversation's exact tool pool. If nothing in `tools` resolves, the agent usually fails to launch.
 
-**Agent Naming Convention**: Use lowercase with hyphens (e.g., `code-explorer`, `ai-engineer`)
+**Agent Naming Convention**: Use lowercase with hyphens (e.g., `code-explorer`, `systematic-debugger`)
 
 **Description Guidelines**:
 - Clearly state when to use the agent
@@ -669,7 +651,7 @@ See [docs/README.md](docs/README.md) "Maintaining This Documentation" section fo
 
 ## Plugin Versions
 
-Plugin versions: core 2.2.0, ai 1.0.0, doc 1.12.0, design-intent 2.3.0, git 1.2.0, google-stitch 2.0.0, lang 1.0.0, playwright 1.0.0, spring-boot 1.2.0, ralph 2.0.0, roadmap 3.0.0, review 2.0.0, devtools 2.5.0, startup 1.0.0. When making breaking changes, increment the major version and update `plugin.json`.
+Plugin versions: core 2.3.0, doc 1.12.0, design-intent 2.3.0, git 1.2.0, google-stitch 2.0.0, lang 1.0.0, playwright 1.0.0, spring-boot 1.2.0, ralph 2.0.0, roadmap 3.0.0, review 2.0.0, devtools 2.5.0. When making breaking changes, increment the major version and update `plugin.json`.
 
 ## Related Documentation
 

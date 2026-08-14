@@ -38,7 +38,6 @@ git clone https://github.com/joaquimscosta/arkhe-claude-plugins.git
 
 ```bash
 /plugin install core@arkhe-claude-plugins
-/plugin install ai@arkhe-claude-plugins
 /plugin install doc@arkhe-claude-plugins
 /plugin install review@arkhe-claude-plugins
 /plugin install design-intent@arkhe-claude-plugins
@@ -71,7 +70,7 @@ cd arkhe-claude-plugins
 ./scripts/install-antigravity.sh
 
 # Or install specific plugins:
-./scripts/install-antigravity.sh core git ai review
+./scripts/install-antigravity.sh core git doc review
 
 # --- Option 2: Manual Symlink for Antigravity CLI (agy) ---
 mkdir -p ~/.gemini/config/plugins
@@ -83,7 +82,6 @@ agy plugin validate ~/.gemini/config/plugins/core
 
 # --- Option 3: Install in Gemini CLI (Legacy) ---
 gemini extensions install ./.gemini-extensions/core
-gemini extensions install ./.gemini-extensions/ai
 gemini extensions install ./.gemini-extensions/doc
 gemini extensions install ./.gemini-extensions/git
 ```
@@ -94,7 +92,7 @@ The `using-arkhe-skills` bootstrap skill (inside the `core` plugin) loads at ses
 
 - **Skills run identically.** Each Gemini extension symlinks `skills/` to the canonical `plugins/<plugin>/skills/`.
 - **Slash commands are transpiled.** Claude `.md` commands convert to Gemini `.toml`. The 6 subagent-heavy commands (`/core:debug`, `/core:think`, `/core:research`, `/core:double-check`, `/spring-boot:spring-review`, `/spring-boot:verify-upgrade`) ship with the agent prompt **inlined** and a degradation banner; expect single-pass behavior, no parallel sub-execution.
-- **Agents are not ported.** The 29 Claude subagents stay Claude-only. Gemini relies on the inlined-prompt fallback above for the 6 commands that need them.
+- **Agents are not ported.** The 20 Claude subagents stay Claude-only. Gemini relies on the inlined-prompt fallback above for the 6 commands that need them.
 
 ---
 
@@ -139,21 +137,9 @@ Quality control and workflow orchestration utilities.
 **Install**: `/plugin install core@arkhe-claude-plugins`
 
 **Components**:
-- 5 agents: `deep-think-partner`, `deep-researcher`, `code-explorer`, `code-architect`, `code-reviewer`
-- 6 commands: `/discuss`, `/double-check`, `/develop`, `/debug`, `/think`, `/research`
-- 3 skills: `sdlc-develop` (command-invoke), `deep-research` (auto-invoke), `workflow-orchestration` (auto-invoke)
-
----
-
-### AI Plugin
-AI engineering toolkit for production-ready LLM applications.
-
-**Install**: `/plugin install ai@arkhe-claude-plugins`
-
-**Components**:
-- 3 agents: `ai-engineer`, `prompt-engineer`, `context-manager`
-- 2 commands: `/improve-agent`, `/multi-agent-optimize`
-- 1 skill: `lyra` (auto-invoked for AI prompt engineering)
+- 6 agents: `deep-think-partner`, `deep-researcher`, `code-explorer`, `code-architect`, `code-reviewer`, `systematic-debugger`
+- 7 commands: `/discuss`, `/double-check`, `/develop`, `/debug`, `/think`, `/research`, `/context-prime`
+- 5 skills: `sdlc-develop` (command-invoke), `deep-research` (auto-invoke), `workflow-orchestration` (auto-invoke), `lyra` (auto-invoke, AI prompt optimization), `using-arkhe-skills` (cross-platform bootstrap)
 
 ---
 
@@ -279,7 +265,7 @@ Product management, roadmap analysis, and solution architecture for any project.
 **Install**: `/plugin install roadmap@arkhe-claude-plugins`
 
 **Components**:
-- 3 agents: `product-manager`, `system-architect`, `roadmap-analyst`
+- 3 agents: `product-manager`, `system-architect`, `roadmap-critic`
 - 3 skills: `pm` (auto-invoke), `roadmap` (auto-invoke), `architect` (auto-invoke)
 
 **Use for:** User stories, scope assessments, prioritization, project status, gap analysis, risk mapping, module design, API design, boundary analysis.
@@ -306,11 +292,6 @@ Install only the plugins you need:
 ```bash
 /plugin install core@arkhe-claude-plugins
 /plugin install doc@arkhe-claude-plugins
-```
-
-### For AI/LLM Development
-```bash
-/plugin install ai@arkhe-claude-plugins
 ```
 
 ### For Code Quality & Review
@@ -365,7 +346,7 @@ After installation, verify that everything works:
 /plugin
 ```
 
-You should see all 13 plugins listed.
+You should see all 12 plugins listed.
 
 ### Check Available Agents
 
@@ -375,11 +356,10 @@ You should see all 13 plugins listed.
 
 You should see agents from installed plugins:
 - **core**: `deep-think-partner`, `deep-researcher`, `code-explorer`, `code-architect`, `code-reviewer`
-- **ai**: `ai-engineer`, `prompt-engineer`, `context-manager`
 - **review**: `pragmatic-code-review`, `design-review`
 - **design-intent**: `ui-explorer`, `ui-architect`, `design-reviewer`
 - **ralph**: `ralph-agent`
-- **roadmap**: `product-manager`, `system-architect`, `roadmap-analyst`
+- **roadmap**: `product-manager`, `system-architect`, `roadmap-critic`
 
 ### Check Available Commands
 
@@ -389,7 +369,6 @@ You should see agents from installed plugins:
 
 You should see commands from installed plugins:
 - **core**: `/discuss`, `/double-check`, `/develop`, `/debug`, `/think`, `/research`
-- **ai**: `/improve-agent`, `/multi-agent-optimize`
 - **doc**: `/code-explain`, `/diagram`
 - **review**: `/code`, `/security`, `/design`, `/codebase`
 - **git**: `/commit`, `/create-pr`, `/create-branch`, `/changelog`, `/resolve-review`
@@ -422,23 +401,11 @@ Skills are automatically invoked when relevant context is detected:
 # Deep analysis with collaborative thinking
 /think optimization strategies for database queries
 
+# Turn a vague request into a precision-optimized prompt
+/core:lyra DETAIL for Claude Write me a marketing email
+
 # Orchestrate complex development workflows
 /develop Create a new feature for user authentication
-```
-
-### AI Plugin
-
-```bash
-# Use AI engineering agent
-/agents
-# Select: ai-engineer
-"Help me build an intelligent search feature with semantic similarity"
-
-# Improve an existing agent
-/improve-agent frontend-engineer
-
-# Optimize multi-agent workflows
-/multi-agent-optimize
 ```
 
 ### Doc Plugin
