@@ -131,7 +131,7 @@ Read the following sections and compare against the updated synced docs:
 - "Plugin Development Workflow" → verify patterns match current docs
 
 ### docs/README.md
-- "Synced Documentation" list → verify all 8 files are listed with correct descriptions
+- "Synced Documentation" list → verify every file in `URL_MAPPINGS` (`update-claude-docs.sh`) is listed with correct descriptions
 - Learning path references → verify links are still valid
 
 ### docs/SKILL_DEVELOPMENT_BEST_PRACTICES.md
