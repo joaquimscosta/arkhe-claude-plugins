@@ -223,7 +223,7 @@ Choose your learning path based on your goals and experience level.
 
 **Goal**: Understand plugin fundamentals and create your first plugin
 
-1. **Start here:** Read [Plugins Guide](./reference/PLUGINS.md) - Understand plugin architecture and components
+1. **Start here:** Read [Plugins Guide](./reference/PLUGINS.md) for the overview, then [Create Plugins](./reference/PLUGINS_CREATE.md) and [Plugin Components](./reference/PLUGINS_COMPONENTS.md) - Understand plugin architecture and components
 2. **Understand agents:** Review [Subagents Guide](./reference/SUBAGENTS.md) - Learn about specialized AI assistants
 3. **Learn automation:** Explore [Hooks Guide](./reference/HOOKS.md) - Understand event-driven automation
 4. **Explore examples:** Browse `core`, `git`, and `review` plugin directories
@@ -432,6 +432,11 @@ The following files are automatically synced from official Claude Code documenta
 - **reference/MCP.md** - MCP server integration guide
 - **reference/PLUGINS_REFERENCE.md** - Plugin manifest reference
 - **reference/BEST_PRACTICES.md** - Official Claude Code best practices
+- **reference/SETTINGS_REFERENCE.md** - Full settings keys, permissions, sandbox, and env vars
+- **reference/PLUGINS_CREATE.md** - Creating plugins: quickstart, layout, local testing
+- **reference/PLUGINS_COMPONENTS.md** - Plugin components: skills, agents, hooks, MCP, LSP, monitors
+- **reference/PLUGINS_MARKETPLACE_REFERENCE.md** - marketplace.json schema
+- **reference/PLUGINS_TROUBLESHOOTING.md** - Plugin debugging and common errors
 
 ### Custom Documentation (Never Overwritten)
 

@@ -167,8 +167,10 @@ Every Skill requires a `SKILL.md` file with YAML frontmatter between `---` marke
 | `allowed-tools` | Tools Claude can use without permission when Skill is active | `Read, Grep, Glob` |
 | `model` | Model to use when Skill is active | `claude-sonnet-4-20250514` |
 | `effort` | Effort level when Skill is active. Overrides session effort. | `low`, `medium`, `high`, `xhigh`, `max` |
+| `disallowed-tools` | Tools removed from the pool while Skill is active | `AskUserQuestion` |
 | `context` | Set to `fork` to run in isolated sub-agent context | `fork` |
 | `agent` | Agent type when `context: fork` is set | `Explore`, `Plan`, `general-purpose`, or custom agent name |
+| `background` | With `context: fork` only. `false` waits for the forked result in the invoking turn instead of running in the background | `false` |
 | `hooks` | Skill-scoped lifecycle hooks | See [Advanced Patterns](#skill-scoped-hooks) |
 | `user-invocable` | Set to `false` to hide from slash command menu | `false` |
 | `disable-model-invocation` | Set to `true` to prevent Claude from automatically loading this skill. Use for workflows with side effects. Default: `false`. | `true` |
@@ -176,6 +178,11 @@ Every Skill requires a `SKILL.md` file with YAML frontmatter between `---` marke
 | `arguments` | Named positional arguments for `$name` substitution in skill content | `pr_url`, `"file format"` |
 | `paths` | Glob patterns that limit when this skill is auto-activated | `src/**/*.ts`, `["*.py", "tests/**"]` |
 | `shell` | Shell for inline `` !`command` `` blocks. Default `bash`. | `bash`, `powershell` |
+| `metadata` | Free-form map for your own tooling; Claude Code ignores it | `{version: "1.2"}` |
+| `license` | License covering the skill (Agent Skills spec) | `MIT` |
+| `compatibility` | Environment requirements, string ≤500 chars (Agent Skills spec); accepted but not acted on by Claude Code | `Requires Python 3.8+ and git` |
+
+> **Portability:** claude.ai uploads, the Skills API, and `package_skill.py` accept only `name`, `description`, `license`, `compatibility`, `metadata`, `allowed-tools`. Any other key is a hard error there (`Unexpected key(s) in SKILL.md frontmatter`). Claude Code accepts every field above.
 
 ### Complete Field Reference
 

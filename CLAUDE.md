@@ -215,7 +215,7 @@ model: sonnet  # Optional - sonnet/opus/haiku/fable, a full model ID, or 'inheri
 System prompt defining the agent's role, capabilities, and approach.
 ```
 
-**Background tool filtering**: subagents run in the background by default (Claude Code v2.1.198+), and background subagents keep every MCP tool but only these built-ins: `Read`, `Grep`, `Glob`, `Bash`, `PowerShell`, `Edit`, `Write`, `NotebookEdit`, `WebFetch`, `WebSearch`, `TodoWrite`, `Skill`, `ToolSearch`, `EnterWorktree`, `ExitWorktree`, `Monitor`, `TaskStop`, `SendMessage`, `Artifact`. Anything else in `tools` is dropped silently, with two exceptions that follow their own conditions wherever the subagent runs:
+**Background tool filtering**: subagents run in the background by default (Claude Code v2.1.198+), and background subagents keep every MCP tool but only these built-ins: `Read`, `Grep`, `Glob`, `LSP` (v2.1.280+), `Bash`, `PowerShell`, `Edit`, `Write`, `NotebookEdit`, `WebFetch`, `WebSearch`, `TodoWrite`, `Skill`, `ToolSearch`, `EnterWorktree`, `ExitWorktree`, `Monitor`, `TaskStop`, `SendMessage`, `Artifact` (plus `SubagentHandback` for a subagent that reports through it). Anything else in `tools` is dropped silently, with two exceptions that follow their own conditions wherever the subagent runs:
 
 - `Agent` survives unless the subagent is at the nesting depth limit (3 layers by default; tune with `CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH`). **Keep `Agent` on orchestrator agents that spawn sub-agents** — e.g. `spring-boot-reviewer`, `spring-boot-upgrade-verifier`.
 - `ExitPlanMode` survives only with `permissionMode: plan`.
@@ -492,7 +492,7 @@ description: What it does...  # 1,024 chars max (200-400 recommended)
 ---
 ```
 
-> **`name` is not a display label for plugin skills.** As of Claude Code v2.1.216, a plugin skill's `name` sets the *last segment of its slash command*: a skill in a `review/` directory under plugin `my-plugin`, but carrying `name: fancy`, is invoked as `/my-plugin:fancy`, not `/my-plugin:review`. Use kebab-case and keep it identical to the directory name so the command is predictable. A name with spaces or capitals produces an awkward or unusable command. (Before v2.1.216 the frontmatter name replaced the *whole* command, dropping the plugin prefix.) For personal and project skills, `name` remains a display label only and the command comes from the directory.
+> **`name` is not a display label for plugin skills.** As of Claude Code v2.1.216, a plugin skill's `name` sets the *last segment of its slash command*: a skill in a `review/` directory under plugin `my-plugin`, but carrying `name: fancy`, is invoked as `/my-plugin:fancy`, not `/my-plugin:review`. Use kebab-case and keep it identical to the directory name so the command is predictable. A name with spaces or capitals produces an awkward or unusable command. (Before v2.1.216 the frontmatter name replaced the *whole* command, dropping the plugin prefix; v2.1.216–v2.1.245 doubled the prefix when `name` already carried it, fixed in v2.1.246.) For personal and project skills, `name` also sets the `/` command (unless another command already uses it), and the directory name still invokes the skill.
 >
 > `description` and `when_to_use` are concatenated in the skill listing and truncated together at **1,536 characters** — put the key use case first.
 
@@ -611,9 +611,14 @@ chmod +x scripts/*.py
 **Plugin System**:
 - `docs/reference/PLUGINS.md` - Plugin system documentation (synced)
 - `docs/reference/PLUGINS_REFERENCE.md` - Plugin manifest reference (synced)
+- `docs/reference/PLUGINS_CREATE.md` - Creating plugins: quickstart, layout, local testing (synced)
+- `docs/reference/PLUGINS_COMPONENTS.md` - Plugin components: skills, agents, hooks, MCP, LSP, monitors (synced)
+- `docs/reference/PLUGINS_MARKETPLACE_REFERENCE.md` - marketplace.json schema (synced)
+- `docs/reference/PLUGINS_TROUBLESHOOTING.md` - Plugin debugging and common errors (synced)
 - `docs/reference/SUBAGENTS.md` - Agent configuration and usage guide (synced)
 - `docs/reference/HOOKS.md` - Event handling documentation (synced)
-- `docs/reference/SETTINGS.md` - Configuration and settings reference (synced)
+- `docs/reference/SETTINGS.md` - Settings scopes, precedence, and how-to (synced)
+- `docs/reference/SETTINGS_REFERENCE.md` - Full settings keys, permissions, sandbox, env vars (synced)
 - `docs/reference/MCP.md` - MCP server integration guide (synced)
 
 **Development Tools**:
@@ -628,9 +633,10 @@ Synced documentation lives in `docs/reference/` (automated copies of official Cl
 cd docs/reference && ./update-claude-docs.sh
 ```
 
-**Synced files** (in `docs/reference/`, 8 total):
+**Synced files** (in `docs/reference/`, 13 total):
 - SUBAGENTS.md, PLUGINS.md, HOOKS.md, SKILLS.md
-- SETTINGS.md, MCP.md, PLUGINS_REFERENCE.md, BEST_PRACTICES.md
+- SETTINGS.md, SETTINGS_REFERENCE.md, MCP.md, BEST_PRACTICES.md
+- PLUGINS_REFERENCE.md, PLUGINS_CREATE.md, PLUGINS_COMPONENTS.md, PLUGINS_MARKETPLACE_REFERENCE.md, PLUGINS_TROUBLESHOOTING.md
 
 **Custom files** (in `docs/`, never overwritten):
 - SKILL_DEVELOPMENT_BEST_PRACTICES.md, CLAUDE_CODE_GUIDE.md, README.md

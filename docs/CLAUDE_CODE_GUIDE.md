@@ -55,7 +55,7 @@ The global `~/.claude/CLAUDE.md` file sits at the top of a three-level memory hi
 | Global User | `~/.claude/CLAUDE.md` | Standards for ALL projects |
 | Project | `./CLAUDE.md` | Team-shared instructions |
 
-> **Official Reference**: For the complete settings specification, see [SETTINGS.md](./reference/SETTINGS.md).
+> **Official Reference**: For scopes and precedence, see [SETTINGS.md](./reference/SETTINGS.md); for every settings key, see [SETTINGS_REFERENCE.md](./reference/SETTINGS_REFERENCE.md).
 
 #### Security Rules
 
@@ -1042,13 +1042,17 @@ claude --add-dir ../shared-configs ../team-standards
 
 ### Synced Official Docs (in this repository)
 
-- [SETTINGS.md](./reference/SETTINGS.md) — Claude Code settings and configuration
+- [SETTINGS.md](./reference/SETTINGS.md) — Claude Code settings scopes and precedence
+- [SETTINGS_REFERENCE.md](./reference/SETTINGS_REFERENCE.md) — Full settings keys reference
 - [MCP.md](./reference/MCP.md) — Model Context Protocol reference
 - [SKILLS.md](./reference/SKILLS.md) — Using Skills in Claude Code
 - [HOOKS.md](./reference/HOOKS.md) — Event handling and hooks
 - [SUBAGENTS.md](./reference/SUBAGENTS.md) — Agent configuration and usage
 - [BEST_PRACTICES.md](./reference/BEST_PRACTICES.md) — Context engineering best practices
-- [PLUGINS_REFERENCE.md](./reference/PLUGINS_REFERENCE.md) — Plugins reference
+- [PLUGINS_REFERENCE.md](./reference/PLUGINS_REFERENCE.md) — Plugin manifest reference
+- [PLUGINS_CREATE.md](./reference/PLUGINS_CREATE.md) / [PLUGINS_COMPONENTS.md](./reference/PLUGINS_COMPONENTS.md) — Creating plugins and their components
+- [PLUGINS_MARKETPLACE_REFERENCE.md](./reference/PLUGINS_MARKETPLACE_REFERENCE.md) — marketplace.json schema
+- [PLUGINS_TROUBLESHOOTING.md](./reference/PLUGINS_TROUBLESHOOTING.md) — Plugin debugging
 
 ### Custom Docs (in this repository)
 

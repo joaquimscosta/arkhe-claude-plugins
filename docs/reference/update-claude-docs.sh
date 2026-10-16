@@ -88,6 +88,11 @@ readonly URL_MAPPINGS=(
     "https://code.claude.com/docs/en/mcp.md|MCP.md"
     "https://code.claude.com/docs/en/plugins-reference.md|PLUGINS_REFERENCE.md"
     "https://code.claude.com/docs/en/best-practices.md|BEST_PRACTICES.md"
+    "https://code.claude.com/docs/en/settings-reference.md|SETTINGS_REFERENCE.md"
+    "https://code.claude.com/docs/en/plugins/create.md|PLUGINS_CREATE.md"
+    "https://code.claude.com/docs/en/plugins/components.md|PLUGINS_COMPONENTS.md"
+    "https://code.claude.com/docs/en/plugins/marketplace-reference.md|PLUGINS_MARKETPLACE_REFERENCE.md"
+    "https://code.claude.com/docs/en/plugins/troubleshooting.md|PLUGINS_TROUBLESHOOTING.md"
     # NOTE: platform.claude.com docs (Agent Skills Overview, Claude 4 Best Practices)
     # do not serve raw markdown - use web version at https://platform.claude.com/docs/
 )

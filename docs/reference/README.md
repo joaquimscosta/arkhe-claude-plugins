@@ -10,10 +10,15 @@ This directory contains **auto-synced copies** of official Claude Code documenta
 | PLUGINS.md | Plugin system documentation |
 | HOOKS.md | Event handling documentation |
 | SKILLS.md | Using Skills in Claude Code |
-| SETTINGS.md | Configuration and settings reference |
+| SETTINGS.md | Settings scopes, precedence, and how-to |
+| SETTINGS_REFERENCE.md | Full settings keys, permissions, sandbox, env vars |
 | MCP.md | MCP server integration guide |
 | PLUGINS_REFERENCE.md | Plugin manifest reference |
 | BEST_PRACTICES.md | Official Claude Code best practices |
+| PLUGINS_CREATE.md | Creating plugins: quickstart, layout, local testing |
+| PLUGINS_COMPONENTS.md | Plugin components: skills, agents, hooks, MCP, LSP, monitors |
+| PLUGINS_MARKETPLACE_REFERENCE.md | marketplace.json schema |
+| PLUGINS_TROUBLESHOOTING.md | Plugin debugging and common errors |
 
 ## Updating
 
